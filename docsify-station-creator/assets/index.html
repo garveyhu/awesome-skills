@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{PROJECT_NAME}} - {{PROJECT_DESCRIPTION}}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>{{PROJECT_ICON}}</text></svg>"
+    />
+
+    <style>
+      :root {
+        --theme-color: #42b883;
+      }
+      body.dark {
+        background: #1e1e1e;
+        color: #e8e8e8;
+      }
+      body.dark .sidebar {
+        background: #252526;
+      }
+      body.dark .sidebar-toggle {
+        background: #252526;
+      }
+      body.dark .sidebar-nav a {
+        color: #aaa;
+      }
+      body.dark .sidebar-nav a:hover {
+        color: var(--theme-color);
+      }
+      body.dark .markdown-section {
+        color: #e8e8e8;
+      }
+      body.dark .markdown-section h1,
+      body.dark .markdown-section h2,
+      body.dark .markdown-section h3 {
+        color: #e8e8e8;
+      }
+      body.dark .markdown-section a {
+        color: var(--theme-color);
+      }
+      body.dark .markdown-section code {
+        background: #2d2d30;
+        color: #e8e8e8;
+      }
+      body.dark .markdown-section pre {
+        background: #2d2d30 !important;
+      }
+      body.dark .search input {
+        background: #2d2d30;
+        color: #e8e8e8;
+        border-color: #3e3e42;
+      }
+      body.dark .search {
+        border-bottom-color: #3e3e42 !important;
+      }
+      body.dark .search input::placeholder {
+        color: #888;
+      }
+      body.dark .search .results-panel {
+        background: #252526;
+        border-color: #3e3e42;
+      }
+      body.dark .search .matching-post {
+        border-bottom-color: #3e3e42;
+      }
+      body.dark .search .matching-post:hover {
+        background: #2d2d30;
+      }
+      .sidebar > h1 {
+        font-size: 16px;
+        padding: 0px 10px;
+        margin: 0;
+        text-align: center;
+      }
+      .sidebar-nav > ul > li > p {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 12px 15px 6px;
+      }
+      .sidebar-nav a {
+        font-size: 13px;
+        padding: 0px 15px;
+      }
+      .sidebar-toggle {
+        margin-left: 15px !important;
+      }
+      .theme-toggle-btn {
+        position: fixed;
+        top: 15px;
+        right: 20px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: #fff;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 1;
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+        padding: 0;
+      }
+      .theme-toggle-btn span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .theme-toggle-btn:hover {
+        transform: scale(1.1);
+      }
+      body.dark .theme-toggle-btn {
+        background: #2d2d30;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+      .content {
+        padding-right: 320px !important;
+      }
+      #right-toc {
+        position: fixed;
+        right: 20px;
+        top: 80px;
+        width: 260px;
+        max-height: calc(100vh - 100px);
+        overflow-y: auto;
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 8px;
+        border: 1px solid #ffffff;
+        z-index: 50;
+      }
+      body.dark #right-toc {
+        background: #252526;
+        border-color: #3e3e42;
+      }
+      #right-toc .toc-title {
+        font-weight: 700;
+        font-size: 15px;
+        margin: 0 0 15px 0;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e8e8e8;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        user-select: none;
+      }
+      #right-toc .toc-title .collapse-icon {
+        transition: transform 0.3s;
+      }
+      #right-toc.collapsed .toc-title .collapse-icon {
+        transform: rotate(-90deg);
+      }
+      #right-toc.collapsed #toc-content {
+        display: none;
+      }
+      body.dark #right-toc .toc-title {
+        color: #e8e8e8;
+        border-bottom-color: #3e3e42;
+      }
+      #right-toc a {
+        display: block;
+        padding: 5px 10px;
+        font-size: 13px;
+        line-height: 1.8;
+        color: #5d6d7e;
+        text-decoration: none;
+        border-left: 0;
+        transition: all 0.2s;
+        border-radius: 4px;
+      }
+      body.dark #right-toc a {
+        color: #aaa;
+      }
+      #right-toc a:hover {
+        color: var(--theme-color);
+        background: rgba(66, 184, 131, 0.1);
+      }
+      #right-toc a.active {
+        color: var(--theme-color);
+        font-weight: 600;
+        background: rgba(66, 184, 131, 0.15);
+      }
+      #right-toc .h2 {
+        padding-left: 10px;
+      }
+      #right-toc .h3 {
+        padding-left: 20px;
+        font-size: 12px;
+      }
+      #right-toc .h4 {
+        padding-left: 30px;
+        font-size: 12px;
+      }
+      #right-toc::-webkit-scrollbar {
+        width: 6px;
+      }
+      #right-toc::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      #right-toc::-webkit-scrollbar-thumb {
+        background: #ccc;
+        border-radius: 3px;
+      }
+      body.dark #right-toc::-webkit-scrollbar-thumb {
+        background: #555;
+      }
+      @media screen and (max-width: 1200px) {
+        #right-toc {
+          display: none;
+        }
+        .content {
+          padding-right: 2rem !important;
+        }
+        .theme-toggle-btn {
+          right: 20px;
+        }
+      }
+      .docsify-copy-code-button {
+        background: #f8f8f8 !important;
+        color: #878888 !important;
+        border: 1px solid #f8f8f8 !important;
+        border-radius: 4px !important;
+        font-size: 12px !important;
+        padding: 4px 10px !important;
+        box-shadow: 0 1px 3px rgba(248, 248, 248, 0.2) !important;
+        transition: all 0.3s !important;
+      }
+      .mermaid {
+        cursor: zoom-in;
+        transition: all 0.3s;
+      }
+      .mermaid:hover {
+        opacity: 0.9;
+      }
+      .image-viewer-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 255, 255, 0.95);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+      .image-viewer-overlay.active {
+        opacity: 1;
+      }
+      body.dark .image-viewer-overlay {
+        background: rgba(30, 30, 30, 0.95);
+      }
+      .image-viewer-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: move;
+      }
+      .image-viewer-container img {
+        max-width: none;
+        max-height: none;
+        user-select: none;
+      }
+      .image-viewer-close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background: rgba(0, 0, 0, 0.5);
+        border: none;
+        border-radius: 50%;
+        color: white;
+        font-size: 24px;
+        cursor: pointer;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+      }
+      .image-viewer-close:hover {
+        background: rgba(0, 0, 0, 0.8);
+        transform: scale(1.1);
+      }
+      .docsify-copy-code-button:hover {
+        background: #f8f8f8 !important;
+        border-color: #f8f8f8 !important;
+        box-shadow: 0 2px 6px rgba(248, 248, 248, 0.2) !important;
+      }
+      .docsify-copy-code-button.success {
+        background: #ffffff !important;
+        color: #52c41a !important;
+        border-color: #52c41a !important;
+      }
+      body.dark .docsify-copy-code-button {
+        background: #2d2d30 !important;
+        color: #42b883 !important;
+        border-color: #3e3e42 !important;
+      }
+      body.dark .docsify-copy-code-button:hover {
+        background: #3e3e42 !important;
+        border-color: #42b883 !important;
+      }
+      body.dark .docsify-copy-code-button.success {
+        background: #2d2d30 !important;
+        color: #52c41a !important;
+        border-color: #52c41a !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">加载中...</div>
+
+    <!-- 主题切换按钮 -->
+    <button class="theme-toggle-btn" onclick="toggleTheme()">
+      <span id="themeIcon">🌙</span>
+    </button>
+
+    <!-- 右侧固定目录 -->
+    <div id="right-toc">
+      <div class="toc-title" onclick="toggleToc()">
+        目录导航
+        <span class="collapse-icon">▼</span>
+      </div>
+      <div id="toc-content"></div>
+    </div>
+
+    <script>
+      // 目录收缩
+      function toggleToc() {
+        document.getElementById("right-toc").classList.toggle("collapsed");
+      }
+
+      // 主题切换
+      function toggleTheme() {
+        document.body.classList.toggle("dark");
+        const isDark = document.body.classList.contains("dark");
+        document.getElementById("themeIcon").textContent = isDark ? "☀️" : "🌙";
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+      }
+
+      // 初始化主题
+      if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark");
+        document.getElementById("themeIcon").textContent = "☀️";
+      }
+
+      // Docsify 配置
+      window.$docsify = {
+        name: "{{PROJECT_NAME}}",
+        repo: "",
+        homepage: "docsify/README.md",
+        loadSidebar: "docsify/_sidebar.md",
+        auto2top: true,
+        maxLevel: 1,
+        subMaxLevel: 0,
+
+        search: {
+          paths: "auto",
+          placeholder: "搜索...",
+          noData: "无结果",
+        },
+
+        copyCode: {
+          buttonText: "复制",
+          successText: "已复制",
+        },
+
+        pagination: {
+          previousText: "上一章",
+          nextText: "下一章",
+        },
+
+        zoom: {
+          selector: ".mermaid svg, img",
+          background: "rgba(0,0,0,0.8)",
+          delay: 300,
+        },
+
+        // 右侧目录生成插件
+        plugins: [
+          function (hook) {
+            hook.doneEach(function () {
+              const content = document.querySelector(".markdown-section");
+              const tocContent = document.getElementById("toc-content");
+
+              if (!content || !tocContent) return;
+
+              const headings = content.querySelectorAll("h1, h2, h3, h4");
+              let html = "";
+
+              headings.forEach((heading) => {
+                const level = heading.tagName.toLowerCase();
+                const text = heading.textContent;
+                const id = heading.id;
+
+                if (id) {
+                  const currentRoute = window.location.hash.split("?")[0];
+                  const href = `${currentRoute}?id=${encodeURIComponent(id)}`;
+                  html += `<a href="${href}" class="${level}">${text}</a>`;
+                }
+              });
+
+              tocContent.innerHTML = html;
+
+              const links = tocContent.querySelectorAll("a");
+
+              function updateActive() {
+                let current = "";
+                headings.forEach((heading) => {
+                  const rect = heading.getBoundingClientRect();
+                  if (rect.top <= 120) {
+                    current = heading.id;
+                  }
+                });
+                if (!current && headings.length > 0) {
+                  current = headings[0].id;
+                }
+                links.forEach((link) => {
+                  link.classList.remove("active");
+                  const href = link.getAttribute("href");
+                  const linkId = decodeURIComponent(href.split("id=")[1] || "");
+                  if (linkId === current) {
+                    link.classList.add("active");
+                    link.scrollIntoView({
+                      block: "nearest",
+                      behavior: "smooth",
+                    });
+                  }
+                });
+              }
+
+              let scrollTimer;
+              function throttledUpdate() {
+                if (scrollTimer) return;
+                scrollTimer = setTimeout(() => {
+                  updateActive();
+                  scrollTimer = null;
+                }, 50);
+              }
+              window.removeEventListener("scroll", throttledUpdate);
+              window.addEventListener("scroll", throttledUpdate);
+              updateActive();
+            });
+          },
+        ],
+      };
+    </script>
+
+    <!-- Docsify -->
+    <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
+
+    <!-- Mermaid -->
+    <script src="//cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: document.body.classList.contains("dark") ? "dark" : "default",
+        securityLevel: "loose",
+      });
+    </script>
+
+    <!-- Plugins -->
+    <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/docsify-copy-code@2"></script>
+    <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+
+    <!-- Panzoom -->
+    <script src="//cdn.jsdelivr.net/npm/@panzoom/panzoom@4/dist/panzoom.min.js"></script>
+
+    <!-- 代码高亮 -->
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-javascript.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-typescript.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-jsx.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-tsx.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-css.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-scss.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-html.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-java.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-python.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-yaml.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-json.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-markdown.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-docker.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-sql.min.js"></script>
+
+    <script>
+      // Mermaid 渲染插件
+      (function () {
+        function renderMermaid() {
+          const mermaidBlocks = document.querySelectorAll(
+            'pre[data-lang="mermaid"] code'
+          );
+          mermaidBlocks.forEach((block, index) => {
+            const pre = block.parentElement;
+            const code = block.textContent;
+            const container = document.createElement("div");
+            container.className = "mermaid";
+            container.setAttribute("data-original-code", code);
+            container.textContent = code;
+            pre.parentNode.replaceChild(container, pre);
+          });
+
+          if (window.mermaid) {
+            mermaid.init(
+              undefined,
+              document.querySelectorAll(".mermaid:not([data-processed])")
+            );
+          }
+        }
+
+        // Panzoom 图片查看（提取为函数，每次页面切换后重新绑定）
+        function setupPanzoom() {
+          document.querySelectorAll(".mermaid svg").forEach((svg) => {
+            if (svg._panzoomBound) return;
+            svg._panzoomBound = true;
+            svg.style.cursor = "zoom-in";
+            svg.addEventListener("click", function () {
+              const blob = new Blob(
+                [new XMLSerializer().serializeToString(svg)],
+                { type: "image/svg+xml" }
+              );
+              const url = URL.createObjectURL(blob);
+
+              const overlay = document.createElement("div");
+              overlay.className = "image-viewer-overlay";
+              const container = document.createElement("div");
+              container.className = "image-viewer-container";
+              const img = document.createElement("img");
+              img.src = url;
+              const closeBtn = document.createElement("button");
+              closeBtn.className = "image-viewer-close";
+              closeBtn.innerHTML = "&times;";
+
+              container.appendChild(img);
+              overlay.appendChild(container);
+              overlay.appendChild(closeBtn);
+              document.body.appendChild(overlay);
+
+              img.onload = function () {
+                const panzoom = Panzoom(img, {
+                  maxScale: 10,
+                  minScale: 0.05,
+                  step: 0.3,
+                  cursor: "move",
+                });
+                const scale = Math.min(
+                  (window.innerWidth * 0.9) / img.naturalWidth,
+                  (window.innerHeight * 0.9) / img.naturalHeight,
+                  0.5
+                );
+                panzoom.zoom(scale, { animate: false });
+                container.addEventListener("wheel", panzoom.zoomWithWheel);
+                setTimeout(() => overlay.classList.add("active"), 10);
+
+                const close = () => {
+                  overlay.classList.remove("active");
+                  setTimeout(() => {
+                    panzoom.destroy();
+                    document.body.removeChild(overlay);
+                    URL.revokeObjectURL(url);
+                  }, 200);
+                };
+                closeBtn.onclick = close;
+                overlay.onclick = (e) => e.target === overlay && close();
+                document.addEventListener("keydown", function esc(e) {
+                  if (e.key === "Escape") {
+                    close();
+                    document.removeEventListener("keydown", esc);
+                  }
+                });
+              };
+            });
+          });
+        }
+
+        if (window.$docsify) {
+          window.$docsify.plugins = [].concat(
+            window.$docsify.plugins || [],
+            function (hook) {
+              hook.doneEach(function () {
+                setTimeout(function () {
+                  renderMermaid();
+                  // 等 Mermaid 渲染完 SVG 后再绑定 Panzoom
+                  setTimeout(setupPanzoom, 500);
+                }, 50);
+              });
+            }
+          );
+        }
+      })();
+    </script>
+  </body>
+</html>

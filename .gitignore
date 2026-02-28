@@ -1,0 +1,15 @@
+# Ignore everything by default
+*
+
+# Allow these skills (whitelist)
+!.gitignore
+!README.md
+!react-best-practices/
+!react-best-practices/**
+!wiki-creator/
+!wiki-creator/**
+!docsify-station-creator/
+!docsify-station-creator/**
+
+# Still ignore packaged .skill files
+*.skill
