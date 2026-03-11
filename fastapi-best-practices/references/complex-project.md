@@ -22,6 +22,11 @@ UV workspace 多包架构，适合大型系统。参考 Sage 项目的 micro-ker
 ├── {project}-core/
 │   └── src/{pkg}/core/
 │       ├── complex/                 # 技术组件
+│       │   ├── auth/
+│       │   │   ├── auth_util.py     # JWT 工具
+│       │   │   └── oauth.py         # get_current_user 依赖
+│       │   ├── constants/
+│       │   │   └── auth_whitelist.py
 │       │   ├── config/
 │       │   │   ├── base_settings.py
 │       │   │   ├── constants.py
@@ -41,6 +46,7 @@ UV workspace 多包架构，适合大型系统。参考 Sage 项目的 micro-ker
 ├── {project}-system/
 │   └── src/{pkg}/system/
 │       ├── api/                     # APIRouter（自动注册）
+│       │   ├── auth_api.py          # 登录/注册接口
 │       │   └── user_api.py
 │       └── modules/
 │           └── user/
@@ -67,6 +73,8 @@ UV workspace 多包架构，适合大型系统。参考 Sage 项目的 micro-ker
 ├── pyproject.toml                   # UV workspace 根
 └── run.sh
 ```
+
+> **禁止物理外键**：所有关联字段只用 `Column(Integer, index=True, comment="关联 xxx 表 ID")`，不使用 `ForeignKey()`。适用于所有数据库类型（SQLite / MySQL / PostgreSQL）。
 
 ---
 
@@ -305,6 +313,10 @@ CONFIG_PATH = PROJECT_ROOT / "config"
 | `{project}-core` | 第三方库 | 其他子包 |
 | `{project}-system` | `{project}-core` | `{project}-app` |
 | `{project}-app` | 所有包 | — |
+
+### 认证规范
+
+JWT 认证工具在 `{project}-core` 中实现（`complex/auth/`），`{project}-system` 通过 `get_current_user` 依赖注入获取当前用户。参考 `references/simple-project.md` 中的 auth 相关模板。
 
 ---
 
