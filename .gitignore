@@ -12,6 +12,13 @@
 !docsify-station-creator/**
 !fastapi-best-practices/
 !fastapi-best-practices/**
+!website-creator/
+!website-creator/**
+!docs/
+!docs/**
 
 # Still ignore packaged .skill files
 *.skill
+
+# Other
+**/.DS_Store
