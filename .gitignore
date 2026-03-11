@@ -10,6 +10,8 @@
 !wiki-creator/**
 !docsify-station-creator/
 !docsify-station-creator/**
+!fastapi-best-practices/
+!fastapi-best-practices/**
 
 # Still ignore packaged .skill files
 *.skill
