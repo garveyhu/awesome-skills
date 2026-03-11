@@ -335,6 +335,269 @@ def on_startup():
 | API 文件 | `{模块}_api.py` | `user_api.py` |
 | Service 文件 | `{模块}_service.py` | `user_service.py` |
 
+### JWT 认证模式
+
+认证逻辑由三个文件协作：
+
+```python
+# {pkg}/complex/auth/auth_util.py
+import jwt
+from sqlalchemy.orm import Session
+from {pkg}.complex.database import SessionLocal
+from {pkg}.models.user import User
+
+SECRET_KEY = "your-secret-key"   # 从 config 读取
+ALGORITHM = "HS256"
+
+def verify_token(token: str) -> Optional[str]:
+    """验证 JWT，返回 username；无效返回 None"""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload.get("sub")
+    except Exception:
+        return None
+
+def verify_and_get_user(token: str) -> Optional[User]:
+    """验证 Token 并返回完整 User 对象"""
+    username = verify_token(token)
+    if not username:
+        return None
+    db: Session = SessionLocal()
+    try:
+        return db.query(User).filter(User.username == username).first()
+    finally:
+        db.close()
+```
+
+```python
+# {pkg}/complex/auth/oauth.py
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from {pkg}.complex.auth.auth_util import verify_and_get_user
+
+bearer_scheme = HTTPBearer()
+
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)):
+    """FastAPI 依赖注入：获取当前认证用户"""
+    user = verify_and_get_user(credentials.credentials)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    return user
+```
+
+```python
+# {pkg}/complex/constants/auth_whitelist.py
+class AuthWhitelist:
+    _WHITELIST = ["/auth/login", "/auth/register", "/health", "/ping",
+                  "/docs", "/redoc", "/openapi.json"]
+
+    @classmethod
+    def is_whitelisted(cls, path: str) -> bool:
+        return any(path.startswith(r) for r in cls._WHITELIST)
+```
+
+中间件使用白名单：
+```python
+@app.middleware("http")
+async def auth_middleware(request: Request, call_next):
+    if AuthWhitelist.is_whitelisted(request.url.path):
+        try:
+            return await call_next(request)
+        finally:
+            RequestContext.clear()
+
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return JSONResponse(status_code=401,
+            content={"success": False, "code": 401, "message": "Missing token"})
+
+    token = auth_header.split(" ", 1)[1]
+    user = verify_and_get_user(token)
+    if not user:
+        return JSONResponse(status_code=401,
+            content={"success": False, "code": 401, "message": "Invalid token"})
+
+    RequestContext.set_current_user(user)
+    try:
+        return await call_next(request)
+    finally:
+        RequestContext.clear()
+```
+
+API 层使用 `get_current_user`：
+```python
+from {pkg}.complex.auth.oauth import get_current_user
+
+@router.get("/profile")
+def get_profile(current_user=Depends(get_current_user)):
+    return Result.ok({"id": current_user.id, "username": current_user.username})
+```
+
+### 自定义业务异常
+
+业务层抛异常，框架层统一捕获处理：
+
+```python
+# {pkg}/complex/response/exception.py
+from {pkg}.complex.response.code import ResultCode
+
+class CustomException(Exception):
+    def __init__(self, result_code: ResultCode, message: str = None):
+        self.result_code = result_code
+        self.message = message or result_code.message
+        super().__init__(self.message)
+```
+
+在 `server.py` 的 `create_app()` 中注册处理器：
+```python
+from {pkg}.complex.response.exception import CustomException
+
+@app.exception_handler(CustomException)
+async def custom_exception_handler(request: Request, exc: CustomException):
+    return JSONResponse(
+        status_code=exc.result_code.code,
+        content=Result(success=False, code=exc.result_code.code,
+                       message=exc.message).model_dump(),
+    )
+```
+
+业务层使用：
+```python
+# Service 层
+from {pkg}.complex.response.exception import CustomException
+from {pkg}.complex.response.code import ResultCode
+
+def get_user(db: Session, user_id: int) -> User:
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise CustomException(ResultCode.NOT_FOUND, f"用户 {user_id} 不存在")
+    return user
+```
+
+### 分页模式
+
+```python
+# {pkg}/schemas/common/pagination.py
+from typing import Generic, List, TypeVar
+from pydantic import BaseModel, Field
+
+T = TypeVar("T")
+
+class PageParams(BaseModel):
+    page: int = Field(1, ge=1, description="页码，从 1 开始")
+    page_size: int = Field(10, ge=1, le=100, description="每页数量")
+
+class PageResult(BaseModel, Generic[T]):
+    items: List[T] = Field(default_factory=list)
+    total: int = Field(0, description="总数")
+    page: int = Field(1)
+    page_size: int = Field(10)
+```
+
+Service 层：
+```python
+def list_users(db: Session, params: PageParams) -> PageResult:
+    query = db.query(User)
+    total = query.count()
+    items = query.offset((params.page - 1) * params.page_size)\
+                 .limit(params.page_size).all()
+    return PageResult(items=items, total=total,
+                      page=params.page, page_size=params.page_size)
+```
+
+API 层：
+```python
+@router.get("")
+def list_users(params: PageParams = Depends(), db: Session = Depends(get_db)):
+    return Result.ok(UserService.list_users(db, params))
+```
+
+### CORS 配置
+
+在 `create_app()` 中注册（中间件顺序：CORS 在 auth 之前）：
+
+```python
+from fastapi.middleware.cors import CORSMiddleware
+
+def create_app() -> FastAPI:
+    app = FastAPI(...)
+
+    # CORS（开发：*, 生产：指定域名列表）
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],            # 生产改为 ["https://yourdomain.com"]
+        allow_credentials=True,
+        allow_methods=["GET", "POST"],  # 与项目 HTTP 方法规范一致
+        allow_headers=["*"],
+    )
+    # ... 其他配置
+```
+
+### SQLAlchemy Model 时间戳与外键约定
+
+**时间戳**（统一使用北京时间 +08:00）：
+```python
+from sqlalchemy import Column, DateTime, Integer, String, text
+
+class Article(Base):
+    __tablename__ = "articles"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    title = Column(String(200), nullable=False)
+
+    # ✅ 正确：server_default 设置北京时间
+    created_at = Column(DateTime(timezone=True),
+                        server_default=text("(datetime('now', '+08:00'))"))
+    updated_at = Column(DateTime(timezone=True),
+                        server_default=text("(datetime('now', '+08:00'))"),
+                        onupdate=text("(datetime('now', '+08:00'))"))
+```
+
+**禁止物理外键（适用所有数据库类型）**：
+```python
+# ✅ 正确：逻辑关联，index=True + comment 说明
+user_id = Column(Integer, index=True, comment="关联 users 表 ID")
+space_id = Column(Integer, index=True, comment="关联 spaces 表 ID")
+
+# ❌ 错误：物理外键约束
+# user_id = Column(Integer, ForeignKey("users.id"))
+```
+
+原因：统一多数据库适配（SQLite/MySQL/PostgreSQL），避免迁移复杂性，逻辑关联由应用层维护。
+
+### Pydantic Schema 约定
+
+```python
+from pydantic import BaseModel, ConfigDict, Field
+from typing import Optional
+from datetime import datetime
+
+# 响应 Schema：from_attributes=True 支持 ORM 对象直接映射
+class UserVO(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    username: str
+    created_at: datetime = Field(description="创建时间")
+
+# Create DTO：必填字段
+class UserCreateDTO(BaseModel):
+    username: str = Field(description="用户名")
+    password: str = Field(description="密码")
+
+# Update DTO：所有字段 Optional（只传要改的字段）
+class UserUpdateDTO(BaseModel):
+    username: Optional[str] = Field(None, description="用户名")
+    password: Optional[str] = Field(None, description="密码")
+
+# camelCase 别名（前后端字段名不一致时）
+class ConfigDTO(BaseModel):
+    page_size: int = Field(10, alias="pageSize")
+    sort_order: Optional[str] = Field(None, alias="sortOrder")
+
+    model_config = ConfigDict(populate_by_name=True)
+```
+
 ---
 
 ## 阶段三：代码审查（Review）
@@ -390,3 +653,21 @@ def on_startup():
 - [ ] `ruff check .` 无报错
 - [ ] 命名符合 snake_case 约定
 - [ ] 无 `print()` 语句（用 `logger` 替代）
+
+### 认证检查
+
+- [ ] 中间件白名单包含 `/health`、`/ping`、`/docs`
+- [ ] API 层使用 `Depends(get_current_user)` 获取用户，不手动解析 Token
+- [ ] 业务异常使用 `CustomException(ResultCode.XXX)` 抛出
+
+### 数据库 Schema 检查
+
+- [ ] Model 无 `ForeignKey()` 约束（关联字段只用 `index=True`）
+- [ ] 关联字段有 `comment` 注明关联关系
+- [ ] `created_at` / `updated_at` 使用 `server_default=text("(datetime('now', '+08:00'))")`
+
+### Schema 检查
+
+- [ ] 响应 Schema 有 `model_config = ConfigDict(from_attributes=True)`
+- [ ] Update DTO 所有字段为 `Optional`
+- [ ] CORS 已配置；生产环境 `allow_origins` 非 `["*"]`
