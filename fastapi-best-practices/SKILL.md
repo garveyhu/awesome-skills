@@ -629,6 +629,17 @@ class ConfigDTO(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 ```
 
+### 可选工具模式
+
+以下工具按需引入，详见 [references/patterns.md](references/patterns.md)：
+
+| 工具 | 用途 |
+|------|------|
+| `convert_util.py` | ORM 对象 → 字典/Schema，snake_case → camelCase |
+| `time_util.py` | UTC → 北京时间转换，时间范围解析 |
+| `request_context_util.py` | 带错误处理的 `get_required_user_id()` 等便捷方法 |
+| `crypto_util.py` | AES-256-GCM 可逆加密（存储 API Key 等场景，按需评估） |
+
 ---
 
 ## 阶段三：代码审查（Review）
