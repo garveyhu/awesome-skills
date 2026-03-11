@@ -341,6 +341,8 @@ def on_startup():
 
 ```python
 # {pkg}/complex/auth/auth_util.py
+from typing import Optional
+
 import jwt
 from sqlalchemy.orm import Session
 from {pkg}.complex.database import SessionLocal
@@ -398,6 +400,12 @@ class AuthWhitelist:
 
 中间件使用白名单：
 ```python
+# Required imports in main.py/server.py:
+# from starlette.responses import JSONResponse
+# from {pkg}.complex.auth.auth_util import verify_and_get_user
+# from {pkg}.complex.config.request_context import RequestContext
+# from {pkg}.complex.constants.auth_whitelist import AuthWhitelist
+
 @app.middleware("http")
 async def auth_middleware(request: Request, call_next):
     if AuthWhitelist.is_whitelisted(request.url.path):
@@ -446,6 +454,16 @@ class CustomException(Exception):
         self.result_code = result_code
         self.message = message or result_code.message
         super().__init__(self.message)
+
+# ResultCode 示例（实际定义在 {pkg}/complex/response/code.py）：
+# class ResultCode(Enum):
+#     SUCCESS = (200, "成功")
+#     NOT_FOUND = (404, "资源不存在")
+#     UNAUTHORIZED = (401, "未授权")
+#
+#     def __init__(self, code: int, message: str):
+#         self.code = code
+#         self.message = message
 ```
 
 在 `server.py` 的 `create_app()` 中注册处理器：
@@ -496,11 +514,12 @@ class PageResult(BaseModel, Generic[T]):
 
 Service 层：
 ```python
-def list_users(db: Session, params: PageParams) -> PageResult:
+def list_users(db: Session, params: PageParams) -> PageResult[UserVO]:
     query = db.query(User)
     total = query.count()
-    items = query.offset((params.page - 1) * params.page_size)\
+    users = query.offset((params.page - 1) * params.page_size)\
                  .limit(params.page_size).all()
+    items = [UserVO.model_validate(u) for u in users]  # ORM → Pydantic VO
     return PageResult(items=items, total=total,
                       page=params.page, page_size=params.page_size)
 ```
@@ -522,15 +541,23 @@ from fastapi.middleware.cors import CORSMiddleware
 def create_app() -> FastAPI:
     app = FastAPI(...)
 
-    # CORS（开发：*, 生产：指定域名列表）
+    # 开发环境：允许所有来源（不能同时使用 credentials）
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],            # 生产改为 ["https://yourdomain.com"]
-        allow_credentials=True,
-        allow_methods=["GET", "POST"],  # 与项目 HTTP 方法规范一致
+        allow_origins=["*"],
+        allow_credentials=False,
+        allow_methods=["GET", "POST"],
         allow_headers=["*"],
     )
-    # ... 其他配置
+
+    # 生产环境（替换上面的配置）：
+    # app.add_middleware(
+    #     CORSMiddleware,
+    #     allow_origins=["https://yourdomain.com"],
+    #     allow_credentials=True,
+    #     allow_methods=["GET", "POST"],
+    #     allow_headers=["*"],
+    # )
 ```
 
 ### SQLAlchemy Model 时间戳与外键约定
@@ -550,8 +577,12 @@ class Article(Base):
                         server_default=text("(datetime('now', '+08:00'))"))
     updated_at = Column(DateTime(timezone=True),
                         server_default=text("(datetime('now', '+08:00'))"),
-                        onupdate=text("(datetime('now', '+08:00'))"))
+                        onupdate=lambda: datetime.now(tz=timezone(timedelta(hours=8))))
 ```
+
+> Note: `server_default` uses SQLite syntax for the initial value; `onupdate` uses a Python-side callable for ORM-triggered updates. Add `from datetime import datetime, timedelta, timezone` to imports.
+>
+> For MySQL/PostgreSQL, use: `server_default=text("NOW()")`.
 
 **禁止物理外键（适用所有数据库类型）**：
 ```python
