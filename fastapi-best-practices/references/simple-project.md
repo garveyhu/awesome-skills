@@ -402,6 +402,172 @@ def get_db():
 
 ---
 
+### `src/{pkg}/complex/auth/auth_util.py`
+
+```python
+from typing import Optional
+import datetime
+
+import jwt
+from sqlalchemy.orm import Session
+
+from {pkg}.complex.config.inventory import AppSettings
+from {pkg}.complex.database import SessionLocal
+from {pkg}.models.user import User
+
+SECRET_KEY = AppSettings.SECRET_KEY   # config/app.json 中配置
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 24 小时
+
+
+def create_access_token(username: str) -> str:
+    """生成 JWT Token"""
+    payload = {
+        "sub": username,
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES),
+    }
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def verify_token(token: str) -> Optional[str]:
+    """验证 Token，返回 username；失败返回 None"""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload.get("sub")
+    except Exception:
+        return None
+
+
+def verify_and_get_user(token: str) -> Optional[User]:
+    """验证 Token 并返回 User 对象"""
+    username = verify_token(token)
+    if not username:
+        return None
+    db: Session = SessionLocal()
+    try:
+        return db.query(User).filter(User.username == username).first()
+    finally:
+        db.close()
+```
+
+安装 JWT 库：`uv add pyjwt`
+
+---
+
+### `src/{pkg}/complex/auth/oauth.py`
+
+```python
+from typing import Optional
+
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
+from {pkg}.complex.auth.auth_util import verify_and_get_user
+from {pkg}.models.user import User
+
+bearer_scheme = HTTPBearer(auto_error=False)
+
+
+def get_current_user(
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
+) -> User:
+    """FastAPI 依赖注入：验证 Token 并返回当前用户"""
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Missing token")
+    user = verify_and_get_user(credentials.credentials)
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+    return user
+```
+
+---
+
+### `src/{pkg}/complex/constants/auth_whitelist.py`
+
+```python
+class AuthWhitelist:
+    """认证白名单：这些路由跳过 JWT 验证"""
+
+    _WHITELIST = [
+        "/auth/login",
+        "/auth/register",
+        "/health",
+        "/ping",
+        "/docs",
+        "/redoc",
+        "/openapi.json",
+    ]
+
+    @classmethod
+    def is_whitelisted(cls, path: str) -> bool:
+        return any(path.startswith(route) for route in cls._WHITELIST)
+
+    @classmethod
+    def get_all(cls) -> list[str]:
+        return cls._WHITELIST.copy()
+```
+
+---
+
+### `src/{pkg}/complex/response/exception.py`
+
+```python
+from {pkg}.complex.response.code import ResultCode
+
+
+class CustomException(Exception):
+    """业务异常：携带 ResultCode 和自定义消息，由全局 exception_handler 捕获"""
+
+    def __init__(self, result_code: ResultCode, message: str = None):
+        self.result_code = result_code
+        self.message = message if message else result_code.message
+        super().__init__(self.message)
+```
+
+在 `server.py` `create_app()` 中注册：
+```python
+from {pkg}.complex.response.exception import CustomException
+
+@app.exception_handler(CustomException)
+async def custom_exception_handler(request: Request, exc: CustomException):
+    return JSONResponse(
+        status_code=exc.result_code.code,
+        content=Result(
+            success=False, code=exc.result_code.code, message=exc.message
+        ).model_dump(),
+    )
+```
+
+---
+
+### `src/{pkg}/schemas/common/pagination.py`
+
+```python
+from typing import Generic, List, TypeVar
+
+from pydantic import BaseModel, Field
+
+T = TypeVar("T")
+
+
+class PageParams(BaseModel):
+    """分页查询参数（通过 Depends() 注入）"""
+
+    page: int = Field(1, ge=1, description="页码，从 1 开始")
+    page_size: int = Field(10, ge=1, le=100, description="每页数量，最大 100")
+
+
+class PageResult(BaseModel, Generic[T]):
+    """分页查询结果（包裹在 Result.ok() 中返回）"""
+
+    items: List[T] = Field(default_factory=list, description="数据列表")
+    total: int = Field(0, description="总记录数")
+    page: int = Field(1, description="当前页码")
+    page_size: int = Field(10, description="每页数量")
+```
+
+---
+
 ### `src/{pkg}/models/base.py`
 
 ```python
@@ -415,7 +581,8 @@ __all__ = ["Base"]
 ### `src/{pkg}/models/user.py`（示例）
 
 ```python
-from sqlalchemy import Column, DateTime, Integer, String, func
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, text
+from datetime import datetime, timedelta, timezone
 
 from {pkg}.complex.database import Base
 
@@ -424,10 +591,56 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(100), nullable=False)
-    email = Column(String(200), nullable=False, unique=True)
-    created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+    username = Column(String(100), nullable=False, unique=True, index=True)
+    password_hash = Column(String(255), nullable=False)
+    is_active = Column(Boolean, default=True)
+
+    # 逻辑外键：不使用 ForeignKey()，用 index=True + comment
+    role_id = Column(Integer, index=True, comment="关联 roles 表 ID")
+
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=text("(datetime('now', '+08:00'))"),
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=text("(datetime('now', '+08:00'))"),
+        onupdate=lambda: datetime.now(tz=timezone(timedelta(hours=8))),
+    )
+```
+
+---
+
+### `src/{pkg}/modules/user/schemas/user_dto.py`
+
+```python
+from typing import Optional
+from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, Field
+
+
+class UserVO(BaseModel):
+    """用户视图对象（响应）"""
+    model_config = ConfigDict(from_attributes=True)  # 支持 ORM 对象直接映射
+
+    id: int
+    username: str
+    is_active: bool
+    created_at: datetime = Field(description="创建时间")
+
+
+class UserCreateDTO(BaseModel):
+    """创建用户（必填字段）"""
+    username: str = Field(description="用户名，唯一")
+    password: str = Field(description="明文密码，服务层负责加密")
+
+
+class UserUpdateDTO(BaseModel):
+    """更新用户（所有字段 Optional，只传要改的）"""
+    username: Optional[str] = Field(None, description="用户名")
+    password: Optional[str] = Field(None, description="新密码")
+    is_active: Optional[bool] = Field(None, description="是否启用")
 ```
 
 ---
