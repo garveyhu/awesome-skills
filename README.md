@@ -1,177 +1,164 @@
 # Awesome Skills
 
-A collection of AI agent skills for [Claude Code](https://docs.anthropic.com/en/docs/claude-code) and other AI coding assistants. These skills cover the full lifecycle of building and shipping a web application — from idea to production.
+**AI skills for the complete web development lifecycle — from idea to deployed container.**
+
+Six opinionated, production-tested skills for Claude Code that encode years of real-world experience into reusable AI workflows. Describe your idea in plain language; the skills handle architecture decisions, boilerplate, conventions, and deployment — so you ship faster without cutting corners.
+
+> 中文版：[README.zh-CN.md](README.zh-CN.md)
 
 ---
 
-## The Full Stack Workflow
+## Why This Exists
 
-Skills in this collection are designed to be used together. Here's the complete journey from idea to deployed product:
+When you ask an AI to "create a React project" or "write a Dockerfile," you get generic output. These skills give your AI a specific, opinionated point of view — one that comes from production apps, not documentation examples.
+
+- **Conventions are pre-decided.** No more choosing between 10 folder structures.
+- **Patterns are battle-tested.** JWT auth, pagination, SSE streaming, multi-arch images — all included.
+- **Skills compose.** Use them independently or chain them to take a project from zero to deployed.
+
+---
+
+## The Workflow
 
 ```
-想法 → website-creator → 项目骨架
-          ↓                    ↓
-  react-best-practices   fastapi-best-practices
-  （前端开发细节）         （后端开发细节）
-          ↓
-     wiki-creator
-    （生成项目文档）
-          ↓
-  docsify-station-creator
-   （文档建站，可浏览）
-          ↓
-  docker-best-practices
-  （容器化 → 测试 → 推送 → 部署）
+  "I want to build a subscription app"
+              │
+              ▼
+     ┌─────────────────┐
+     │ website-creator │  ← Socratic Q&A → plan → scaffolds the project
+     └────────┬────────┘
+              │
+     ┌────────┴────────┐
+     ▼                 ▼
+react-best-       fastapi-best-
+ practices         practices
+(frontend)         (backend)
+     │                 │
+     └────────┬────────┘
+              ▼
+       wiki-creator       ← scans code → generates structured docs
+              │
+              ▼
+  docsify-station-creator ← turns docs/ into a browsable site
+              │
+              ▼
+  docker-best-practices   ← Dockerfile + compose + push + deploy
 ```
 
-**典型使用流程：**
-
-1. **`website-creator`** — 描述你的产品想法，skill 通过苏格拉底式提问确认需求，输出规划，确认后自动调用 `react-best-practices` 和 `fastapi-best-practices` 创建完整项目骨架
-2. **`react-best-practices`** — 在已有前端项目中添加页面、组件、API 服务，或审查前端代码质量
-3. **`fastapi-best-practices`** — 在已有后端项目中添加接口、数据模型，或审查后端代码规范
-4. **`wiki-creator`** — 深度扫描项目代码，自动生成结构化的多文件 Markdown 文档
-5. **`docsify-station-creator`** — 将 `docs/` 目录一键转为可浏览的 Docsify 文档站
-6. **`docker-best-practices`** — 分析项目结构，生成完整 `docker/` 目录，引导本地测试、多架构镜像推送、生产环境部署
+Each skill works standalone. Together, they cover the full lifecycle.
 
 ---
 
 ## Skills
 
-### website-creator
+### [`website-creator`](website-creator/)
 
-从产品想法到完整项目骨架的全流程引导。
+**Turn a product idea into a scaffolded project through structured conversation.**
 
-**Features:**
-- 苏格拉底式提问（固定 3 问 + 最多 5 轮动态追问，达到 95% 需求确定度才出规划）
-- 输出结构化项目规划，用户确认后执行，不提前创建任何文件
-- 自动判断前端/全栈类型，调用对应 skill 的 Init 阶段
-- 单 git 仓库管理前后端（`frontend/` + `backend/` 在同一 repo 根目录）
-- 全栈项目始终内置 JWT 认证骨架
+Asks 3 fixed questions (name, type, directory) then up to 5 rounds of Socratic follow-up — reaching 95% requirement certainty before generating a single file. Outputs a structured plan for your approval, then invokes `react-best-practices` and/or `fastapi-best-practices` to build the skeleton. Frontend-only or full-stack. Single git repo at the root. JWT auth always included in full-stack projects.
 
-**Requires:** `react-best-practices`（前端），`fastapi-best-practices`（全栈）
+```
+"I want to build a SaaS platform for team task management"
+→ clarifying questions → plan confirmation → project scaffolded
+```
 
 ---
 
-### react-best-practices
+### [`react-best-practices`](react-best-practices/)
 
-基于 `yarn + Vite + TypeScript + React + Ant Design + Tailwind CSS` 的 React 项目全生命周期规范。
+**A complete React development system: scaffold, guide, review.**
 
-**Features:**
-- **Init** — 脚手架创建 + 完整代码规范工具链（ESLint、Prettier、Stylelint、Commitlint、Husky、ls-lint、lint-staged）
-- **Guide** — 添加页面、组件、API 服务的分层规范；全局 Loading 两层模式（Suspense 全屏 + 页面内 Spin）
-- **Review** — 结构、命名、代码质量、配置一致性检查清单
+Stack: `yarn + Vite + TypeScript + React 19 + Ant Design + Tailwind CSS`
 
-包含 9 份配置模板和 7 份源码模板（含完整 `App.tsx` 模板）。支持简单项目（静态路由）和复杂项目（`import.meta.glob` 动态路由发现）两种规模。
+- **Init** — Creates project with full linting toolchain: ESLint, Prettier, Stylelint, Commitlint, Husky, ls-lint, lint-staged. 9 config templates + 7 source templates.
+- **Guide** — Layered conventions for pages, components, hooks, services, types. Two-layer loading pattern (Suspense full-screen + in-page Spin). Snake→camelCase API auto-conversion via humps.
+- **Review** — Checklist covering structure, naming, code quality, config consistency.
 
----
-
-### fastapi-best-practices
-
-基于 `FastAPI + uv + SQLAlchemy + Alembic` 的 Python 后端项目全生命周期规范。
-
-**Features:**
-- **Init** — uv 项目初始化，依赖安装，ruff 代码格式化，Alembic 迁移配置，`run.sh` 本地启动脚本
-- **Guide** — HTTP 方法约束（仅 GET/POST）、Result 响应格式、MVC 分层、JWT 认证三件套（auth_util / oauth / AuthWhitelist）、CustomException、分页模式（PageParams/PageResult）、CORS 配置、SQLAlchemy Model 时间戳与逻辑外键约定、Pydantic Schema 约定
-- **Review** — 认证检查、数据库 Schema 检查、Schema 检查等完整清单
-- **Optional patterns** — convert_util、time_util、request_context_util、crypto_util
-
-支持简单项目（单包）和复杂项目（UV workspaces 多包，动态路由注册）。**禁止物理外键设计**，所有关联字段使用逻辑外键（`index=True + comment`）。
+Supports two project scales: simple (static routes) and complex (`import.meta.glob` dynamic route discovery).
 
 ---
 
-### docker-best-practices
+### [`fastapi-best-practices`](fastapi-best-practices/)
 
-从成品项目到容器化测试和生产部署的全流程规范，基于真实生产环境打磨的经验。
+**A complete FastAPI development system: scaffold, guide, review.**
 
-**Features:**
-- **Init** — 自动扫描项目类型（全栈/纯后端/纯前端），收集必要信息，一次性生成完整 `docker/` 目录
-- **Guide** — 本地测试（一行 mkdir + build + up）、镜像推送（buildx 多架构、登录提醒、tar 导出）、生产部署（目录创建 + 权限 + docker-compose.prod.yml）
-- **Review** — 镜像质量、安全、可维护性、网络（SSE/WebSocket）检查清单
+Stack: `FastAPI + uv + SQLAlchemy + Alembic + Pydantic v2`
 
-输出文件：`Dockerfile`（多阶段构建）、`entrypoint.sh`、`nginx.conf`（含 SSE + WebSocket 支持）、`docker-compose.yml`（测试 build-based）、`docker-compose.prod.yml`（生产 image-based）、`DEPLOY.md`（构建与部署说明文档）、`.dockerignore`。
+- **Init** — uv workspace setup, ruff formatting, Alembic migration config, `run.sh` launcher.
+- **Guide** — GET/POST only (no PUT/DELETE/PATCH), `Result[T]` response wrapper, MVC layering, JWT auth trio (auth_util / oauth / AuthWhitelist), `CustomException` with global handler, `PageParams`/`PageResult[T]` pagination, CORS, `server_default` Beijing-time timestamps, no physical foreign keys (logical FK only).
+- **Review** — Auth, DB schema, Pydantic schema, security checklists.
+- **Optional patterns** — `convert_util`, `time_util`, `request_context_util`, `crypto_util` (AES-256-GCM).
 
-内置嵌入式 MariaDB 双模式（`USE_EMBEDDED_DB=true/false` 切换外部 MySQL）。
-
----
-
-### wiki-creator
-
-深度扫描项目代码库，生成结构化的 DeepWiki 风格多文件 Markdown 文档。
-
-**Features:**
-- 4 阶段工作流：深度扫描 → 规划结构 → 生成文档 → 审查
-- 从入口文件出发，追踪 import 链，阅读真实源码
-- 根据项目特征灵活生成 4–10 个文档文件（非固定模板）
-- Mermaid 图表（含渲染安全样式指南和颜色方案）
-- 中文输出，兼容 Docsify 展示
-
-**Pairs with** `docsify-station-creator` — wiki-creator 生成内容，docsify-station-creator 负责建站展示。
+Supports single-package and UV workspace multi-package architectures with dynamic router auto-discovery.
 
 ---
 
-### docsify-station-creator
+### [`docker-best-practices`](docker-best-practices/)
 
-将已有 `docs/` 目录一键转为功能完整的 Docsify 文档站。
+**Containerize any project: generate, test locally, push multi-arch, deploy to production.**
 
-**Features:**
-- 深色/浅色主题切换
-- 右侧目录（含滚动高亮和折叠）
-- 全文搜索
-- Mermaid 图表渲染 + Panzoom 点击放大
-- 代码高亮（16 种语言）+ 复制按钮
-- 响应式布局
-- 跨平台启动脚本（Windows `.bat` + Unix `.sh`）
+Scans your project automatically (full-stack / backend-only / frontend-only), asks only what it can't infer, then generates the complete `docker/` directory in one shot.
+
+Output files:
+
+| File | Purpose |
+|------|---------|
+| `Dockerfile` | Multi-stage build (frontend builder → backend deps → runtime) |
+| `entrypoint.sh` | Startup orchestration with embedded MariaDB toggle |
+| `nginx.conf` | Reverse proxy with SSE streaming + WebSocket support |
+| `docker-compose.yml` | Local test (build-based) |
+| `docker-compose.prod.yml` | Production deploy (image-based) |
+| `DEPLOY.md` | Full build + deploy documentation for the project |
+| `.dockerignore` | Minimized image size |
+
+Embedded MariaDB dual-mode: single image supports both `USE_EMBEDDED_DB=true` (self-contained) and `false` (external MySQL) via env var. Multi-arch `buildx` push to private registry or Docker Hub.
+
+---
+
+### [`wiki-creator`](wiki-creator/)
+
+**Deep-scan a codebase and generate structured, DeepWiki-style documentation.**
+
+Follows import chains from entry files, reads actual source code (not just file names), and generates 4–10 Markdown files tailored to your project's actual characteristics. Includes Mermaid architecture diagrams with render-safe styling. Pairs with `docsify-station-creator` to turn the output into a browsable site.
+
+---
+
+### [`docsify-station-creator`](docsify-station-creator/)
+
+**Turn any `docs/` folder into a fully-featured documentation site.**
+
+Dark/light theme toggle, right-side TOC with scroll highlight, full-text search, Mermaid + Panzoom, syntax highlighting for 16 languages, responsive layout. Cross-platform startup scripts included.
 
 ---
 
 ## Installation
 
-### Claude Code
-
 ```bash
-# 从 GitHub 安装（所有 skills）
-git clone https://github.com/garveyhu/awesome-skills.git ~/.claude/skills/awesome-skills
+# Clone the repo
+git clone https://github.com/garveyhu/awesome-skills.git
 
-# 或只安装需要的 skill
+# Copy skills you want into Claude Code's skill directory
 cp -r awesome-skills/react-best-practices ~/.claude/skills/
+cp -r awesome-skills/fastapi-best-practices ~/.claude/skills/
+cp -r awesome-skills/website-creator ~/.claude/skills/
+cp -r awesome-skills/docker-best-practices ~/.claude/skills/
+cp -r awesome-skills/wiki-creator ~/.claude/skills/
+cp -r awesome-skills/docsify-station-creator ~/.claude/skills/
 ```
 
-### Manual
-
-将所需 skill 文件夹复制到你的 AI 助手 skill 目录。每个 skill 自包含，只需复制文件夹即可。
+Each skill is self-contained — copy just the folders you need.
 
 ---
 
 ## Usage
 
-Skills 在相关场景下自动触发。示例：
+Skills trigger automatically when relevant. Just describe what you want:
 
 ```
-# 触发 website-creator（从想法开始）
-"帮我做一个订阅管理平台"
-"创建一个前后端项目"
-
-# 触发 react-best-practices
-"给这个 React 项目创建一个用户管理页面"
-"审查一下前端代码结构"
-
-# 触发 fastapi-best-practices
-"添加一个商品分页查询接口"
-"检查后端代码是否符合规范"
-
-# 触发 docker-best-practices
-"帮我把这个项目 docker 化"
-"写 Dockerfile 然后推送到私有仓库"
-
-# 触发 wiki-creator
-"为这个项目生成技术文档"
-
-# 触发 docsify-station-creator
-"把 docs/ 目录做成一个可以浏览的文档站"
+"Build me a project management SaaS"           → website-creator
+"Add a paginated user list page"               → react-best-practices
+"Create an order search API with filters"      → fastapi-best-practices
+"Dockerize this project and push to my registry" → docker-best-practices
+"Generate docs for this codebase"              → wiki-creator
+"Turn the docs folder into a site"             → docsify-station-creator
 ```
-
----
-
-## License
-
-MIT

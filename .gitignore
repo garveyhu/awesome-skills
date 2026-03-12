@@ -4,6 +4,7 @@
 # Allow these skills (whitelist)
 !.gitignore
 !README.md
+!README.zh-CN.md
 !react-best-practices/
 !react-best-practices/**
 !wiki-creator/
