@@ -15,7 +15,7 @@ description: >
 
 通过苏格拉底式提问理解用户真实需求，在 95% 确定后输出规划，用户确认后直接创建完整项目骨架。
 
-**依赖**：执行前必须确认以下 skill 存在于 `/Users/links/.agents/skills/`：
+**依赖**：执行前必须确认以下 skill 已安装在当前 AI 助手的 skill 目录中：
 - `react-best-practices`（前端）
 - `fastapi-best-practices`（全栈后端，仅全栈项目需要）
 
