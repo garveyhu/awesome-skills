@@ -241,17 +241,24 @@ http {
         listen {PORT};
 
         # Static assets with long cache
+        # Note: use root + rewrite (not alias) to avoid nginx alias+regex path bug
         location ~* ^/{prefix}/assets/.*\.(js|css|png|jpg|svg|woff2?)$ {
-            alias /app/frontend/dist;
+            root /app/frontend/dist;
+            rewrite ^/{prefix}/(.*)$ /$1 break;
             expires 7d;
             add_header Cache-Control "public, immutable";
         }
 
-        # React SPA
+        # React SPA (alias quirk: try_files checks against root, not alias path)
         location /{prefix} {
-            alias /app/frontend/dist;
+            alias /app/frontend/dist/;
             index index.html;
-            try_files $uri $uri/ /{prefix}/index.html;
+            try_files $uri $uri/ @spa_fallback;
+        }
+
+        location @spa_fallback {
+            root /app/frontend/dist;
+            rewrite ^/{prefix}(/.*)?$ /index.html break;
         }
 
         # API proxy (SSE + WebSocket compatible)
@@ -331,7 +338,7 @@ services:
     restart: always
 ```
 
-Production compose uses **absolute bind mounts** (not relative) because it lives in `/apps/{project}/`.
+Production compose uses `./` relative paths — which resolve correctly because the file is placed in `/apps/{project}/` on the server, making `./logs` → `/apps/{project}/logs`.
 
 ### .dockerignore
 
@@ -430,6 +437,12 @@ docker login                       # Docker Hub
 
 询问用户：目标仓库（私库/Hub/两者）+ 架构（amd64/双架构）
 
+**前置：确保 buildx builder 支持多架构**（首次使用时执行一次）
+```bash
+docker buildx create --use --platform linux/amd64,linux/arm64
+docker buildx inspect --bootstrap
+```
+
 ```bash
 # 多架构推送私有仓库
 docker buildx build \
@@ -444,6 +457,13 @@ docker buildx build \
   -t {dockerhub_user}/{project}:{version} \
   -f docker/Dockerfile \
   --push .
+
+# 可选：本地加载测试（单架构，推送前本地验证）
+docker buildx build \
+  --platform linux/amd64 \
+  --load \
+  -t {project}:{version} \
+  -f docker/Dockerfile .
 
 # 可选：导出 tar（离线部署/归档）
 docker buildx build \
@@ -485,7 +505,7 @@ docker-compose -f docker-compose.prod.yml logs -f
 ### 镜像质量
 - [ ] Dockerfile 使用多阶段构建（最终镜像不含 build-essential 等编译依赖）
 - [ ] `apt-get` 安装后执行 `rm -rf /var/lib/apt/lists/*`
-- [ ] uv sync 使用 `--no-dev` 排除开发依赖
+- [ ] uv sync 同时使用 `--no-install-project`（缓存层技巧）和 `--no-dev`（排除开发依赖）
 - [ ] `.dockerignore` 排除 `node_modules/`、`.venv/`、`.git/`、`tests/`、`docs/`
 
 ### 安全
