@@ -13,7 +13,7 @@
 你让 AI "创建一个 React 项目" 或 "写个 Dockerfile"，得到的往往是通用输出。这些 Skill 给了 AI 一个具体的、有主张的视角 —— 来自真实生产应用，而不是文档示例。
 
 - **规范已预先确定。** 不再纠结于十种目录结构该选哪个。
-- **模式经过生产验证。** JWT 认证、分页、SSE 流式响应、多架构镜像 —— 全都内置。
+- **模式经过生产验证。** 用户认证、分页、SSE 流式响应、多架构镜像 —— 全都内置。
 - **Skill 可以组合。** 单独使用，或串联起来，从零完成一个项目的完整交付。
 
 ---
@@ -55,7 +55,7 @@ react-best-       fastapi-best-
 
 **通过结构化对话，将产品想法变成脚手架项目。**
 
-先问 3 个固定问题（名称、类型、目录），再进行最多 5 轮苏格拉底式追问 —— 在 95% 需求确定度之前不生成任何文件。输出结构化规划等你确认，然后调用 `react-best-practices` 和/或 `fastapi-best-practices` 构建骨架。支持纯前端或前后端全栈，单 git 仓库管理。全栈项目始终内置 JWT 认证骨架。
+先问 3 个固定问题（名称、类型、目录），再进行最多 5 轮苏格拉底式追问 —— 在 95% 需求确定度之前不生成任何文件。输出结构化规划等你确认，然后调用 `react-best-practices` 和/或 `fastapi-best-practices` 构建骨架。支持纯前端或前后端全栈，单 git 仓库管理。全栈项目始终内置用户认证骨架。
 
 ```
 "帮我做一个 SaaS 团队任务管理平台"
@@ -85,7 +85,7 @@ react-best-       fastapi-best-
 技术栈：`FastAPI + uv + SQLAlchemy + Alembic + Pydantic v2`
 
 - **Init** — uv workspace 搭建、ruff 格式化、Alembic 迁移配置、`run.sh` 本地启动脚本。
-- **Guide** — 仅 GET/POST（禁用 PUT/DELETE/PATCH）、`Result[T]` 响应包装、MVC 分层、JWT 认证三件套（auth_util / oauth / AuthWhitelist）、`CustomException` 全局处理、`PageParams`/`PageResult[T]` 分页、CORS、`server_default` 北京时间时间戳、禁止物理外键（仅逻辑外键）。
+- **Guide** — 仅 GET/POST（禁用 PUT/DELETE/PATCH）、`Result[T]` 响应包装、MVC 分层、用户认证三件套（auth_util / oauth / AuthWhitelist）、`CustomException` 全局处理、`PageParams`/`PageResult[T]` 分页、CORS、`server_default` 北京时间时间戳、禁止物理外键（仅逻辑外键）。
 - **Review** — 认证、数据库 Schema、Pydantic Schema、安全检查清单。
 - **可选工具模式** — `convert_util`、`time_util`、`request_context_util`、`crypto_util`（AES-256-GCM）。
 

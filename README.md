@@ -13,7 +13,7 @@ Six opinionated, production-tested skills for Claude Code that encode years of r
 When you ask an AI to "create a React project" or "write a Dockerfile," you get generic output. These skills give your AI a specific, opinionated point of view — one that comes from production apps, not documentation examples.
 
 - **Conventions are pre-decided.** No more choosing between 10 folder structures.
-- **Patterns are battle-tested.** JWT auth, pagination, SSE streaming, multi-arch images — all included.
+- **Patterns are battle-tested.** User auth, pagination, SSE streaming, multi-arch images — all included.
 - **Skills compose.** Use them independently or chain them to take a project from zero to deployed.
 
 ---
@@ -55,7 +55,7 @@ Each skill works standalone. Together, they cover the full lifecycle.
 
 **Turn a product idea into a scaffolded project through structured conversation.**
 
-Asks 3 fixed questions (name, type, directory) then up to 5 rounds of Socratic follow-up — reaching 95% requirement certainty before generating a single file. Outputs a structured plan for your approval, then invokes `react-best-practices` and/or `fastapi-best-practices` to build the skeleton. Frontend-only or full-stack. Single git repo at the root. JWT auth always included in full-stack projects.
+Asks 3 fixed questions (name, type, directory) then up to 5 rounds of Socratic follow-up — reaching 95% requirement certainty before generating a single file. Outputs a structured plan for your approval, then invokes `react-best-practices` and/or `fastapi-best-practices` to build the skeleton. Frontend-only or full-stack. Single git repo at the root. User authentication always included in full-stack projects.
 
 ```
 "I want to build a SaaS platform for team task management"
@@ -85,7 +85,7 @@ Supports two project scales: simple (static routes) and complex (`import.meta.gl
 Stack: `FastAPI + uv + SQLAlchemy + Alembic + Pydantic v2`
 
 - **Init** — uv workspace setup, ruff formatting, Alembic migration config, `run.sh` launcher.
-- **Guide** — GET/POST only (no PUT/DELETE/PATCH), `Result[T]` response wrapper, MVC layering, JWT auth trio (auth_util / oauth / AuthWhitelist), `CustomException` with global handler, `PageParams`/`PageResult[T]` pagination, CORS, `server_default` Beijing-time timestamps, no physical foreign keys (logical FK only).
+- **Guide** — GET/POST only (no PUT/DELETE/PATCH), `Result[T]` response wrapper, MVC layering, token-based user auth (auth_util / oauth / AuthWhitelist), `CustomException` with global handler, `PageParams`/`PageResult[T]` pagination, CORS, `server_default` Beijing-time timestamps, no physical foreign keys (logical FK only).
 - **Review** — Auth, DB schema, Pydantic schema, security checklists.
 - **Optional patterns** — `convert_util`, `time_util`, `request_context_util`, `crypto_util` (AES-256-GCM).
 
