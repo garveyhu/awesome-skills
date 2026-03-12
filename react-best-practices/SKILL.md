@@ -267,6 +267,98 @@ export const userService = {
 2. 创建 `routes.ts` 导出 `ModuleRouteConfig`
 3. 路由会被 `import.meta.glob` 自动发现
 
+### 全局加载状态
+
+**两层 Loading 规范**：
+
+**层 1：全局路由切换 Loading**（App.tsx）
+
+用 `React.Suspense` 包裹 `RouterProvider`，路由懒加载时自动展示全屏 Loading：
+
+```tsx
+// src/App.tsx
+import { App as AntdApp, ConfigProvider, Spin } from 'antd';
+import { Suspense } from 'react';
+import { RouterProvider } from 'react-router-dom';
+import { router } from '@/router';
+import '@/assets/styles/index.less';
+
+const LoadingFallback = () => (
+  <div
+    style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #f0f9ff 0%, #e8f4fd 50%, #f0f0ff 100%)',
+    }}
+  >
+    <div style={{ textAlign: 'center' }}>
+      <Spin size="large" />
+      <div
+        style={{
+          marginTop: 16,
+          fontSize: 15,
+          fontWeight: 500,
+          color: '#64748b',
+          letterSpacing: '0.5px',
+        }}
+      >
+        加载中...
+      </div>
+    </div>
+  </div>
+);
+
+const App = () => (
+  <ConfigProvider theme={{ token: { colorPrimary: '#0ea5e9', borderRadius: 8 } }}>
+    <AntdApp message={{ duration: 1.5, maxCount: 2, top: 72 }}>
+      <Suspense fallback={<LoadingFallback />}>
+        <RouterProvider router={router} />
+      </Suspense>
+    </AntdApp>
+  </ConfigProvider>
+);
+
+export default App;
+```
+
+路由文件中使用 `lazy()` 做代码分割，配合 Suspense 触发 Loading：
+
+```tsx
+// src/router/index.tsx
+import { lazy } from 'react';
+const HomePage = lazy(() => import('@/pages/home'));
+```
+
+**层 2：页面内数据加载 Loading**
+
+页面初始加载数据时，在内容区居中展示 Spin，避免空白闪烁：
+
+```tsx
+// src/pages/orders/index.tsx
+const OrdersPage = () => {
+  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    orderService.list().then(res => {
+      setOrders(res.data);
+    }).finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  return <div>{/* 页面内容 */}</div>;
+};
+```
+
 ### 命名约定
 
 | 类型 | 约定 | 示例 |

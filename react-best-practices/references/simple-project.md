@@ -224,6 +224,60 @@ yarn commitlint
 import '@/assets/styles/index.less';
 ```
 
+## App.tsx 模板
+
+完整的 `src/App.tsx`，包含全局 Loading、ConfigProvider、AntdApp 封装：
+
+```tsx
+import { App as AntdApp, ConfigProvider, Spin } from 'antd';
+import { Suspense } from 'react';
+import { RouterProvider } from 'react-router-dom';
+
+import { router } from '@/router';
+import '@/assets/styles/index.less';
+
+const LoadingFallback = () => (
+  <div
+    style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: '100vh',
+      background: 'linear-gradient(135deg, #f0f9ff 0%, #e8f4fd 50%, #f0f0ff 100%)',
+    }}
+  >
+    <div style={{ textAlign: 'center' }}>
+      <Spin size="large" />
+      <div
+        style={{
+          marginTop: 16,
+          fontSize: 15,
+          fontWeight: 500,
+          color: '#64748b',
+          letterSpacing: '0.5px',
+        }}
+      >
+        加载中...
+      </div>
+    </div>
+  </div>
+);
+
+const App = () => (
+  <ConfigProvider theme={{ token: { colorPrimary: '#0ea5e9', borderRadius: 8 } }}>
+    <AntdApp message={{ duration: 1.5, maxCount: 2, top: 72 }}>
+      <Suspense fallback={<LoadingFallback />}>
+        <RouterProvider router={router} />
+      </Suspense>
+    </AntdApp>
+  </ConfigProvider>
+);
+
+export default App;
+```
+
+> `colorPrimary` 根据项目主题调整；`Suspense` 配合路由 `lazy()` 在页面切换时自动触发全屏 Loading。
+
 ## 路由使用示例
 
 ### 添加新页面路由
