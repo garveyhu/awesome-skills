@@ -14,8 +14,8 @@
 !fastapi-best-practices/**
 !website-creator/
 !website-creator/**
-!docs/
-!docs/**
+!docker-best-practices/
+!docker-best-practices/**
 
 # Still ignore packaged .skill files
 *.skill
