@@ -5,6 +5,7 @@
 !.gitignore
 !README.md
 !README.zh-CN.md
+!CONTRIBUTING.md
 !react-best-practices/
 !react-best-practices/**
 !wiki-creator/
