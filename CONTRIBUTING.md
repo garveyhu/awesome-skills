@@ -8,15 +8,10 @@ This file captures the conventions and constraints for creating or editing skill
 
 ## Repo Setup
 
-**Two remotes — always push both:**
+**Push to origin after every commit:**
 
 ```bash
-git remote -v
-# origin   git@github.com:garveyhu/awesome-skills.git
-# iktapp   git@repo.iktapp.com:ai/awesome-skills.git
-
 git push origin main
-git push iktapp main
 ```
 
 **`.gitignore` uses a whitelist pattern** — everything is ignored by default, and skills are explicitly allowed:
@@ -185,4 +180,4 @@ When adding a new skill, add a section to both READMEs following the existing fo
 - [ ] Add skill section to `README.md`
 - [ ] Add skill section to `README.zh-CN.md`
 - [ ] Commit with `feat(skill): ...`
-- [ ] Push to both `origin` and `iktapp`
+- [ ] Push to `origin`
