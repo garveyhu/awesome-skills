@@ -18,6 +18,8 @@
 !website-creator/**
 !docker-best-practices/
 !docker-best-practices/**
+!req-to-ai-spec/
+!req-to-ai-spec/**
 
 # Still ignore packaged .skill files
 *.skill
