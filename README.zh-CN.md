@@ -1,8 +1,8 @@
 # Awesome Skills
 
-**覆盖 Web 开发完整生命周期的 AI Skill 集合 —— 从想法到上线容器。**
+**覆盖 Web 开发完整生命周期的 AI Skill 集合 —— 从想法到上线容器，再到跨团队 AI 协作。**
 
-六个经过真实生产环境打磨的 Claude Code Skill，将多年实战经验固化为可复用的 AI 工作流。用自然语言描述你的需求，Skill 负责架构决策、样板代码、开发规范和部署流程 —— 更快交付，不走捷径。
+八个经过真实生产环境打磨的 Claude Code Skill，将多年实战经验固化为可复用的 AI 工作流。用自然语言描述你的需求，Skill 负责架构决策、样板代码、开发规范和部署流程 —— 更快交付，不走捷径。
 
 > English version: [README.md](README.md)
 
@@ -35,17 +35,24 @@ react-best-       fastapi-best-
 （前端开发）         （后端开发）
      │                 │
      └────────┬────────┘
-              ▼
-       wiki-creator       ← 扫描代码 → 生成结构化文档
               │
-              ▼
-  docsify-station-creator ← 将 docs/ 变成可浏览的文档站
-              │
-              ▼
-  docker-best-practices   ← Dockerfile + compose + 推送 + 部署
+     ┌────────┼──────────────────────┐
+     ▼        ▼                      ▼
+wiki-     req-to-ai-spec      spechub-best-practices
+creator   （需求 →                （AI 间规约交接
+           AI 可执行规格）          via git worktree）
+     │        │                      │
+     ▼        ▼                      ▼
+docsify-  AI 代理执行            消费方 AI 读取
+station-  开发实现               规约并实现
+creator
+     │
+     ▼
+docker-best-practices
+（容器化 + 部署）
 ```
 
-每个 Skill 都可以单独使用。组合起来，覆盖开发全生命周期。
+每个 Skill 都可以单独使用。组合起来，覆盖从需求分析到跨团队 AI 协作再到部署的完整生命周期。
 
 ---
 
@@ -131,6 +138,41 @@ react-best-       fastapi-best-
 
 ---
 
+### [`req-to-ai-spec`](req-to-ai-spec/)
+
+**将零散的产品需求转化为结构化的、AI 可执行的需求规格文档。**
+
+接受多种输入 —— 聊天记录、产品笔记、Axure/Figma 截图、现有代码库 —— 产出结构化规格文档，任何 AI 编码代理读后即可无歧义地完成开发。
+
+- **多来源输入** — 文字描述、原型截图、现有代码模式。自动探索代码库以理解现有规范和数据模型。
+- **结构化输出** — 生成 `YYYY-MM-DD-<slug>-spec.md`，包含术语表、全局约束、带验收标准的实现任务。
+- **与 spechub-best-practices 配合** — `req-to-ai-spec` 产出初始规格；`spechub-best-practices` 负责其在团队间的分发和增量更新管理。
+
+```
+"把这些产品需求转成 AI 可执行的规格文档"    → 结构化规格文档
+"分析这些截图生成开发任务"                 → 带验收标准的实现任务
+```
+
+---
+
+### [`spechub-best-practices`](spechub-best-practices/)
+
+**编写高质量规约文档并通过 git worktree 管理，用于不同 AI 助手间的任务交接。**
+
+当 A 同事的 AI 完成后端开发，B 同事的 AI 需要接手前端实现时，交接规约是两个 AI 之间唯一的沟通渠道。这个 Skill 确保规约无歧义、完整、且针对 AI 消费优化。
+
+- **通用规约框架** — 设计原则、文件结构（README + CHANGELOG + 总览 + 详细说明）、CHANGELOG 驱动的增量更新工作流。
+- **分类模板库** — 按任务类型提供专用模板（当前支持：API 对接），可扩展。
+- **Git worktree 工作流** — 多项目规约通过 `git worktree` 管理，自动识别 SpecHub 仓库，结构化 commit message。
+
+```
+"写 ADOS 模块的 API 对接规约"              → 按模板生成 4 个文件
+"更新规约，新增了一个接口"                 → 更新文档 + CHANGELOG 条目
+"检出 ados 的规约"                        → git worktree add specs/ados feature/ados
+```
+
+---
+
 ## 安装
 
 ```bash
@@ -144,6 +186,8 @@ cp -r awesome-skills/website-creator ~/.claude/skills/
 cp -r awesome-skills/docker-best-practices ~/.claude/skills/
 cp -r awesome-skills/wiki-creator ~/.claude/skills/
 cp -r awesome-skills/docsify-station-creator ~/.claude/skills/
+cp -r awesome-skills/req-to-ai-spec ~/.claude/skills/
+cp -r awesome-skills/spechub-best-practices ~/.claude/skills/
 ```
 
 每个 Skill 完全自包含，按需复制对应文件夹即可。
@@ -155,10 +199,12 @@ cp -r awesome-skills/docsify-station-creator ~/.claude/skills/
 Skill 在相关场景下自动触发，直接描述你想做的事：
 
 ```
-"帮我做一个项目管理 SaaS"             → website-creator
-"添加一个用户列表分页页面"             → react-best-practices
-"写一个带过滤条件的订单查询接口"       → fastapi-best-practices
-"把这个项目容器化然后推送到我的仓库"   → docker-best-practices
-"给这个项目生成文档"                   → wiki-creator
-"把 docs 目录做成一个文档站"           → docsify-station-creator
+"帮我做一个项目管理 SaaS"                  → website-creator
+"添加一个用户列表分页页面"                  → react-best-practices
+"写一个带过滤条件的订单查询接口"             → fastapi-best-practices
+"把这个项目容器化然后推送到我的仓库"          → docker-best-practices
+"给这个项目生成文档"                        → wiki-creator
+"把 docs 目录做成一个文档站"                → docsify-station-creator
+"把这些产品需求转成 AI 规格文档"             → req-to-ai-spec
+"写 API 对接规约给前端"                     → spechub-best-practices
 ```
