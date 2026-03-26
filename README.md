@@ -1,8 +1,8 @@
 # Awesome Skills
 
-**AI skills for the complete web development lifecycle — from idea to deployed container.**
+**AI skills for the complete web development lifecycle — from idea to deployed container, and across-team AI collaboration.**
 
-Six opinionated, production-tested skills for Claude Code that encode years of real-world experience into reusable AI workflows. Describe your idea in plain language; the skills handle architecture decisions, boilerplate, conventions, and deployment — so you ship faster without cutting corners.
+Seven opinionated, production-tested skills for Claude Code that encode years of real-world experience into reusable AI workflows. Describe your idea in plain language; the skills handle architecture decisions, boilerplate, conventions, and deployment — so you ship faster without cutting corners.
 
 > 中文版：[README.zh-CN.md](README.zh-CN.md)
 
@@ -35,17 +35,22 @@ react-best-       fastapi-best-
 (frontend)         (backend)
      │                 │
      └────────┬────────┘
-              ▼
-       wiki-creator       ← scans code → generates structured docs
               │
-              ▼
-  docsify-station-creator ← turns docs/ into a browsable site
-              │
-              ▼
-  docker-best-practices   ← Dockerfile + compose + push + deploy
+              ├──────────────────────┐
+              ▼                      ▼
+       wiki-creator       spechub-best-practices
+  (generate docs)         (AI-to-AI spec handoff)
+              │                      │
+              ▼                      │
+  docsify-station-creator            │
+  (browsable doc site)               │
+              │                      │
+              ▼                      ▼
+  docker-best-practices   Frontend AI reads specs
+  (containerize+deploy)   and implements
 ```
 
-Each skill works standalone. Together, they cover the full lifecycle.
+Each skill works standalone. Together, they cover the full lifecycle — including cross-team AI collaboration via structured spec documents.
 
 ---
 
@@ -131,6 +136,24 @@ Dark/light theme toggle, right-side TOC with scroll highlight, full-text search,
 
 ---
 
+### [`spechub-best-practices`](spechub-best-practices/)
+
+**Write high-quality spec documents for AI-to-AI collaboration, managed via git worktree.**
+
+When Developer A's AI finishes backend work and Developer B's AI needs to pick up frontend implementation, the handoff spec is the *only* communication channel between them. This skill ensures specs are unambiguous, complete, and optimized for AI consumption.
+
+- **Universal framework** — Design principles, file structure (README + CHANGELOG + overview + details), incremental update workflow via CHANGELOG-driven reads.
+- **Template library** — Category-specific templates (currently: API integration). Extensible for future task types.
+- **Git worktree workflow** — Multi-project spec management via `git worktree`, auto-detection of SpecHub repos, structured commit messages.
+
+```
+"Write API spec for the ADOS module"        → generates 4 files following the template
+"Update the spec, added a new endpoint"     → updates docs + CHANGELOG entry
+"Check out the ados specs"                  → git worktree add specs/ados feature/ados
+```
+
+---
+
 ## Installation
 
 ```bash
@@ -144,6 +167,7 @@ cp -r awesome-skills/website-creator ~/.claude/skills/
 cp -r awesome-skills/docker-best-practices ~/.claude/skills/
 cp -r awesome-skills/wiki-creator ~/.claude/skills/
 cp -r awesome-skills/docsify-station-creator ~/.claude/skills/
+cp -r awesome-skills/spechub-best-practices ~/.claude/skills/
 ```
 
 Each skill is self-contained — copy just the folders you need.
@@ -161,4 +185,5 @@ Skills trigger automatically when relevant. Just describe what you want:
 "Dockerize this project and push to my registry" → docker-best-practices
 "Generate docs for this codebase"              → wiki-creator
 "Turn the docs folder into a site"             → docsify-station-creator
+"Write API spec for frontend integration"      → spechub-best-practices
 ```

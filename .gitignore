@@ -20,6 +20,8 @@
 !docker-best-practices/**
 !req-to-ai-spec/
 !req-to-ai-spec/**
+!spechub-best-practices/
+!spechub-best-practices/**
 
 # Still ignore packaged .skill files
 *.skill
