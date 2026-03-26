@@ -2,7 +2,7 @@
 
 **AI skills for the complete web development lifecycle — from idea to deployed container, and across-team AI collaboration.**
 
-Seven opinionated, production-tested skills for Claude Code that encode years of real-world experience into reusable AI workflows. Describe your idea in plain language; the skills handle architecture decisions, boilerplate, conventions, and deployment — so you ship faster without cutting corners.
+Eight opinionated, production-tested skills for Claude Code that encode years of real-world experience into reusable AI workflows. Describe your idea in plain language; the skills handle architecture decisions, boilerplate, conventions, and deployment — so you ship faster without cutting corners.
 
 > 中文版：[README.zh-CN.md](README.zh-CN.md)
 
@@ -36,21 +36,23 @@ react-best-       fastapi-best-
      │                 │
      └────────┬────────┘
               │
-              ├──────────────────────┐
-              ▼                      ▼
-       wiki-creator       spechub-best-practices
-  (generate docs)         (AI-to-AI spec handoff)
-              │                      │
-              ▼                      │
-  docsify-station-creator            │
-  (browsable doc site)               │
-              │                      │
-              ▼                      ▼
-  docker-best-practices   Frontend AI reads specs
-  (containerize+deploy)   and implements
+     ┌────────┼──────────────────────┐
+     ▼        ▼                      ▼
+wiki-     req-to-ai-spec      spechub-best-practices
+creator   (requirements →      (AI-to-AI spec handoff
+           AI-ready spec)       via git worktree)
+     │        │                      │
+     ▼        ▼                      ▼
+docsify-  Implementation       Frontend AI reads
+station-  by AI agents         specs and implements
+creator
+     │
+     ▼
+docker-best-practices
+(containerize+deploy)
 ```
 
-Each skill works standalone. Together, they cover the full lifecycle — including cross-team AI collaboration via structured spec documents.
+Each skill works standalone. Together, they cover the full lifecycle — from requirements analysis through cross-team AI collaboration to deployment.
 
 ---
 
@@ -136,6 +138,23 @@ Dark/light theme toggle, right-side TOC with scroll highlight, full-text search,
 
 ---
 
+### [`req-to-ai-spec`](req-to-ai-spec/)
+
+**Turn scattered product requirements into structured, AI-ready specification documents.**
+
+Takes informal inputs — chat logs, product notes, Axure/Figma screenshots, existing codebases — and produces a structured spec that any AI coding agent can implement without ambiguity.
+
+- **Multi-source input** — Text descriptions, prototype screenshots, existing code patterns. Explores the codebase to understand conventions and data models.
+- **Structured output** — Generates `YYYY-MM-DD-<slug>-spec.md` with terminology, global constraints, and implementation tasks with acceptance criteria.
+- **Pairs with spechub-best-practices** — `req-to-ai-spec` produces the initial spec; `spechub-best-practices` manages its distribution and incremental updates across teams.
+
+```
+"Convert these product notes into an AI spec"   → structured spec document
+"Analyze these screenshots and generate tasks"   → implementation-ready tasks
+```
+
+---
+
 ### [`spechub-best-practices`](spechub-best-practices/)
 
 **Write high-quality spec documents for AI-to-AI collaboration, managed via git worktree.**
@@ -167,6 +186,7 @@ cp -r awesome-skills/website-creator ~/.claude/skills/
 cp -r awesome-skills/docker-best-practices ~/.claude/skills/
 cp -r awesome-skills/wiki-creator ~/.claude/skills/
 cp -r awesome-skills/docsify-station-creator ~/.claude/skills/
+cp -r awesome-skills/req-to-ai-spec ~/.claude/skills/
 cp -r awesome-skills/spechub-best-practices ~/.claude/skills/
 ```
 
@@ -185,5 +205,6 @@ Skills trigger automatically when relevant. Just describe what you want:
 "Dockerize this project and push to my registry" → docker-best-practices
 "Generate docs for this codebase"              → wiki-creator
 "Turn the docs folder into a site"             → docsify-station-creator
+"Convert these product notes into a spec"       → req-to-ai-spec
 "Write API spec for frontend integration"      → spechub-best-practices
 ```
