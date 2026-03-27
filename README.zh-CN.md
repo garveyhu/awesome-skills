@@ -2,7 +2,7 @@
 
 **覆盖 Web 开发完整生命周期的 AI Skill 集合 —— 从想法到上线容器，再到跨团队 AI 协作。**
 
-八个经过真实生产环境打磨的 Claude Code Skill，将多年实战经验固化为可复用的 AI 工作流。用自然语言描述你的需求，Skill 负责架构决策、样板代码、开发规范和部署流程 —— 更快交付，不走捷径。
+将实战经验固化为可复用 AI 工作流的 Claude Code Skill 集合。用自然语言描述你的需求，Skill 负责架构决策、样板代码、开发规范和部署流程 —— 更快交付，不走捷径。
 
 > English version: [README.md](README.md)
 
@@ -20,36 +20,42 @@
 
 ## 工作流
 
-```
-  "我想做一个订阅管理平台"
-              │
-              ▼
-     ┌─────────────────┐
-     │ website-creator │  ← 苏格拉底提问 → 确认规划 → 生成项目骨架
-     └────────┬────────┘
-              │
-     ┌────────┴────────┐
-     ▼                 ▼
-react-best-       fastapi-best-
- practices         practices
-（前端开发）         （后端开发）
-     │                 │
-     └────────┬────────┘
-              │
-     ┌────────┼──────────────────────┐
-     ▼        ▼                      ▼
-wiki-     req-to-ai-spec      spechub-best-practices
-creator   （需求 →                （AI 间规约交接
-           AI 可执行规格）          via git worktree）
-     │        │                      │
-     ▼        ▼                      ▼
-docsify-  AI 代理执行            消费方 AI 读取
-station-  开发实现               规约并实现
-creator
-     │
-     ▼
-docker-best-practices
-（容器化 + 部署）
+```mermaid
+graph TB
+    classDef idea fill:#9F7AEA,stroke:#7C5CC4,stroke-width:2px,color:#fff
+    classDef scaffold fill:#4A90D9,stroke:#2E6BA6,stroke-width:2px,color:#fff
+    classDef dev fill:#48BB78,stroke:#38A169,stroke-width:2px,color:#fff
+    classDef style fill:#ED8936,stroke:#C66A32,stroke-width:2px,color:#fff
+    classDef docs fill:#4299E1,stroke:#2B6CB0,stroke-width:1px,color:#fff
+    classDef spec fill:#ECC94B,stroke:#D69E2E,stroke-width:2px,color:#2D3748
+    classDef deploy fill:#1A365D,stroke:#0F2440,stroke-width:2px,color:#fff
+    classDef action fill:#EDF2F7,stroke:#A0AEC0,stroke-width:1px,color:#4A5568,stroke-dasharray:5 5
+
+    Start(["💡 我想做一个订阅管理平台"]):::idea
+    WC(website-creator):::scaffold
+    React(react-best-practices):::dev
+    FastAPI(fastapi-best-practices):::dev
+    SV(style-vault):::style
+    Wiki(wiki-creator):::docs
+    Docsify(docsify-station-creator):::docs
+    Req(req-to-ai-spec):::spec
+    Spec(spechub-best-practices):::spec
+    Docker(docker-best-practices):::deploy
+    Impl([AI 代理执行开发]):::action
+    FrontAI([消费方 AI 读取规约并实现]):::action
+
+    Start ==> WC
+    WC -->|前端| React
+    WC -->|后端| FastAPI
+    React --> SV
+    React --> Wiki
+    FastAPI --> Req
+    Req --> Spec
+    Spec -.-> FrontAI
+    SV -.->|"预调组件"| FrontAI
+    Wiki --> Docsify
+    React & FastAPI --> Docker
+    Req -.-> Impl
 ```
 
 每个 Skill 都可以单独使用。组合起来，覆盖从需求分析到跨团队 AI 协作再到部署的完整生命周期。
@@ -204,6 +210,7 @@ cp -r awesome-skills/wiki-creator ~/.claude/skills/
 cp -r awesome-skills/docsify-station-creator ~/.claude/skills/
 cp -r awesome-skills/req-to-ai-spec ~/.claude/skills/
 cp -r awesome-skills/spechub-best-practices ~/.claude/skills/
+cp -r awesome-skills/style-vault ~/.claude/skills/
 ```
 
 每个 Skill 完全自包含，按需复制对应文件夹即可。
@@ -223,4 +230,5 @@ Skill 在相关场景下自动触发，直接描述你想做的事：
 "把 docs 目录做成一个文档站"                → docsify-station-creator
 "把这些产品需求转成 AI 规格文档"             → req-to-ai-spec
 "写 API 对接规约给前端"                     → spechub-best-practices
+"用我的风格做一个管理后台表格"                → style-vault
 ```

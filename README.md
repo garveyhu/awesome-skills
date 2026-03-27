@@ -2,7 +2,7 @@
 
 **AI skills for the complete web development lifecycle — from idea to deployed container, and across-team AI collaboration.**
 
-Eight opinionated, production-tested skills for Claude Code that encode years of real-world experience into reusable AI workflows. Describe your idea in plain language; the skills handle architecture decisions, boilerplate, conventions, and deployment — so you ship faster without cutting corners.
+Opinionated skills for Claude Code that encode real-world experience into reusable AI workflows. Describe your idea in plain language; the skills handle architecture decisions, boilerplate, conventions, and deployment — so you ship faster without cutting corners.
 
 > 中文版：[README.zh-CN.md](README.zh-CN.md)
 
@@ -20,36 +20,42 @@ When you ask an AI to "create a React project" or "write a Dockerfile," you get 
 
 ## The Workflow
 
-```
-  "I want to build a subscription app"
-              │
-              ▼
-     ┌─────────────────┐
-     │ website-creator │  ← Socratic Q&A → plan → scaffolds the project
-     └────────┬────────┘
-              │
-     ┌────────┴────────┐
-     ▼                 ▼
-react-best-       fastapi-best-
- practices         practices
-(frontend)         (backend)
-     │                 │
-     └────────┬────────┘
-              │
-     ┌────────┼──────────────────────┐
-     ▼        ▼                      ▼
-wiki-     req-to-ai-spec      spechub-best-practices
-creator   (requirements →      (AI-to-AI spec handoff
-           AI-ready spec)       via git worktree)
-     │        │                      │
-     ▼        ▼                      ▼
-docsify-  Implementation       Frontend AI reads
-station-  by AI agents         specs and implements
-creator
-     │
-     ▼
-docker-best-practices
-(containerize+deploy)
+```mermaid
+graph TB
+    classDef idea fill:#9F7AEA,stroke:#7C5CC4,stroke-width:2px,color:#fff
+    classDef scaffold fill:#4A90D9,stroke:#2E6BA6,stroke-width:2px,color:#fff
+    classDef dev fill:#48BB78,stroke:#38A169,stroke-width:2px,color:#fff
+    classDef style fill:#ED8936,stroke:#C66A32,stroke-width:2px,color:#fff
+    classDef docs fill:#4299E1,stroke:#2B6CB0,stroke-width:1px,color:#fff
+    classDef spec fill:#ECC94B,stroke:#D69E2E,stroke-width:2px,color:#2D3748
+    classDef deploy fill:#1A365D,stroke:#0F2440,stroke-width:2px,color:#fff
+    classDef action fill:#EDF2F7,stroke:#A0AEC0,stroke-width:1px,color:#4A5568,stroke-dasharray:5 5
+
+    Start(["💡 I want to build a subscription app"]):::idea
+    WC(website-creator):::scaffold
+    React(react-best-practices):::dev
+    FastAPI(fastapi-best-practices):::dev
+    SV(style-vault):::style
+    Wiki(wiki-creator):::docs
+    Docsify(docsify-station-creator):::docs
+    Req(req-to-ai-spec):::spec
+    Spec(spechub-best-practices):::spec
+    Docker(docker-best-practices):::deploy
+    Impl([AI agents implement]):::action
+    FrontAI([Frontend AI reads & implements]):::action
+
+    Start ==> WC
+    WC -->|frontend| React
+    WC -->|backend| FastAPI
+    React --> SV
+    React --> Wiki
+    FastAPI --> Req
+    Req --> Spec
+    Spec -.-> FrontAI
+    SV -.->|"pre-tuned components"| FrontAI
+    Wiki --> Docsify
+    React & FastAPI --> Docker
+    Req -.-> Impl
 ```
 
 Each skill works standalone. Together, they cover the full lifecycle — from requirements analysis through cross-team AI collaboration to deployment.
@@ -204,6 +210,7 @@ cp -r awesome-skills/wiki-creator ~/.claude/skills/
 cp -r awesome-skills/docsify-station-creator ~/.claude/skills/
 cp -r awesome-skills/req-to-ai-spec ~/.claude/skills/
 cp -r awesome-skills/spechub-best-practices ~/.claude/skills/
+cp -r awesome-skills/style-vault ~/.claude/skills/
 ```
 
 Each skill is self-contained — copy just the folders you need.
@@ -223,4 +230,5 @@ Skills trigger automatically when relevant. Just describe what you want:
 "Turn the docs folder into a site"             → docsify-station-creator
 "Convert these product notes into a spec"       → req-to-ai-spec
 "Write API spec for frontend integration"      → spechub-best-practices
+"用我的风格做一个管理后台表格"                    → style-vault
 ```
