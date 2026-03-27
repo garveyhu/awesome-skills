@@ -22,6 +22,8 @@
 !req-to-ai-spec/**
 !spechub-best-practices/
 !spechub-best-practices/**
+!style-vault/
+!style-vault/**
 
 # Still ignore packaged .skill files
 *.skill
