@@ -173,6 +173,22 @@ When Developer A's AI finishes backend work and Developer B's AI needs to pick u
 
 ---
 
+### [`style-vault`](style-vault/)
+
+**Personal frontend component style library — your pre-tuned UI building blocks.**
+
+Stack: `React + Ant Design + Tailwind CSS`
+
+A growing collection of personally refined component styles. Instead of tweaking tables, toolbars, and forms from scratch every project, pull from your validated library of components that already look the way you want.
+
+- **Composites** — Scene-level combinations: admin tables with unified pagination, search toolbars with filter/action layout
+- **Atoms** — Individual elements with distinct styling (growing)
+- **Tokens** — Global design variables: spacing, colors, typography (growing)
+
+Each component includes complete, copy-paste-ready code with style notes explaining *why*, not just *what*.
+
+---
+
 ## Installation
 
 ```bash
