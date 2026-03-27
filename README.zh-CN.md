@@ -25,7 +25,7 @@ graph TB
     classDef idea fill:#9F7AEA,stroke:#7C5CC4,stroke-width:2px,color:#fff
     classDef scaffold fill:#4A90D9,stroke:#2E6BA6,stroke-width:2px,color:#fff
     classDef dev fill:#48BB78,stroke:#38A169,stroke-width:2px,color:#fff
-    classDef style fill:#ED8936,stroke:#C66A32,stroke-width:2px,color:#fff
+    classDef uistyle fill:#ED8936,stroke:#C66A32,stroke-width:2px,color:#fff
     classDef docs fill:#4299E1,stroke:#2B6CB0,stroke-width:1px,color:#fff
     classDef spec fill:#ECC94B,stroke:#D69E2E,stroke-width:2px,color:#2D3748
     classDef deploy fill:#1A365D,stroke:#0F2440,stroke-width:2px,color:#fff
@@ -35,7 +35,7 @@ graph TB
     WC(website-creator):::scaffold
     React(react-best-practices):::dev
     FastAPI(fastapi-best-practices):::dev
-    SV(style-vault):::style
+    SV(style-vault):::uistyle
     Wiki(wiki-creator):::docs
     Docsify(docsify-station-creator):::docs
     Req(req-to-ai-spec):::spec
