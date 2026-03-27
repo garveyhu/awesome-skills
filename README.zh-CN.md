@@ -201,19 +201,15 @@ graph TB
 # 克隆仓库
 git clone https://github.com/garveyhu/awesome-skills.git
 
-# 将需要的 Skill 复制到 Claude Code 的 skill 目录
-cp -r awesome-skills/react-best-practices ~/.claude/skills/
-cp -r awesome-skills/fastapi-best-practices ~/.claude/skills/
-cp -r awesome-skills/website-creator ~/.claude/skills/
-cp -r awesome-skills/docker-best-practices ~/.claude/skills/
-cp -r awesome-skills/wiki-creator ~/.claude/skills/
-cp -r awesome-skills/docsify-station-creator ~/.claude/skills/
-cp -r awesome-skills/req-to-ai-spec ~/.claude/skills/
-cp -r awesome-skills/spechub-best-practices ~/.claude/skills/
-cp -r awesome-skills/style-vault ~/.claude/skills/
+# 一键复制所有 Skill 到 Claude Code 的 skill 目录
+cp -r awesome-skills/*/  ~/.claude/skills/
 ```
 
-每个 Skill 完全自包含，按需复制对应文件夹即可。
+每个 Skill 完全自包含。如果只需要部分 Skill，单独复制对应文件夹即可：
+
+```bash
+cp -r awesome-skills/react-best-practices ~/.claude/skills/
+```
 
 ---
 

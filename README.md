@@ -201,19 +201,15 @@ Each component includes complete, copy-paste-ready code with style notes explain
 # Clone the repo
 git clone https://github.com/garveyhu/awesome-skills.git
 
-# Copy skills you want into Claude Code's skill directory
-cp -r awesome-skills/react-best-practices ~/.claude/skills/
-cp -r awesome-skills/fastapi-best-practices ~/.claude/skills/
-cp -r awesome-skills/website-creator ~/.claude/skills/
-cp -r awesome-skills/docker-best-practices ~/.claude/skills/
-cp -r awesome-skills/wiki-creator ~/.claude/skills/
-cp -r awesome-skills/docsify-station-creator ~/.claude/skills/
-cp -r awesome-skills/req-to-ai-spec ~/.claude/skills/
-cp -r awesome-skills/spechub-best-practices ~/.claude/skills/
-cp -r awesome-skills/style-vault ~/.claude/skills/
+# Copy all skills into Claude Code's skill directory
+cp -r awesome-skills/*/  ~/.claude/skills/
 ```
 
-Each skill is self-contained — copy just the folders you need.
+Each skill is self-contained. To install only specific skills, copy individual folders instead:
+
+```bash
+cp -r awesome-skills/react-best-practices ~/.claude/skills/
+```
 
 ---
 
@@ -230,5 +226,5 @@ Skills trigger automatically when relevant. Just describe what you want:
 "Turn the docs folder into a site"             → docsify-station-creator
 "Convert these product notes into a spec"       → req-to-ai-spec
 "Write API spec for frontend integration"      → spechub-best-practices
-"用我的风格做一个管理后台表格"                    → style-vault
+"Build an admin table matching my style"          → style-vault
 ```
