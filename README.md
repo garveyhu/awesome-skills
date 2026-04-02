@@ -179,6 +179,23 @@ When Developer A's AI finishes backend work and Developer B's AI needs to pick u
 
 ---
 
+### [`solution-vault`](solution-vault/)
+
+**Personal solution library — replicate proven technical solutions across projects.**
+
+A growing collection of battle-tested, complete technical solutions. When you encounter a familiar requirement (OAuth login, file upload, payment integration), pull from your validated solution library instead of building from scratch. Each solution is a self-contained directory with README, template code files, migration scripts, and configuration guides.
+
+- **Categorized** — Solutions organized by domain: `auth/`, `ui/`, `data/`, `integration/`, `infra/`
+- **Complete** — Each solution includes backend service, routes, DTOs, frontend components, migrations, and config docs
+- **Adaptable** — Template code uses `# ADAPT:` markers for project-specific customization; Claude reads the solution and auto-adapts to your current project's stack and conventions
+
+```
+"Give this project Google login"    → reads auth/google-oauth-popup, adapts to your stack
+"Save this solution"               → extracts and catalogs the current implementation
+```
+
+---
+
 ### [`style-vault`](style-vault/)
 
 **Personal frontend component style library — your pre-tuned UI building blocks.**
@@ -227,4 +244,5 @@ Skills trigger automatically when relevant. Just describe what you want:
 "Convert these product notes into a spec"       → req-to-ai-spec
 "Write API spec for frontend integration"      → spechub-best-practices
 "Build an admin table matching my style"          → style-vault
+"Add Google login to this project"                → solution-vault
 ```

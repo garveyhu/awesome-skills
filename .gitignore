@@ -24,6 +24,8 @@
 !spechub-best-practices/**
 !style-vault/
 !style-vault/**
+!solution-vault/
+!solution-vault/**
 
 # Still ignore packaged .skill files
 *.skill
