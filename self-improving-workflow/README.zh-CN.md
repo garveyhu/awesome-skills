@@ -172,7 +172,7 @@ crystallize.sh 跑（每 phase 完成时 + 退出时）
 
 ### 文件布局怎么对应这个机制
 
-**关键设计**：commands / agents / scripts 在 skill 里，**所有项目共享**；state / memory / rules 在每个项目的 `.claude/` 里，**项目独有**。
+**关键设计**：`scripts/` 留在 skill 仓库（用绝对路径调用）；`commands/` 和 `agents/` 在 bootstrap 时从 skill 镜像到每个项目的 `.claude/`（Claude Code 只能从 `.claude/` 下发现 slash 命令和 subagent，所以必须落地）。state / memory / rules 一次性种到项目里，随使用增长。
 
 学习是项目维度的——A 项目踩的坑不会污染 B 项目。下次 `/run` 同一个项目时，已晶化的规则会自动变成 plan 评审和代码评审的 checklist——这个 skill 是"越用越懂你这个项目"。
 
@@ -249,25 +249,23 @@ crystallize.sh 跑（每 phase 完成时 + 退出时）
 
 ## Skill 仓库布局
 
-slash 命令和评审 subagent 直接放在 skill 根目录 — 用户装好 skill 立即可用，没有拷贝步骤。
-
 ```
 self-improving-workflow/
 ├── SKILL.md
 ├── README.md / README.zh-CN.md
-├── commands/                         ← skill 级 slash 命令
+├── commands/                         ← bootstrap 时镜像到 .claude/commands/
 │   ├── run.md
 │   ├── plan.md
 │   ├── review.md
 │   ├── learn.md
 │   └── resume.md
-├── agents/                           ← skill 级评审 subagent
+├── agents/                           ← bootstrap 时镜像到 .claude/agents/
 │   ├── planner-critic.md
 │   ├── implementation-reviewer.md
 │   ├── requirement-auditor.md
 │   └── integration-checker.md
-├── scripts/
-│   ├── init.sh                       ← 把每个项目的状态种子写进 .claude/
+├── scripts/                          ← 留在 skill，用绝对路径调用
+│   ├── init.sh                       ← 在目标项目里种 .claude/
 │   ├── guard.sh                      ← 不可逆操作正则检测
 │   ├── crystallize.sh                ← episodic→semantic→rules 晶化
 │   └── plan_lint.sh                  ← plan.json schema 校验
@@ -287,11 +285,22 @@ self-improving-workflow/
 
 ## 文件布局 — 项目侧（`.claude/`）
 
-`init.sh` 只会种"项目级状态" — slash 命令和评审 agent 不会拷到项目里：
+`init.sh` 在你的项目里跑完后：
 
 ```
 .claude/
-├── CLAUDE.md                          ← 来自 seeds/
+├── CLAUDE.md                          ← 来自 seeds/，仅当项目还没有时才写入
+├── commands/                          ← 从 skill 镜像（Claude Code 在这里发现 slash 命令）
+│   ├── run.md
+│   ├── plan.md
+│   ├── review.md
+│   ├── learn.md
+│   └── resume.md
+├── agents/                            ← 从 skill 镜像（Claude Code 在这里发现 subagent）
+│   ├── planner-critic.md
+│   ├── implementation-reviewer.md
+│   ├── requirement-auditor.md
+│   └── integration-checker.md
 ├── rules/
 │   ├── autonomy-stops.md              ← 来自 seeds/，可追加
 │   └── dev-lessons.md                 ← 来自 seeds/，由 /learn 自动填充
@@ -306,6 +315,8 @@ self-improving-workflow/
     ├── semantic-patterns.json         (git 追踪)
     └── working/                       (已 gitignore)
 ```
+
+`commands/` 和 `agents/` 是按文件 write-once：升级 skill 后再跑 `init.sh`，新加的文件会被拉过来，但你本地改过的文件不会被覆盖。
 
 `.gitignore` 会被幂等追加，排除 `episodic/` 和 `working/`。
 

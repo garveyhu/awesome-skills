@@ -42,7 +42,7 @@ Decision log at `.claude/state/decisions.jsonl` records every non-trivial choice
 
 ## Commands
 
-Slash commands live at the skill itself (`commands/*.md`) — no copy step. They are available the moment the skill loads.
+Slash commands are mirrored from the skill into each project's `.claude/commands/` on bootstrap, so Claude Code can discover them. Re-running `init.sh` picks up new commands added to the skill in future versions.
 
 | Command | Purpose |
 |---|---|
@@ -54,11 +54,19 @@ Slash commands live at the skill itself (`commands/*.md`) — no copy step. They
 
 ## Reviewer subagents
 
-The four reviewers also live at the skill (`agents/*.md`), shared across every project. Customize project-specific rubric items via `.claude/rules/dev-lessons.md` instead of forking the prompts.
+The four reviewers are mirrored from the skill into `.claude/agents/` on bootstrap (same reason — Claude Code only discovers subagents under `.claude/agents/` or `~/.claude/agents/`). Customize project-specific rubric items via `.claude/rules/dev-lessons.md` instead of forking the prompts.
 
 ## Bootstrap
 
-First time `/run` is invoked, `scripts/init.sh` seeds **per-project state** into `.claude/` (state, memory, rules, CLAUDE.md). Idempotent, write-once. Existing files are never overwritten — `CLAUDE.md` triggers a `.skill-template` companion.
+First time `/run` is invoked, `scripts/init.sh` seeds the project's `.claude/`:
+
+- `commands/` and `agents/` — mirrored from the skill (write-once per file)
+- `state/` — `plan.json`, `decisions.jsonl`, `plan.schema.json`, `archive/`
+- `memory/` — `episodic/`, `working/`, `semantic-patterns.json`
+- `rules/autonomy-stops.md`, `rules/dev-lessons.md`
+- `CLAUDE.md` — only if the project doesn't already have one
+
+Only `scripts/` stays in the skill repo and is invoked by absolute path from the commands. Existing files are never overwritten; the script is fully idempotent.
 
 ## See also
 

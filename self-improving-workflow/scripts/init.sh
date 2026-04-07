@@ -2,19 +2,20 @@
 # init.sh — scaffold a project's .claude/ for self-improving-workflow.
 # Usage: init.sh [project_root]
 #
-# What this DOES seed in the project's .claude/ (per-project state):
+# What this DOES seed in the project's .claude/:
+#   - commands/  (slash commands — copied from skill, so Claude Code can find them)
+#   - agents/    (reviewer subagents — copied from skill, so Claude Code can find them)
 #   - state/ (plan.json, decisions.jsonl, plan.schema.json, archive/)
 #   - memory/ (episodic/, working/, semantic-patterns.json, README.md)
 #   - rules/ (autonomy-stops.md, dev-lessons.md) — copied from skill seeds
-#   - CLAUDE.md — copied from skill seeds (with .skill-template companion if one already exists)
+#   - CLAUDE.md — copied from skill seeds ONLY if no CLAUDE.md exists yet
 #   - .gitignore patch
 #
-# What this does NOT seed (lives at the skill itself, shared across projects):
-#   - commands/  (slash commands)
-#   - agents/    (reviewer subagents)
+# What this does NOT seed (stays in the skill repo, called by absolute path):
 #   - scripts/   (init/guard/plan_lint/crystallize)
 #
 # Idempotent. Existing files are skipped (write-once).
+# Re-running picks up new commands/agents added to the skill.
 set -euo pipefail
 
 ROOT="${1:-$(pwd)}"
@@ -35,13 +36,8 @@ copy_once() {
   local src="$1" dst="$2"
   mkdir -p "$(dirname "$dst")"
   if [[ -e "$dst" ]]; then
-    if [[ "$(basename "$dst")" == "CLAUDE.md" ]]; then
-      cp "$src" "${dst}.skill-template"
-      echo "  ~ $dst exists; wrote ${dst}.skill-template"
-    else
-      SKIPPED=$((SKIPPED+1))
-      echo "  - $dst exists, skip"
-    fi
+    SKIPPED=$((SKIPPED+1))
+    echo "  - $dst exists, skip"
     return
   fi
   cp "$src" "$dst"
@@ -49,8 +45,25 @@ copy_once() {
   echo "  + $dst"
 }
 
-# CLAUDE.md
+# Mirror an entire directory from skill into .claude/, file-by-file (write-once per file).
+# New files added to the skill in future versions get picked up on re-run.
+mirror_dir() {
+  local src_dir="$1" dst_dir="$2"
+  [[ -d "$src_dir" ]] || return 0
+  mkdir -p "$dst_dir"
+  local f rel
+  while IFS= read -r -d '' f; do
+    rel="${f#$src_dir/}"
+    copy_once "$f" "$dst_dir/$rel"
+  done < <(find "$src_dir" -type f -print0)
+}
+
+# CLAUDE.md — write-once. If the project already has one, leave it alone.
 copy_once "$SEEDS/CLAUDE.md" ".claude/CLAUDE.md"
+
+# commands/ and agents/ — must live in .claude/ for Claude Code to discover them.
+mirror_dir "$SKILL_DIR/commands" ".claude/commands"
+mirror_dir "$SKILL_DIR/agents" ".claude/agents"
 
 # rules
 copy_once "$SEEDS/rules/autonomy-stops.md" ".claude/rules/autonomy-stops.md"

@@ -105,11 +105,11 @@ When multiple reviewers trigger at the same level (e.g., final plan review runs 
 
 ## Reviewer Agent Prompts
 
-Each reviewer's behavior is defined in its agent prompt file, living at the skill itself:
+Each reviewer's behavior is defined in its agent prompt file, mirrored from the skill into the project on bootstrap (Claude Code only discovers subagents under `.claude/agents/`):
 
-- `agents/planner-critic.md`
-- `agents/implementation-reviewer.md`
-- `agents/requirement-auditor.md`
-- `agents/integration-checker.md`
+- `.claude/agents/planner-critic.md`
+- `.claude/agents/implementation-reviewer.md`
+- `.claude/agents/requirement-auditor.md`
+- `.claude/agents/integration-checker.md`
 
-These files are skill-global, not per-project. Every project that uses the skill shares the same reviewer roster — there is no copy step. To customize per-project, append rubric items to `.claude/rules/dev-lessons.md` rather than forking the agent prompts.
+The skill copy is the source of truth. Re-running `init.sh` after upgrading the skill picks up new reviewers, but write-once: any local edits in a project are never overwritten. To customize per-project, prefer appending rubric items to `.claude/rules/dev-lessons.md` over editing the agent prompts directly.

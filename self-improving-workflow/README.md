@@ -172,7 +172,7 @@ Not just "AI keeps running". The substance:
 
 ### How the file layout maps to this mechanism
 
-**Key design**: commands / agents / scripts live in the skill itself, **shared across all projects**; state / memory / rules live in each project's `.claude/`, **project-local**.
+**Key design**: `scripts/` lives in the skill itself (called by absolute path); `commands/` and `agents/` are mirrored from the skill into each project's `.claude/` on bootstrap (Claude Code only discovers slash commands and subagents under `.claude/`, so they have to physically live there). State / memory / rules are seeded once per project and grow as you use it.
 
 Learning is per-project — pitfalls in project A do not pollute project B. On the next `/run` against the same project, crystallized rules become hard checklists for plan and code review. The skill **gets smarter about your project the more you use it**.
 
@@ -250,25 +250,23 @@ The second time you `/run` against the same project: `planner-critic` and `imple
 
 ## Skill Repo Layout
 
-The skill has user-facing artifacts at the root — slash commands and reviewer subagents are discovered the moment the skill loads. There is no copy step for them.
-
 ```
 self-improving-workflow/
 ├── SKILL.md
 ├── README.md / README.zh-CN.md
-├── commands/                         ← skill-global slash commands
+├── commands/                         ← mirrored into each project's .claude/commands/
 │   ├── run.md
 │   ├── plan.md
 │   ├── review.md
 │   ├── learn.md
 │   └── resume.md
-├── agents/                           ← skill-global reviewer subagents
+├── agents/                           ← mirrored into each project's .claude/agents/
 │   ├── planner-critic.md
 │   ├── implementation-reviewer.md
 │   ├── requirement-auditor.md
 │   └── integration-checker.md
-├── scripts/
-│   ├── init.sh                       ← seeds per-project state into .claude/
+├── scripts/                          ← stays in skill, called by absolute path
+│   ├── init.sh                       ← seeds .claude/ in the target project
 │   ├── guard.sh                      ← irreversible-op regex check
 │   ├── crystallize.sh                ← episodic→semantic→rules promotion
 │   └── plan_lint.sh                  ← plan.json schema validation
@@ -288,11 +286,22 @@ self-improving-workflow/
 
 ## File Layout — Project Side (`.claude/`)
 
-After `init.sh` runs in your project, only **per-project state** is seeded — slash commands and reviewer agents stay at the skill, not duplicated:
+After `init.sh` runs in your project:
 
 ```
 .claude/
-├── CLAUDE.md                          ← from seeds/
+├── CLAUDE.md                          ← from seeds/, only if you don't already have one
+├── commands/                          ← mirrored from skill (Claude Code discovers these)
+│   ├── run.md
+│   ├── plan.md
+│   ├── review.md
+│   ├── learn.md
+│   └── resume.md
+├── agents/                            ← mirrored from skill (Claude Code discovers these)
+│   ├── planner-critic.md
+│   ├── implementation-reviewer.md
+│   ├── requirement-auditor.md
+│   └── integration-checker.md
 ├── rules/
 │   ├── autonomy-stops.md              ← from seeds/, you may append
 │   └── dev-lessons.md                 ← from seeds/, auto-populated by /learn
@@ -307,6 +316,8 @@ After `init.sh` runs in your project, only **per-project state** is seeded — s
     ├── semantic-patterns.json         (git-tracked)
     └── working/                       (gitignored)
 ```
+
+`commands/` and `agents/` are write-once per file: re-running `init.sh` after upgrading the skill picks up newly-added files but never overwrites edits you made locally.
 
 `.gitignore` is patched idempotently to exclude `episodic/` and `working/`.
 

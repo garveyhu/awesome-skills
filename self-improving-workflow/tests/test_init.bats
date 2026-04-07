@@ -13,7 +13,7 @@ teardown() {
   rm -rf "$TMP"
 }
 
-@test "creates per-project layout (no commands/agents — those live at skill)" {
+@test "creates per-project layout including commands/agents" {
   bash "$INIT" "$TMP"
   [ -f .claude/CLAUDE.md ]
   [ -f .claude/rules/autonomy-stops.md ]
@@ -26,9 +26,16 @@ teardown() {
   [ -d .claude/memory/working ]
   [ -f .claude/memory/semantic-patterns.json ]
   [ -f .claude/memory/README.md ]
-  # Per-project layout deliberately does NOT include commands/ or agents/
-  [ ! -d .claude/commands ]
-  [ ! -d .claude/agents ]
+  # Claude Code requires commands/ and agents/ to live in .claude/ to discover them.
+  [ -f .claude/commands/run.md ]
+  [ -f .claude/commands/plan.md ]
+  [ -f .claude/commands/review.md ]
+  [ -f .claude/commands/learn.md ]
+  [ -f .claude/commands/resume.md ]
+  [ -f .claude/agents/planner-critic.md ]
+  [ -f .claude/agents/implementation-reviewer.md ]
+  [ -f .claude/agents/requirement-auditor.md ]
+  [ -f .claude/agents/integration-checker.md ]
 }
 
 @test "is idempotent — second run touches nothing" {
@@ -45,12 +52,19 @@ teardown() {
   [ "$count" -eq 1 ]
 }
 
-@test "writes .skill-template companion if CLAUDE.md exists" {
+@test "leaves existing CLAUDE.md untouched and writes no sidecar" {
   mkdir -p .claude
   echo "# pre-existing" > .claude/CLAUDE.md
   bash "$INIT" "$TMP"
-  [ -f .claude/CLAUDE.md.skill-template ]
   grep -q "pre-existing" .claude/CLAUDE.md
+  [ ! -f .claude/CLAUDE.md.skill-template ]
+}
+
+@test "re-running picks up newly added commands/agents" {
+  bash "$INIT" "$TMP"
+  rm .claude/commands/run.md
+  bash "$INIT" "$TMP"
+  [ -f .claude/commands/run.md ]
 }
 
 @test "rejects non-directory arg" {
