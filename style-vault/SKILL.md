@@ -9,7 +9,7 @@ description: >
   or when the user asks to make UI look good / match existing style.
 ---
 
-# Style Vault — 个人前端样式库
+# Style Vault
 
 ## 技术栈
 
