@@ -1,166 +1,86 @@
 #!/usr/bin/env bash
-# init.sh — 初始化 .claude/ 工作流配置
-# 用法：bash init.sh <tier> [tech_stack] [compliance] [project_root]
-#   tier: minimal | standard | full
-#   tech_stack: java | python | node | vue | react | monorepo | other
-#   compliance: none | govt | fintech | healthcare | privacy
+# init.sh — scaffold .claude/ for self-improving-workflow (no tier/stack/compliance)
+# Usage: init.sh [project_root]
+# Idempotent: existing files are skipped (write-once); CLAUDE.md exception writes a .skill-template companion.
 set -euo pipefail
 
-TIER="${1:?Usage: init.sh <tier> [tech_stack] [compliance] [project_root]}"
-TECH_STACK="${2:-other}"
-COMPLIANCE="${3:-none}"
-ROOT="${4:-$(pwd)}"
+ROOT="${1:-$(pwd)}"
+if [[ ! -d "$ROOT" ]]; then
+  echo "ERROR: $ROOT is not a directory" >&2
+  exit 1
+fi
 
 SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-TEMPLATES_DIR="$SKILL_DIR/templates"
+TPL="$SKILL_DIR/templates"
 
 cd "$ROOT"
 
-if [[ ! "$TIER" =~ ^(minimal|standard|full)$ ]]; then
-    echo "Error: tier must be one of: minimal, standard, full" >&2
-    exit 1
-fi
-
-# 项目名 = 当前目录名
-PROJECT_NAME=$(basename "$ROOT")
-CREATED_DATE=$(date +%Y-%m-%d)
-
-# 计数器
 CREATED=0
 SKIPPED=0
-TEMPLATES_WRITTEN=0
 
-# render_template <source_template> <target_path>
-# 渲染模板：替换 {{VAR}}，跳过已存在的目标文件
-render_template() {
-    local src="$1"
-    local dst="$2"
-    local target_dir
-    target_dir=$(dirname "$dst")
-
-    mkdir -p "$target_dir"
-
-    if [[ -e "$dst" ]]; then
-        # CLAUDE.md 例外：写 .skill-template 旁置
-        if [[ "$(basename "$dst")" == "CLAUDE.md" ]]; then
-            local companion="${dst}.skill-template"
-            sed \
-                -e "s|{{PROJECT_NAME}}|$PROJECT_NAME|g" \
-                -e "s|{{PROJECT_TYPE}}|$TIER|g" \
-                -e "s|{{TECH_STACK}}|$TECH_STACK|g" \
-                -e "s|{{PROJECT_SCALE}}|$TIER tier|g" \
-                -e "s|{{CREATED_DATE}}|$CREATED_DATE|g" \
-                -e "s|{{TIER}}|$TIER|g" \
-                -e "s|{{COMPLIANCE_PRESET}}|$COMPLIANCE|g" \
-                "$src" > "$companion"
-            echo "✓ $dst exists, wrote ${companion##$ROOT/} for reference"
-            TEMPLATES_WRITTEN=$(( TEMPLATES_WRITTEN + 1 ))
-        else
-            echo "✓ ${dst##$ROOT/} exists, skipped"
-        fi
-        SKIPPED=$(( SKIPPED + 1 ))
-        return
+copy_once() {
+  local src="$1" dst="$2"
+  mkdir -p "$(dirname "$dst")"
+  if [[ -e "$dst" ]]; then
+    if [[ "$(basename "$dst")" == "CLAUDE.md" ]]; then
+      cp "$src" "${dst}.skill-template"
+      echo "  ~ $dst exists; wrote ${dst}.skill-template"
+    else
+      SKIPPED=$((SKIPPED+1))
+      echo "  - $dst exists, skip"
     fi
-
-    sed \
-        -e "s|{{PROJECT_NAME}}|$PROJECT_NAME|g" \
-        -e "s|{{PROJECT_TYPE}}|$TIER|g" \
-        -e "s|{{TECH_STACK}}|$TECH_STACK|g" \
-        -e "s|{{PROJECT_SCALE}}|$TIER tier|g" \
-        -e "s|{{CREATED_DATE}}|$CREATED_DATE|g" \
-        -e "s|{{TIER}}|$TIER|g" \
-        -e "s|{{COMPLIANCE_PRESET}}|$COMPLIANCE|g" \
-        "$src" > "$dst"
-    echo "✗ ${dst##$ROOT/} created"
-    CREATED=$(( CREATED + 1 ))
+    return
+  fi
+  cp "$src" "$dst"
+  CREATED=$((CREATED+1))
+  echo "  + $dst"
 }
 
-# install_tier <tier_name>
-# 把 templates/<tier>/ 下所有 .template 文件渲染到 .claude/ 对应位置
-install_tier() {
-    local tier_name="$1"
-    local src_root="$TEMPLATES_DIR/$tier_name"
+# CLAUDE.md
+copy_once "$TPL/CLAUDE.md.template" ".claude/CLAUDE.md"
 
-    if [[ ! -d "$src_root" ]]; then
-        return
-    fi
+# commands
+for c in run plan review learn resume; do
+  copy_once "$TPL/commands/${c}.md.template" ".claude/commands/${c}.md"
+done
 
-    # 找所有 .template 文件
-    while IFS= read -r template_file; do
-        # 计算相对路径并去掉 .template 后缀
-        local rel_path="${template_file#$src_root/}"
-        local target_path=".claude/${rel_path%.template}"
-        render_template "$template_file" "$target_path"
-    done < <(find "$src_root" -type f -name '*.template')
-}
+# agents
+for a in planner-critic implementation-reviewer requirement-auditor integration-checker; do
+  copy_once "$TPL/agents/${a}.md.template" ".claude/agents/${a}.md"
+done
 
-echo "📦 Installing self-improving-workflow ($TIER tier) into $ROOT"
-echo ""
+# rules
+copy_once "$TPL/rules/autonomy-stops.md.template" ".claude/rules/autonomy-stops.md"
+copy_once "$TPL/rules/dev-lessons.md.template" ".claude/rules/dev-lessons.md"
 
-# 按档位累加：full 包含 standard 包含 minimal
-case "$TIER" in
-    minimal)
-        install_tier minimal
-        ;;
-    standard)
-        install_tier minimal
-        install_tier standard
-        ;;
-    full)
-        install_tier minimal
-        install_tier standard
-        install_tier full
-        ;;
-esac
+# state
+copy_once "$TPL/state/plan.schema.json" ".claude/state/plan.schema.json"
+if [[ ! -f .claude/state/plan.json ]]; then
+  echo '{}' > .claude/state/plan.json
+  CREATED=$((CREATED+1))
+  echo "  + .claude/state/plan.json"
+fi
+if [[ ! -f .claude/state/decisions.jsonl ]]; then
+  : > .claude/state/decisions.jsonl
+  CREATED=$((CREATED+1))
+  echo "  + .claude/state/decisions.jsonl"
+fi
+mkdir -p .claude/state/archive
 
-# 创建 episodic / working 目录的 .gitkeep
-mkdir -p .claude/memory/episodic
-[[ -e .claude/memory/episodic/.gitkeep ]] || touch .claude/memory/episodic/.gitkeep
-if [[ "$TIER" == "full" ]]; then
-    mkdir -p .claude/memory/working
-    [[ -e .claude/memory/working/.gitkeep ]] || touch .claude/memory/working/.gitkeep
+# memory
+copy_once "$TPL/memory/README.md.template" ".claude/memory/README.md"
+mkdir -p .claude/memory/episodic .claude/memory/working
+if [[ ! -f .claude/memory/semantic-patterns.json ]]; then
+  echo '{"patterns":[]}' > .claude/memory/semantic-patterns.json
+  CREATED=$((CREATED+1))
+  echo "  + .claude/memory/semantic-patterns.json"
 fi
 
-# 写 .workflow-tier 标记
-echo "$TIER" > .claude/.workflow-tier
+# gitignore patch (idempotent)
+GI=".gitignore"
+touch "$GI"
+for line in ".claude/memory/episodic/" ".claude/memory/working/" ".claude/state/working/"; do
+  grep -qxF "$line" "$GI" || echo "$line" >> "$GI"
+done
 
-# .gitignore patch（幂等）
-if [[ -f .gitignore ]]; then
-    if grep -q '^\.claude/$' .gitignore 2>/dev/null; then
-        echo ""
-        echo "⚠️  WARNING: .gitignore contains '.claude/' which ignores the entire dir."
-        echo "   This skill assumes .claude/ should be git-tracked (except memory subdirs)."
-        echo "   Manually remove '.claude/' line and add the granular pattern below:"
-        echo ""
-        echo "   # Claude — project config tracked, ignore private/temp data"
-        echo "   .claude/settings.local.json"
-        echo "   .claude/memory/episodic/"
-        echo "   .claude/memory/working/"
-        echo ""
-    elif ! grep -q '\.claude/memory/episodic/' .gitignore 2>/dev/null; then
-        cat >> .gitignore <<'EOF'
-
-# Claude — project config tracked, ignore private/temp data
-.claude/settings.local.json
-.claude/memory/episodic/
-.claude/memory/working/
-EOF
-        echo "✗ .gitignore patched"
-        CREATED=$(( CREATED + 1 ))
-    fi
-fi
-
-echo ""
-echo "✅ Done. Tier: $TIER"
-echo "   Created: $CREATED files"
-echo "   Skipped: $SKIPPED existing files"
-if (( TEMPLATES_WRITTEN > 0 )); then
-    echo "   Reference templates written: $TEMPLATES_WRITTEN (.skill-template)"
-fi
-echo ""
-echo "Next steps:"
-echo "  1. Read .claude/CLAUDE.md (or CLAUDE.md.skill-template if you had one)"
-echo "  2. Try /self-improve to capture your first lesson"
-if [[ "$TIER" != "minimal" ]]; then
-    echo "  3. Use /phase-start <name> for your next phase"
-fi
+echo "init: created=$CREATED skipped=$SKIPPED"
