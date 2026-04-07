@@ -1,0 +1,41 @@
+---
+description: 模块边界与跨模块通信规则
+applies_to: 多模块项目（monorepo / microservice / java multi-module / python workspace）
+---
+
+# 模块隔离规则
+
+**Why**：跨模块直接耦合是大型项目最常见的返工根因。事后发现的循环依赖、孤儿事件、接口漂移都源于此。
+
+## 硬性禁令
+
+### 1. 禁止跨模块直接引用实现
+
+```
+❌ 在 module-A 中 import module-B 的 ServiceImpl / 内部类
+✅ module-A 只能 import：
+   - module-B 的 public 接口（定义在 base / common 模块）
+   - 跨模块事件类（定义在 base 模块）
+```
+
+### 2. 跨模块通信只有两种方式
+
+- **事件解耦**：定义事件类 → publisher 在自己模块发 → listener 在对方模块听
+- **接口反转**：base 模块定义接口 → 业务模块实现并注册为 Bean
+
+### 3. 多 Agent 并行修改时严格按模块切分
+
+派 Agent 时一个模块只能由一个 Agent 修改。Agent A 改 module-X 时，Agent B/C 不得碰 module-X。
+
+### 4. 每个 Agent 完成后立即编译
+
+不积累错误。每个 Agent 完成后立即跑该模块的编译命令，发现问题立即修。
+
+## 检测时机
+
+- `/phase-review` 时由 `code-quality-reviewer` agent 扫描跨模块违规
+- `cross-module-checker` agent（full 档）做事件链路闭环检查
+
+## 项目特定补充
+
+<!-- 由 /self-improve 在用户确认后追加 -->

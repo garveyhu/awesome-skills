@@ -1,0 +1,53 @@
+---
+description: 阶段完成评审协议 — 编译 + 前端验证 + 评审 agent + self-improve
+---
+
+# Phase 完成评审协议
+
+参数：$ARGUMENTS（例：`Phase4`、`AuthRefactor`）
+
+**禁止跳过任何步骤直接进入下一 Phase。**
+
+## 1. 全量编译验证
+
+跑项目的全模块编译命令（具体命令在 `.claude/commands/compile-check.md` 或项目 README）。
+
+有错立刻修。
+
+## 2. 前端 / 端到端验证提醒
+
+向用户输出：
+- 启动后端命令
+- 启动前端命令
+- 本阶段需要在浏览器或客户端实操验证的功能清单
+- **等用户回复 "前端验证 OK" 再继续**
+
+## 3. 派评审 Agent（standard 档：1 个；full 档：3 个并行）
+
+### Standard 档：单 Agent 评审
+
+调用 `.claude/agents/code-quality-reviewer.md` sub-agent：
+- 编码禁令检查（`.claude/rules/coding-bans.md`）
+- 模块隔离检查（`.claude/rules/module-isolation.md`）
+- 政府/合规规则（如有 `domain-compliance.md`）
+
+### Full 档：3 Agent 并行（在同一 message 内 parallel dispatch）
+
+- `requirement-auditor` — 对照需求文档审计实现度
+- `code-quality-reviewer` — 上述检查
+- `cross-module-checker` — 事件链路闭环 / 状态机闭环 / 接口对齐
+
+## 4. 汇总评审结果
+
+列出 P0 / P1 / P2 问题清单，**先修 P0** 再 commit "$ARGUMENTS 完成"。
+
+## 5. 自我改进沉淀
+
+**强制**调用 `/self-improve $ARGUMENTS`，让 self-improving 流程抽取本 Phase 经验：
+
+- 评审中发现的所有 P0/P1 问题 → 抽象成"什么没做对"的模式
+- 跑通的工作流 → 抽象成"成功路径"
+- 用户对评审报告的反应 → 反馈信号
+- critical 级新教训追加到 `.claude/rules/dev-lessons.md`（**需用户确认**）
+
+**禁止跳过此步**。这是项目持续改进的唯一沉淀点。

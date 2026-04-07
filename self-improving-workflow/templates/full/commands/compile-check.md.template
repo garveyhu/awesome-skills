@@ -1,0 +1,33 @@
+---
+description: 全模块快速编译验证
+---
+
+# 编译验证
+
+按依赖顺序快速编译所有模块。具体命令需根据项目栈定制：
+
+## {{TECH_STACK}} 示例
+
+<!-- 由 init.sh 根据 tech_stack 注入对应栈的命令 -->
+
+### Java/Maven
+
+```bash
+mvn compile -pl <base-module> -am -q && \
+mvn compile -pl <module-1> -am -q && \
+mvn compile -pl <module-2> -am -q
+```
+
+### Python/uv
+
+```bash
+uv sync && uv run python -c "import {{PACKAGE}}"
+```
+
+### Node/TypeScript
+
+```bash
+pnpm -r build
+```
+
+任一模块失败立刻停下来定位，**禁止继续**。

@@ -1,0 +1,25 @@
+---
+description: 升档当前项目的工作流配置
+---
+
+# 升档协议
+
+参数：$ARGUMENTS（目标档位：minimal / standard / full）
+
+由 self-improving-workflow skill 的 `scripts/upgrade.sh` 实际执行。
+
+## 流程
+
+1. 读取 `.claude/.workflow-tier` 获取当前档位
+2. 计算目标档位 vs 当前档位的文件差集
+3. 对每个**新增文件**：write-once 写入
+4. 对每个**同名但内容不同**的文件：
+   - 计算 diff
+   - 提示用户 [k]eep / [n]ew / [d]iff / [s]kip
+5. 更新 `.claude/.workflow-tier` 标记
+
+## 边界
+
+- 永远不静默覆盖
+- 永远不删除已有文件
+- 升档不支持降档（避免误删）

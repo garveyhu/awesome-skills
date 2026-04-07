@@ -30,6 +30,10 @@ graph TB
     classDef spec fill:#ECC94B,stroke:#D69E2E,stroke-width:2px,color:#2D3748
     classDef deploy fill:#1A365D,stroke:#0F2440,stroke-width:2px,color:#fff
     classDef action fill:#EDF2F7,stroke:#A0AEC0,stroke-width:1px,color:#4A5568,stroke-dasharray:5 5
+    classDef meta fill:#9B2C6E,stroke:#702459,stroke-width:2px,color:#fff
+
+    Meta(self-improving-workflow):::meta
+    Meta -.->|"bootstraps & evolves any project"| Start
 
     Start(["💡 I want to build a subscription app"]):::idea
     WC(website-creator):::scaffold
@@ -63,6 +67,26 @@ Each skill works standalone. Together, they cover the full lifecycle — from re
 ---
 
 ## Skills
+
+### [`self-improving-workflow`](self-improving-workflow/)
+
+**Project-level workflow scaffold + continuous-improvement loop. Works for any project, new or existing.**
+
+The meta skill that bootstraps any project with `.claude/` config. Three tiers (minimal/standard/full) for solo scripts up to government-grade systems. Captures lessons via `/self-improve` and (with your confirmation) promotes them into team-shared rules.
+
+- **Init** — `/init-workflow` asks 4 questions, scaffolds the right tier in 30 seconds
+- **Phase protocols** — `/phase-start` and `/phase-review` give discipline without ceremony
+- **Self-improving** — `/self-improve` captures session lessons, optionally delegates to `charon-fan/agent-playbook@self-improving-agent` for richer memory
+- **Non-destructive** — Existing files never overwritten. CLAUDE.md gets a `.skill-template` companion
+- **Compliance presets** — `govt` / `fintech` / `healthcare` / `privacy` ready-to-use rule packs in `full` tier
+
+```
+"Bootstrap workflow for this new project"   → /init-workflow
+"Capture lessons from this session"          → /self-improve
+"Run phase review for Phase 3"               → /phase-review
+```
+
+---
 
 ### [`website-creator`](website-creator/)
 
@@ -245,4 +269,6 @@ Skills trigger automatically when relevant. Just describe what you want:
 "Write API spec for frontend integration"      → spechub-best-practices
 "Build an admin table matching my style"          → style-vault
 "Add Google login to this project"                → solution-vault
+"Bootstrap a workflow for this project"           → self-improving-workflow
+"Capture lessons from this session"               → self-improving-workflow
 ```

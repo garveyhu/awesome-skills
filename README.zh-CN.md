@@ -30,6 +30,10 @@ graph TB
     classDef spec fill:#ECC94B,stroke:#D69E2E,stroke-width:2px,color:#2D3748
     classDef deploy fill:#1A365D,stroke:#0F2440,stroke-width:2px,color:#fff
     classDef action fill:#EDF2F7,stroke:#A0AEC0,stroke-width:1px,color:#4A5568,stroke-dasharray:5 5
+    classDef meta fill:#9B2C6E,stroke:#702459,stroke-width:2px,color:#fff
+
+    Meta(self-improving-workflow):::meta
+    Meta -.->|"为任意项目搭脚手架并持续演进"| Start
 
     Start(["💡 我想做一个订阅管理平台"]):::idea
     WC(website-creator):::scaffold
@@ -63,6 +67,26 @@ graph TB
 ---
 
 ## Skill 列表
+
+### [`self-improving-workflow`](self-improving-workflow/)
+
+**项目级工作流脚手架 + 持续改进闭环。适用于任意新老项目。**
+
+这是一个 meta skill，给任意项目装上 `.claude/` 工作流配置。三档（minimal/standard/full）从单人脚本到政府级系统。通过 `/self-improve` 抓取教训并经你确认后沉淀为团队共享规则。
+
+- **初始化** — `/init-workflow` 问 4 个问题，30 秒装上对应档位的脚手架
+- **阶段协议** — `/phase-start` 和 `/phase-review` 给纪律但不重流程
+- **自我改进** — `/self-improve` 抓本次会话教训，可选委托给 `charon-fan/agent-playbook@self-improving-agent` 获得三层记忆能力
+- **非破坏性** — 永远不覆盖已有文件。已存在的 CLAUDE.md 会得到一个 `.skill-template` 旁置参考
+- **合规预设** — `full` 档提供 `govt` / `fintech` / `healthcare` / `privacy` 即用规则包
+
+```
+"给这个新项目搭一套工作流"      → /init-workflow
+"沉淀本次会话的教训"            → /self-improve
+"跑 Phase 3 的阶段评审"        → /phase-review
+```
+
+---
 
 ### [`website-creator`](website-creator/)
 
@@ -245,4 +269,6 @@ Skill 在相关场景下自动触发，直接描述你想做的事：
 "写 API 对接规约给前端"                     → spechub-best-practices
 "用我的风格做一个管理后台表格"                → style-vault
 "给这个项目接入 Google 登录"                  → solution-vault
+"给这个项目搭一套工作流"                      → self-improving-workflow
+"沉淀本次会话的教训"                          → self-improving-workflow
 ```
