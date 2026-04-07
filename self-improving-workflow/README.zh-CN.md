@@ -46,6 +46,195 @@
 
 ---
 
+## 工作机制 — 由表及里
+
+### 一句话定位
+
+**给 AI 一个长任务，AI 自己规划、执行、自评、改进，直到完成；过程中 4 个评审 agent 互相把关，踩到的坑自动沉淀成下次的规则。**
+
+### 用户视角 — 你只做 3 件事
+
+```
+1. 装上 skill（git clone awesome-skills，里面就有 self-improving-workflow）
+2. 在任意项目里说一句：/run 帮我加个用户登录功能
+3. 等。看终端跑就行了。
+```
+
+中间不需要你做任何决定。AI 跑完会告诉你 "done" 或者 "卡住了"。
+
+### AI 视角 — 收到 `/run` 之后发生什么
+
+把 `/run` 当成一个有限状态机：
+
+```
+[bootstrap]                                ← 第一次跑：init.sh 种 .claude/ 骨架
+     ↓
+[写 plan]                                  ← AI 把任务拆成 phase→slice→task 三层树
+     ↓
+[planner-critic 评审 plan]                 ← 评审 1：plan 本身够不够好？
+     ↓ pass
+[执行循环] ←──────────────────────────────┐
+     ↓                                      │
+   挑下一个 pending 的 task                 │
+     ↓                                      │
+   guard.sh 检查每条 bash 命令              │ 命中不可逆 → BLOCKED 退出
+     ↓ allowed                              │
+   AI 写代码 / 跑测试 / commit              │
+     ↓                                      │
+   [implementation-reviewer 评审 task]      │ 评审 2：这个 task 做对了吗？
+     ↓ pass                                 │
+   slice 全 done? → [requirement-auditor]   │ 评审 3：这个 slice 满足 user_value 了吗？
+     ↓ pass                                 │
+   phase 全 done? → [integration-checker]   │ 评审 4：phase 内部模块对得上吗？
+     ↓ pass                                 │
+   plan 全 done? → [crystallize.sh] → done  │
+     ↓ no                                   │
+     └──────────────────────────────────────┘
+```
+
+**唯一的两个停机条件**：
+1. `guard.sh` 拦下一条不可逆命令（删数据 / 强推 / 改密钥 / 发 webhook / kill -9 / drop table）
+2. 同一个目标连续 3 次评审 fail（plan 烂 / task 修不好 / slice 漏需求）
+
+其他任何 "该选 A 还是 B" 的事，**AI 自己拍**，写一行到 `decisions.jsonl`，继续干。
+
+### Plan 的形状（核心数据结构）
+
+```
+Plan
+├── Phase 1（≤4 个 phase）
+│   ├── Slice 1.1（≤5 个 slice/phase）— 必须有 user_value 和 acceptance
+│   │   ├── Task 1.1.1（≤7 个 task/slice）— 必须动词开头
+│   │   ├── Task 1.1.2
+│   │   └── ...
+│   ├── Slice 1.2
+│   └── ...
+├── Phase 2
+└── ...
+```
+
+`plan_lint.sh` 用 jq 强校验这个 schema。AI 写出 "100 个 task 一个 phase" 那种鬼东西会被 planner-critic 直接 reject 重写。
+
+**为什么三层**：颗粒度对应不同评审深度。
+- task 完成 → implementation-reviewer 检查代码
+- slice 完成 → requirement-auditor 检查"用户价值"是不是真的实现了
+- phase 完成 → integration-checker 检查跨 slice 的接口/状态/事件是不是对得上
+
+### 4 个评审 agent 各管一段
+
+| Agent | 触发时机 | 看什么 | 失败时怎么修 |
+|---|---|---|---|
+| **planner-critic** | plan 写完 / 重写后 | plan 本身 + 历史教训 | AI 重写 plan |
+| **implementation-reviewer** | 每个 task 完成时 | 这个 task 的代码改动 | AI 重做这个 task |
+| **requirement-auditor** | 每个 slice 完成时 | slice 的 user_value + 所有 task 产出 | 把缺的需求加成新 task |
+| **integration-checker** | 每个 phase 完成时 | phase 内所有 slice 的衔接 | 把缺的衔接加成新 slice |
+
+**关键约束**：评审 agent **只读**，不写代码。它们只产 JSON 报告（pass / fail + issues），主循环根据报告自己改。这避免了"评审者抢方向盘"。
+
+### 两根支柱怎么实际运转
+
+**支柱 1 — 多智能体协作学习**
+
+不是简单的"多个 agent 一起干活"。是三类角色互相隔离：
+- **执行者**（跑 task 的 AI 主循环）
+- **4 个评审者**（4 个独立 subagent，各管一段）
+- **学习者**（`crystallize.sh`，确定性脚本）
+
+具体怎么"学"：
+
+```
+implementation-reviewer 发现："这个 task 没校验 null 输入"
+    ↓
+写一条 episodic 到 .claude/memory/episodic/ep-xxx.json
+    fingerprint: "boundary:null-input:user-service"
+    confidence: 0.8
+    ↓
+crystallize.sh 跑（每 phase 完成时 + 退出时）
+    ↓
+聚合：fingerprint 的前 2 段 "boundary:null-input" 已经出现 3 次了？
+    且 avg_confidence ≥ 0.7？
+    ↓ yes
+自动 append 一条规则到 .claude/rules/dev-lessons.md
+    ↓
+下次 /run 启动时，planner-critic 和 implementation-reviewer
+都会自动读 dev-lessons.md，对照新规则审 plan 和代码
+```
+
+**阈值写死**：≥3 次 + ≥0.7 置信度。不可调。设计上故意防止用户调成"少学"或"多学"。
+
+**支柱 2 — 长任务不间断执行**
+
+关键点不是"AI 一直跑"那么简单。是：
+- **决策权下放**：所有非不可逆决策 AI 自己做（选 lib、命名、要不要加 cache、用 mock 还是真依赖……）
+- **决策可审计**：`decisions.jsonl` append-only 记录所有非平凡选择，事后你能看 AI 当时为什么选 A 不选 B
+- **跨 session 续跑**：`plan.json` + `decisions.jsonl` 是状态快照，进程被杀了下次 `/resume` 从第一个非 done task 继续
+- **task 必须幂等**：被中断重做不会留垃圾。implementation-reviewer 把"幂等性"列入审查项
+
+### 文件布局怎么对应这个机制
+
+**关键设计**：commands / agents / scripts 在 skill 里，**所有项目共享**；state / memory / rules 在每个项目的 `.claude/` 里，**项目独有**。
+
+学习是项目维度的——A 项目踩的坑不会污染 B 项目。下次 `/run` 同一个项目时，已晶化的规则会自动变成 plan 评审和代码评审的 checklist——这个 skill 是"越用越懂你这个项目"。
+
+### 一个具体例子穿起来看
+
+```
+你输入：/run 给项目加一个用户注册接口
+
+[bootstrap] init.sh 跑（如果 .claude/ 不存在）
+
+[plan]  AI 写出：
+        Phase 1: 用户注册 MVP
+        ├── Slice 1.1: 数据库 schema
+        │   ├── T1: 实现 User model
+        │   ├── T2: 写 alembic migration
+        │   └── T3: 验证 migration 在测试库
+        ├── Slice 1.2: 注册 endpoint
+        │   ├── T1: 实现 POST /register
+        │   ├── T2: 加邮箱格式校验
+        │   ├── T3: 加密码 hash
+        │   └── T4: 写集成测试
+        └── Slice 1.3: 错误处理 + 限流
+
+[planner-critic] pass
+
+[execute T1.1.1] AI 写 model
+[guard.sh "vim models/user.py"]  exit 0
+[guard.sh "alembic upgrade head"] exit 0
+[implementation-reviewer T1.1.1] pass
+[execute T1.1.2] ...
+[implementation-reviewer T1.1.2] FAIL — "migration 没用 batch_alter_table，SQLite 会挂"
+   AI 修
+   [implementation-reviewer T1.1.2] pass
+   写 episodic: fingerprint=spec:sqlite-batch-alter:migration, confidence=0.9
+[execute T1.1.3] ...
+
+[slice 1.1 done → requirement-auditor] pass
+
+[execute slice 1.2 ...] ...
+[implementation-reviewer T1.2.2] FAIL — "邮箱校验没处理 Unicode"
+   AI 修
+   写 episodic: fingerprint=boundary:unicode:input-validation, confidence=0.7
+
+[slice 1.2 done → requirement-auditor]
+   FAIL — "user_value 说'用户能注册'，但没看到任何返回 token 的逻辑"
+   注入新 task: T1.2.5 实现 注册成功后返回 JWT
+[execute T1.2.5] ...
+[requirement-auditor 重审] pass
+
+[slice 1.3 done] [phase 1 done → integration-checker] pass
+
+[plan done → crystallize.sh]
+   episodic 聚合 → 没有任何 fingerprint 凑够 3 次 → 不晋升
+   （这次 /run 没产生新规则，但 episodic 已经存着了，下次 /run 累计到 3 就晋升）
+
+[退出] plan.meta.status = done
+```
+
+第二次跑同一个项目时：planner-critic 和 implementation-reviewer 会读 `dev-lessons.md`，已晶化的规则变成 plan 评审和代码评审的硬 checklist。第一次跑可能踩很多坑，跑十次之后规则库就稳定下来了。
+
+---
+
 ## 命令
 
 | 命令 | 用途 |

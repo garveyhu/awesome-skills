@@ -46,6 +46,196 @@ The first time `/run` is called, `init.sh` bootstraps the `.claude/` skeleton au
 
 ---
 
+## How It Works — From Surface to Internals
+
+### One-line definition
+
+**Hand the AI a long task; the AI plans, executes, self-reviews, and improves until done. Four reviewer agents keep each other honest along the way. Pitfalls are auto-crystallized into rules that govern the next run.**
+
+### User's perspective — you do exactly 3 things
+
+```
+1. Install the skill (git clone awesome-skills; self-improving-workflow ships with it)
+2. In any project, say one sentence: /run add a user login feature
+3. Wait. Watch the terminal.
+```
+
+You make zero decisions in between. When the AI is finished, it tells you "done" or "blocked".
+
+### AI's perspective — what `/run` actually does
+
+Treat `/run` as a finite state machine:
+
+```
+[bootstrap]                                ← first run: init.sh seeds .claude/
+     ↓
+[write plan]                               ← AI splits the task into a phase→slice→task tree
+     ↓
+[planner-critic reviews the plan]          ← review 1: is the plan itself good enough?
+     ↓ pass
+[execute loop] ←──────────────────────────┐
+     ↓                                      │
+   pick next pending task                   │
+     ↓                                      │
+   guard.sh checks every bash command       │ irreversible hit → BLOCKED, exit
+     ↓ allowed                              │
+   AI writes code / runs tests / commits    │
+     ↓                                      │
+   [implementation-reviewer per task]       │ review 2: did this task get done right?
+     ↓ pass                                 │
+   slice all done? → [requirement-auditor]  │ review 3: does the slice fulfill its user_value?
+     ↓ pass                                 │
+   phase all done? → [integration-checker]  │ review 4: do the seams between slices line up?
+     ↓ pass                                 │
+   plan all done? → [crystallize.sh] → done │
+     ↓ no                                   │
+     └──────────────────────────────────────┘
+```
+
+**Only two halt conditions**:
+1. `guard.sh` blocks an irreversible command (delete data / force-push / edit secrets / send webhook / kill -9 / drop table)
+2. Three consecutive review failures on the same target (bad plan / unfixable task / missing requirement)
+
+For any other "should I pick A or B" call, **the AI decides itself**, appends a line to `decisions.jsonl`, and keeps moving.
+
+### Plan shape (the central data structure)
+
+```
+Plan
+├── Phase 1 (≤4 phases per plan)
+│   ├── Slice 1.1 (≤5 slices per phase) — must have user_value and acceptance
+│   │   ├── Task 1.1.1 (≤7 tasks per slice) — must start with a verb
+│   │   ├── Task 1.1.2
+│   │   └── ...
+│   ├── Slice 1.2
+│   └── ...
+├── Phase 2
+└── ...
+```
+
+`plan_lint.sh` enforces this schema with jq. If the AI writes a "100 tasks in one phase" monstrosity, `planner-critic` rejects it and the AI re-plans.
+
+**Why three levels**: granularity maps to reviewer depth.
+- task done → `implementation-reviewer` checks the code
+- slice done → `requirement-auditor` checks whether the user value is actually delivered
+- phase done → `integration-checker` checks whether interfaces / state / events line up across slices
+
+### Four reviewer agents, each in its lane
+
+| Agent | Triggered when | Reads | Fix on failure |
+|---|---|---|---|
+| **planner-critic** | plan written / re-planned | the plan + accumulated lessons | AI re-writes the plan |
+| **implementation-reviewer** | each task completed | the task's code change | AI redoes the task |
+| **requirement-auditor** | each slice completed | slice user_value + all task evidence | inject missing requirements as new tasks |
+| **integration-checker** | each phase completed | seams across the phase's slices | inject missing seams as new slices |
+
+**Hard constraint**: reviewers are **read-only**. They emit JSON reports (pass / fail + issues); the main loop applies the fix. This prevents reviewers from fighting the executor for the steering wheel.
+
+### How the two pillars actually run
+
+**Pillar 1 — Multi-Agent Collaborative Learning**
+
+Not "many agents working together" in a vague sense. Three role classes are isolated:
+- **Executor** (the main loop running tasks)
+- **Four reviewers** (independent subagents, each in its lane)
+- **Learner** (`crystallize.sh`, a deterministic script)
+
+Concretely how it learns:
+
+```
+implementation-reviewer finds: "this task didn't validate null input"
+    ↓
+write an episodic record to .claude/memory/episodic/ep-xxx.json
+    fingerprint: "boundary:null-input:user-service"
+    confidence: 0.8
+    ↓
+crystallize.sh runs (after each phase done + at exit)
+    ↓
+aggregate: has fingerprint's first 2 segments "boundary:null-input"
+    appeared 3+ times AND avg_confidence ≥ 0.7?
+    ↓ yes
+auto-append a rule to .claude/rules/dev-lessons.md
+    ↓
+on the next /run, planner-critic and implementation-reviewer
+read dev-lessons.md and check the new rule against the plan and code
+```
+
+**Thresholds are hard-coded**: ≥3 occurrences AND ≥0.7 avg confidence. Not user-tunable. Intentional, to prevent users from dialing it to "learn less" or "learn more".
+
+**Pillar 2 — Long-Running Uninterrupted Execution**
+
+Not just "AI keeps running". The substance:
+- **Decision authority delegated**: every non-irreversible decision is the AI's call (pick a lib, naming, cache or not, mock or real dep…)
+- **Decisions are auditable**: `decisions.jsonl` is append-only, capturing every non-trivial choice with reasoning so you can replay later
+- **Cross-session resume**: `plan.json` + `decisions.jsonl` are the state snapshot. If the process gets killed, `/resume` picks up at the first non-done task next time
+- **Tasks must be idempotent**: rerunning a task after interruption must leave the system in the same state. `implementation-reviewer` includes idempotency in its rubric
+
+### How the file layout maps to this mechanism
+
+**Key design**: commands / agents / scripts live in the skill itself, **shared across all projects**; state / memory / rules live in each project's `.claude/`, **project-local**.
+
+Learning is per-project — pitfalls in project A do not pollute project B. On the next `/run` against the same project, crystallized rules become hard checklists for plan and code review. The skill **gets smarter about your project the more you use it**.
+
+### A concrete walkthrough
+
+```
+You type: /run add a user-registration endpoint
+
+[bootstrap] init.sh runs (if .claude/ doesn't exist)
+
+[plan]  AI writes:
+        Phase 1: User Registration MVP
+        ├── Slice 1.1: Database schema
+        │   ├── T1: Implement User model
+        │   ├── T2: Write alembic migration
+        │   └── T3: Verify migration on test database
+        ├── Slice 1.2: Registration endpoint
+        │   ├── T1: Implement POST /register
+        │   ├── T2: Add email format validation
+        │   ├── T3: Add password hashing
+        │   └── T4: Write integration tests
+        └── Slice 1.3: Error handling + rate limiting
+
+[planner-critic] pass
+
+[execute T1.1.1] AI writes the model
+[guard.sh "vim models/user.py"]  exit 0
+[guard.sh "alembic upgrade head"] exit 0
+[implementation-reviewer T1.1.1] pass
+[execute T1.1.2] ...
+[implementation-reviewer T1.1.2] FAIL — "migration didn't use batch_alter_table; SQLite will choke"
+   AI fixes
+   [implementation-reviewer T1.1.2] pass
+   write episodic: fingerprint=spec:sqlite-batch-alter:migration, confidence=0.9
+[execute T1.1.3] ...
+
+[slice 1.1 done → requirement-auditor] pass
+
+[execute slice 1.2 ...] ...
+[implementation-reviewer T1.2.2] FAIL — "email validation doesn't handle unicode"
+   AI fixes
+   write episodic: fingerprint=boundary:unicode:input-validation, confidence=0.7
+
+[slice 1.2 done → requirement-auditor]
+   FAIL — "user_value says 'user can register' but I see no JWT-on-success path"
+   inject new task: T1.2.5 Implement returning JWT after successful registration
+[execute T1.2.5] ...
+[requirement-auditor re-review] pass
+
+[slice 1.3 done] [phase 1 done → integration-checker] pass
+
+[plan done → crystallize.sh]
+   aggregate episodics → no fingerprint reached 3 occurrences → no promotion
+   (this /run produced no new rules, but episodics are stored;
+    the next time the same fingerprint comes up will be #3, then promotion)
+
+[exit] plan.meta.status = done
+```
+
+The second time you `/run` against the same project: `planner-critic` and `implementation-reviewer` read `dev-lessons.md`; crystallized rules become hard checklists. The first run may step on many rakes; ten runs in, the rule library stabilizes.
+
+---
+
 ## Commands
 
 | Command | Purpose |
