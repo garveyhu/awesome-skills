@@ -1,0 +1,130 @@
+{
+  "meta": {
+    "topic": "test",
+    "created_at": "2026-04-07T00:00:00Z",
+    "status": "pending",
+    "current_phase_id": null
+  },
+  "phases": [
+    {
+      "id": "P1",
+      "title": "Phase one",
+      "goal": "Do the thing",
+      "status": "pending",
+      "slices": [
+        {
+          "id": "P1-S1",
+          "title": "Slice one",
+          "user_value": "User can foo",
+          "acceptance": ["foo returns bar"],
+          "status": "pending",
+          "tasks": [
+            {
+              "id": "P1-S1-T1",
+              "action": "Implement foo function",
+              "target": "src/foo.py",
+              "status": "pending",
+              "evidence": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P2",
+      "title": "Phase two",
+      "goal": "Do the second thing",
+      "status": "pending",
+      "slices": [
+        {
+          "id": "P2-S1",
+          "title": "Slice one",
+          "user_value": "User can bar",
+          "acceptance": ["bar returns baz"],
+          "status": "pending",
+          "tasks": [
+            {
+              "id": "P2-S1-T1",
+              "action": "Implement bar function",
+              "target": "src/bar.py",
+              "status": "pending",
+              "evidence": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P3",
+      "title": "Phase three",
+      "goal": "Do the third thing",
+      "status": "pending",
+      "slices": [
+        {
+          "id": "P3-S1",
+          "title": "Slice one",
+          "user_value": "User can baz",
+          "acceptance": ["baz returns qux"],
+          "status": "pending",
+          "tasks": [
+            {
+              "id": "P3-S1-T1",
+              "action": "Implement baz function",
+              "target": "src/baz.py",
+              "status": "pending",
+              "evidence": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P4",
+      "title": "Phase four",
+      "goal": "Do the fourth thing",
+      "status": "pending",
+      "slices": [
+        {
+          "id": "P4-S1",
+          "title": "Slice one",
+          "user_value": "User can qux",
+          "acceptance": ["qux returns quux"],
+          "status": "pending",
+          "tasks": [
+            {
+              "id": "P4-S1-T1",
+              "action": "Implement qux function",
+              "target": "src/qux.py",
+              "status": "pending",
+              "evidence": null
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P5",
+      "title": "Phase five",
+      "goal": "Do the fifth thing",
+      "status": "pending",
+      "slices": [
+        {
+          "id": "P5-S1",
+          "title": "Slice one",
+          "user_value": "User can quux",
+          "acceptance": ["quux returns corge"],
+          "status": "pending",
+          "tasks": [
+            {
+              "id": "P5-S1-T1",
+              "action": "Implement quux function",
+              "target": "src/quux.py",
+              "status": "pending",
+              "evidence": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
