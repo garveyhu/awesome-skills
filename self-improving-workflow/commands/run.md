@@ -15,16 +15,18 @@ Argument: $ARGUMENTS (the topic, in natural language)
 
 ## 0. Bootstrap
 
-If `.claude/state/plan.json` is missing:
-- Run `bash ~/.agents/skills/self-improving-workflow/scripts/init.sh "$(pwd)"`
-- Initialize plan.json to `{}`
+Three cases for `.claude/state/plan.json`:
 
-If `.claude/state/plan.json` exists with `meta.status` not `done`:
-- Ask the user once: `"Existing unfinished plan found. (o)verwrite / (r)esume / (a)bort?"`
-- `o` → archive current plan to `.claude/state/archive/plan-$(date +%s).json`, proceed
-- `r` → invoke `/resume` instead
-- `a` → exit
-**This is the only time you ask the user anything.**
+1. **Missing** → run `bash ~/.agents/skills/self-improving-workflow/scripts/init.sh "$(pwd)"`, then write `{}` to plan.json. Proceed to §1.
+
+2. **Empty seed** (file is `{}`, or has no `phases` array, or `phases` is empty) → no real plan exists yet, this is the freshly-seeded state. Proceed silently to §1 with no user prompt.
+
+3. **Real unfinished plan** (file has at least one phase AND `meta.status != "done"`) → ask the user once: `"Existing unfinished plan found. (o)verwrite / (r)esume / (a)bort?"`
+   - `o` → archive current plan to `.claude/state/archive/plan-$(date +%s).json`, reset plan.json to `{}`, proceed to §1
+   - `r` → invoke `/resume` instead
+   - `a` → exit
+
+**This (case 3) is the only time you ask the user anything during the entire `/run` lifecycle.**
 
 ## 1. Write plan
 
