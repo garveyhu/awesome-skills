@@ -1,0 +1,5 @@
+[
+  {"id":"ep-1","ts":"2026-04-01T10:00:00Z","scope":"P1-S1-T1","source":"implementation-reviewer","category":"boundary","what":"null input not validated","why":"missing guard","fix":"add not-null check","fingerprint":"boundary:null-input:user-service","confidence":0.8},
+  {"id":"ep-2","ts":"2026-04-02T10:00:00Z","scope":"P1-S2-T3","source":"implementation-reviewer","category":"boundary","what":"empty string accepted","why":"missing guard","fix":"add length check","fingerprint":"boundary:null-input:auth-service","confidence":0.75},
+  {"id":"ep-3","ts":"2026-04-03T10:00:00Z","scope":"P2-S1-T2","source":"implementation-reviewer","category":"boundary","what":"undefined header","why":"missing guard","fix":"add header check","fingerprint":"boundary:null-input:api-gateway","confidence":0.7}
+]
