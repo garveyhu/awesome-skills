@@ -59,7 +59,7 @@ Transitions:
 
 ## Canonical JSON Schema
 
-The full JSON Schema document is at `templates/state/plan.schema.json`. This is the source of truth for field names, types, and required/optional status. `plan_lint.sh` validates `plan.json` against this schema before each execution step.
+The full JSON Schema document is at `seeds/plan.schema.json` in the skill, and is copied by `init.sh` into each project at `.claude/state/plan.schema.json`. This is the source of truth for field names, types, and required/optional status. `plan_lint.sh` validates `plan.json` against this schema before each execution step.
 
 ---
 

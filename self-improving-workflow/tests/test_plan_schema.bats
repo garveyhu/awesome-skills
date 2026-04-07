@@ -1,7 +1,7 @@
 #!/usr/bin/env bats
 
 SKILL_DIR="$(cd "$(dirname "$BATS_TEST_FILENAME")/.." && pwd)"
-SCHEMA="$SKILL_DIR/templates/state/plan.schema.json"
+SCHEMA="$SKILL_DIR/seeds/plan.schema.json"
 
 @test "plan.schema.json exists" {
   [ -f "$SCHEMA" ]

@@ -40,7 +40,9 @@ Single `/run <topic>` command drives a hierarchical plan (`phase → slice → t
 
 Decision log at `.claude/state/decisions.jsonl` records every non-trivial choice for post-hoc audit.
 
-## Commands installed in `.claude/commands/`
+## Commands
+
+Slash commands live at the skill itself (`commands/*.md`) — no copy step. They are available the moment the skill loads.
 
 | Command | Purpose |
 |---|---|
@@ -50,9 +52,13 @@ Decision log at `.claude/state/decisions.jsonl` records every non-trivial choice
 | `/learn` | Manual crystallization |
 | `/resume` | Continue an unfinished plan |
 
+## Reviewer subagents
+
+The four reviewers also live at the skill (`agents/*.md`), shared across every project. Customize project-specific rubric items via `.claude/rules/dev-lessons.md` instead of forking the prompts.
+
 ## Bootstrap
 
-First time `/run` is invoked, `scripts/init.sh` writes the `.claude/` skeleton (idempotent, write-once). Existing files are never overwritten — `CLAUDE.md` triggers a `.skill-template` companion.
+First time `/run` is invoked, `scripts/init.sh` seeds **per-project state** into `.claude/` (state, memory, rules, CLAUDE.md). Idempotent, write-once. Existing files are never overwritten — `CLAUDE.md` triggers a `.skill-template` companion.
 
 ## See also
 

@@ -58,69 +58,67 @@
 
 ---
 
-## 文件布局 — 项目侧（`.claude/`）
-
-`init.sh` 在项目中运行后生成：
-
-```
-.claude/
-├── CLAUDE.md
-├── commands/
-│   ├── run.md
-│   ├── plan.md
-│   ├── review.md
-│   ├── learn.md
-│   └── resume.md
-├── agents/
-│   ├── planner-critic.md
-│   ├── implementation-reviewer.md
-│   ├── requirement-auditor.md
-│   └── integration-checker.md
-├── rules/
-│   ├── autonomy-stops.md
-│   └── dev-lessons.md
-├── state/
-│   ├── plan.json
-│   ├── plan.schema.json
-│   ├── decisions.jsonl
-│   └── archive/
-└── memory/
-    ├── README.md
-    ├── episodic/               (已 gitignore)
-    ├── semantic-patterns.json  (git 追踪)
-    └── working/                (已 gitignore)
-```
-
-`.gitignore` 会被幂等追加，排除 `episodic/` 和 `working/`。
-
----
-
 ## Skill 仓库布局
+
+slash 命令和评审 subagent 直接放在 skill 根目录 — 用户装好 skill 立即可用，没有拷贝步骤。
 
 ```
 self-improving-workflow/
 ├── SKILL.md
 ├── README.md / README.zh-CN.md
+├── commands/                         ← skill 级 slash 命令
+│   ├── run.md
+│   ├── plan.md
+│   ├── review.md
+│   ├── learn.md
+│   └── resume.md
+├── agents/                           ← skill 级评审 subagent
+│   ├── planner-critic.md
+│   ├── implementation-reviewer.md
+│   ├── requirement-auditor.md
+│   └── integration-checker.md
 ├── scripts/
-│   ├── init.sh            ← 初始化，无分档/技术栈/合规参数
-│   ├── guard.sh           ← 不可逆操作正则检测
-│   ├── crystallize.sh     ← episodic→semantic→rules 晶化
-│   └── plan_lint.sh       ← plan.json schema 校验
-├── templates/             ← 单一目录，无分档子目录
-│   ├── CLAUDE.md.template
-│   ├── commands/{run,plan,review,learn,resume}.md.template
-│   ├── agents/{planner-critic,implementation-reviewer,
-│   │          requirement-auditor,integration-checker}.md.template
-│   ├── rules/{autonomy-stops,dev-lessons}.md.template
-│   ├── state/{plan.schema.json,.gitkeep}
-│   └── memory/{README.md.template,episodic/.gitkeep}
-└── references/
-    ├── methodology.md
-    ├── plan-schema.md
-    ├── reviewer-contracts.md
-    ├── learning-loop.md
-    └── migration-from-tiered.md
+│   ├── init.sh                       ← 把每个项目的状态种子写进 .claude/
+│   ├── guard.sh                      ← 不可逆操作正则检测
+│   ├── crystallize.sh                ← episodic→semantic→rules 晶化
+│   └── plan_lint.sh                  ← plan.json schema 校验
+├── seeds/                            ← init.sh 拷到项目里的种子文件
+│   ├── CLAUDE.md
+│   ├── plan.schema.json
+│   ├── rules/{autonomy-stops,dev-lessons}.md
+│   └── memory/README.md
+├── references/
+│   ├── methodology.md
+│   ├── plan-schema.md
+│   ├── reviewer-contracts.md
+│   ├── learning-loop.md
+│   └── migration-from-tiered.md
+└── tests/                            ← bats 测试套件 + fixtures
 ```
+
+## 文件布局 — 项目侧（`.claude/`）
+
+`init.sh` 只会种"项目级状态" — slash 命令和评审 agent 不会拷到项目里：
+
+```
+.claude/
+├── CLAUDE.md                          ← 来自 seeds/
+├── rules/
+│   ├── autonomy-stops.md              ← 来自 seeds/，可追加
+│   └── dev-lessons.md                 ← 来自 seeds/，由 /learn 自动填充
+├── state/
+│   ├── plan.schema.json               ← 来自 seeds/
+│   ├── plan.json                      ← 初始为 `{}`
+│   ├── decisions.jsonl                ← 初始为空
+│   └── archive/                       ← 历史 plan
+└── memory/
+    ├── README.md                      ← 来自 seeds/
+    ├── episodic/                      (已 gitignore)
+    ├── semantic-patterns.json         (git 追踪)
+    └── working/                       (已 gitignore)
+```
+
+`.gitignore` 会被幂等追加，排除 `episodic/` 和 `working/`。
 
 ---
 

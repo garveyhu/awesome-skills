@@ -13,25 +13,22 @@ teardown() {
   rm -rf "$TMP"
 }
 
-@test "creates expected layout" {
+@test "creates per-project layout (no commands/agents — those live at skill)" {
   bash "$INIT" "$TMP"
   [ -f .claude/CLAUDE.md ]
-  [ -f .claude/commands/run.md ]
-  [ -f .claude/commands/plan.md ]
-  [ -f .claude/commands/review.md ]
-  [ -f .claude/commands/learn.md ]
-  [ -f .claude/commands/resume.md ]
-  [ -f .claude/agents/planner-critic.md ]
-  [ -f .claude/agents/implementation-reviewer.md ]
-  [ -f .claude/agents/requirement-auditor.md ]
-  [ -f .claude/agents/integration-checker.md ]
   [ -f .claude/rules/autonomy-stops.md ]
   [ -f .claude/rules/dev-lessons.md ]
   [ -f .claude/state/plan.schema.json ]
   [ -f .claude/state/plan.json ]
   [ -f .claude/state/decisions.jsonl ]
+  [ -d .claude/state/archive ]
   [ -d .claude/memory/episodic ]
+  [ -d .claude/memory/working ]
   [ -f .claude/memory/semantic-patterns.json ]
+  [ -f .claude/memory/README.md ]
+  # Per-project layout deliberately does NOT include commands/ or agents/
+  [ ! -d .claude/commands ]
+  [ ! -d .claude/agents ]
 }
 
 @test "is idempotent — second run touches nothing" {

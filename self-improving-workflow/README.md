@@ -58,69 +58,67 @@ The first time `/run` is called, `init.sh` bootstraps the `.claude/` skeleton au
 
 ---
 
-## File Layout — Project Side (`.claude/`)
-
-After `init.sh` runs in your project:
-
-```
-.claude/
-├── CLAUDE.md
-├── commands/
-│   ├── run.md
-│   ├── plan.md
-│   ├── review.md
-│   ├── learn.md
-│   └── resume.md
-├── agents/
-│   ├── planner-critic.md
-│   ├── implementation-reviewer.md
-│   ├── requirement-auditor.md
-│   └── integration-checker.md
-├── rules/
-│   ├── autonomy-stops.md
-│   └── dev-lessons.md
-├── state/
-│   ├── plan.json
-│   ├── plan.schema.json
-│   ├── decisions.jsonl
-│   └── archive/
-└── memory/
-    ├── README.md
-    ├── episodic/          (gitignored)
-    ├── semantic-patterns.json  (git-tracked)
-    └── working/           (gitignored)
-```
-
-`.gitignore` is patched idempotently to exclude `episodic/` and `working/`.
-
----
-
 ## Skill Repo Layout
+
+The skill has user-facing artifacts at the root — slash commands and reviewer subagents are discovered the moment the skill loads. There is no copy step for them.
 
 ```
 self-improving-workflow/
 ├── SKILL.md
 ├── README.md / README.zh-CN.md
+├── commands/                         ← skill-global slash commands
+│   ├── run.md
+│   ├── plan.md
+│   ├── review.md
+│   ├── learn.md
+│   └── resume.md
+├── agents/                           ← skill-global reviewer subagents
+│   ├── planner-critic.md
+│   ├── implementation-reviewer.md
+│   ├── requirement-auditor.md
+│   └── integration-checker.md
 ├── scripts/
-│   ├── init.sh            ← bootstrap, no tier/stack/compliance args
-│   ├── guard.sh           ← irreversible-op regex check
-│   ├── crystallize.sh     ← episodic→semantic→rules promotion
-│   └── plan_lint.sh       ← plan.json schema validation
-├── templates/             ← single directory, no tier subdirs
-│   ├── CLAUDE.md.template
-│   ├── commands/{run,plan,review,learn,resume}.md.template
-│   ├── agents/{planner-critic,implementation-reviewer,
-│   │          requirement-auditor,integration-checker}.md.template
-│   ├── rules/{autonomy-stops,dev-lessons}.md.template
-│   ├── state/{plan.schema.json,.gitkeep}
-│   └── memory/{README.md.template,episodic/.gitkeep}
-└── references/
-    ├── methodology.md
-    ├── plan-schema.md
-    ├── reviewer-contracts.md
-    ├── learning-loop.md
-    └── migration-from-tiered.md
+│   ├── init.sh                       ← seeds per-project state into .claude/
+│   ├── guard.sh                      ← irreversible-op regex check
+│   ├── crystallize.sh                ← episodic→semantic→rules promotion
+│   └── plan_lint.sh                  ← plan.json schema validation
+├── seeds/                            ← per-project files copied by init.sh
+│   ├── CLAUDE.md
+│   ├── plan.schema.json
+│   ├── rules/{autonomy-stops,dev-lessons}.md
+│   └── memory/README.md
+├── references/
+│   ├── methodology.md
+│   ├── plan-schema.md
+│   ├── reviewer-contracts.md
+│   ├── learning-loop.md
+│   └── migration-from-tiered.md
+└── tests/                            ← bats suite + fixtures
 ```
+
+## File Layout — Project Side (`.claude/`)
+
+After `init.sh` runs in your project, only **per-project state** is seeded — slash commands and reviewer agents stay at the skill, not duplicated:
+
+```
+.claude/
+├── CLAUDE.md                          ← from seeds/
+├── rules/
+│   ├── autonomy-stops.md              ← from seeds/, you may append
+│   └── dev-lessons.md                 ← from seeds/, auto-populated by /learn
+├── state/
+│   ├── plan.schema.json               ← from seeds/
+│   ├── plan.json                      ← `{}` initially
+│   ├── decisions.jsonl                ← empty initially
+│   └── archive/                       ← old plans
+└── memory/
+    ├── README.md                      ← from seeds/
+    ├── episodic/                      (gitignored)
+    ├── semantic-patterns.json         (git-tracked)
+    └── working/                       (gitignored)
+```
+
+`.gitignore` is patched idempotently to exclude `episodic/` and `working/`.
 
 ---
 

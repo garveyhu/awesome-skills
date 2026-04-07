@@ -72,11 +72,11 @@ When multiple reviewers trigger at the same level (e.g., final plan review runs 
 
 ## Reviewer Agent Prompts
 
-Each reviewer's behavior is defined in its agent prompt file, installed at:
+Each reviewer's behavior is defined in its agent prompt file, living at the skill itself:
 
-- `.claude/agents/planner-critic.md`
-- `.claude/agents/implementation-reviewer.md`
-- `.claude/agents/requirement-auditor.md`
-- `.claude/agents/integration-checker.md`
+- `agents/planner-critic.md`
+- `agents/implementation-reviewer.md`
+- `agents/requirement-auditor.md`
+- `agents/integration-checker.md`
 
-These files are written by `scripts/init.sh` from `templates/agents/*.md.template`. Existing files are never overwritten (write-once principle). Project teams may extend these prompts with project-specific review criteria.
+These files are skill-global, not per-project. Every project that uses the skill shares the same reviewer roster — there is no copy step. To customize per-project, append rubric items to `.claude/rules/dev-lessons.md` rather than forking the agent prompts.

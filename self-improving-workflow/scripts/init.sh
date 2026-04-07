@@ -1,7 +1,20 @@
 #!/usr/bin/env bash
-# init.sh — scaffold .claude/ for self-improving-workflow (no tier/stack/compliance)
+# init.sh — scaffold a project's .claude/ for self-improving-workflow.
 # Usage: init.sh [project_root]
-# Idempotent: existing files are skipped (write-once); CLAUDE.md exception writes a .skill-template companion.
+#
+# What this DOES seed in the project's .claude/ (per-project state):
+#   - state/ (plan.json, decisions.jsonl, plan.schema.json, archive/)
+#   - memory/ (episodic/, working/, semantic-patterns.json, README.md)
+#   - rules/ (autonomy-stops.md, dev-lessons.md) — copied from skill seeds
+#   - CLAUDE.md — copied from skill seeds (with .skill-template companion if one already exists)
+#   - .gitignore patch
+#
+# What this does NOT seed (lives at the skill itself, shared across projects):
+#   - commands/  (slash commands)
+#   - agents/    (reviewer subagents)
+#   - scripts/   (init/guard/plan_lint/crystallize)
+#
+# Idempotent. Existing files are skipped (write-once).
 set -euo pipefail
 
 ROOT="${1:-$(pwd)}"
@@ -11,7 +24,7 @@ if [[ ! -d "$ROOT" ]]; then
 fi
 
 SKILL_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-TPL="$SKILL_DIR/templates"
+SEEDS="$SKILL_DIR/seeds"
 
 cd "$ROOT"
 
@@ -37,24 +50,14 @@ copy_once() {
 }
 
 # CLAUDE.md
-copy_once "$TPL/CLAUDE.md.template" ".claude/CLAUDE.md"
-
-# commands
-for c in run plan review learn resume; do
-  copy_once "$TPL/commands/${c}.md.template" ".claude/commands/${c}.md"
-done
-
-# agents
-for a in planner-critic implementation-reviewer requirement-auditor integration-checker; do
-  copy_once "$TPL/agents/${a}.md.template" ".claude/agents/${a}.md"
-done
+copy_once "$SEEDS/CLAUDE.md" ".claude/CLAUDE.md"
 
 # rules
-copy_once "$TPL/rules/autonomy-stops.md.template" ".claude/rules/autonomy-stops.md"
-copy_once "$TPL/rules/dev-lessons.md.template" ".claude/rules/dev-lessons.md"
+copy_once "$SEEDS/rules/autonomy-stops.md" ".claude/rules/autonomy-stops.md"
+copy_once "$SEEDS/rules/dev-lessons.md" ".claude/rules/dev-lessons.md"
 
 # state
-copy_once "$TPL/state/plan.schema.json" ".claude/state/plan.schema.json"
+copy_once "$SEEDS/plan.schema.json" ".claude/state/plan.schema.json"
 if [[ ! -f .claude/state/plan.json ]]; then
   echo '{}' > .claude/state/plan.json
   CREATED=$((CREATED+1))
@@ -68,7 +71,7 @@ fi
 mkdir -p .claude/state/archive
 
 # memory
-copy_once "$TPL/memory/README.md.template" ".claude/memory/README.md"
+copy_once "$SEEDS/memory/README.md" ".claude/memory/README.md"
 mkdir -p .claude/memory/episodic .claude/memory/working
 if [[ ! -f .claude/memory/semantic-patterns.json ]]; then
   echo '{"patterns":[]}' > .claude/memory/semantic-patterns.json
