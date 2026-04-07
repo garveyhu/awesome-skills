@@ -70,20 +70,20 @@ Each skill works standalone. Together, they cover the full lifecycle — from re
 
 ### [`self-improving-workflow`](self-improving-workflow/)
 
-**Project-level workflow scaffold + continuous-improvement loop. Works for any project, new or existing.**
+**Universal methodology skill. Two pillars: multi-agent collaborative learning + long-running uninterrupted execution.**
 
-The meta skill that bootstraps any project with `.claude/` config. Three tiers (minimal/standard/full) for solo scripts up to government-grade systems. Captures lessons via `/self-improve` and (with your confirmation) promotes them into team-shared rules.
+Tech-stack agnostic, project agnostic, no tier system. Drives any project's `.claude/` workflow through a single `/run` entrypoint that plans, executes, reviews, and learns autonomously until done.
 
-- **Init** — `/init-workflow` asks 4 questions, scaffolds the right tier in 30 seconds
-- **Phase protocols** — `/phase-start` and `/phase-review` give discipline without ceremony
-- **Self-improving** — `/self-improve` captures session lessons, optionally delegates to `charon-fan/agent-playbook@self-improving-agent` for richer memory
-- **Non-destructive** — Existing files never overwritten. CLAUDE.md gets a `.skill-template` companion
-- **Compliance presets** — `govt` / `fintech` / `healthcare` / `privacy` ready-to-use rule packs in `full` tier
+- **Pillar 1 — Multi-agent learning** — Four reviewer sub-agents (`planner-critic`, `implementation-reviewer`, `requirement-auditor`, `integration-checker`) hooked at plan/task/slice/phase boundaries. Findings auto-crystallize into `dev-lessons.md` at threshold (≥3 occurrences, ≥0.7 confidence)
+- **Pillar 2 — Long-running execution** — `/run <topic>` drives a hierarchical plan (phase→slice→task, hard limits 4×5×7) to completion. Halts only on physically irreversible operations or 3 consecutive review fails
+- **Decision log** — `.claude/state/decisions.jsonl` records every non-trivial choice for post-hoc audit
+- **Non-destructive bootstrap** — `init.sh` is idempotent; existing files never overwritten
 
 ```
-"Bootstrap workflow for this new project"   → /init-workflow
-"Capture lessons from this session"          → /self-improve
-"Run phase review for Phase 3"               → /phase-review
+"/run add Google login to this project"     → full closed loop
+"/plan refactor the auth module"             → plan only
+"/learn"                                      → manual crystallization
+"/resume"                                     → continue an unfinished plan
 ```
 
 ---

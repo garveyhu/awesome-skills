@@ -70,20 +70,20 @@ graph TB
 
 ### [`self-improving-workflow`](self-improving-workflow/)
 
-**项目级工作流脚手架 + 持续改进闭环。适用于任意新老项目。**
+**通用方法论 skill。两根支柱：多智能体协同学习 + 长任务不间断执行。**
 
-这是一个 meta skill，给任意项目装上 `.claude/` 工作流配置。三档（minimal/standard/full）从单人脚本到政府级系统。通过 `/self-improve` 抓取教训并经你确认后沉淀为团队共享规则。
+技术栈无关，项目无关，无分档。通过单一 `/run` 入口，自主驱动任意项目的 `.claude/` 工作流——计划、执行、评审、学习直到完成。
 
-- **初始化** — `/init-workflow` 问 4 个问题，30 秒装上对应档位的脚手架
-- **阶段协议** — `/phase-start` 和 `/phase-review` 给纪律但不重流程
-- **自我改进** — `/self-improve` 抓本次会话教训，可选委托给 `charon-fan/agent-playbook@self-improving-agent` 获得三层记忆能力
-- **非破坏性** — 永远不覆盖已有文件。已存在的 CLAUDE.md 会得到一个 `.skill-template` 旁置参考
-- **合规预设** — `full` 档提供 `govt` / `fintech` / `healthcare` / `privacy` 即用规则包
+- **支柱 1 · 多智能体协同学习** — 4 个评审子代理（`planner-critic`、`implementation-reviewer`、`requirement-auditor`、`integration-checker`）分别 hook 在 plan/task/slice/phase 边界。评审产出经阈值（≥3 次出现 + ≥0.7 置信度）自动晶体化进 `dev-lessons.md`
+- **支柱 2 · 长任务不间断执行** — `/run <主题>` 驱动三层 plan（phase→slice→task，硬上限 4×5×7）跑到完成。仅在物理不可逆操作或同一目标连续 3 次评审失败时停下
+- **决策日志** — `.claude/state/decisions.jsonl` 记录所有非平凡决策，事后可审计
+- **非破坏性 bootstrap** — `init.sh` 幂等；已有文件不动
 
 ```
-"给这个新项目搭一套工作流"      → /init-workflow
-"沉淀本次会话的教训"            → /self-improve
-"跑 Phase 3 的阶段评审"        → /phase-review
+"/run 给这个项目接入 Google 登录"  → 全闭环
+"/plan 重构 auth 模块"              → 仅写 plan
+"/learn"                             → 手动晶体化
+"/resume"                            → 续跑未完成的 plan
 ```
 
 ---
