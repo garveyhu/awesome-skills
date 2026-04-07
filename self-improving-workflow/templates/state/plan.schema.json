@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "self-improving-workflow plan",
+  "type": "object",
+  "required": ["meta", "phases"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["topic", "created_at", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "topic": {"type": "string", "minLength": 1},
+        "created_at": {"type": "string", "format": "date-time"},
+        "status": {"enum": ["pending", "in_progress", "done", "blocked"]},
+        "current_phase_id": {"type": ["string", "null"]}
+      }
+    },
+    "phases": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": {"$ref": "#/definitions/phase"}
+    }
+  },
+  "definitions": {
+    "phase": {
+      "type": "object",
+      "required": ["id", "title", "goal", "status", "slices"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^P[0-9]+$"},
+        "title": {"type": "string", "minLength": 1},
+        "goal": {"type": "string", "minLength": 1},
+        "status": {"enum": ["pending", "in_progress", "done", "blocked"]},
+        "slices": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 5,
+          "items": {"$ref": "#/definitions/slice"}
+        }
+      }
+    },
+    "slice": {
+      "type": "object",
+      "required": ["id", "title", "user_value", "acceptance", "status", "tasks"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^P[0-9]+-S[0-9]+$"},
+        "title": {"type": "string", "minLength": 1},
+        "user_value": {"type": "string", "minLength": 1},
+        "acceptance": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "status": {"enum": ["pending", "in_progress", "done", "blocked"]},
+        "tasks": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 7,
+          "items": {"$ref": "#/definitions/task"}
+        }
+      }
+    },
+    "task": {
+      "type": "object",
+      "required": ["id", "action", "target", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "pattern": "^P[0-9]+-S[0-9]+-T[0-9]+$"},
+        "action": {
+          "type": "string",
+          "pattern": "^(Implement|Modify|Add|Remove|Verify|Refactor|Write|Update|Delete|Validate|Generate|Configure|Install|Run|Migrate|Document|实现|修改|添加|删除|验证|重构|编写|更新|配置|安装|运行|迁移)\\b.+"
+        },
+        "target": {"type": "string", "minLength": 1},
+        "status": {"enum": ["pending", "in_progress", "done", "blocked"]},
+        "evidence": {"type": ["string", "null"]}
+      }
+    }
+  }
+}
