@@ -32,7 +32,12 @@ Every non-trivial decision is logged to `.claude/state/decisions.jsonl` for post
 From your project root, after the skill is installed in `~/.agents/skills/`:
 
 ```
-# Start a fully autonomous plan-and-execute loop
+# Step 1 (one time per project) — invoke the skill by name to bootstrap.
+# This mirrors commands/ and agents/ into .claude/ so Claude Code can
+# discover them, and seeds state/ and memory/.
+/self-improving-workflow
+
+# Step 2 — start a fully autonomous plan + execute + review loop
 /run implement the user search feature
 
 # Plan only — review without executing
@@ -42,7 +47,7 @@ From your project root, after the skill is installed in `~/.agents/skills/`:
 /resume
 ```
 
-The first time `/run` is called, `init.sh` bootstraps the `.claude/` skeleton automatically (idempotent; existing files are never overwritten).
+After step 1, the project has its own `.claude/{commands,agents,state,memory,rules}/`. Step 1 is idempotent — re-invoking the skill picks up new commands/agents from upgraded skill versions but never overwrites local edits.
 
 ---
 

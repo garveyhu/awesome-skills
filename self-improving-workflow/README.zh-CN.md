@@ -32,7 +32,12 @@
 在项目根目录，确保 skill 已安装到 `~/.agents/skills/` 后：
 
 ```
-# 启动完全自主的规划→执行循环
+# 第 1 步（每个项目一次）—— 用 skill 名字调用，触发 bootstrap。
+# 这一步会把 commands/ 和 agents/ 镜像到 .claude/ 下，
+# 让 Claude Code 能发现它们，并种好 state/ 和 memory/。
+/self-improving-workflow
+
+# 第 2 步 —— 启动完全自主的规划→执行→评审循环
 /run 实现用户搜索功能
 
 # 仅规划，不执行；含 Planner-Critic 评审
@@ -42,7 +47,7 @@
 /resume
 ```
 
-首次调用 `/run` 时，`init.sh` 会自动初始化 `.claude/` 骨架（幂等操作；已存在的文件永不覆盖）。
+第 1 步完成后，项目里就有自己的 `.claude/{commands,agents,state,memory,rules}/`。这一步是幂等的 —— skill 升级后再次调用会拉新加的 commands/agents，但永远不会覆盖你本地的修改。
 
 ---
 

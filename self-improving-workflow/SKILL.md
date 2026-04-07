@@ -16,7 +16,25 @@ allowed-tools: Read, Write, Edit, Bash, Grep, Glob, Task
 
 # Self-Improving Workflow
 
-A universal methodology skill. No tech stack templates. No tier system. Two pillars:
+A universal methodology skill. No tech stack templates. No tier system. Two pillars.
+
+## ⚡ First action when this skill is invoked — bootstrap
+
+Whenever this skill is loaded (the user invoked it by name, or a trigger word matched), **immediately do the following before anything else**:
+
+1. Run the bootstrap:
+   ```bash
+   bash ~/.agents/skills/self-improving-workflow/scripts/init.sh "$(pwd)"
+   ```
+2. Check the output:
+   - If it created files (commands/, agents/, state/, memory/, rules/) → tell the user: *"Workflow scaffold installed in `.claude/`. You can now use `/run <topic>` to start an autonomous task, or `/plan <topic>` to plan only. See `.claude/CLAUDE.md` for the full operating contract."* Then **stop and wait** for the user's next instruction.
+   - If everything was skipped (already initialized) → tell the user: *"Workflow already initialized. Use `/run <topic>` to start, `/resume` to continue an unfinished plan, or `/review` for a read-only diagnostic."* Then **stop and wait**.
+
+This is the only purpose of invoking the skill by name. The skill is **not** an entrypoint that itself plans or executes — it lays down the slash commands and reviewer subagents into `.claude/`, after which the user drives everything via `/run`, `/plan`, `/resume`, etc.
+
+Init is idempotent and write-once per file: it never overwrites your `CLAUDE.md`, your rules, or any local edits to commands/agents.
+
+## The two pillars
 
 ## Pillar 1 — Multi-Agent Collaborative Learning
 
@@ -56,17 +74,17 @@ Slash commands are mirrored from the skill into each project's `.claude/commands
 
 The four reviewers are mirrored from the skill into `.claude/agents/` on bootstrap (same reason — Claude Code only discovers subagents under `.claude/agents/` or `~/.claude/agents/`). Customize project-specific rubric items via `.claude/rules/dev-lessons.md` instead of forking the prompts.
 
-## Bootstrap
+## What bootstrap seeds
 
-First time `/run` is invoked, `scripts/init.sh` seeds the project's `.claude/`:
+`scripts/init.sh` seeds the project's `.claude/` (see the top of this file for when it runs):
 
-- `commands/` and `agents/` — mirrored from the skill (write-once per file)
+- `commands/` and `agents/` — mirrored from the skill (write-once per file, so Claude Code can discover them)
 - `state/` — `plan.json`, `decisions.jsonl`, `plan.schema.json`, `archive/`
 - `memory/` — `episodic/`, `working/`, `semantic-patterns.json`
 - `rules/autonomy-stops.md`, `rules/dev-lessons.md`
 - `CLAUDE.md` — only if the project doesn't already have one
 
-Only `scripts/` stays in the skill repo and is invoked by absolute path from the commands. Existing files are never overwritten; the script is fully idempotent.
+Only `scripts/` stays in the skill repo and is invoked by absolute path from the commands.
 
 ## See also
 
