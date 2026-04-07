@@ -77,14 +77,25 @@ Tech-stack agnostic, project agnostic, no tier system. Drives any project's `.cl
 - **Pillar 1 — Multi-agent learning** — Four reviewer sub-agents (`planner-critic`, `implementation-reviewer`, `requirement-auditor`, `integration-checker`) hooked at plan/task/slice/phase boundaries. Findings auto-crystallize into `dev-lessons.md` at threshold (≥3 occurrences, ≥0.7 confidence)
 - **Pillar 2 — Long-running execution** — `/run <topic>` drives a hierarchical plan (phase→slice→task, hard limits 4×5×7) to completion. Halts only on physically irreversible operations or 3 consecutive review fails
 - **Decision log** — `.claude/state/decisions.jsonl` records every non-trivial choice for post-hoc audit
-- **Non-destructive bootstrap** — `init.sh` is idempotent; existing files never overwritten
+- **Hard reviewer contracts** — Strict JSON output schema + verdict-vs-finding consistency invariants prevent reviewers from silently dropping coverage gaps or seam findings
+- **Non-destructive bootstrap** — `init.sh` is idempotent and write-once; existing CLAUDE.md, rules, and any local edits to commands/agents are never overwritten
+
+**Two-step usage** (one-time per project, then everyday):
 
 ```
-"/run add Google login to this project"     → full closed loop
-"/plan refactor the auth module"             → plan only
-"/learn"                                      → manual crystallization
-"/resume"                                     → continue an unfinished plan
+# Step 1 (one time per project) — invoke the skill by name to install
+# the slash commands and reviewer subagents into .claude/
+/self-improving-workflow
+
+# Step 2 — drive real work
+/run add Google login to this project     # full closed loop
+/plan refactor the auth module             # plan only
+/resume                                    # continue an unfinished plan
+/review                                    # diagnostic, read-only
+/learn                                     # manual crystallization
 ```
+
+Step 1 is the bootstrap: it mirrors `commands/` and `agents/` from the skill into the project's `.claude/` (Claude Code only discovers slash commands and subagents from there) and seeds `state/`, `memory/`, and the autonomy-stops rule. Step 2 is where the real value lives — `/run` plans, executes, reviews, and crystallizes lessons fully autonomously.
 
 ---
 

@@ -77,14 +77,25 @@ graph TB
 - **支柱 1 · 多智能体协同学习** — 4 个评审子代理（`planner-critic`、`implementation-reviewer`、`requirement-auditor`、`integration-checker`）分别 hook 在 plan/task/slice/phase 边界。评审产出经阈值（≥3 次出现 + ≥0.7 置信度）自动晶体化进 `dev-lessons.md`
 - **支柱 2 · 长任务不间断执行** — `/run <主题>` 驱动三层 plan（phase→slice→task，硬上限 4×5×7）跑到完成。仅在物理不可逆操作或同一目标连续 3 次评审失败时停下
 - **决策日志** — `.claude/state/decisions.jsonl` 记录所有非平凡决策，事后可审计
-- **非破坏性 bootstrap** — `init.sh` 幂等；已有文件不动
+- **硬性评审契约** — 严格的 JSON 输出 schema + verdict-vs-finding 一致性不变量，避免评审默默丢掉 coverage gap 或 seam
+- **非破坏性 bootstrap** — `init.sh` 幂等且按文件 write-once；已有的 CLAUDE.md、rules、以及任何对 commands/agents 的本地修改都不会被覆盖
+
+**两步上手**（每个项目一次性 + 日常使用）：
 
 ```
-"/run 给这个项目接入 Google 登录"  → 全闭环
-"/plan 重构 auth 模块"              → 仅写 plan
-"/learn"                             → 手动晶体化
-"/resume"                            → 续跑未完成的 plan
+# 第 1 步（每个项目一次）—— 用 skill 名字调用，触发 bootstrap，
+# 把 commands/ 和 agents/ 装进 .claude/
+/self-improving-workflow
+
+# 第 2 步 —— 真正驱动工作
+/run 给这个项目接入 Google 登录   # 全闭环
+/plan 重构 auth 模块               # 仅写 plan
+/resume                            # 续跑未完成的 plan
+/review                            # 只读诊断
+/learn                             # 手动晶体化
 ```
+
+第 1 步是 bootstrap：把 skill 里的 `commands/` 和 `agents/` 镜像到项目 `.claude/`（Claude Code 只能在这两个目录下发现 slash 命令和 subagent），并种下 `state/`、`memory/`、`rules/autonomy-stops.md`。第 2 步才是真正的价值所在 —— `/run` 全自主完成 plan、执行、评审、晶体化。
 
 ---
 
