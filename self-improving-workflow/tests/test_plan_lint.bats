@@ -65,3 +65,9 @@ F="$SKILL_DIR/tests/fixtures/plans"
   run bash "$LINT" "$F/valid_with_recovery_phase.json"
   [ "$status" -eq 0 ]
 }
+
+@test "lint rejects recovery phase with 0 slices" {
+  run bash "$LINT" "$F/invalid_recovery_zero_slices.json"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"slices count 0"* || "$output" == *"slices count"* ]]
+}

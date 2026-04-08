@@ -42,9 +42,13 @@ errors=$(jq -r --arg verb "$VERB_RE" '
     (.phases[] |
       (if (.id | test("^(P[0-9]+|P_recovery)$")) | not then "FAIL: phase id \(.id) bad pattern" else empty end),
       ((.kind // "main") as $k |
-        if $k == "recovery" then empty
-        elif (.slices | length) < 1 or (.slices | length) > 5
-           then "FAIL: phase \(.id) slices count \(.slices | length) not in [1,5]" else empty end),
+        if (.slices | length) < 1
+          then "FAIL: phase \(.id) slices count 0 (must be >= 1)"
+        elif $k == "recovery"
+          then empty
+        elif (.slices | length) > 5
+          then "FAIL: phase \(.id) slices count \(.slices | length) not in [1,5]"
+        else empty end),
       (.slices[] |
         (if (.id | test("^(P[0-9]+|P_recovery)-S[0-9]+$")) | not then "FAIL: slice id \(.id) bad pattern" else empty end),
         (if (.user_value // "") == "" then "FAIL: slice \(.id) user_value empty" else empty end),

@@ -1,0 +1,10 @@
+{
+  "meta": {"topic": "test zero slice recovery", "created_at": "2026-04-08T00:00:00Z", "status": "in_progress", "mode": "strict"},
+  "phases": [
+    { "id": "P1", "title": "main", "goal": "main", "status": "done", "kind": "main",
+      "slices": [{"id": "P1-S1", "title":"x","user_value":"x","acceptance":["x"],"status":"done",
+        "tasks":[{"id":"P1-S1-T1","action":"Implement x","target":"x","status":"done","evidence":"out"}]}]},
+    { "id": "P_recovery", "title": "r", "goal": "r", "status": "pending", "kind": "recovery",
+      "slices": []}
+  ]
+}
