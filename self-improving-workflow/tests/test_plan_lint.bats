@@ -33,3 +33,14 @@ F="$SKILL_DIR/tests/fixtures/plans"
   run bash "$LINT"
   [ "$status" -eq 2 ]
 }
+
+@test "lint passes valid strict-mode plan" {
+  run bash "$LINT" "$F/valid_strict_mode.json"
+  [ "$status" -eq 0 ]
+}
+
+@test "lint rejects bogus mode value" {
+  run bash "$LINT" "$F/invalid_bad_mode.json"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"meta.mode invalid"* ]]
+}

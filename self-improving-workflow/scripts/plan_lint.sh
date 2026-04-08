@@ -25,6 +25,8 @@ errors=$(jq -r --arg verb "$VERB_RE" '
     (if (.meta.topic // "") == "" then "FAIL: meta.topic missing/empty" else empty end),
     (if .meta.status as $s | (["pending","in_progress","done","blocked"] | index($s)) == null
        then "FAIL: meta.status invalid" else empty end),
+    ((.meta.mode // "normal") as $m | if (["normal","strict"] | index($m)) == null
+       then "FAIL: meta.mode invalid (\($m))" else empty end),
 
     # phases count
     (if (.phases | length) < 1 or (.phases | length) > 4
