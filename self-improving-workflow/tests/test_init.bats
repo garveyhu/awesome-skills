@@ -28,6 +28,7 @@ teardown() {
   [ -f .claude/memory/README.md ]
   # Claude Code requires commands/ and agents/ to live in .claude/ to discover them.
   [ -f .claude/commands/run.md ]
+  [ -f .claude/commands/run-strict.md ]
   [ -f .claude/commands/plan.md ]
   [ -f .claude/commands/review.md ]
   [ -f .claude/commands/learn.md ]
