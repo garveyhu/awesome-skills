@@ -1,0 +1,35 @@
+{
+  "meta": {
+    "topic": "test strict",
+    "created_at": "2026-04-08T00:00:00Z",
+    "status": "pending",
+    "current_phase_id": null,
+    "mode": "strict"
+  },
+  "phases": [
+    {
+      "id": "P1",
+      "title": "Phase one",
+      "goal": "Do the thing",
+      "status": "pending",
+      "slices": [
+        {
+          "id": "P1-S1",
+          "title": "Slice one",
+          "user_value": "User can foo",
+          "acceptance": ["foo returns bar"],
+          "status": "pending",
+          "tasks": [
+            {
+              "id": "P1-S1-T1",
+              "action": "Implement foo function",
+              "target": "src/foo.py",
+              "status": "pending",
+              "evidence": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
