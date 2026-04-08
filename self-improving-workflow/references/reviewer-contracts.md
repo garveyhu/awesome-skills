@@ -1,4 +1,4 @@
-# Reviewer Contracts — Four Specialists
+# Reviewer Contracts — Five Specialists
 
 ## Trigger Matrix
 
@@ -8,12 +8,13 @@
 | **Implementation-Reviewer** | After each task `done` | task evidence + `dev-lessons.md` | `verdict` + `issues` |
 | **Requirement-Auditor** | After all slice tasks `done` | `slice.user_value` + `acceptance[]` + task evidence | `verdict` + `coverage_gap` |
 | **Integration-Checker** | After all phase slices `done` | phase products + adjacent phase acceptance | `verdict` + `seams` |
+| **Topic-Auditor** *(strict mode only)* | After all phases `done`, before `plan.meta.status = done` | `plan.meta.topic` + all evidence + live read-only smoke commands | `verdict` + `missing_chains` |
 
 ---
 
 ## Unified Output JSON Shape
 
-All four reviewers emit the same JSON structure:
+All five reviewers emit the same JSON structure:
 
 ```json
 {
@@ -46,6 +47,7 @@ Field notes:
 - `issues[]` fields are exactly `what`, `why`, `fix_hint`, `category` — never renamed to `description`, `problem`, `file`, etc. File/line info goes inside `what`.
 - `lessons_candidate[].pattern`: three-segment fingerprint `category:sub-area:scope`. The first two segments are the crystallization key.
 - `lessons_candidate`: optional. When present, the learning loop writes an episodic record and runs threshold check.
+- `missing_chains[]` (topic-auditor only): each entry has `acceptance_ref`, `what_is_missing`, `suggested_slice`. Same hard rule as coverage_gap and seams: non-empty → verdict must be fail.
 
 ---
 
@@ -77,6 +79,16 @@ There is **no** third option of `pass` + non-empty specialist field. The `/run` 
 ### I4. Three consecutive failures → blocked
 
 Same reviewer failing on the same target three times in a row marks the target `blocked`, writes a `decisions.jsonl` entry (`kind=blocked`), and halts `/run` for user attention. A repair task injected in response to a failure resets the counter for the repaired target.
+
+**Strict-mode override**: under `/run-strict`, the strike rule is progress-aware. The counter only increments when consecutive failures from the same reviewer on the same target carry a normalized-equal `issues[]` text (whitespace-stripped, lowercased, runs of whitespace collapsed). If the issue text changes between rounds, the counter resets to 1. Hard halt only when the same issue repeats three runs in a row — i.e. the reviewer is stuck on the literal same complaint, not just slowly making progress. This applies to all 5 reviewers under strict mode, including `topic-auditor`.
+
+### I5. Topic-auditor `missing_chains` consistency (strict mode only)
+
+The 5th reviewer, `topic-auditor`, runs only under `/run-strict`. Its specialist field is `missing_chains[]` — entries describing acceptance items whose end-to-end delivery cannot be traced to observable proof.
+
+> If `missing_chains` is non-empty → `verdict` MUST be `"fail"` and `severity` MUST be `"P0"` or `"P1"`.
+
+A missing chain is by definition a broken delivery and cannot coexist with `verdict == "pass"`. The main loop converts each entry into a new slice in the (single) `P_recovery` phase, then re-enters the execute loop. The plan can only reach `meta.status = "done"` after `topic-auditor` returns `verdict: pass` with empty `missing_chains`.
 
 ---
 
@@ -111,5 +123,6 @@ Each reviewer's behavior is defined in its agent prompt file, mirrored from the 
 - `.claude/agents/implementation-reviewer.md`
 - `.claude/agents/requirement-auditor.md`
 - `.claude/agents/integration-checker.md`
+- `.claude/agents/topic-auditor.md` *(strict mode only)*
 
 The skill copy is the source of truth. Re-running `init.sh` after upgrading the skill picks up new reviewers, but write-once: any local edits in a project are never overwritten. To customize per-project, prefer appending rubric items to `.claude/rules/dev-lessons.md` over editing the agent prompts directly.
