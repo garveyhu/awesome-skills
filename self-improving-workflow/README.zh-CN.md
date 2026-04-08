@@ -40,6 +40,10 @@
 # 第 2 步 —— 启动完全自主的规划→执行→评审循环
 /run 实现用户搜索功能
 
+# 严格模式 —— 在 topic-auditor 端到端验证通过前拒绝标记 done
+# 比 /run 慢，但能证明任务真的完成
+/run-strict 上线密码重置功能，要求带邮件发送链路
+
 # 仅规划，不执行；含 Planner-Critic 评审
 /plan 重构认证模块
 
@@ -238,6 +242,18 @@ crystallize.sh 跑（每 phase 完成时 + 退出时）
 
 第二次跑同一个项目时：planner-critic 和 implementation-reviewer 会读 `dev-lessons.md`，已晶化的规则变成 plan 评审和代码评审的硬 checklist。第一次跑可能踩很多坑，跑十次之后规则库就稳定下来了。
 
+### 严格模式 (`/run-strict`)
+
+当任务无法接受半成品时（生产发布、面向用户的功能、安全相关），用 `/run-strict` 代替 `/run`。三层差异：
+
+- **计划入口闸**：`planner-critic` 强制执行 Universal Completion Chain —— 每个 acceptance 都必须有一条 task 链能追到 observable proof（测试输出、命令 stdout、文件内容、日志关键行）。链不闭合的浅 plan 在执行之前就被拒绝。
+- **单任务闸**：`implementation-reviewer` 要求 evidence 必须是运行时证据，纯 commit sha 一律拒绝。纯重构/重命名走 `static-only: <reason>` 显式豁免。
+- **整体收尾闸**：第 5 个 reviewer `topic-auditor` 在所有 phase 完成后跑一次，被授权执行只读 smoke 命令（`pytest`、`curl`、`cat` 等）。它只回答一个问题："如果一个全新用户只看到这个 topic 和这些产物，他会不会说'这事完成了'？" 不会 → 把缺的链路作为新 slice 注入到一个特殊的 `P_recovery` phase（豁免 4×5 硬上限），重新进 execute loop。`status: done` 必须由 `topic-auditor` 说 yes 之后才能写。
+
+严格模式还使用 **进度感知 strike rule**：3 次 fail 才挂的规则只在 reviewer 的 issue 文本完全相同时触发 —— 在慢慢进步的修复永远不会被打断。
+
+`/run-strict` 大约比 `/run` 慢 2-5×。要用就要明白自己在做什么。
+
 ---
 
 ## 命令
@@ -245,6 +261,7 @@ crystallize.sh 跑（每 phase 完成时 + 退出时）
 | 命令 | 用途 |
 |---|---|
 | `/run <topic>` | 主入口 — 完整的自主规划 + 执行 + 评审循环 |
+| `/run-strict <topic>` | 严格模式 — 5 个评审者循环，在 topic-auditor 验证端到端交付前拒绝标记完成 |
 | `/plan <topic>` | 仅规划，不执行；包含 Planner-Critic 评审 |
 | `/review [scope]` | 诊断性派发评审者，只读 |
 | `/learn` | 手动触发记忆晶化（episodic → rules） |
@@ -260,6 +277,7 @@ self-improving-workflow/
 ├── README.md / README.zh-CN.md
 ├── commands/                         ← bootstrap 时镜像到 .claude/commands/
 │   ├── run.md
+│   ├── run-strict.md
 │   ├── plan.md
 │   ├── review.md
 │   ├── learn.md
@@ -268,7 +286,8 @@ self-improving-workflow/
 │   ├── planner-critic.md
 │   ├── implementation-reviewer.md
 │   ├── requirement-auditor.md
-│   └── integration-checker.md
+│   ├── integration-checker.md
+│   └── topic-auditor.md
 ├── scripts/                          ← 留在 skill，用绝对路径调用
 │   ├── init.sh                       ← 在目标项目里种 .claude/
 │   ├── guard.sh                      ← 不可逆操作正则检测
@@ -297,6 +316,7 @@ self-improving-workflow/
 ├── CLAUDE.md                          ← 来自 seeds/，仅当项目还没有时才写入
 ├── commands/                          ← 从 skill 镜像（Claude Code 在这里发现 slash 命令）
 │   ├── run.md
+│   ├── run-strict.md
 │   ├── plan.md
 │   ├── review.md
 │   ├── learn.md
@@ -305,7 +325,8 @@ self-improving-workflow/
 │   ├── planner-critic.md
 │   ├── implementation-reviewer.md
 │   ├── requirement-auditor.md
-│   └── integration-checker.md
+│   ├── integration-checker.md
+│   └── topic-auditor.md
 ├── rules/
 │   ├── autonomy-stops.md              ← 来自 seeds/，可追加
 │   └── dev-lessons.md                 ← 来自 seeds/，由 /learn 自动填充
