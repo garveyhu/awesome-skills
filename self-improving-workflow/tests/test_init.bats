@@ -36,6 +36,7 @@ teardown() {
   [ -f .claude/agents/implementation-reviewer.md ]
   [ -f .claude/agents/requirement-auditor.md ]
   [ -f .claude/agents/integration-checker.md ]
+  [ -f .claude/agents/topic-auditor.md ]
 }
 
 @test "is idempotent — second run touches nothing" {
