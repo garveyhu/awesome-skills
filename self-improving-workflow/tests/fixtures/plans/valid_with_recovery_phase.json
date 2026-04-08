@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "topic": "test recovery",
+    "created_at": "2026-04-08T00:00:00Z",
+    "status": "in_progress",
+    "current_phase_id": "P_recovery",
+    "mode": "strict"
+  },
+  "phases": [
+    {
+      "id": "P1",
+      "title": "Main work",
+      "goal": "Build it",
+      "status": "done",
+      "kind": "main",
+      "slices": [
+        {
+          "id": "P1-S1",
+          "title": "Slice one",
+          "user_value": "User can foo",
+          "acceptance": ["foo returns bar"],
+          "status": "done",
+          "tasks": [
+            {
+              "id": "P1-S1-T1",
+              "action": "Implement foo",
+              "target": "src/foo.py",
+              "status": "done",
+              "evidence": "pytest tests/test_foo.py output: 1 passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P_recovery",
+      "title": "Topic-auditor recovery",
+      "goal": "Patch missing chains",
+      "status": "in_progress",
+      "kind": "recovery",
+      "slices": [
+        {
+          "id": "P_recovery-S1",
+          "title": "Add error rendering",
+          "user_value": "User sees validation errors",
+          "acceptance": ["error rendered for invalid input"],
+          "status": "pending",
+          "tasks": [
+            {
+              "id": "P_recovery-S1-T1",
+              "action": "Implement error rendering",
+              "target": "src/ui.py",
+              "status": "pending",
+              "evidence": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

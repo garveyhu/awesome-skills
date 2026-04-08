@@ -30,10 +30,11 @@
       "required": ["id", "title", "goal", "status", "slices"],
       "additionalProperties": false,
       "properties": {
-        "id": {"type": "string", "pattern": "^P[0-9]+$"},
+        "id": {"type": "string", "pattern": "^(P[0-9]+|P_recovery)$"},
         "title": {"type": "string", "minLength": 1},
         "goal": {"type": "string", "minLength": 1},
         "status": {"enum": ["pending", "in_progress", "done", "blocked"]},
+        "kind": {"enum": ["main", "recovery"]},
         "slices": {
           "type": "array",
           "minItems": 1,
@@ -47,7 +48,7 @@
       "required": ["id", "title", "user_value", "acceptance", "status", "tasks"],
       "additionalProperties": false,
       "properties": {
-        "id": {"type": "string", "pattern": "^P[0-9]+-S[0-9]+$"},
+        "id": {"type": "string", "pattern": "^(P[0-9]+|P_recovery)-S[0-9]+$"},
         "title": {"type": "string", "minLength": 1},
         "user_value": {"type": "string", "minLength": 1},
         "acceptance": {
@@ -69,7 +70,7 @@
       "required": ["id", "action", "target", "status"],
       "additionalProperties": false,
       "properties": {
-        "id": {"type": "string", "pattern": "^P[0-9]+-S[0-9]+-T[0-9]+$"},
+        "id": {"type": "string", "pattern": "^(P[0-9]+|P_recovery)-S[0-9]+-T[0-9]+$"},
         "action": {
           "type": "string",
           "pattern": "^(Implement|Modify|Add|Remove|Verify|Refactor|Write|Update|Delete|Validate|Generate|Configure|Install|Run|Migrate|Document|实现|修改|添加|删除|验证|重构|编写|更新|配置|安装|运行|迁移)\\b.+"

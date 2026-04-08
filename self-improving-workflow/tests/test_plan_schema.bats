@@ -30,3 +30,13 @@ SCHEMA="$SKILL_DIR/seeds/plan.schema.json"
   run jq -e '.properties.meta.properties.mode.enum == ["normal","strict"]' "$SKILL_DIR/seeds/plan.schema.json"
   [ "$status" -eq 0 ]
 }
+
+@test "schema definition declares phase.kind field" {
+  run jq -e '.definitions.phase.properties.kind' "$SKILL_DIR/seeds/plan.schema.json"
+  [ "$status" -eq 0 ]
+}
+
+@test "phase.kind enum is main and recovery" {
+  run jq -e '.definitions.phase.properties.kind.enum == ["main","recovery"]' "$SKILL_DIR/seeds/plan.schema.json"
+  [ "$status" -eq 0 ]
+}
