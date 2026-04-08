@@ -23,12 +23,12 @@ For everyday refactors, exploration, and lower-stakes changes, use `/run`.
 
 Three cases for `.claude/state/plan.json`:
 
-1. **Missing** → run `bash ~/.agents/skills/self-improving-workflow/scripts/init.sh "$(pwd)"`, then write `{"meta":{"mode":"strict"}}` (a sentinel — §1 will fill the rest). Proceed to §1.
+1. **Missing** → run `bash ~/.agents/skills/self-improving-workflow/scripts/init.sh "$(pwd)"`, then write `{"meta":{"mode":"strict"}}` (a sentinel — §1 will fill the rest). Also delete `.claude/state/strike-state.json` if it exists. Proceed to §1.
 
 2. **Empty seed** (file is `{}`, or has no `phases` array, or `phases` is empty) → no real plan exists yet. Set `meta.mode = "strict"` and proceed silently to §1.
 
 3. **Real unfinished plan** (file has at least one phase AND `meta.status != "done"`) → ask the user once: `"Existing unfinished plan found. (o)verwrite / (r)esume / (a)bort?"`
-   - `o` → archive current plan to `.claude/state/archive/plan-$(date +%s).json`, reset plan.json to `{"meta":{"mode":"strict"}}`, proceed to §1
+   - `o` → archive current plan to `.claude/state/archive/plan-$(date +%s).json`, reset plan.json to `{"meta":{"mode":"strict"}}`, also reset `.claude/state/strike-state.json` to `{}`, proceed to §1
    - `r` → invoke `/resume` instead (resume preserves whatever mode the archived plan had)
    - `a` → exit
 
@@ -54,7 +54,7 @@ Identical to `/run` §3, except:
 
 - Each `implementation-reviewer` dispatch sees `plan.meta.mode == "strict"` and applies the observable-proof rule.
 - The strike counter is progress-aware (see §5).
-- `guard.sh` is invoked on every shell command (unchanged), and additionally on every read-only command the eventual `topic-auditor` will run.
+- `guard.sh` is invoked on every shell command this executor runs (unchanged from `/run` §3). The `topic-auditor` reviewer dispatched in §4 honors its own guard.sh requirement per its agent prompt — the executor does not need to pre-guard those commands.
 
 ## 4. Slice / phase / plan completion
 
@@ -69,8 +69,10 @@ if all main phases done AND (no P_recovery exists OR P_recovery is fully done):
     for each missing_chain:
       append a new slice to P_recovery (id: P_recovery-S<n>)
       append the implied tasks under it
+    set plan.meta.current_phase_id = "P_recovery"; persist
     persist; continue main loop (re-execute the new slices)
   else:
+    dispatch planner-critic for final pass
     bash ~/.agents/skills/self-improving-workflow/scripts/crystallize.sh .claude
     set plan.meta.status = "done"; persist
     EXIT cleanly
@@ -98,7 +100,16 @@ on each reviewer fail for target T from reviewer R:
 
 `normalize(issues)` strips whitespace, lowercases, and collapses runs of whitespace. This catches "the reviewer is stuck on the literal same complaint" without halting on slow-but-progressing fixes.
 
-State for the strike counters lives in memory for the duration of `/run-strict`. It is NOT persisted to plan.json.
+State for the strike counters is persisted to `.claude/state/strike-state.json` after each update so that `/resume` can pick up where the previous run left off. Format:
+
+```json
+{
+  "<target>::<reviewer>": {"last_hash": "<sha1>", "strike": <int>},
+  ...
+}
+```
+
+The `strike-state.json` file is rewritten atomically (temp file + rename) on every counter change. On `/run-strict` start in case 1 (missing plan), or case 3-overwrite, the file is deleted. On case 2 (empty seed) or case 3-resume, it is loaded and the counters resume from their persisted values. This means a stuck loop cannot evade the strike rule by triggering a session restart.
 
 ## 6. Decision log discipline
 
