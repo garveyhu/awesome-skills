@@ -65,6 +65,7 @@ Slash commands are mirrored from the skill into each project's `.claude/commands
 | Command | Purpose |
 |---|---|
 | `/run <topic>` | The main entrypoint |
+| `/run-strict <topic>` | Strict mode — 5-reviewer loop, refuses to mark done until topic-auditor verifies end-to-end delivery |
 | `/plan <topic>` | Plan only, no execution |
 | `/review [scope]` | Diagnostic, read-only |
 | `/learn` | Manual crystallization |
@@ -73,6 +74,18 @@ Slash commands are mirrored from the skill into each project's `.claude/commands
 ## Reviewer subagents
 
 The four reviewers are mirrored from the skill into `.claude/agents/` on bootstrap (same reason — Claude Code only discovers subagents under `.claude/agents/` or `~/.claude/agents/`). Customize project-specific rubric items via `.claude/rules/dev-lessons.md` instead of forking the prompts.
+
+## Strict mode
+
+`/run-strict` is the opt-in stricter sibling of `/run`. Use it when partial completion is unacceptable. Three differences from `/run`:
+
+1. **Universal Completion Chain enforcement** — `planner-critic` rejects plans where any acceptance item lacks a task chain reaching observable proof (test output, command stdout, file content, log line, etc. — never just "commit sha").
+2. **Observable-proof evidence per task** — `implementation-reviewer` rejects task evidence that's just a commit sha. Static-only changes can use `static-only: <reason>` as an explicit exemption.
+3. **5th reviewer `topic-auditor`** — runs once after all phases done, before the loop is allowed to write `plan.meta.status = "done"`. May execute read-only smoke commands (`pytest`, `curl`, `cat`, etc.) to verify end-to-end delivery against `plan.meta.topic`. If anything is missing, injects new slices into a single `P_recovery` phase that's exempt from the 4×5 hard limits.
+
+Strict mode also uses a **progress-aware strike rule**: same-target failures only count toward the 3-strike halt when the reviewer's complaint is unchanged round-to-round. Slow-but-progressing repair never gets killed.
+
+Tradeoff: `/run-strict` runs 2-5× longer than `/run`. Use it when you mean it.
 
 ## What bootstrap seeds
 
