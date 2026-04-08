@@ -61,11 +61,11 @@ Each reviewer's entire final response is a single JSON object matching the shape
 
 ### I2. Verdict vs severity consistency
 
-`verdict == "fail"` iff at least one `issues[]` entry has `severity` of `P0` or `P1`, **or** the reviewer's specialist field (`coverage_gap` / `seams`) is non-empty. A P2-only issue list with no specialist findings → `verdict == "pass"`.
+`verdict == "fail"` iff at least one `issues[]` entry has `severity` of `P0` or `P1`, **or** the reviewer's specialist field (`coverage_gap` / `seams` / `missing_chains`) is non-empty. A P2-only issue list with no specialist findings → `verdict == "pass"`.
 
 ### I3. Specialist-field vs verdict consistency (coverage_gap / seams)
 
-A **coverage gap** (requirement-auditor) is a missing acceptance requirement. A **seam** (integration-checker) is a missing cross-slice bridge. Both are, by definition, blocking. Therefore:
+A **coverage gap** (requirement-auditor) is a missing acceptance requirement. A **seam** (integration-checker) is a missing cross-slice bridge. Both are, by definition, blocking. The `missing_chains` field (topic-auditor) follows the same template — non-empty means blocking fail — see I5 for the topic-auditor specialization. Therefore:
 
 > If `coverage_gap` is non-empty → `verdict` MUST be `"fail"` and `severity` MUST be `"P0"` or `"P1"`.
 > If `seams` is non-empty → `verdict` MUST be `"fail"` and `severity` MUST be `"P0"` or `"P1"`.
@@ -80,7 +80,9 @@ There is **no** third option of `pass` + non-empty specialist field. The `/run` 
 
 Same reviewer failing on the same target three times in a row marks the target `blocked`, writes a `decisions.jsonl` entry (`kind=blocked`), and halts `/run` for user attention. A repair task injected in response to a failure resets the counter for the repaired target.
 
-**Strict-mode override**: under `/run-strict`, the strike rule is progress-aware. The counter only increments when consecutive failures from the same reviewer on the same target carry a normalized-equal `issues[]` text (whitespace-stripped, lowercased, runs of whitespace collapsed). If the issue text changes between rounds, the counter resets to 1. Hard halt only when the same issue repeats three runs in a row — i.e. the reviewer is stuck on the literal same complaint, not just slowly making progress. This applies to all 5 reviewers under strict mode, including `topic-auditor`.
+**Strict-mode override (replaces I4 above when running `/run-strict`):** the strike rule is progress-aware. The counter only increments when consecutive failures from the same reviewer on the same target carry a normalized-equal `issues[]` text (whitespace-stripped, lowercased, runs of whitespace collapsed). If the issue text changes between rounds, the counter resets to 1. Hard halt only when the same issue repeats three runs in a row — i.e. the reviewer is stuck on the literal same complaint, not just slowly making progress. This applies to all 5 reviewers under strict mode, including `topic-auditor`.
+
+**Under normal `/run`, the original three-strike rule above applies unchanged** — there is no progress-aware counter outside strict mode.
 
 ### I5. Topic-auditor `missing_chains` consistency (strict mode only)
 
@@ -89,6 +91,8 @@ The 5th reviewer, `topic-auditor`, runs only under `/run-strict`. Its specialist
 > If `missing_chains` is non-empty → `verdict` MUST be `"fail"` and `severity` MUST be `"P0"` or `"P1"`.
 
 A missing chain is by definition a broken delivery and cannot coexist with `verdict == "pass"`. The main loop converts each entry into a new slice in the (single) `P_recovery` phase, then re-enters the execute loop. The plan can only reach `meta.status = "done"` after `topic-auditor` returns `verdict: pass` with empty `missing_chains`.
+
+**No downgrade path.** Unlike I3's `coverage_gap` and `seams` (which allow a reviewer to drop a finding to a P2 `issues[]` entry if it feels minor), `missing_chains` has no such escape hatch. The 5th reviewer is the terminal gate of strict mode — if the reviewer is unsure whether a chain is delivered, the safe answer is to add it as a `missing_chain` and let the recovery loop patch it. A topic-auditor that downgrades a real gap to a "P2 observation" defeats the entire purpose of `/run-strict`.
 
 ---
 
