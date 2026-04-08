@@ -40,6 +40,10 @@ From your project root, after the skill is installed in `~/.agents/skills/`:
 # Step 2 — start a fully autonomous plan + execute + review loop
 /run implement the user search feature
 
+# Strict mode — refuses to mark done until topic-auditor verifies
+# end-to-end delivery against the original topic. Slower but provable.
+/run-strict ship the password reset feature with email sending
+
 # Plan only — review without executing
 /plan refactor the auth module
 
@@ -239,6 +243,18 @@ You type: /run add a user-registration endpoint
 
 The second time you `/run` against the same project: `planner-critic` and `implementation-reviewer` read `dev-lessons.md`; crystallized rules become hard checklists. The first run may step on many rakes; ten runs in, the rule library stabilizes.
 
+### Strict mode (`/run-strict`)
+
+For high-stakes work where partial completion is unacceptable, use `/run-strict` instead of `/run`. Three differences:
+
+- **Plan-time gate**: `planner-critic` enforces the Universal Completion Chain — every acceptance item must have a task chain reaching observable proof (test output, command stdout, file content, log line). Plans with shallow tasks are rejected before execution.
+- **Task-time gate**: `implementation-reviewer` requires runtime evidence per task; bare commit sha is rejected. Pure refactors/renames use `static-only: <reason>` as an explicit escape hatch.
+- **Plan-done gate**: a new 5th reviewer `topic-auditor` runs once after all phases finish, with permission to execute read-only smoke commands (`pytest`, `curl`, `cat`, etc.). It answers one question: "given only the topic and the resulting artifacts, would a fresh user say this is delivered?" If not, missing chains are injected as new slices in a special `P_recovery` phase that bypasses the 4×5 hard limits, and the loop re-enters execution. The plan can only reach `status: done` after `topic-auditor` says yes.
+
+Strict mode also uses a **progress-aware strike rule**: the 3-fail halt only fires when the reviewer's complaint is literally unchanged across three rounds — slow-but-progressing repair runs unbounded.
+
+`/run-strict` is 2-5× slower than `/run`. Use it when you mean it.
+
 ---
 
 ## Commands
@@ -246,6 +262,7 @@ The second time you `/run` against the same project: `planner-critic` and `imple
 | Command | Purpose |
 |---|---|
 | `/run <topic>` | Main entrypoint — full autonomous plan + execute + review loop |
+| `/run-strict <topic>` | Strict mode — 5-reviewer loop, refuses to mark done until topic-auditor verifies end-to-end delivery |
 | `/plan <topic>` | Plan only, no execution; Planner-Critic review included |
 | `/review [scope]` | Dispatch reviewers diagnostically, read-only |
 | `/learn` | Manual crystallization of episodic memory → rules |
@@ -261,6 +278,7 @@ self-improving-workflow/
 ├── README.md / README.zh-CN.md
 ├── commands/                         ← mirrored into each project's .claude/commands/
 │   ├── run.md
+│   ├── run-strict.md
 │   ├── plan.md
 │   ├── review.md
 │   ├── learn.md
@@ -269,7 +287,8 @@ self-improving-workflow/
 │   ├── planner-critic.md
 │   ├── implementation-reviewer.md
 │   ├── requirement-auditor.md
-│   └── integration-checker.md
+│   ├── integration-checker.md
+│   └── topic-auditor.md
 ├── scripts/                          ← stays in skill, called by absolute path
 │   ├── init.sh                       ← seeds .claude/ in the target project
 │   ├── guard.sh                      ← irreversible-op regex check
@@ -298,6 +317,7 @@ After `init.sh` runs in your project:
 ├── CLAUDE.md                          ← from seeds/, only if you don't already have one
 ├── commands/                          ← mirrored from skill (Claude Code discovers these)
 │   ├── run.md
+│   ├── run-strict.md
 │   ├── plan.md
 │   ├── review.md
 │   ├── learn.md
@@ -306,7 +326,8 @@ After `init.sh` runs in your project:
 │   ├── planner-critic.md
 │   ├── implementation-reviewer.md
 │   ├── requirement-auditor.md
-│   └── integration-checker.md
+│   ├── integration-checker.md
+│   └── topic-auditor.md
 ├── rules/
 │   ├── autonomy-stops.md              ← from seeds/, you may append
 │   └── dev-lessons.md                 ← from seeds/, auto-populated by /learn
