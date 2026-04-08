@@ -21,19 +21,36 @@ Plan { meta, phases }
 
 ---
 
-## Hard Schema Limits
+## Schema Constraints
 
-`Planner-Critic` rejects any plan that violates these limits. `plan_lint.sh` enforces them as a script check:
+`Planner-Critic` rejects any plan that violates these constraints. `plan_lint.sh` enforces them as a script check:
 
-| Limit | Value |
+| Constraint | Value |
 |---|---|
 | Slice must have `user_value` | required |
 | Slice must have ≥1 `acceptance` | required |
 | Task `action` must start with a verb | required |
 | Plan tree must trace user intent → outcome | required |
 | Task may not nest sub-tasks | enforced |
+| At most one phase with `kind: "recovery"` | enforced |
+| Plan and decisions log content language matches the user's input language | required |
 
-Earlier versions of the skill enforced 4×5×7 upper bounds (≤4 phases, ≤5 slices/phase, ≤7 tasks/slice) as a forcing function against scope creep. Experience showed the caps were arbitrary — real topics legitimately need more, and the reviewer pipeline (planner-critic + requirement-auditor + integration-checker + topic-auditor) plus the crystallization loop catch sprawl far more reliably than a hard cap ever did. The schema and lint now only enforce structural minimums and shape; granularity is the planner's call.
+There is no upper bound on phase / slice / task counts — granularity is the planner's call.
+
+### Language-match rule
+
+The `meta.topic`, every `phase.title` / `phase.goal`, every `slice.title` / `slice.user_value` / `slice.acceptance[]`, every `task.action` / `task.target` / `task.evidence`, and every `decisions.jsonl` entry's human-readable fields (e.g. `reason`, `note`, `description`) **must be written in the same natural language the user used in their original `/run` (or `/run-strict`) topic argument.**
+
+The point is auditability: the user must be able to open `plan.json` and `decisions.jsonl` and read what's there without translation. If the user typed Chinese, the plan body is Chinese. If the user typed English, the plan body is English. Mixed-language topics → the planner picks the dominant language and stays consistent throughout.
+
+This rule does NOT apply to:
+- Schema field names (always English: `meta`, `phases`, `tasks`, `evidence`, `verdict`, `kind`, etc.)
+- Enum values (always English: `pending`, `in_progress`, `done`, `blocked`, `main`, `recovery`, `strict`, `normal`)
+- Id strings (always ASCII: `P1`, `P1-S2-T3`, `P_recovery-S1`)
+- File paths and code identifiers in `task.target` (always literal)
+- Tool names, command names, library names, error messages copied verbatim from tools
+
+`planner-critic` checks language consistency at plan-write time and rejects plans whose body strings drift from the topic's language.
 
 ---
 

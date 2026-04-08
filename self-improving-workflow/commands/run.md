@@ -30,7 +30,11 @@ Three cases for `.claude/state/plan.json`:
 
 ## 1. Write plan
 
-Generate a plan.json for the topic following the schema in `.claude/state/plan.schema.json`. Use as many phases / slices / tasks as the topic genuinely needs — no hard upper bound, but every task must be atomic, every slice must deliver concrete user value, and the plan tree must trace from user intent to outcome. Reviewers and crystallization handle quality, not artificial caps. Write to `.claude/state/plan.json`.
+Generate a plan.json for the topic following the schema in `.claude/state/plan.schema.json`. Use as many phases / slices / tasks as the topic genuinely needs — no hard upper bound, but every task must be atomic, every slice must deliver concrete user value, and the plan tree must trace from user intent to outcome. Reviewers and crystallization handle quality, not artificial caps.
+
+**Language-match rule (hard)**: every human-readable field in the plan (`meta.topic`, every `title`, `goal`, `user_value`, `acceptance[]`, `action`, `target` description, `evidence`) MUST be written in the same natural language the user used in `$ARGUMENTS`. If the user wrote Chinese, the plan body is Chinese. If they wrote English, the plan body is English. The user must be able to open `plan.json` and read it without translation. Schema field names, enum values, id strings, file paths, and tool names stay as-is (always English/ASCII). See `references/plan-schema.md` for the full rule.
+
+Write to `.claude/state/plan.json`.
 
 ## 2. Validate plan
 
@@ -108,6 +112,8 @@ Append to `.claude/state/decisions.jsonl` for every:
 - halt (`kind=blocked`)
 
 JSONL format: one line per record, see schema in design doc §7.
+
+**Language-match rule (hard)**: every human-readable field in a decision entry — `reason`, `note`, `description`, free-text `detail` — must use the same natural language as `plan.meta.topic`. The user must be able to `cat decisions.jsonl` and read it without translation. Field names (`kind`, `scope`, `target`, `reviewer`), enum values (`choice`, `replan`, `error`, `blocked`, `audit`), id strings, file paths, and verbatim tool/error output stay as-is.
 
 ## 6. Crystallization
 

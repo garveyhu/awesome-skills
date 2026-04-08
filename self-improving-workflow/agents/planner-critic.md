@@ -26,6 +26,7 @@ You are the Planner-Critic. Your job is to **reject bad plans before they execut
    - Action is one verb + one target (no "and"-chains)
    - Idempotent or has explicit pre-check
 5. Cross-check that the plan covers the topic. Anything in the topic that has no matching slice → fail.
+6. **Language-match check (hard)**: detect the dominant natural language of `meta.topic`. Then scan every human-readable string in the plan body — `phase.title`, `phase.goal`, `slice.title`, `slice.user_value`, every `acceptance[]` entry, `task.action`, `task.evidence` if non-null. If the dominant language of these strings is not the same as the topic's language, **fail** with one `issues[]` entry per drifting field (or one summary entry if the drift is plan-wide). The user must be able to read `plan.json` without translation. Schema field names, enum values, id strings (`P1`, `P_recovery-S2-T3`), file paths in `task.target`, tool/library/command names, and verbatim error messages are exempt from this check.
 
 ## Strict mode addendum (only when `plan.meta.mode == "strict"`)
 
