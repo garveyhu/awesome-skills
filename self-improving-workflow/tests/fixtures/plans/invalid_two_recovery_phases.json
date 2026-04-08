@@ -1,0 +1,14 @@
+{
+  "meta": {"topic": "x", "created_at": "2026-04-08T00:00:00Z", "status": "in_progress", "mode": "strict"},
+  "phases": [
+    { "id": "P1", "title": "x", "goal": "x", "status": "done", "kind": "main",
+      "slices": [{"id": "P1-S1", "title":"x","user_value":"x","acceptance":["x"],"status":"done",
+        "tasks":[{"id":"P1-S1-T1","action":"Implement x","target":"x","status":"done","evidence":"out"}]}]},
+    { "id": "P_recovery", "title": "r1", "goal": "r1", "status": "done", "kind": "recovery",
+      "slices": [{"id": "P_recovery-S1", "title":"x","user_value":"x","acceptance":["x"],"status":"done",
+        "tasks":[{"id":"P_recovery-S1-T1","action":"Implement x","target":"x","status":"done","evidence":"out"}]}]},
+    { "id": "P_recovery", "title": "r2", "goal": "r2", "status": "pending", "kind": "recovery",
+      "slices": [{"id": "P_recovery-S2", "title":"x","user_value":"x","acceptance":["x"],"status":"pending",
+        "tasks":[{"id":"P_recovery-S2-T1","action":"Implement x","target":"x","status":"pending","evidence":null}]}]}
+  ]
+}

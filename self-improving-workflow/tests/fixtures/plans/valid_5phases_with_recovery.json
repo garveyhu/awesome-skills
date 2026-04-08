@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "topic": "test 4 main plus recovery",
+    "created_at": "2026-04-08T00:00:00Z",
+    "status": "in_progress",
+    "current_phase_id": "P_recovery",
+    "mode": "strict"
+  },
+  "phases": [
+    {
+      "id": "P1",
+      "title": "Phase one",
+      "goal": "Build thing one",
+      "status": "done",
+      "kind": "main",
+      "slices": [
+        {
+          "id": "P1-S1",
+          "title": "Slice one",
+          "user_value": "User can do alpha",
+          "acceptance": ["alpha works"],
+          "status": "done",
+          "tasks": [
+            {
+              "id": "P1-S1-T1",
+              "action": "Implement alpha",
+              "target": "src/alpha.py",
+              "status": "done",
+              "evidence": "pytest passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P2",
+      "title": "Phase two",
+      "goal": "Build thing two",
+      "status": "done",
+      "kind": "main",
+      "slices": [
+        {
+          "id": "P2-S1",
+          "title": "Slice one",
+          "user_value": "User can do beta",
+          "acceptance": ["beta works"],
+          "status": "done",
+          "tasks": [
+            {
+              "id": "P2-S1-T1",
+              "action": "Implement beta",
+              "target": "src/beta.py",
+              "status": "done",
+              "evidence": "pytest passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P3",
+      "title": "Phase three",
+      "goal": "Build thing three",
+      "status": "done",
+      "kind": "main",
+      "slices": [
+        {
+          "id": "P3-S1",
+          "title": "Slice one",
+          "user_value": "User can do gamma",
+          "acceptance": ["gamma works"],
+          "status": "done",
+          "tasks": [
+            {
+              "id": "P3-S1-T1",
+              "action": "Implement gamma",
+              "target": "src/gamma.py",
+              "status": "done",
+              "evidence": "pytest passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P4",
+      "title": "Phase four",
+      "goal": "Build thing four",
+      "status": "done",
+      "kind": "main",
+      "slices": [
+        {
+          "id": "P4-S1",
+          "title": "Slice one",
+          "user_value": "User can do delta",
+          "acceptance": ["delta works"],
+          "status": "done",
+          "tasks": [
+            {
+              "id": "P4-S1-T1",
+              "action": "Implement delta",
+              "target": "src/delta.py",
+              "status": "done",
+              "evidence": "pytest passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P_recovery",
+      "title": "Recovery phase",
+      "goal": "Patch missing chains",
+      "status": "in_progress",
+      "kind": "recovery",
+      "slices": [
+        {
+          "id": "P_recovery-S1",
+          "title": "Fix chain",
+          "user_value": "User sees correct chain",
+          "acceptance": ["chain renders correctly"],
+          "status": "pending",
+          "tasks": [
+            {
+              "id": "P_recovery-S1-T1",
+              "action": "Implement chain fix",
+              "target": "src/chain.py",
+              "status": "pending",
+              "evidence": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

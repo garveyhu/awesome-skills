@@ -44,3 +44,24 @@ F="$SKILL_DIR/tests/fixtures/plans"
   [ "$status" -ne 0 ]
   [[ "$output" == *"meta.mode invalid"* ]]
 }
+
+@test "lint passes 4 main phases plus 1 recovery phase (5 total)" {
+  run bash "$LINT" "$F/valid_5phases_with_recovery.json"
+  [ "$status" -eq 0 ]
+}
+
+@test "lint allows recovery phase to have more than 5 slices" {
+  run bash "$LINT" "$F/valid_recovery_with_6_slices.json"
+  [ "$status" -eq 0 ]
+}
+
+@test "lint rejects more than one recovery phase" {
+  run bash "$LINT" "$F/invalid_two_recovery_phases.json"
+  [ "$status" -ne 0 ]
+  [[ "$output" == *"more than one recovery phase"* ]]
+}
+
+@test "lint passes the recovery-phase fixture from Task 2" {
+  run bash "$LINT" "$F/valid_with_recovery_phase.json"
+  [ "$status" -eq 0 ]
+}

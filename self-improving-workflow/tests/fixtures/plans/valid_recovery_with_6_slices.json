@@ -1,0 +1,141 @@
+{
+  "meta": {
+    "topic": "test recovery with 6 slices",
+    "created_at": "2026-04-08T00:00:00Z",
+    "status": "in_progress",
+    "current_phase_id": "P_recovery",
+    "mode": "strict"
+  },
+  "phases": [
+    {
+      "id": "P1",
+      "title": "Main phase",
+      "goal": "Build it",
+      "status": "done",
+      "kind": "main",
+      "slices": [
+        {
+          "id": "P1-S1",
+          "title": "Slice one",
+          "user_value": "User can foo",
+          "acceptance": ["foo works"],
+          "status": "done",
+          "tasks": [
+            {
+              "id": "P1-S1-T1",
+              "action": "Implement foo",
+              "target": "src/foo.py",
+              "status": "done",
+              "evidence": "pytest passed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P_recovery",
+      "title": "Recovery phase with 6 slices",
+      "goal": "Patch everything",
+      "status": "in_progress",
+      "kind": "recovery",
+      "slices": [
+        {
+          "id": "P_recovery-S1",
+          "title": "Fix one",
+          "user_value": "User sees fix one",
+          "acceptance": ["fix one works"],
+          "status": "done",
+          "tasks": [
+            {
+              "id": "P_recovery-S1-T1",
+              "action": "Implement fix one",
+              "target": "src/fix1.py",
+              "status": "done",
+              "evidence": "done"
+            }
+          ]
+        },
+        {
+          "id": "P_recovery-S2",
+          "title": "Fix two",
+          "user_value": "User sees fix two",
+          "acceptance": ["fix two works"],
+          "status": "done",
+          "tasks": [
+            {
+              "id": "P_recovery-S2-T1",
+              "action": "Implement fix two",
+              "target": "src/fix2.py",
+              "status": "done",
+              "evidence": "done"
+            }
+          ]
+        },
+        {
+          "id": "P_recovery-S3",
+          "title": "Fix three",
+          "user_value": "User sees fix three",
+          "acceptance": ["fix three works"],
+          "status": "done",
+          "tasks": [
+            {
+              "id": "P_recovery-S3-T1",
+              "action": "Implement fix three",
+              "target": "src/fix3.py",
+              "status": "done",
+              "evidence": "done"
+            }
+          ]
+        },
+        {
+          "id": "P_recovery-S4",
+          "title": "Fix four",
+          "user_value": "User sees fix four",
+          "acceptance": ["fix four works"],
+          "status": "done",
+          "tasks": [
+            {
+              "id": "P_recovery-S4-T1",
+              "action": "Implement fix four",
+              "target": "src/fix4.py",
+              "status": "done",
+              "evidence": "done"
+            }
+          ]
+        },
+        {
+          "id": "P_recovery-S5",
+          "title": "Fix five",
+          "user_value": "User sees fix five",
+          "acceptance": ["fix five works"],
+          "status": "pending",
+          "tasks": [
+            {
+              "id": "P_recovery-S5-T1",
+              "action": "Implement fix five",
+              "target": "src/fix5.py",
+              "status": "pending",
+              "evidence": null
+            }
+          ]
+        },
+        {
+          "id": "P_recovery-S6",
+          "title": "Fix six",
+          "user_value": "User sees fix six",
+          "acceptance": ["fix six works"],
+          "status": "pending",
+          "tasks": [
+            {
+              "id": "P_recovery-S6-T1",
+              "action": "Implement fix six",
+              "target": "src/fix6.py",
+              "status": "pending",
+              "evidence": null
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
