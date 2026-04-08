@@ -92,3 +92,57 @@ The split is principled:
 ## Canonical Reference
 
 If a section here ever drifts from the design doc at `docs/plans/2026-04-07-self-improving-workflow-refactor-design.md`, the design doc wins.
+
+---
+
+## Strict mode (`/run-strict`)
+
+The everyday `/run` command is built for speed and tolerance: it accepts that some plans will be slightly under-specified and that not every task will have runtime evidence. For most exploratory and refactor work, that tradeoff is right.
+
+But there's a class of tasks where partial completion is the wrong answer at any speed — production rollouts, customer-facing features, security work, anything where "done" must mean "actually delivered end-to-end". For those, `/run-strict` exists.
+
+### What strict mode adds — three layers of defense
+
+**Layer 1 — Plan-time gate.** `planner-critic` applies the Universal Completion Chain rule (see below). Plans that don't trace every acceptance item to observable proof are rejected before execution starts. The bad plan never wastes a single task.
+
+**Layer 2 — Task-time gate.** `implementation-reviewer` rejects task evidence that doesn't include observable proof. Pure refactors use `static-only: <reason>` as an explicit escape hatch — anything else needs runtime evidence.
+
+**Layer 3 — Plan-done gate.** A new 5th reviewer, `topic-auditor`, runs exactly once at the end of the plan, before the loop is allowed to write `meta.status = done`. It reads `plan.meta.topic` (the user's original ask), all evidence, and may execute read-only smoke commands (`pytest`, `curl`, `cat`, `--help`, etc.) to verify the deliverable in situ. If it says no, the missing chains are injected as new slices in a special `P_recovery` phase that bypasses the 4×5 hard limits, and the execute loop re-enters. The plan only reaches `done` when topic-auditor says yes.
+
+### Universal Completion Chain — the rule that drives all three layers
+
+> For each acceptance item, the plan must contain a task chain that traces:
+>
+> **trigger → all components touched → observable proof**
+>
+> *Observable proof* means at least one of: test output, command stdout, generated file content, log line with sentinel, HTTP response body, rendered doc, or runnable example. Bare commit sha is not observable proof.
+
+This rule is universal — it applies regardless of tech stack:
+
+- **Feature code**: trigger = user action / API call → components = endpoint + service + DB → proof = response body + UI assertion
+- **CLI tool**: trigger = command run → components = argparse + handlers → proof = exit code + stdout match
+- **Refactor**: trigger = structural change → components = files moved → proof = old tests still pass + measured complexity drop
+- **Doc**: trigger = reader question → components = sections written → proof = doc renders + executable example actually runs
+- **Data pipeline**: trigger = input dataset → components = transforms → proof = output rows match snapshot
+- **Library/SDK**: trigger = caller import → components = public API → proof = example calling code asserts
+- **Investigation**: trigger = research question → components = sources read → proof = written conclusion + citations + reproducible commands
+
+### Progress-aware strike rule
+
+Strict mode replaces the simple "3 fails → blocked" rule with a progress-aware version:
+
+> Same-target failures only count toward the 3-strike halt when the reviewer's `issues[]` text is normalized-equal between rounds. If the issue is evolving (the reviewer is finding new things to fix, or the executor is making progress against the old complaint), the counter resets.
+
+Hard halt only when the reviewer is stuck on the literal same complaint three runs in a row — i.e. genuine stuckness. Slow-but-progressing repair runs unbounded. Strike state is persisted to `.claude/state/strike-state.json` so a session restart cannot evade the rule.
+
+### When to use strict vs normal
+
+| Situation | Use |
+|---|---|
+| Exploration, prototypes, refactors | `/run` |
+| Customer-facing or production-bound features | `/run-strict` |
+| Security or compliance work | `/run-strict` |
+| One-off scripts, internal tools, dev experience tweaks | `/run` |
+| Anything where "looks done" must equal "actually delivered" | `/run-strict` |
+
+`/run-strict` is typically 2-5× slower than `/run` because of the extra reviewer rounds and the topic-auditor recovery loop. Use it when you mean it.
