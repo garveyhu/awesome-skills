@@ -107,7 +107,7 @@ But there's a class of tasks where partial completion is the wrong answer at any
 
 **Layer 2 — Task-time gate.** `implementation-reviewer` rejects task evidence that doesn't include observable proof. Pure refactors use `static-only: <reason>` as an explicit escape hatch — anything else needs runtime evidence.
 
-**Layer 3 — Plan-done gate.** A new 5th reviewer, `topic-auditor`, runs exactly once at the end of the plan, before the loop is allowed to write `meta.status = done`. It reads `plan.meta.topic` (the user's original ask), all evidence, and may execute read-only smoke commands (`pytest`, `curl`, `cat`, `--help`, etc.) to verify the deliverable in situ. If it says no, the missing chains are injected as new slices in a special `P_recovery` phase that bypasses the 4×5 hard limits, and the execute loop re-enters. The plan only reaches `done` when topic-auditor says yes.
+**Layer 3 — Plan-done gate.** A new 5th reviewer, `topic-auditor`, runs exactly once at the end of the plan, before the loop is allowed to write `meta.status = done`. It reads `plan.meta.topic` (the user's original ask), all evidence, and may execute read-only smoke commands (`pytest`, `curl`, `cat`, `--help`, etc.) to verify the deliverable in situ. If it says no, the missing chains are injected as new slices in the special `P_recovery` phase, and the execute loop re-enters. The plan only reaches `done` when topic-auditor says yes.
 
 ### Universal Completion Chain — the rule that drives all three layers
 

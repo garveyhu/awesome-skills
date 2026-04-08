@@ -19,7 +19,7 @@
 
 **支柱 2 — 长任务不间断执行**
 
-单一 `/run <topic>` 命令驱动分层计划（`phase → slice → task`，上限 4×5×7）自主运行至完成。仅在以下情况停止：
+单一 `/run <topic>` 命令驱动分层计划（`phase → slice → task`）自主运行至完成。仅在以下情况停止：
 1. `guard.sh` 检测到不可逆操作（数据丢失、远程写入、凭据变更、对外通信、进程强杀）
 2. 同一目标连续 3 次评审失败
 
@@ -111,9 +111,9 @@
 
 ```
 Plan
-├── Phase 1（≤4 个 phase）
-│   ├── Slice 1.1（≤5 个 slice/phase）— 必须有 user_value 和 acceptance
-│   │   ├── Task 1.1.1（≤7 个 task/slice）— 必须动词开头
+├── Phase 1（无上限）
+│   ├── Slice 1.1 — 必须有 user_value 和 acceptance
+│   │   ├── Task 1.1.1 — 必须动词开头
 │   │   ├── Task 1.1.2
 │   │   └── ...
 │   ├── Slice 1.2
@@ -248,7 +248,7 @@ crystallize.sh 跑（每 phase 完成时 + 退出时）
 
 - **计划入口闸**：`planner-critic` 强制执行 Universal Completion Chain —— 每个 acceptance 都必须有一条 task 链能追到 observable proof（测试输出、命令 stdout、文件内容、日志关键行）。链不闭合的浅 plan 在执行之前就被拒绝。
 - **单任务闸**：`implementation-reviewer` 要求 evidence 必须是运行时证据，纯 commit sha 一律拒绝。纯重构/重命名走 `static-only: <reason>` 显式豁免。
-- **整体收尾闸**：第 5 个 reviewer `topic-auditor` 在所有 phase 完成后跑一次，被授权执行只读 smoke 命令（`pytest`、`curl`、`cat` 等）。它只回答一个问题："如果一个全新用户只看到这个 topic 和这些产物，他会不会说'这事完成了'？" 不会 → 把缺的链路作为新 slice 注入到一个特殊的 `P_recovery` phase（豁免 4×5 硬上限），重新进 execute loop。`status: done` 必须由 `topic-auditor` 说 yes 之后才能写。
+- **整体收尾闸**：第 5 个 reviewer `topic-auditor` 在所有 phase 完成后跑一次，被授权执行只读 smoke 命令（`pytest`、`curl`、`cat` 等）。它只回答一个问题："如果一个全新用户只看到这个 topic 和这些产物，他会不会说'这事完成了'？" 不会 → 把缺的链路作为新 slice 注入到那个特殊的 `P_recovery` phase，重新进 execute loop。`status: done` 必须由 `topic-auditor` 说 yes 之后才能写。
 
 严格模式还使用 **进度感知 strike rule**：3 次 fail 才挂的规则只在 reviewer 的 issue 文本完全相同时触发 —— 在慢慢进步的修复永远不会被打断。
 

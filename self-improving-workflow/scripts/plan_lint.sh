@@ -28,11 +28,6 @@ errors=$(jq -r --arg verb "$VERB_RE" '
     ((.meta.mode // "normal") as $m | if (["normal","strict"] | index($m)) == null
        then "FAIL: meta.mode invalid (\($m))" else empty end),
 
-    # phases count: main phases only must be in [1,4]; recovery phases excluded
-    ((.phases | map(select((.kind // "main") == "main")) | length) as $main_count |
-      if $main_count < 1 or $main_count > 4
-        then "FAIL: main phases count \($main_count) not in [1,4]" else empty end),
-
     # at most one recovery phase
     ((.phases | map(select((.kind // "main") == "recovery")) | length) as $rec_count |
       if $rec_count > 1
@@ -41,20 +36,14 @@ errors=$(jq -r --arg verb "$VERB_RE" '
     # walk phases
     (.phases[] |
       (if (.id | test("^(P[0-9]+|P_recovery)$")) | not then "FAIL: phase id \(.id) bad pattern" else empty end),
-      ((.kind // "main") as $k |
-        if (.slices | length) < 1
-          then "FAIL: phase \(.id) slices count 0 (must be >= 1)"
-        elif $k == "recovery"
-          then empty
-        elif (.slices | length) > 5
-          then "FAIL: phase \(.id) slices count \(.slices | length) not in [1,5]"
-        else empty end),
+      (if (.slices | length) < 1
+         then "FAIL: phase \(.id) slices count 0 (must be >= 1)" else empty end),
       (.slices[] |
         (if (.id | test("^(P[0-9]+|P_recovery)-S[0-9]+$")) | not then "FAIL: slice id \(.id) bad pattern" else empty end),
         (if (.user_value // "") == "" then "FAIL: slice \(.id) user_value empty" else empty end),
         (if (.acceptance | length) < 1 then "FAIL: slice \(.id) acceptance empty" else empty end),
-        (if (.tasks | length) < 1 or (.tasks | length) > 7
-           then "FAIL: slice \(.id) tasks count \(.tasks | length) not in [1,7]" else empty end),
+        (if (.tasks | length) < 1
+           then "FAIL: slice \(.id) tasks count 0 (must be >= 1)" else empty end),
         (.tasks[] |
           (if (.id | test("^(P[0-9]+|P_recovery)-S[0-9]+-T[0-9]+$")) | not then "FAIL: task id \(.id) bad pattern" else empty end),
           (if (.action | test($verb)) | not then "FAIL: task \(.id) action does not start with whitelisted verb: \(.action)" else empty end)

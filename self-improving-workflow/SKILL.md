@@ -51,7 +51,7 @@ All findings flow to `.claude/memory/episodic/` and are auto-promoted to `.claud
 
 ## Pillar 2 — Long-Running Uninterrupted Execution
 
-Single `/run <topic>` command drives a hierarchical plan (`phase → slice → task`, hard limits: 4×5×7) to completion. **Only stops on**:
+Single `/run <topic>` command drives a hierarchical plan (`phase → slice → task`) to completion. **Only stops on**:
 
 1. `guard.sh` blocks an irreversible operation (data loss, remote irreversible, credentials, shared comms, process kill)
 2. 3 consecutive review failures on the same target
@@ -81,7 +81,7 @@ The five reviewers are mirrored from the skill into `.claude/agents/` on bootstr
 
 1. **Universal Completion Chain enforcement** — `planner-critic` rejects plans where any acceptance item lacks a task chain reaching observable proof (test output, command stdout, file content, log line, etc. — never just "commit sha").
 2. **Observable-proof evidence per task** — `implementation-reviewer` rejects task evidence that's just a commit sha. Static-only changes can use `static-only: <reason>` as an explicit exemption.
-3. **5th reviewer `topic-auditor`** — runs once after all phases done, before the loop is allowed to write `plan.meta.status = "done"`. May execute read-only smoke commands (`pytest`, `curl`, `cat`, etc.) to verify end-to-end delivery against `plan.meta.topic`. If anything is missing, injects new slices into a single `P_recovery` phase that's exempt from the 4×5 hard limits.
+3. **5th reviewer `topic-auditor`** — runs once after all phases done, before the loop is allowed to write `plan.meta.status = "done"`. May execute read-only smoke commands (`pytest`, `curl`, `cat`, etc.) to verify end-to-end delivery against `plan.meta.topic`. If anything is missing, injects new slices into the single `P_recovery` phase.
 
 Strict mode also uses a **progress-aware strike rule**: same-target failures only count toward the 3-strike halt when the reviewer's complaint is unchanged round-to-round. Slow-but-progressing repair never gets killed.
 

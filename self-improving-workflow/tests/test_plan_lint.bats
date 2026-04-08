@@ -9,11 +9,6 @@ F="$SKILL_DIR/tests/fixtures/plans"
   [ "$status" -eq 0 ]
 }
 
-@test "lint rejects too many phases" {
-  run bash "$LINT" "$F/invalid_too_many_phases.json"
-  [ "$status" -ne 0 ]
-}
-
 @test "lint rejects slice missing user_value" {
   run bash "$LINT" "$F/invalid_slice_no_user_value.json"
   [ "$status" -ne 0 ]
@@ -21,11 +16,6 @@ F="$SKILL_DIR/tests/fixtures/plans"
 
 @test "lint rejects task action not starting with verb" {
   run bash "$LINT" "$F/invalid_task_action_not_verb.json"
-  [ "$status" -ne 0 ]
-}
-
-@test "lint rejects phase with too many slices" {
-  run bash "$LINT" "$F/invalid_phase_too_many_slices.json"
   [ "$status" -ne 0 ]
 }
 
@@ -45,12 +35,12 @@ F="$SKILL_DIR/tests/fixtures/plans"
   [[ "$output" == *"meta.mode invalid"* ]]
 }
 
-@test "lint passes 4 main phases plus 1 recovery phase (5 total)" {
+@test "lint passes plan with 5 phases (no upper bound)" {
   run bash "$LINT" "$F/valid_5phases_with_recovery.json"
   [ "$status" -eq 0 ]
 }
 
-@test "lint allows recovery phase to have more than 5 slices" {
+@test "lint passes phase with 6 slices (no upper bound)" {
   run bash "$LINT" "$F/valid_recovery_with_6_slices.json"
   [ "$status" -eq 0 ]
 }

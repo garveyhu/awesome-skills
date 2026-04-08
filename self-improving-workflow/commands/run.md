@@ -30,7 +30,7 @@ Three cases for `.claude/state/plan.json`:
 
 ## 1. Write plan
 
-Generate a plan.json for the topic following the schema in `.claude/state/plan.schema.json`. Hard limits: ≤4 phases, ≤5 slices/phase, ≤7 tasks/slice. Write to `.claude/state/plan.json`.
+Generate a plan.json for the topic following the schema in `.claude/state/plan.schema.json`. Use as many phases / slices / tasks as the topic genuinely needs — no hard upper bound, but every task must be atomic, every slice must deliver concrete user value, and the plan tree must trace from user intent to outcome. Reviewers and crystallization handle quality, not artificial caps. Write to `.claude/state/plan.json`.
 
 ## 2. Validate plan
 

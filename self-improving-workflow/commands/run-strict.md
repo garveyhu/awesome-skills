@@ -38,7 +38,7 @@ This is the only time you ask the user anything during the entire `/run-strict` 
 
 Same as `/run` §1, but the plan must include `"meta": {..., "mode": "strict"}` and every phase must include `"kind": "main"` (recovery phases are added later, by topic-auditor failures, not by the planner).
 
-Hard limits: ≤4 main phases, ≤5 slices per main phase, ≤7 tasks per slice. Recovery phase (added later) is exempt from these limits.
+No hard upper bound on phase / slice / task counts — pick the granularity the topic genuinely needs. The strict-mode `planner-critic` addendum (Universal Completion Chain) is what catches under-specification, not arbitrary caps. The `P_recovery` phase added later by `topic-auditor` follows the same rules as main phases.
 
 ## 2. Validate plan
 

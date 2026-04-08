@@ -30,12 +30,10 @@ Plan { meta, phases }
 | Slice must have `user_value` | required |
 | Slice must have ≥1 `acceptance` | required |
 | Task `action` must start with a verb | required |
-| Tasks per slice | ≤ 7 |
-| Slices per phase | ≤ 5 |
-| Phases per plan | ≤ 4 |
+| Plan tree must trace user intent → outcome | required |
 | Task may not nest sub-tasks | enforced |
 
-These limits exist to prevent scope creep from accreting invisibly inside the plan tree. A plan that can't fit into 4×5×7 needs to be descoped, not expanded.
+Earlier versions of the skill enforced 4×5×7 upper bounds (≤4 phases, ≤5 slices/phase, ≤7 tasks/slice) as a forcing function against scope creep. Experience showed the caps were arbitrary — real topics legitimately need more, and the reviewer pipeline (planner-critic + requirement-auditor + integration-checker + topic-auditor) plus the crystallization loop catch sprawl far more reliably than a hard cap ever did. The schema and lint now only enforce structural minimums and shape; granularity is the planner's call.
 
 ---
 

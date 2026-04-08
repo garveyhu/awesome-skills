@@ -19,7 +19,7 @@ Four specialist sub-agents review every plan, task, slice, and phase. Their find
 
 **Pillar 2 — Long-Running Uninterrupted Execution**
 
-Single `/run <topic>` drives a hierarchical plan (`phase → slice → task`, limits: 4×5×7) to completion. Halts only on:
+Single `/run <topic>` drives a hierarchical plan (`phase → slice → task`) to completion. Halts only on:
 1. `guard.sh` detects an irreversible operation (data loss, remote write, credential mutation, shared comms, process kill)
 2. 3 consecutive review failures on the same target
 
@@ -111,9 +111,9 @@ For any other "should I pick A or B" call, **the AI decides itself**, appends a 
 
 ```
 Plan
-├── Phase 1 (≤4 phases per plan)
-│   ├── Slice 1.1 (≤5 slices per phase) — must have user_value and acceptance
-│   │   ├── Task 1.1.1 (≤7 tasks per slice) — must start with a verb
+├── Phase 1 (no upper bound)
+│   ├── Slice 1.1 — must have user_value and acceptance
+│   │   ├── Task 1.1.1 — must start with a verb
 │   │   ├── Task 1.1.2
 │   │   └── ...
 │   ├── Slice 1.2
@@ -249,7 +249,7 @@ For high-stakes work where partial completion is unacceptable, use `/run-strict`
 
 - **Plan-time gate**: `planner-critic` enforces the Universal Completion Chain — every acceptance item must have a task chain reaching observable proof (test output, command stdout, file content, log line). Plans with shallow tasks are rejected before execution.
 - **Task-time gate**: `implementation-reviewer` requires runtime evidence per task; bare commit sha is rejected. Pure refactors/renames use `static-only: <reason>` as an explicit escape hatch.
-- **Plan-done gate**: a new 5th reviewer `topic-auditor` runs once after all phases finish, with permission to execute read-only smoke commands (`pytest`, `curl`, `cat`, etc.). It answers one question: "given only the topic and the resulting artifacts, would a fresh user say this is delivered?" If not, missing chains are injected as new slices in a special `P_recovery` phase that bypasses the 4×5 hard limits, and the loop re-enters execution. The plan can only reach `status: done` after `topic-auditor` says yes.
+- **Plan-done gate**: a new 5th reviewer `topic-auditor` runs once after all phases finish, with permission to execute read-only smoke commands (`pytest`, `curl`, `cat`, etc.). It answers one question: "given only the topic and the resulting artifacts, would a fresh user say this is delivered?" If not, missing chains are injected as new slices in the special `P_recovery` phase, and the loop re-enters execution. The plan can only reach `status: done` after `topic-auditor` says yes.
 
 Strict mode also uses a **progress-aware strike rule**: the 3-fail halt only fires when the reviewer's complaint is literally unchanged across three rounds — slow-but-progressing repair runs unbounded.
 
@@ -352,7 +352,7 @@ After `init.sh` runs in your project:
 ## Reference
 
 - [`references/methodology.md`](references/methodology.md) — why two pillars and the hybrid architecture approach
-- [`references/plan-schema.md`](references/plan-schema.md) — phase/slice/task tree shape and hard limits
+- [`references/plan-schema.md`](references/plan-schema.md) — phase/slice/task tree shape and schema constraints
 - [`references/reviewer-contracts.md`](references/reviewer-contracts.md) — four reviewer triggers and IO shapes
 - [`references/learning-loop.md`](references/learning-loop.md) — episodic→semantic→rules crystallization algorithm
 - [`references/migration-from-tiered.md`](references/migration-from-tiered.md) — upgrading from the old tiered version
