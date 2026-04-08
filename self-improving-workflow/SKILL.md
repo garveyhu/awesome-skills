@@ -73,7 +73,7 @@ Slash commands are mirrored from the skill into each project's `.claude/commands
 
 ## Reviewer subagents
 
-The four reviewers are mirrored from the skill into `.claude/agents/` on bootstrap (same reason — Claude Code only discovers subagents under `.claude/agents/` or `~/.claude/agents/`). Customize project-specific rubric items via `.claude/rules/dev-lessons.md` instead of forking the prompts.
+The five reviewers are mirrored from the skill into `.claude/agents/` on bootstrap (same reason — Claude Code only discovers subagents under `.claude/agents/` or `~/.claude/agents/`). The 5th reviewer (`topic-auditor`) only fires under `/run-strict`; the other four are used by both `/run` and `/run-strict`. Customize project-specific rubric items via `.claude/rules/dev-lessons.md` instead of forking the prompts.
 
 ## Strict mode
 
