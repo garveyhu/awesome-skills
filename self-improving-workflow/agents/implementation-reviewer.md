@@ -25,6 +25,35 @@ For the target task, check:
 5. **Side effects** — anything modified outside `target`?
 6. **Evidence quality** — does the evidence pointer (commit/file/test output) actually exist and demonstrate the change?
 
+## Strict mode addendum (only when `plan.meta.mode == "strict"`)
+
+If `plan.meta.mode == "strict"`, evidence requirements are tightened:
+
+### Observable proof requirement
+
+The task's `evidence` field must contain at least one **observable proof**:
+
+- test pass output (e.g. `pytest tests/x.py::test_y output: 1 passed`)
+- command stdout that demonstrates the behavior (e.g. `curl http://localhost:8000/foo response: {...}`)
+- generated file content showing the change took effect
+- log line containing a known-good sentinel
+- HTTP response body with the expected fields
+- rendered document / referenced screenshot
+- new doc that is both readable AND has executable steps that worked
+
+A bare commit sha is **not** observable proof. A bare "file written" or "compiles" is **not** observable proof.
+
+If the task's evidence does not meet this bar:
+
+- `verdict: "fail"`, `severity: "P1"`
+- `issues[]` entry with `category: "spec"`, `what` naming the missing proof, `fix_hint` proposing what command to run / what assertion to capture
+
+### `static-only:` exception
+
+Tasks whose action is intrinsically static (rename, reformat, comment-only, license header, gitignore tweak) cannot have runtime evidence. For these, the executor must put a literal `static-only: <one-line justification>` token at the start of the `evidence` field. When you see this token, accept the evidence and pass — but log it as an info-level observation (P2 issue) so the audit trail records the exemption.
+
+If a task uses `static-only:` for an action that is NOT intrinsically static, reject it: that's a loophole abuse.
+
 ## Output — strict contract
 
 Your **entire final response** must be a single JSON object matching this exact schema. No prose preamble, no postamble, no ```json fences inside the JSON, no extra top-level keys. Field names are case-sensitive.
