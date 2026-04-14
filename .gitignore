@@ -28,6 +28,8 @@
 !solution-vault/**
 !self-improving-workflow/
 !self-improving-workflow/**
+!notion-chat-archiver/
+!notion-chat-archiver/**
 
 # Still ignore packaged .skill files
 *.skill
