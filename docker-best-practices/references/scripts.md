@@ -216,9 +216,11 @@ if docker compose ps --quiet 2>/dev/null | grep -q .; then
 fi
 
 # 启动
+# --remove-orphans：清理同项目名下已不在 compose 里的孤儿容器（历史遗留的其他
+# service），否则每次 up 都会 WARN Found orphan containers
 echo ""
 echo "🚀 docker compose up -d ..."
-docker compose up -d
+docker compose up -d --remove-orphans
 
 # 等 healthy（最多 90s）
 echo ""

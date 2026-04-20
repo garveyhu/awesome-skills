@@ -267,3 +267,11 @@ docker compose up -d
 `down` 只销毁容器，**保留 named volume 和 bind mount 数据**。`--remove-orphans` 清理掉已经从 compose 里删掉但容器还在的老 service（比如重命名后的残留）。
 
 **避免用 `down -v`**：那会清掉 `venv-data` / `models-data` / `code-data` 三个命名 volume，下次启动 init 容器要重新把 1.3GB venv + 400MB models 拷一遍，几分钟起步。除非确实需要重置。
+
+**顺带**：给 `up -d` 也加 `--remove-orphans`。compose 用目录名作项目名，若历史上在同目录跑过别的 compose 栈，那边的容器会被当作"orphan"每次 up 都报 WARN。加 `--remove-orphans` 把它们也清掉：
+
+```bash
+docker compose up -d --remove-orphans
+```
+
+注意 orphan 判定基于**同项目名下当前 compose 文件未声明的 service**，不会误删其它项目（不同目录 / 不同 `-p` 指定项目名）的容器。
