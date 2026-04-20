@@ -240,3 +240,30 @@ docker volume rm {project}_venv-data {project}_models-data {project}_code-data
 a. `REGISTRY_NAMESPACE` 写错，或 Harbor project 权限不对。去 Harbor UI 确认当前用户对该 project 有 `Push` 权限。
 b. 镜像名超过长度 / 有非法字符。Harbor 通常要求 lowercase。
 c. Harbor project 设置了"禁止覆盖 tag"，推相同 tag 会失败。bump 版本号或在 Harbor 里开启覆盖。
+
+---
+
+## 11. `run-local.sh` 第二次跑报 `container name already in use`
+
+**现象**：第一次跑 `./scripts/run-local.sh` 成功，第二次跑报：
+
+```
+Error response from daemon: Conflict. The container name "/sage" is already in use by container "...".
+You have to remove (or rename) that container to be able to reuse that name.
+```
+
+**根因**：compose 的 `container_name: sage` 指定了固定名字，`docker compose up -d` 在已有容器时不会自动销毁重建，就报冲突。
+
+**解决**：脚本里 `up -d` 之前先尝试 `down`，保证幂等。判断当前是否有已运行的服务，避免空 down 无意义输出：
+
+```bash
+if docker compose ps --quiet 2>/dev/null | grep -q .; then
+    echo "🧹 stopping existing compose stack (keeping volumes) ..."
+    docker compose down --remove-orphans
+fi
+docker compose up -d
+```
+
+`down` 只销毁容器，**保留 named volume 和 bind mount 数据**。`--remove-orphans` 清理掉已经从 compose 里删掉但容器还在的老 service（比如重命名后的残留）。
+
+**避免用 `down -v`**：那会清掉 `venv-data` / `models-data` / `code-data` 三个命名 volume，下次启动 init 容器要重新把 1.3GB venv + 400MB models 拷一遍，几分钟起步。除非确实需要重置。

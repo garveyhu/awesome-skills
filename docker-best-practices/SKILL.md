@@ -317,6 +317,7 @@ rm *.tar
 - [ ] push-images.sh 不动 buildx builder，用用户当前激活的那个
 - [ ] build-images.sh 对稳定层（base/venv/models）skip-if-tag-exists；代码层每次重建
 - [ ] run-local.sh 在 compose up 后等容器 `healthy`（带超时），然后打印访问地址
+- [ ] run-local.sh 幂等：`docker compose up -d` 之前检测并 `docker compose down --remove-orphans`，避免 `container name already in use`（保留 volume，不用 `-v`）
 
 ### 常见坑（见 [references/pitfalls.md](references/pitfalls.md)）
 

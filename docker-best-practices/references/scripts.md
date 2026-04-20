@@ -178,7 +178,9 @@ PLATFORMS=linux/amd64,linux/arm64
 
 ## 3. `scripts/run-local.sh`
 
-一键本地：初始化 → build（增量） → up → 等 healthy → 打印访问/运维提示。
+一键本地：初始化 → build（增量） → **停掉已有 compose 栈 → up** → 等 healthy → 打印访问/运维提示。
+
+**关键设计**：脚本必须支持重复执行。直接 `docker compose up -d` 在容器已存在时会报 `container name 'xxx' already in use`，所以先 `docker compose down --remove-orphans`（保留 volume，只销毁容器）。已经干净的状态下 down 是 no-op。
 
 ```bash
 #!/usr/bin/env bash
@@ -205,10 +207,17 @@ echo ""
 echo "📦 building images (skip-if-exists) ..."
 "${ROOT}/scripts/build-images.sh"
 
+# 先停掉现有栈（保留 named volume），让脚本可重复执行
+cd docker
+if docker compose ps --quiet 2>/dev/null | grep -q .; then
+    echo ""
+    echo "🧹 stopping existing compose stack (keeping volumes) ..."
+    docker compose down --remove-orphans
+fi
+
 # 启动
 echo ""
 echo "🚀 docker compose up -d ..."
-cd docker
 docker compose up -d
 
 # 等 healthy（最多 90s）
