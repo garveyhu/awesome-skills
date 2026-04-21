@@ -4,15 +4,34 @@
 
 ---
 
-## 识别 SpecHub 仓库
+## 仓库路径解析
 
-通过以下信号确认（至少匹配两项）：
+所有操作都在 SpecHub 仓库内进行。使用前先确定仓库绝对路径：
+
+1. **用户显式指定**：用户本次调用带了路径参数，以用户指定为准。
+2. **默认配置**：读取 `~/.agents/path.json` 的 `spechub` 字段。
 
 ```bash
-grep -q '^specs/' .gitignore 2>/dev/null          # .gitignore 包含 specs/
-ls specs/ 2>/dev/null                               # specs/ 目录存在
-git branch -r | grep 'feature/' 2>/dev/null         # 有远程 feature 分支
-git branch --show-current | grep '^feature/' 2>/dev/null  # 当前在 feature 分支上
+SPECHUB=$(jq -r '.spechub' ~/.agents/path.json)
+# 或者用户手动指定：
+# SPECHUB=/path/to/spechub
+```
+
+若读取失败或字段为空，提示用户在 `~/.agents/path.json` 配置 `spechub` 字段，或本次显式指定路径。
+
+下文命令统一使用 `$SPECHUB` 指代仓库根目录。
+
+---
+
+## 识别 SpecHub 仓库
+
+进入 `$SPECHUB` 后通过以下信号确认（至少匹配两项）：
+
+```bash
+grep -q '^specs/' "$SPECHUB/.gitignore" 2>/dev/null                    # .gitignore 包含 specs/
+ls "$SPECHUB/specs/" 2>/dev/null                                        # specs/ 目录存在
+git -C "$SPECHUB" branch -r | grep 'feature/' 2>/dev/null               # 有远程 feature 分支
+git -C "$SPECHUB" branch --show-current | grep '^feature/' 2>/dev/null  # 当前在 feature 分支上
 ```
 
 ---
@@ -22,16 +41,16 @@ git branch --show-current | grep '^feature/' 2>/dev/null  # 当前在 feature �
 ### 首次配置
 
 ```bash
-git fetch --all
-git branch -r | grep 'feature/'          # 查看可用项目
-git worktree add specs/<project> feature/<project>
+git -C "$SPECHUB" fetch --all
+git -C "$SPECHUB" branch -r | grep 'feature/'          # 查看可用项目
+git -C "$SPECHUB" worktree add specs/<project> feature/<project>
 ```
 
 ### 首次阅读规约（消费方）
 
 首次对接时，按全量顺序阅读：
 
-1. 拉取最新：`git -C specs/<project> pull`
+1. 拉取最新：`git -C "$SPECHUB/specs/<project>" pull`
 2. 按顺序阅读：README → 01-总览 → 02-详细说明，逐模块
 3. 每个模块的 README 说明覆盖范围，先看它再深入细节
 
@@ -39,15 +58,15 @@ git worktree add specs/<project> feature/<project>
 
 已完成首轮实现后，后续更新采用增量模式：
 
-1. 拉取：`git -C specs/<project> pull`
+1. 拉取：`git -C "$SPECHUB/specs/<project>" pull`
 2. **先只读 CHANGELOG.md**（项目根目录和各模块目录下的），从最新条目读到上次处理过的为止
 3. 按"消费方需要做什么"和"涉及文件和章节"，只读对应变更部分
 4. 完成增量修改
 
 辅助确认变更内容：
 ```bash
-git -C specs/<project> log --oneline -5
-git -C specs/<project> diff HEAD~1
+git -C "$SPECHUB/specs/<project>" log --oneline -5
+git -C "$SPECHUB/specs/<project>" diff HEAD~1
 ```
 
 ### 更新并推送规约（生产方）
@@ -55,7 +74,7 @@ git -C specs/<project> diff HEAD~1
 每次更新规约时，必须同步维护 CHANGELOG.md：
 
 ```bash
-cd specs/<project>
+cd "$SPECHUB/specs/<project>"
 # 1. 修改规约文档
 # 2. 在对应模块和项目根目录的 CHANGELOG.md 添加新条目
 # 3. 结构化 commit
@@ -69,6 +88,7 @@ git push
 ### 新建项目分支
 
 ```bash
+cd "$SPECHUB"
 git checkout main
 git checkout -b feature/<project-name>
 rm README.md
@@ -90,7 +110,7 @@ git checkout main
 
 ```bash
 rsync -av --include='*.md' --exclude='.*' --exclude='*.zip' --exclude='*.png' \
-  <源路径>/ specs/<project>/<模块>/
+  <源路径>/ "$SPECHUB/specs/<project>/<模块>/"
 ```
 
 ---

@@ -88,19 +88,33 @@ feature/<project>/
 
 通过 git worktree 管理多项目规约的检出、阅读、更新、推送。
 
-**仓库识别：** `.gitignore` 含 `specs/`、存在 `specs/` 目录、有 `feature/*` 远程分支——至少匹配两项即为 SpecHub 仓库。
+### 仓库路径解析
+
+所有 git 操作都在 SpecHub 仓库内执行。启动时按以下优先级确定仓库绝对路径：
+
+1. **用户显式指定**：用户在调用 skill 时带上路径（如"在 /path/to/spechub 里更新 xxx 规约"），以用户指定为准。
+2. **默认配置**：读取 `~/.agents/path.json` 的 `spechub` 字段作为默认路径。
+
+```bash
+# 默认路径读取
+SPECHUB=$(jq -r '.spechub' ~/.agents/path.json)
+```
+
+后续命令统一使用 `$SPECHUB` 作为仓库根目录。若读取失败或字段为空，提示用户配置 `~/.agents/path.json` 或显式指定路径。
+
+**仓库识别：** 进入 `$SPECHUB` 后，`.gitignore` 含 `specs/`、存在 `specs/` 目录、有 `feature/*` 远程分支——至少匹配两项即为 SpecHub 仓库。
 
 **核心操作速查：**
 
 ```bash
 # 检出项目
-git worktree add specs/<project> feature/<project>
+git -C "$SPECHUB" worktree add specs/<project> feature/<project>
 
 # 消费方拉取更新
-git -C specs/<project> pull
+git -C "$SPECHUB/specs/<project>" pull
 
 # 生产方推送更新（必须同步更新 CHANGELOG）
-cd specs/<project>
+cd "$SPECHUB/specs/<project>"
 git add . && git commit -m "<变更类型>(<模块>): <简述>" && git push
 ```
 
