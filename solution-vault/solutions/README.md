@@ -6,4 +6,4 @@
 | `ui/` | UI 交互方案：复杂表单、选择器、编辑器、动效 | *(暂空)* |
 | `data/` | 数据处理与存储：导入导出、缓存、搜索、迁移 | *(暂空)* |
 | `integration/` | 第三方服务集成：支付、邮件、短信、云存储 | *(暂空)* |
-| `infra/` | 部署与基础设施：Docker、CI/CD、监控、日志 | *(暂空)* |
+| `infra/` | 部署与基础设施：Docker、CI/CD、监控、日志、长耗时任务 | [async-task-with-progress](infra/async-task-with-progress/) |
