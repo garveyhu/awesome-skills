@@ -21,7 +21,7 @@
 
 ## 收录边界
 
-- composite 能独立引用 atoms 和 primitives，**不引用其他 composite**（若要共用，应该拆出 atom 或 primitive）
+- composite 原则上只引用 atoms 和 primitives。若两个 composite 存在紧耦合的共享（如共用同一套 Ant Design theme），允许在 `uses:` 里声明对另一 composite 的引用，但必须在正文"引用关系"章节说明理由。长期来看应考虑把共享抽成 primitive 层。
 - composite 不带路由，也不覆盖整个页面——那是 archetype
 - composite 必带可直接复制的核心代码和示例
 

@@ -85,13 +85,17 @@ AI 按步骤执行：
    VAULT=$(jq -r '."style-vault" // empty' ~/.agents/path.json 2>/dev/null)
    if [[ -z "$VAULT" || ! -d "$VAULT/frontend" ]]; then
      VAULT_OK=false
-   elif ! grep -q '"style-vault-site": true' "$VAULT/frontend/package.json" 2>/dev/null; then
+   elif ! jq -e '.["style-vault-site"] == true' "$VAULT/frontend/package.json" >/dev/null 2>&1; then
      VAULT_OK=false
    else
      VAULT_OK=true
    fi
    ```
    `VAULT_OK=false` → 直接跳到第 9 步（skill-only 沉淀）；`VAULT_OK=true` → 进第 8 步（双仓同步）。三重校验分别覆盖：字段缺失、路径失效、目录存在但不是 style-vault 网站。
+
+   若 `VAULT_OK=true`，进入第 8 步前先检查/创建并发锁：
+   - 若 `$VAULT/.style-vault-lock` 存在 → 拒绝启动，提示"另一个会话正在沉淀"
+   - 否则：`touch "$VAULT/.style-vault-lock"`
 8. **网站侧**
    - 按层级模板在 `$VAULT/frontend/src/preview/<id>.tsx` 创建 preview 页（模板位于 `$VAULT/frontend/src/preview/_templates/`，按层取对应模板）
    - 跑 `cd $VAULT/frontend && yarn sync`（重建 `registry.json` + 校验 frontmatter / tag / primitive tokens）
@@ -103,6 +107,8 @@ AI 按步骤执行：
    - push 永远留给用户——网站那边可能还要跑 `yarn dev` 预览调整
 10. **输出行动摘要**
     ID / 路径 / 命中的 tag / 两个 commit hash；提示用户"切到 `$VAULT/frontend` 跑 `yarn dev` 查看 preview"。如果是 skill-only 分支（VAULT_OK=false），摘要里也要说明"未联动网站仓，原因：xxx"。
+
+    最后无论成败，若第 7 步创建了锁文件，需 `rm -f "$VAULT/.style-vault-lock"` 释放。
 
 ### 沉淀模式 Checklist
 
@@ -142,7 +148,7 @@ AI 按步骤执行：
 ## Tag 字典与 Frontmatter
 
 - Tag 字典：[references/_tags.yaml](references/_tags.yaml)。四大分组 `aesthetic` / `mood` / `theme` / `stack`。字典是权威源，sync 会严格校验。
-- Frontmatter schema：[references/README.md](references/README.md)。必填 `id` / `type` / `name` / `description` / `tags`；vibe / archetype / composite / atom 带 `preview` 路径，atom 以外各层建议填 `uses`。
+- Frontmatter schema：[references/README.md](references/README.md)。必填 `id` / `type` / `name` / `description` / `tags`；vibe / archetype / composite / atom 带 `preview` 路径，vibe / archetype / composite 建议填 `uses`；atom 可选；primitive 不填（最底层）。
 - primitive 必填 `## Tokens` 下的可 `JSON.parse` 代码块（网站的色卡、字阶、间距 preview 从这里取值渲染）。
 - composite / atom / archetype / vibe 的局部 token 也写在 `## Tokens` 节里，但不强制 JSON.parse——带注释、变量引用都可以。
 
@@ -161,7 +167,7 @@ tags:
   stack: [react-antd-tailwind]
 uses:
   - primitives/palettes/admin-slate
-  - atoms/pagination/admin-pagination
+  - atoms/buttons/ghost-button
 preview: /preview/composites/display/table
 ---
 ```
@@ -237,6 +243,7 @@ primitive 的 `## Tokens` 代码块示例（必须可 JSON.parse）：
 - **orphan**：skill / 网站任一方有、另一方没有的条目；sync 给 warning 但不自动删
 - **sync**：网站仓 `yarn sync`，扫 skill 仓 → 重建 `registry.json` + 校验 frontmatter / tag / tokens
 - **marker**：网站仓 `frontend/package.json` 里的 `"style-vault-site": true`，用于区分普通 React 仓和 style-vault 网站仓
+- **VAULT_OK**：沉淀模式 step 7 的分支判定结果。`true` 表示 `~/.agents/path.json` 的 style-vault 字段有效、目录存在且 frontend/package.json 的 `style-vault-site` marker 为 `true`，`false` 表示任一项不满足，只沉淀到 skill 不联动网站。
 - **layer（层）**：vibe / archetype / composite / atom / primitive 五个大类之一
 - **bucket（桶）**：每层下的二级目录，如 `composites/display/` / `primitives/palettes/`
 
