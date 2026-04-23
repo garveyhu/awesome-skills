@@ -1,12 +1,22 @@
-# AdminTable
+---
+id: composites/display/table
+type: composite
+name: Admin Table
+description: 管理后台无边框表格，统一分页、中文本地化、行 hover 减淡
+tags:
+  aesthetic: [minimal]
+  mood: [calm, serious]
+  theme: [light]
+  stack: [react-antd-tailwind]
+uses: []
+preview: /preview/composites/display/table
+---
+
+# Admin Table
 
 > 管理后台无边框表格，统一分页、中文本地化、行 hover 减淡
 
-## 技术栈
-
-React + Ant Design + Tailwind CSS
-
-## 预览效果
+## 视觉特征
 
 无边框无竖线表格，底部分页栏带"共 N 条"总数显示、页大小切换（10/15/20/50 条/页）、"跳至 X 页"快速跳转。行 hover 时背景变为极浅灰色，选中行为浅蓝，展开行为浅灰。表格不被任何边框容器包裹，直接渲染在面板中。
 
@@ -118,3 +128,16 @@ function UserListPage() {
 ```
 
 无需手动传 `pagination` 或 `size` 属性，AdminTable 已内置合理的默认值。如需自定义分页，可传入 `pagination` 对象与默认配置合并；传 `pagination={false}` 则完全隐藏分页栏。
+
+## 适配指南
+
+- `columns` 外部传入，遵循 Ant Design `Table` 的 `columns` 类型定义，不要尝试在组件内部硬编码
+- `rowKey` 必填，不传会在 React key 警告里翻车并触发 Ant Design console warn
+- `pagination` 支持对象合并（会和 `ADMIN_PAGINATION` 做浅合并）；传 `false` 则完全隐藏分页栏
+- `className` 会与默认的一长串 Tailwind override 拼接，不会覆盖默认样式——要打破默认样式需改源码
+
+## 反模式 / 禁忌
+
+- 不要设 `bordered={true}`，会破坏"无边框"这条核心视觉特征
+- 不要用 Ant Design 默认的深灰 hover 色（`bg-gray-100` 及以上），整体"轻盈"会塌
+- 不要给分页栏外层再加阴影或边框容器，分页栏是表格的延伸，不是独立块
