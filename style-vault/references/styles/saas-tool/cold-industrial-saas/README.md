@@ -1,19 +1,20 @@
 ---
-id: vibes/saas-tool/cold-industrial-saas
-type: vibe
-name: Cold Industrial SaaS
+id: styles/saas-tool/cold-industrial-saas
+type: style
+name: 冷感工业 SaaS
 description: 冷感留白 + IBM Plex 双字体 + 几何切割，工具型 SaaS 的整站调性
+platforms: [web]
+theme: both
 tags:
   aesthetic: [minimal, industrial]
   mood: [cold, serious]
-  theme: [dark, light]
   stack: [react-antd-tailwind]
 uses:
-  - primitives/palettes/slate-cyan-ice
-  - primitives/typography/pairs/ibm-plex-duo
-  - atoms/buttons/ghost-button
-  - archetypes/landing/saas-landing
-preview: /preview/vibes/saas-tool/cold-industrial-saas
+  - tokens/palettes/slate-cyan-ice
+  - tokens/typography/pairs/ibm-plex-duo
+  - components/buttons/ghost-button
+  - pages/landing/saas-landing
+preview: /preview/styles/saas-tool/cold-industrial-saas
 ---
 
 # Cold Industrial SaaS
@@ -30,10 +31,10 @@ preview: /preview/vibes/saas-tool/cold-industrial-saas
 
 ## 适配指南
 
-- 把 uses 里的 primitive tokens 注入 CSS 变量：
+- 把 uses 里的 Tokens 注入 CSS 变量：
   - `--font-sans` / `--font-mono` ← ibm-plex-duo
   - `--color-bg` / `--color-fg` / `--color-accent` ← slate-cyan-ice
-- archetypes/landing/saas-landing 直接套用后只需覆盖变量
+- pages/landing/saas-landing 直接套用后只需覆盖变量
 - ghost-button 作为次要 CTA；primary CTA 用 slate-cyan-ice 的 accent 作填色
 
 ## 反模式

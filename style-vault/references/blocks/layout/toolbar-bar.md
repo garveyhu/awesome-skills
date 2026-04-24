@@ -1,16 +1,17 @@
 ---
-id: composites/layout/toolbar-bar
-type: composite
-name: Admin Toolbar Bar
+id: blocks/layout/toolbar-bar
+type: block
+name: 管理后台工具栏
 description: 表格顶部工具栏，搜索+筛选左对齐，功能按钮右对齐
+platforms: [web]
+theme: light
 tags:
   aesthetic: [minimal]
   mood: [calm, serious]
-  theme: [light]
   stack: [react-antd-tailwind]
 uses:
-  - composites/display/table
-preview: /preview/composites/layout/toolbar-bar
+  - blocks/display/table
+preview: /preview/blocks/layout/toolbar-bar
 ---
 
 # Admin Toolbar Bar

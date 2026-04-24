@@ -1,14 +1,15 @@
 ---
-id: primitives/palettes/slate-cyan-ice
-type: primitive
+id: tokens/palettes/slate-cyan-ice
+type: token
 name: Slate × Cyan Ice
 description: 冷感留白、深 slate 底 + cyan 高亮的工具型界面基础色
+platforms: [any]
+theme: both
 tags:
   aesthetic: [minimal, industrial]
   mood: [cold, serious]
-  theme: [dark, light]
   stack: [react-antd-tailwind, html-tailwind]
-preview: /preview/primitives/palettes/slate-cyan-ice
+preview: /preview/tokens/palettes/slate-cyan-ice
 ---
 
 # Slate × Cyan Ice

@@ -1,14 +1,15 @@
 ---
-id: primitives/typography/pairs/ibm-plex-duo
-type: primitive
-name: IBM Plex Duo
+id: tokens/typography/pairs/ibm-plex-duo
+type: token
+name: IBM Plex 双字体
 description: IBM Plex Sans + IBM Plex Mono，技术感与中性感兼具的字体搭配
+platforms: [any]
+theme: both
 tags:
   aesthetic: [minimal, industrial]
   mood: [serious, calm]
-  theme: [light, dark]
   stack: [react-antd-tailwind, html-tailwind]
-preview: /preview/primitives/typography/pairs/ibm-plex-duo
+preview: /preview/tokens/typography/pairs/ibm-plex-duo
 ---
 
 # IBM Plex Duo

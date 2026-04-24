@@ -1,16 +1,17 @@
 ---
-id: atoms/buttons/ghost-button
-type: atom
-name: Ghost Button
+id: components/buttons/ghost-button
+type: component
+name: 幽灵按钮
 description: 幽灵按钮——透明底 + 1px 描边，只在 hover 时显色
+platforms: [web]
+theme: both
 tags:
   aesthetic: [minimal, industrial]
   mood: [calm, serious]
-  theme: [light, dark]
   stack: [react-antd-tailwind, html-tailwind]
 uses:
-  - primitives/palettes/slate-cyan-ice
-preview: /preview/atoms/buttons/ghost-button
+  - tokens/palettes/slate-cyan-ice
+preview: /preview/components/buttons/ghost-button
 ---
 
 # Ghost Button

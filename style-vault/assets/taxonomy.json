@@ -1,0 +1,76 @@
+{
+  "type": {
+    "product":   { "zh": "产品", "color": "purple" },
+    "style":     { "zh": "风格", "color": "magenta" },
+    "page":      { "zh": "页面", "color": "geekblue" },
+    "block":     { "zh": "模块", "color": "cyan" },
+    "component": { "zh": "组件", "color": "green" },
+    "token":     { "zh": "原语", "color": "orange" }
+  },
+  "platform": {
+    "web":     { "zh": "Web" },
+    "ios":     { "zh": "iOS" },
+    "android": { "zh": "Android" },
+    "any":     { "zh": "通用" }
+  },
+  "theme": {
+    "light": { "zh": "浅色" },
+    "dark":  { "zh": "深色" },
+    "both":  { "zh": "双主题" }
+  },
+  "category": {
+    "productivity": { "zh": "效率工具", "dot": "#a855f7", "order": 1 },
+    "content":      { "zh": "内容",     "dot": "#22d3ee", "order": 2 },
+    "lifestyle":    { "zh": "生活",     "dot": "#f59e0b", "order": 3 },
+    "social":       { "zh": "社交",     "dot": "#ec4899", "order": 4 },
+    "commerce":     { "zh": "电商",     "dot": "#10b981", "order": 5 }
+  },
+  "tag": {
+    "aesthetic": {
+      "groupZh": "风格",
+      "values": {
+        "minimal":    { "zh": "极简" },
+        "maximal":    { "zh": "繁复" },
+        "brutalist":  { "zh": "粗野" },
+        "editorial":  { "zh": "编辑" },
+        "glass":      { "zh": "玻璃拟态" },
+        "skeuomorph": { "zh": "拟物" },
+        "neumorph":   { "zh": "新拟态" },
+        "bento":      { "zh": "便当网格" },
+        "retro":      { "zh": "复古" },
+        "y2k":        { "zh": "Y2K" },
+        "cyberpunk":  { "zh": "赛博朋克" },
+        "organic":    { "zh": "有机" },
+        "industrial": { "zh": "工业" },
+        "swiss":      { "zh": "瑞士风" },
+        "luxe":       { "zh": "奢华" },
+        "handdrawn":  { "zh": "手绘" }
+      }
+    },
+    "mood": {
+      "groupZh": "氛围",
+      "values": {
+        "cold":       { "zh": "冷峻" },
+        "warm":       { "zh": "温暖" },
+        "calm":       { "zh": "平静" },
+        "energetic":  { "zh": "活力" },
+        "serious":    { "zh": "严肃" },
+        "playful":    { "zh": "俏皮" },
+        "dark":       { "zh": "暗黑" },
+        "dreamy":     { "zh": "梦幻" },
+        "nostalgic":  { "zh": "怀旧" },
+        "confident":  { "zh": "自信" }
+      }
+    },
+    "stack": {
+      "groupZh": "技术栈",
+      "values": {
+        "react-tailwind":      { "zh": "React + Tailwind" },
+        "react-antd-tailwind": { "zh": "React + Antd + Tailwind" },
+        "html-tailwind":       { "zh": "HTML + Tailwind" },
+        "shadcn-radix":        { "zh": "shadcn + Radix" },
+        "vanilla-css":         { "zh": "原生 CSS" }
+      }
+    }
+  }
+}

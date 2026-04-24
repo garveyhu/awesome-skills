@@ -1,15 +1,16 @@
 ---
-id: composites/display/table
-type: composite
-name: Admin Table
+id: blocks/display/table
+type: block
+name: 管理后台表格
 description: 管理后台无边框表格，统一分页、中文本地化、行 hover 减淡
+platforms: [web]
+theme: light
 tags:
   aesthetic: [minimal]
   mood: [calm, serious]
-  theme: [light]
   stack: [react-antd-tailwind]
 uses: []
-preview: /preview/composites/display/table
+preview: /preview/blocks/display/table
 ---
 
 # Admin Table
