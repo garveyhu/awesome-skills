@@ -4,8 +4,9 @@
 
 ## 共享主干（被所有路径共用）
 
-- [shared-workflow.md](shared-workflow.md) · 8 步通用主流程：加载字典 → 授权 auto-fill → 生成方案 → 整批 review → path.json 分叉 → 逐条写入 → 聚合 commit → 沉淀报告
+- [shared-workflow.md](shared-workflow.md) · 8 步通用主流程 + 步骤 9 教训回写：加载字典 → 授权 auto-fill → 生成方案 → 整批 review → path.json 分叉 → 逐条写入 → 聚合 commit → 沉淀报告 →（条件触发）教训回写
 - [depth-tiers.md](depth-tiers.md) · 3 档深度（精髓 / 基础 / 全量）· 每档条目区间 + 强制 discovery checklist + Tier 3 覆盖率门槛
+- [lessons-loopback.md](lessons-loopback.md) · Skill 自迭代机制 · 区分"一次小错"vs"模式错" · 模式错回写 3 步 + 反污染规则 + 已回写清单
 
 ## Create 分支（按起点选一）
 

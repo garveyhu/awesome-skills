@@ -66,11 +66,13 @@ style-vault 的**写入端 skill**。全部新增 / 修改 / 删除操作都从�
 - **双仓独立 commit，同一次沉淀各仓聚合为一个 commit**，不 push
 - **沉淀报告是每次写入的收尾**，同时落盘到 `assets/sediment-history/`
 - **分类字典以 style-vault/assets/taxonomy.json 为准**，新 category / tag 值必须先改字典再写条目
+- **Skill 可自迭代**：沉淀结果出错时，区分"一次小错"与"模式错"——模式错必须回写到对应 workflow 文件并登记到 [lessons-loopback.md](references/lessons-loopback.md) 清单；小错改条目即可
 
 ## 入口索引
 
 - [共享主流程 shared-workflow.md](references/shared-workflow.md)
 - [深度档位 depth-tiers.md](references/depth-tiers.md)
+- [教训回写 lessons-loopback.md](references/lessons-loopback.md) · skill 自迭代机制
 - [Create 分支一览](references/README.md)
 - 沉淀历史归档：`assets/sediment-history/<author>/<date-topic>/`
 - 查询工具（读侧）：`style-vault/scripts/taxonomy.py`

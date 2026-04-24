@@ -575,3 +575,17 @@ ls $PROJECT/src/components/
 **6. 汇入 shared-workflow**
 
 用户确认后调 [shared-workflow.md 步骤 2](shared-workflow.md#步骤-2--授权-auto-fill)。
+
+---
+
+## 沉淀出错时 → 教训回写
+
+用户在 review / 写入后指出沉淀和真实项目"差异大"、"风格不对"、要求重写整条，或 AI 自己发现抽象错了 → 走 [shared-workflow.md 步骤 9 · 教训回写](shared-workflow.md#步骤-9--教训回写条件触发) + [lessons-loopback.md](lessons-loopback.md)。
+
+**from-project 最常见的"模式错"类型**：
+- 只读文件头 / 只读 state 就开写（漏 JSX）→ 已回写为"写 page 条目前的硬规矩"节
+- 路由枚举漏 lazy-loaded / 动态 route / Next.js App Router page.tsx
+- 跨文件 className 扫描没跑，漏全局一致性（黑白 CTA 模式 / 统一 focus / 统一圆角）
+- 把整站独特元素当作"blog 长文 + sidebar"这种刻板印象套路写
+
+一次小错（单条条目具体字段错了）→ 改条目即可，**不要**触发教训回写。
