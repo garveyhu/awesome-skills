@@ -354,6 +354,41 @@ grep -rhoE 'animate-\[[^\]]+\]|animate-pulse|animate-spin' "$PROJECT/src" 2>/dev
 
 ---
 
+## 写 page 条目前的硬规矩：**必须通读 JSX**
+
+**惨痛教训**（2026-04-24 · skillhub tier3 第一次交付时犯过）：只读了 `skill/pages/detail/index.tsx` 文件头 150 行（state / hooks / fetching）就开始写沉淀条目，结果把"长文 + sidebar"的刻板印象套上去，漏了 **安装命令条 / SUMMARY box / SKILL.md pill / 元信息矩阵 / timeline 评论 / rounded-3xl compose** 6 处关键结构。用户一截图比对就发现差异很大。
+
+### 硬规矩
+
+Tier 2 / Tier 3 写 page / 复杂 block 条目前，**必须满足以下全部**：
+
+1. **完整读过 `return (` 到文件末尾的 JSX**。不能只读 state/hooks。
+2. **识别出至少 3 处"本页独有的视觉结构"**（breadcrumb / install bar / stats grid / timeline / ...），写进 README.md 的"页面骨架"或"视觉要点"节。
+3. **列出所有 `className` 里的具体数值**（`rounded-lg` 不是 `rounded-xl` / `w-1.5 h-6 bg-blue-500` 等），而不是写"圆角 / 蓝色竖条"这种模糊描述。
+4. **不允许描述"未在源码出现"的元素**（比如不要给 detail 页写"使用此 Skill 黑底 CTA"如果源码里没有）。
+
+### 文件长度分级处理
+
+| 文件行数 | 建议读法 |
+|---|---|
+| ≤ 200 | 一次全读 |
+| 200–500 | 读 state + JSX（分 2 次读）|
+| 500–1000 | 读 state（头 100 行）+ JSX 分 2-3 段 |
+| > 1000 | 分段 + 优先读最长的 return 块，state 只扫字段名 |
+
+**不允许"读头就开写"**。
+
+### 自检问题（写 page README 前自问）
+
+- [ ] 这个页面第一眼的"主要视觉块"是什么？我在 README 里写到它了吗？
+- [ ] 这个页面的"主 CTA"在哪里？不是我凭印象猜的吗？
+- [ ] 这个页面有没有"意想不到"的模式（install bar / breadcrumb / timeline / ... ）？
+- [ ] 如果用户拿我写的 README 逆向还原出一页，会和真实页差到哪一步？
+
+答不上 → 回去读源码。
+
+---
+
 ## 层级反向归类表
 
 把扫到的文件映射到资产层级：
