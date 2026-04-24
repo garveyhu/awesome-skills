@@ -1,0 +1,8 @@
+{
+  "_comment": "本文件缓存本机作者 slug，用于 sediment-history 的文件夹命名。首次使用 skill 时自动生成。",
+  "_example": {
+    "author": "links",
+    "configured_at": "2026-04-24T12:00:00Z",
+    "source": "git-config | manual-input"
+  }
+}
