@@ -3,9 +3,9 @@ name: style-vault
 description: >
   Personal style library organized in 6 tiers (product / style / page / block / component / token).
   Use when: the user pastes a prompt copied from the style-vault website ("用 style-vault 里的 xxx 生成…"),
-  asks to build frontend matching a personal style preference, or wants to sink a new style into the vault.
-  Triggers: "/style-vault", "沉淀风格", "存一下样式", "加到 vault", "用 xxx 风格", "参考 style-vault 里的",
-  "使用 style-vault skill", 网站 Prompt 卡片粘贴。
+  or asks to build frontend matching a personal style preference.
+  Triggers: "用 xxx 风格", "使用 style-vault skill", "参考 style-vault 里的",
+  网站 Prompt 卡片粘贴、组件样式 / 管理后台 / 落地页等前端生成场景。
 ---
 
 # Style Vault
@@ -27,22 +27,17 @@ skill 的核心价值不在"能查到什么"，而是 **"拿到一个 id，就�
 
 **引用方向严格自上而下**。`product` 是聚合视图（只引用、不产出新实现）；`token` 是最底层（不引用任何东西）。
 
-## 两种工作模式
+## 读 / 写分工
 
-| Trigger 关键词 | 模式 |
+本 skill 只负责**读**——消费资产 + 查询分类。**写入（新增 / 修改 / 删除风格）不在本 skill 处理**，请调 `style-vault-sediment` skill。
+
+| 触发语 | 调哪个 skill |
 |---|---|
-| 网站 Prompt 卡片、"用 xxx 风格"、"使用 style-vault skill"、"参考 style-vault 里的" | **消费（Consumption）** |
-| `/style-vault`、"沉淀"、"存一下"、"加到 vault"、"记录这个风格" | **沉淀（Maintenance）** |
-| 裸词 "style-vault" | 问用户意图再分叉 |
+| "用 xxx 风格" / 网站 prompt 卡片 / "参考 style-vault 里的 xxx" | **style-vault**（本 skill，走消费模式） |
+| "沉淀" / "加到 vault" / "记录这套风格" / `/style-vault-sediment` | **style-vault-sediment** |
+| "修改 <id>" / "删除 <id>" / "下掉 <id>" | **style-vault-sediment**（显式触发修改/删除） |
 
-两模式**绝不混用**：消费只读、沉淀才写入。对话里出现歧义（例："style-vault 里有没有表格？"）一律先回问。
-
-| 维度 | 消费 | 沉淀 |
-|---|---|---|
-| 读写 | 只读 | 读 + 写 |
-| 触达 | skill `references/` + `assets/taxonomy.json` | skill 全仓 + 可选的网站仓 |
-| 产出 | 前端代码 | 新资产 + 双仓独立 commit |
-| 需 `path.json` | 否 | 是 |
+两 skill 硬依赖：`style-vault-sediment` 读 `style-vault/assets/taxonomy.json` 和 `style-vault/scripts/taxonomy.py`，安装时两个 skill 必须成对。
 
 ---
 
@@ -87,80 +82,9 @@ AI 执行：
 
 ---
 
-## 沉淀模式（Maintenance，10 步）
-
-1. **定位主体**
-   从对话识别用户要沉淀的风格对象。不确定哪一层或粒度大小——一次只问一个问题，别连环追问。
-
-2. **归类**
-   读对应层的 `_CATEGORY.md`，按边界判据归档。关键两问："能不能脱离整站单独用？" + "是不是纯值 / 资源？"
-
-3. **生成 id = 路径**
-   id 严格等于相对路径（不含扩展名），全程 kebab-case。冲突加语义后缀（`table-striped` / `table-compact`），不用 `-v2`。
-
-4. **Tag / category 校验**
-   读 `assets/taxonomy.json` —— 这是 skill 的唯一权威字典（tag 值、category slug、platform、theme 都在这里）。
-   **新 tag 值或新 category 必须先改 taxonomy.json，再写条目**，顺序反了 sync 会 reject。
-   4 个 tag group：
-   - `aesthetic`（风格）：视觉大类（minimal / industrial / editorial …）
-   - `mood`（氛围）：情绪基调（cold / warm / calm / serious …）
-   - `stack`（技术栈）：react-tailwind / react-antd-tailwind / html-tailwind …
-   - `theme`：只有 light / dark / both（作为独立字段，不在 tags 内）
-
-5. **写 skill 条目**
-   按 [references/README.md](references/README.md) 的 frontmatter schema + 正文章节：
-   `# 条目名` → `> 一句话定位` → `## 视觉特征` → `## Tokens` → `## 核心代码` → `## 适配指南` → `## 反模式 / 禁忌`
-   Token 层强制带 `## Tokens` 下可 `JSON.parse` 的代码块。
-
-6. **处理 `uses` / `refs` 悬空**
-   悬空引用允许存在（sync 给 warning 不阻断），但要列给用户选"一起沉 / 先放着"。选"一起沉"就每条悬空 id 走一遍本流程。
-
-7. **path.json 分叉**
-   判定是否联动网站仓：
-   ```bash
-   VAULT=$(jq -r '."style-vault" // empty' ~/.agents/path.json 2>/dev/null)
-   if [[ -z "$VAULT" || ! -d "$VAULT/frontend" ]]; then
-     VAULT_OK=false
-   elif ! jq -e '.["style-vault-site"] == true' "$VAULT/frontend/package.json" >/dev/null 2>&1; then
-     VAULT_OK=false
-   else
-     VAULT_OK=true
-   fi
-   ```
-   `VAULT_OK=false` → 跳到第 9 步（skill-only）；`true` → 进第 8 步（双仓同步）。
-
-   若 `VAULT_OK=true`，先检查并发锁：`$VAULT/.style-vault-lock` 存在则拒启；否则 `touch` 之。
-
-8. **网站侧**
-   - 按层级在 `$VAULT/frontend/src/preview/<id>.tsx` 建 preview 页
-   - `cd $VAULT/frontend && yarn sync`（重建 `registry.json` + 复制 `taxonomy.json` + 校验）
-   - 校验失败**停**，不 commit，错误原样报给用户。不要改 frontmatter 绕过校验。
-
-9. **双仓独立 commit（不 push）**
-   - skill 仓：`feat(style-vault): add <id>` 或按 type 拆（`feat(block): add <id>`）
-   - 网站仓：`feat(preview): add <id>`
-   - 两仓独立，push 留给用户。commit footer 按 `~/.claude/rules/git.md` 的约定追加 `Co-Authored-By`。
-
-10. **输出行动摘要**
-    id / 路径 / 命中 tag / 两个 commit hash / 提示跑 `yarn dev` 查看 preview。skill-only 分支要说明"未联动网站，原因 xxx"。无论成败，若第 7 步建了锁就 `rm -f "$VAULT/.style-vault-lock"`。
-
-### 沉淀 Checklist
-
-- [ ] 用户明确表示"满意 / 沉下来"（不是顺口一提）
-- [ ] id 与路径一致，kebab-case，无版本号
-- [ ] frontmatter 必填齐全（`id` / `type` / `name` / `description` / `tags`；product 还要 `category` / `refs`）
-- [ ] 所有 tag 值 / category slug 已在 `assets/taxonomy.json` 字典里
-- [ ] token 条目的 `## Tokens` 代码块可 `JSON.parse`
-- [ ] 悬空引用已向用户列示决定
-- [ ] 若 `VAULT_OK=true`：preview 已建 + `yarn sync` 绿灯
-- [ ] 双仓独立 commit + 正确 footer
-- [ ] 摘要贴给用户
-
----
-
 ## 分类探索工具
 
-skill 提供 `scripts/taxonomy.py`，AI 和人都可以用它查询分类体系与资产状况。**比直接读 MD 文件高效得多**——特别是在消费模式第 1 步反查 id、沉淀模式第 4 步校验 tag、或用户问"vault 里有什么"时。
+skill 提供 `scripts/taxonomy.py`，AI 和人都可以用它查询分类体系与资产状况。**比直接读 MD 文件高效得多**——特别是在消费模式第 1 步反查 id、或用户问"vault 里有什么"时。
 
 ```bash
 # 依赖：PyYAML。运行要用用户的全局 venv python：
@@ -236,26 +160,17 @@ Token 条目必带 `## Tokens` 下可 `JSON.parse` 的代码块。schema 全貌�
 
 ## 常见错误
 
-- 新条目未跑 `yarn sync` → 网站 `registry.json` 过期
-- tag 值 / category slug 不在 `assets/taxonomy.json` → sync reject
-- token 没 `## Tokens` 代码块 → 网站 preview 色卡/字阶渲染不出
-- 文件夹式条目 id 填了路径但文件名不对（`README.md` 必须）
-- 跨层错误引用（token 引用了上层 / block 引用另一个 block）→ sync 报层级倒挂
-- 沉淀跳过 tag 校验直接写 → 到 sync 才报新值没进字典
 - 消费去网站仓拉资产（网站是 preview；权威源永远是 skill 的 `references/`）
 - 合并 token 时层级覆盖顺序错（正确：token 打底 → component → block → page → style → product）
-- 混用 mood 和 aesthetic（把 "calm" 塞进 aesthetic）→ sync 拒写
-- 双仓改动写到同一个 commit message 里 → 必须各自独立
+- 文件夹式条目 id 填了路径但文件名不对（`README.md` 必须）
+- 跨层错误引用（token 引用了上层 / block 引用另一个 block）——消费时遇到直接跳过并提示
 
 ## 术语速查
 
 - **资产（asset）**：`references/` 下的一条 md（或文件夹 + README.md）
 - **主体 id / 叠加项**：消费模式里 prompt 指定的基础资产和附加变形
 - **uses / refs**：前者是各层的依赖列表，后者是 product 的显式引用字段
-- **悬空引用**：uses/refs 里写了 id 但对应文件不存在；允许，warning 不阻断
-- **orphan**：skill / 网站任一方有另一方没有的条目；warning 不自动删
-- **sync**：网站仓 `yarn sync`，扫 skill → 重建 `registry.json` + 复制 `taxonomy.json` + 全套校验
-- **VAULT_OK**：沉淀第 7 步的网站联动判定结果
+- **悬空引用**：uses/refs 里写了 id 但对应文件不存在；消费时跳过并提示
 - **category**：product 层专用，英文 slug，中文 label 存在 `assets/taxonomy.json`
 
 ## 入口索引
@@ -273,10 +188,5 @@ Token 条目必带 `## Tokens` 下可 `JSON.parse` 的代码块。schema 全貌�
 
 ## 维护原则
 
-- **不自动起 dev server** —— 生命周期归用户
-- **不自动 push** —— 两仓都由用户决定
-- **不自动删 orphan** —— 先 warning，人工确认再删
-- **新 tag / category 先改 `assets/taxonomy.json` 再写条目**
-- **新二级桶先改对应层 `_CATEGORY.md`，再写条目**
 - **消费模式禁止触发任何 commit / sync / 写入**
 - **skill 仓真实 git 根在 `/Users/links/.agents/skills/`**，git 命令用 `git -C /Users/links/.agents/skills` 形式
