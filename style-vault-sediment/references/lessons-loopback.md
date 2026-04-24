@@ -129,6 +129,7 @@ grep -rn "关键词" ~/.agents/skills/style-vault-sediment/{SKILL.md,references/
 | 2026-04-24 | 写 preview tsx 时用 Antd `<Button type="primary">` 没覆盖 `colorPrimary`，直接出 `#1677ff` 默认蓝；用 `<Tag color="blue">` / hardcoded `bg-blue-50` / `text-blue-500`——这些都是"用了 antd/tailwind 默认色没对齐被沉淀站的主色覆盖"的同一类错 | [见下方"preview 写 antd 组件的硬规矩"节](#preview-写-antd-组件的硬规矩必做) | 2026-04-24 用户指出 user-public-profile / profile-edit-form / admin table & toolbar 有大量默认蓝 |
 | 2026-04-24 | 写 user-public-profile 时加了 tabs + 2 列内容，真实页是纯 profile header 无 tabs——凭印象套了"用户主页 = header + tabs"的刻板印象 | 并入上面"通读 JSX"规矩——**每个 page 源码的 return 块必须从头读到尾，不允许脑补存在本无的结构** | 2026-04-24 同上 |
 | 2026-04-24 | 写 `blocks/form/profile-edit-form` 时被"form"这个名字带偏，直接写成"头像 + input 字段 + 保存按钮"的长表单，真实 skillhub `/me/edit` 是 **iOS 列表点击模式**（每行点击弹独立 modal，没保存按钮）| [见下方"block/page 命名不能带偏抽象"节](#blockpage-命名不能带偏抽象必做) | 2026-04-24 用户指出 profile-edit-form 不对 |
+| 2026-04-24 | preview 组件在卡片缩略图里**反复 mount** 时，任何"mount 时的异步动画"都会被反复触发放大可见——具体表现两类：(a) `scrollIntoView({smooth})` / framer-motion `initial→animate` / CSS `transition from→to` 等进场动画；(b) macOS overlay scrollbar 在程序化 `scrollTop = N` 时系统级"淡入再淡出"动画。用户切分类时整屏卡片反复闪 | [见下方"preview 组件是静态快照 · 禁止 mount 时异步动画"节](#preview-组件是静态快照--禁止-mount-时异步动画必做) | 2026-04-24 用户连续指出 StyleCard scale 闪、IM 滚动条抖动、macOS overlay 滚动条渐隐 |
 
 ---
 
@@ -175,6 +176,42 @@ grep -rn "关键词" ~/.agents/skills/style-vault-sediment/{SKILL.md,references/
 - [ ] 真实交互是一次性输入全字段 submit，还是点一行改一字段？
 
 任一答错 → 停下来重读源码，别被 id 名字带偏。
+
+---
+
+## preview 组件是静态快照 · 禁止 mount 时异步动画（必做）
+
+**惨痛教训**（2026-04-24 · 连续 3 轮用户指正）：preview 组件在 vault 网站里会被 StyleCard 缩放成卡片缩略图。卡片在切分类/筛选/滚动时**反复 mount**，任何"mount 时触发的异步动画"都会在卡片里反复播放 → 用户看到整屏闪烁。
+
+具体表现（同一类错的不同症状）：
+
+1. **StyleCard 初始 scale 硬编码 0.28** · useEffect 在 paint 后才纠正 → 每次卡片 mount 都先按 0.28 画一帧再跳到正确 scale
+2. **IM preview `scrollIntoView({ behavior: 'smooth' })`** · 300ms 平滑滚动动画 → 卡片 mount 时播放，切分类时整屏滚动条乱动
+3. **macOS overlay scrollbar** · 程序化 `el.scrollTop = el.scrollHeight` 触发系统级"淡入淡出"动画 → 用户在缩略卡里看到滚动条闪一下
+4. **潜在同类**：framer-motion `initial + animate` 的进场动画（opacity 0→1 / translateY 20→0）同理；CSS `transition` 配合 mount 时 state 切换同理
+
+### 硬规矩
+
+1. **preview 组件必须是"静态快照"** · 渲染完立即稳定 · **不允许 mount 时触发任何 > 0ms 的动画**
+2. **测量类副作用（scale / 容器尺寸 / 首帧滚动位置）必须用 `useLayoutEffect` + 初始同步测量** · paint 前完成，不产生"首帧错误→第二帧正确"的闪烁
+3. **首次进入滚动到底 / 到指定位置，用 `el.scrollTop = N` 或 `el.scrollLeft = N`**，**禁止** `scrollIntoView({ behavior: 'smooth' })` · smooth 必然动画
+4. **preview 里的 overflow 容器必须隐藏滚动条** · 因为 pointer-events-none 下用户无法滚，但程序化 setScroll 会触发 macOS overlay scrollbar 的系统动画。用以下 CSS 三重保险：
+   ```css
+   .xxx::-webkit-scrollbar { display: none; width: 0; height: 0; }
+   .xxx { scrollbar-width: none; -ms-overflow-style: none; }
+   ```
+5. **framer-motion 在 preview 里要么换 `animate` 直接到终态（省 `initial`），要么完全去掉**——mount-time 进场动画在缩略卡上下文没意义
+6. **CSS `transition` 里不允许 mount-state 切换触发** · 例：别在 mount 后 setState 改 className 来触发 from→to 的 transition
+
+### 自检问题（写 preview 前自问）
+
+- [ ] 这个 preview 里有 `scrollIntoView` / `element.animate` / `requestAnimationFrame` / `setTimeout` 吗？任一有 → 可疑
+- [ ] 这个 preview 用了 `useEffect` 做首次测量 / 定位 / 滚动吗？应改 `useLayoutEffect` + 初始同步值
+- [ ] 这个 preview 用 framer-motion 的 `initial` 属性吗？mount 时会播放 → 缩略卡里是噪音，去掉
+- [ ] 这个 preview 有 `overflow-auto` / `overflow-y: auto` 容器吗？没隐藏滚动条 → 切分类时用户会看到滚动条闪烁
+- [ ] 这个 preview 的初始 state 里有"需要测量后修正的值"吗（如 scale / container size）？初始给 `null` 不渲染，`useLayoutEffect` 填完再渲染
+
+任一命中 → 改。缩略卡里的静态感是硬底线，preview 是给 vault 网站做"一眼看风格"用的，不是功能演示。
 
 ---
 
