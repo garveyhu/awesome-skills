@@ -2,7 +2,9 @@
 
 **个人风格资产库 · 写侧** · 新增 / 修改 / 删除风格资产的完整工作流。
 
-这是 style-vault 三件套中的**写 skill**：只写、不读（读走兄弟 skill [`style-vault`](../style-vault/)）。
+这是 style-vault 三件套中的**写 skill**——**只有创作者 / 社区维护者需要装**。普通消费者用网站 + [`style-vault`](../style-vault/) 读 skill 即可。
+
+读操作（消费资产、查分类字典）走兄弟 skill [`style-vault`](../style-vault/)。本 skill 只负责写。
 
 ---
 

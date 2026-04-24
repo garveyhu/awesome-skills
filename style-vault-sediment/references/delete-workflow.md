@@ -99,7 +99,7 @@ refs:
 对**每条**待删 id 调：
 
 ```bash
-~/.venvs/current/bin/python ~/.agents/skills/style-vault/scripts/taxonomy.py \
+python3 ~/.agents/skills/style-vault/scripts/taxonomy.py \
   item <id> --json
 ```
 

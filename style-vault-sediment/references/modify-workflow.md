@@ -22,7 +22,7 @@
 **模糊 id / 只给了名字** → 用 `search --name` 反查：
 
 ```bash
-~/.venvs/current/bin/python ~/.agents/skills/style-vault/scripts/taxonomy.py \
+python3 ~/.agents/skills/style-vault/scripts/taxonomy.py \
   search --name "<用户说的名字>" --json
 ```
 
@@ -87,7 +87,7 @@
 **新增**：紧接着反查要改的条目全貌：
 
 ```bash
-~/.venvs/current/bin/python ~/.agents/skills/style-vault/scripts/taxonomy.py \
+python3 ~/.agents/skills/style-vault/scripts/taxonomy.py \
   item <id> --json
 ```
 

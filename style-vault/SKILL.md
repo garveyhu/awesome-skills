@@ -87,8 +87,8 @@ AI 执行：
 skill 提供 `scripts/taxonomy.py`，AI 和人都可以用它查询分类体系与资产状况。**比直接读 MD 文件高效得多**——特别是在消费模式第 1 步反查 id、或用户问"vault 里有什么"时。
 
 ```bash
-# 依赖：PyYAML。运行要用用户的全局 venv python：
-~/.venvs/current/bin/python ~/.agents/skills/style-vault/scripts/taxonomy.py <subcommand>
+# 依赖：Python 3 + PyYAML（`pip install pyyaml`）
+python3 ~/.agents/skills/style-vault/scripts/taxonomy.py <subcommand>
 ```
 
 常用子命令：

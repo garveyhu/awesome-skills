@@ -11,7 +11,7 @@
 - **skill 仓真实 git 根**：`/Users/links/.agents/skills/`（也就是 `~/.agents/skills/`）
 - **网站仓路径**：读 `~/.agents/path.json` 的 `"style-vault"` 字段（见步骤 5 的判定逻辑）
 - **分类字典真相源**：`~/.agents/skills/style-vault/assets/taxonomy.json`
-- **查询工具**：`~/.agents/skills/style-vault/scripts/taxonomy.py`（通过 `~/.venvs/current/bin/python` 调）
+- **查询工具**：`~/.agents/skills/style-vault/scripts/taxonomy.py`（用 `python3` 调，依赖 PyYAML）
 - **沉淀历史归档**：`~/.agents/skills/style-vault-sediment/assets/sediment-history/<author>/<date-topic>/`
 
 ---
@@ -23,7 +23,7 @@
 **操作**：
 
 ```bash
-~/.venvs/current/bin/python ~/.agents/skills/style-vault/scripts/taxonomy.py overview --json
+python3 ~/.agents/skills/style-vault/scripts/taxonomy.py overview --json
 ```
 
 输出是 JSON，结构大致：
@@ -45,7 +45,7 @@
 
 **把这个 JSON 的合法值清单记在当前对话的工作集里**——后面步骤 3 生成方案、步骤 4 用户 review 时要反复用它校验。
 
-**如果 taxonomy.py 报错**：说明依赖缺失（`style-vault` skill 未安装或 `~/.venvs/current/bin/python` 不存在）。停止、让用户修环境，不往下走。
+**如果 taxonomy.py 报错**：说明依赖缺失（`style-vault` skill 未安装 / `python3` 不在 PATH / PyYAML 未安装）。停止、让用户修环境，不往下走。
 
 ---
 
@@ -603,7 +603,7 @@ rm -f "$VAULT/.style-vault-lock"
 | **步骤 6 某条 `yarn sync` 失败** | 停止后续；skill 仓已写的前 k-1 条**保留**（未 commit）；网站仓 `git checkout -- src/preview/` 清理；释放锁；打印错误 + 修复指引；`plan.md` 已落盘保留 |
 | **用户 Ctrl-C / 打断** | 同 sync 失败：清网站侧，保 skill 侧未 commit 文件，释放锁 |
 | **步骤 5 并发锁冲突** | 直接拒启，打印"另一个会话正在沉淀 `<other-topic>`"。**不做任何写入**，不释放锁（锁属于其它会话）。 |
-| **步骤 1 taxonomy.py 报错** | 停止，提示用户修环境（`style-vault` skill 是否安装、`~/.venvs/current/bin/python` 是否存在） |
+| **步骤 1 taxonomy.py 报错** | 停止，提示用户修环境（`style-vault` skill 是否安装、`python3` 是否在 PATH、PyYAML 是否已安装） |
 | **步骤 3 AI 填了字典里没有的 tag** | 打断用户："`<tag>` 不在 taxonomy.json，请先改字典或换已有 slug" |
 | **步骤 5.a git config user.name 为空** | 让用户手工输入 author slug 到 prompt，存入 `.author-config.json` |
 | **步骤 6 VAULT_OK=false 时依然有用户给的网站相关指令** | 忽略并在沉淀报告注明"未联动网站（VAULT_OK=false）" |

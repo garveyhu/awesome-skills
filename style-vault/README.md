@@ -2,7 +2,9 @@
 
 **个人风格资产库 · 读侧** · 消费风格资产、查询分类字典、生成对齐风格的前端代码。
 
-这是 style-vault 三件套中的**读 skill**：只读、不写。写入（新增 / 修改 / 删除风格）请用兄弟 skill [`style-vault-sediment`](../style-vault-sediment/)。
+这是 style-vault 三件套中的**读 skill**，**所有使用者都必装**——它和网站是绑定的：消费者从网站复制 prompt 后需要本 skill 解析资产并产出代码。
+
+写入（新增 / 修改 / 删除风格）请用兄弟 skill [`style-vault-sediment`](../style-vault-sediment/)（仅创作者需要）。
 
 ---
 
@@ -98,11 +100,11 @@ AI 执行：
 ### 查询分类字典
 
 ```bash
-# 需要先用用户的全局 venv python
-~/.venvs/current/bin/python ~/.agents/skills/style-vault/scripts/taxonomy.py overview
-~/.venvs/current/bin/python ~/.agents/skills/style-vault/scripts/taxonomy.py item products/acme-cold-saas
-~/.venvs/current/bin/python ~/.agents/skills/style-vault/scripts/taxonomy.py search --aesthetic minimal --mood cold
-~/.venvs/current/bin/python ~/.agents/skills/style-vault/scripts/taxonomy.py history
+# 依赖：Python 3 + PyYAML（pip install pyyaml）
+python3 ~/.agents/skills/style-vault/scripts/taxonomy.py overview
+python3 ~/.agents/skills/style-vault/scripts/taxonomy.py item products/acme-cold-saas
+python3 ~/.agents/skills/style-vault/scripts/taxonomy.py search --aesthetic minimal --mood cold
+python3 ~/.agents/skills/style-vault/scripts/taxonomy.py history
 ```
 
 ---
