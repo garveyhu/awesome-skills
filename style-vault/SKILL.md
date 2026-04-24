@@ -101,10 +101,17 @@ skill 提供 `scripts/taxonomy.py`，AI 和人都可以用它查询分类体系�
 ... taxonomy.py tag aesthetic minimal          # 用了 minimal 这个 tag 的所有条目
 ... taxonomy.py type style                     # 所有 styles
 ... taxonomy.py platform web                   # 所有 web 条目
-... taxonomy.py item products/acme-cold-saas   # 某条目详情 + refs
+... taxonomy.py item products/acme-cold-saas   # 某条目详情 + refs + usedBy
 ... taxonomy.py search --aesthetic minimal --mood cold    # 多条件过滤
 ... taxonomy.py search ... --json              # 任意子命令加 --json 切 JSON 输出
+... taxonomy.py history                            # 列出所有沉淀历史
+... taxonomy.py history --author links             # 过滤某作者
+... taxonomy.py history --since 2026-04-01         # 日期范围
+... taxonomy.py history --mode delete              # 按模式过滤
+... taxonomy.py history show <date-topic>          # 查看某批次 plan+report
 ```
+
+沉淀历史的真相源在 `style-vault-sediment/assets/sediment-history/<author>/<date-topic>/`。
 
 真相字典：**`assets/taxonomy.json`**（唯一源，前端仓 sync 时会复制一份过去）。
 

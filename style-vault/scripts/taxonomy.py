@@ -22,6 +22,9 @@ USAGE
     taxonomy.py search [--type] [--category] [--aesthetic] [--mood]
                        [--stack] [--platform] [--theme] [--name <substr>]
                                              Multi-filter search
+    taxonomy.py history [--author] [--since] [--until] [--mode]
+                                             List sediment-history batches
+    taxonomy.py history show <date-topic>    Show plan+report of one batch
 
 FLAGS
     --json                                   Machine-readable JSON output
@@ -33,6 +36,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -45,6 +49,7 @@ except ImportError:
 SKILL_ROOT = Path(__file__).resolve().parent.parent
 REFS_DIR = SKILL_ROOT / "references"
 TAXONOMY_FILE = SKILL_ROOT / "assets" / "taxonomy.json"
+SEDIMENT_HISTORY_ROOT = Path.home() / ".agents/skills/style-vault-sediment/assets/sediment-history"
 
 
 # --- loaders ---
@@ -339,13 +344,63 @@ def cmd_dim_filter(dim, value, tax, items, as_json):
         print(_fmt_item_line(i))
 
 
+def compute_used_by(target, all_entries):
+    """找出所有引用了 target 的条目，返回 [{id, field}, ...]。
+
+    遍历所有 entry 的 uses / refs.style / refs.pages / refs.blocks /
+    refs.components / refs.tokens.* 字段，定位到具体的哪个 frontmatter
+    字段指向 target，供 cascade 精确定位 patch 目标。
+    """
+    target_id = target.get("id")
+    if not target_id:
+        return []
+    out = []
+    for entry in all_entries:
+        if entry.get("id") == target_id:
+            continue
+        entry_id = entry.get("id")
+        if not entry_id:
+            continue
+
+        # uses 列表
+        uses = entry.get("uses") or []
+        if isinstance(uses, list) and target_id in uses:
+            out.append({"id": entry_id, "field": "uses"})
+
+        refs = entry.get("refs") or {}
+        if not isinstance(refs, dict):
+            continue
+
+        # refs.style（单值）
+        if refs.get("style") == target_id:
+            out.append({"id": entry_id, "field": "refs.style"})
+
+        # refs.pages / refs.blocks / refs.components（列表）
+        for k in ("pages", "blocks", "components"):
+            lst = refs.get(k) or []
+            if isinstance(lst, list) and target_id in lst:
+                out.append({"id": entry_id, "field": f"refs.{k}"})
+
+        # refs.tokens.*（单值 map）
+        tokens = refs.get("tokens") or {}
+        if isinstance(tokens, dict):
+            for tk, tv in tokens.items():
+                if tv == target_id:
+                    out.append({"id": entry_id, "field": f"refs.tokens.{tk}"})
+
+    return out
+
+
 def cmd_item(ident, items, as_json):
     found = next((i for i in items if i.get("id") == ident), None)
     if not found:
         sys.stderr.write(f"Error: item '{ident}' not found.\n")
         sys.exit(1)
+    used_by = compute_used_by(found, items)
     if as_json:
-        _out_json(found)
+        out = dict(found)
+        out["usedBy"] = used_by
+        _out_json(out)
         return
     print(f"=== {found.get('name', '?')} ===")
     print(f"id:          {found.get('id')}")
@@ -375,6 +430,12 @@ def cmd_item(ident, items, as_json):
             print("  tokens:")
             for tk, tv in refs["tokens"].items():
                 print(f"    {tk:<12} {tv}")
+    print(f"\n## 被引用（{len(used_by)} 处）")
+    if used_by:
+        for u in used_by:
+            print(f"  - {u['id']:<48} [{u['field']}]")
+    else:
+        print("  （无）")
 
 
 def cmd_search(filters, items, as_json):
@@ -390,6 +451,99 @@ def cmd_search(filters, items, as_json):
     print(f"Search ({', '.join(active) if active else 'no filters'}): {len(matched)} matches")
     for i in matched:
         print(_fmt_item_line(i))
+
+
+# --- history ---
+
+def load_history_batches():
+    """扫 sediment-history 目录，返回 [(author, date, topic, folder_path, mode), ...]。"""
+    if not SEDIMENT_HISTORY_ROOT.is_dir():
+        return []
+    out = []
+    for author_dir in sorted(SEDIMENT_HISTORY_ROOT.iterdir()):
+        if not author_dir.is_dir() or author_dir.name.startswith("."):
+            continue
+        author = author_dir.name
+        for batch_dir in sorted(author_dir.iterdir()):
+            if not batch_dir.is_dir():
+                continue
+            name = batch_dir.name
+            if not re.match(r"^\d{4}-\d{2}-\d{2}-", name):
+                continue
+            date = name[:10]
+            topic = name[11:]
+            mode = _read_mode_from_plan(batch_dir)
+            out.append((author, date, topic, batch_dir, mode))
+    return out
+
+
+def _read_mode_from_plan(batch_dir):
+    """从 plan.md 顶部 metadata 抽取 mode（create/modify/delete）。"""
+    plan = batch_dir / "plan.md"
+    if not plan.is_file():
+        return None
+    try:
+        text = plan.read_text(encoding="utf-8")
+        m = re.search(r"^模式：(\w+)", text, re.MULTILINE)
+        return m.group(1) if m else None
+    except Exception:
+        return None
+
+
+def cmd_history(args):
+    batches = load_history_batches()
+
+    # 规范化 show 目标：支持 `show <date-topic>` 或单独 `<date-topic>`
+    pos = list(args.positional or [])
+    show_target = None
+    if len(pos) >= 2 and pos[0] == "show":
+        show_target = pos[1]
+    elif len(pos) == 1:
+        # 单个 token：若是 show 则忽略（等同列表），否则当 date-topic
+        show_target = None if pos[0] == "show" else pos[0]
+    elif len(pos) > 2:
+        sys.stderr.write(f"Error: history 子命令接收多余参数：{pos}\n")
+        sys.exit(1)
+
+    if show_target:
+        match = [b for b in batches if f"{b[1]}-{b[2]}" == show_target]
+        if not match:
+            print(f"未找到批次：{show_target}")
+            return
+        folder = match[0][3]
+        for name in ("plan.md", "report.md", "source.md"):
+            f = folder / name
+            if f.is_file():
+                print(f"\n=== {name} ===\n")
+                print(f.read_text(encoding="utf-8"))
+        return
+
+    if args.author:
+        batches = [b for b in batches if b[0] == args.author]
+    if args.since:
+        batches = [b for b in batches if b[1] >= args.since]
+    if args.until:
+        batches = [b for b in batches if b[1] <= args.until]
+    if args.mode:
+        batches = [b for b in batches if b[4] == args.mode]
+
+    if args.json:
+        out = [
+            {"author": a, "date": d, "topic": t, "mode": m, "path": str(p)}
+            for a, d, t, p, m in batches
+        ]
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return
+
+    if not batches:
+        print("（无匹配的沉淀记录）")
+        return
+
+    print(f"{'日期':<12} {'作者':<12} {'模式':<8} 主题")
+    print("-" * 60)
+    for author, date, topic, _, mode in batches:
+        mode_str = mode or "—"
+        print(f"{date:<12} {author:<12} {mode_str:<8} {topic}")
 
 
 # --- CLI ---
@@ -442,6 +596,17 @@ def build_parser():
     ps.add_argument("--theme")
     ps.add_argument("--name")
 
+    ph = sub.add_parser("history", parents=[common], help="查询沉淀历史")
+    ph.add_argument("--author", help="过滤作者 slug")
+    ph.add_argument("--since", help="起始日期 YYYY-MM-DD")
+    ph.add_argument("--until", help="截止日期 YYYY-MM-DD")
+    ph.add_argument("--mode", choices=["create", "modify", "delete"], help="按模式过滤")
+    # 支持两种形式：
+    #   taxonomy history                          （列表）
+    #   taxonomy history show <date-topic>        （详情，两个 token）
+    #   taxonomy history <date-topic>             （详情，一个 token，向后兼容）
+    ph.add_argument("positional", nargs="*", help="显示某批次 plan+report：`show <date-topic>` 或 `<date-topic>`")
+
     return p
 
 
@@ -484,6 +649,8 @@ def main():
                       "platform", "theme", "name")
         }
         cmd_search(filters, items, as_json)
+    elif cmd == "history":
+        cmd_history(args)
 
 
 if __name__ == "__main__":
