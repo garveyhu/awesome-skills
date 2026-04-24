@@ -63,28 +63,92 @@ graph TB
 
 ---
 
-## 核心工作流（shared-workflow 8 步）
+## 三档深度 · 先选再沉淀
 
-所有路径（create / modify / delete）都汇入同一条 8 步主干：
+进入 discovery 前第一步先问**挖掘深度**——决定要抽多少条、扫多细。详见 [references/depth-tiers.md](references/depth-tiers.md)。
+
+| 档位 | 名称 | 目标条目 | 时间 | 典型场景 |
+|:---:|---|:---:|:---:|---|
+| **1** | 精髓（essence） | 5–8 | 20–30 min | 给别人看 5 样最代表这个风格的东西 |
+| **2** | 基础（foundation） | 12–18 | 1–1.5 h | 能启动一个同风格新产品的最小设计系统 · **默认** |
+| **3** | 全量（comprehensive） | 30–50+ | 3–4 h | 尽可能 100% 复刻 · 每条主路由独立 page |
+
+**Tier 3 硬下限**（不达标不能进入写入阶段）：
+
+- 全路由枚举 → 主路由 ≥ 80% 被沉淀为独立 page
+- 跨文件 className 模式扫描 → 至少 3 条"全局模式"沉淀为 token/component（抓"负空间一致性"——整站统一的按钮/输入/圆角等）
+- 表单 / 状态 / 动效清单 → 覆盖率 ≥ 80%
+
+越高档对 discovery 要求越严，避免"抽样式"沉淀漏掉核心信息。
+
+---
+
+## Skill 自迭代 · 教训回写
+
+Skill 会**自己修自己**——每次沉淀出错（用户指出差异大 / AI 发现抽象错了），把**错误模式**抽象成硬规矩回写到对应 workflow 文件，后续所有沉淀自动遵守。详见 [references/lessons-loopback.md](references/lessons-loopback.md)。
+
+### 流程
 
 ```
+沉淀出错
+  ↓
+诊断性质
+  ↓
+[一次小错] → 改条目即可
+[模式错]   → 回写 3 步：
+             1. 抽象问题（一句话"为什么会犯这类错"）
+             2. 定位所属 workflow 文件
+             3. 写硬规矩 + 自检问题
+  ↓
+登记到 lessons-loopback.md 的 append-only 清单
+  ↓
+同 commit 推送（message 前缀 docs(skill): 沉淀教训 · xxx）
+```
+
+### 反污染硬规矩
+
+- 不允许把"具体错误"（某条字段值错）当教训写入
+- 不允许重复加同义规则——先 grep 搜已有的
+- 规则必须"必须/不允许"强制语气——温馨提示会被 AI 忽略
+- 清单 append-only，过时条目只标注"已失效"不删
+
+### 已回写的典型教训
+
+- **路由覆盖率**：Tier 2 沉淀 skillhub 漏 10/12 主路由 → 改到 `depth-tiers.md` 加 Tier 3 硬下限 checklist
+- **必须通读 JSX**：写 page 条目时只读文件头 150 行（state/hooks）凭印象抽象 → 改到 `sediment-from-project.md` 加"写 page 前必须通读 JSX + 文件长度分级读法 + 4 项自检问题"
+- **antd 默认主色**：用 antd Button `type="primary"` 没覆盖 `colorPrimary` 导致 preview 出现默认蓝 → 改到 preview 写法约定里（见该教训登记）
+
+Skill 越用越准——每次真实使用后都比上一次少犯一类错。
+
+---
+
+## 核心工作流（shared-workflow 8 步 + step 9 教训回写）
+
+所有路径（create / modify / delete）都汇入同一条 8 步主干 +（条件触发）第 9 步：
+
+```
+0. 档位门                （Tier 1/2/3，见上节）
 1. 加载分类字典         （调 taxonomy.py overview）
 2. 授权 auto-fill       （Y / N / 逐条决定）
 3. 生成完整写入方案     （拓扑序 + frontmatter + 正文骨架）
-4. 整批 review          （用户确认后 plan.md 落盘）
+4. 整批 review          （用户确认后 plan.md 落盘 · Tier 3 跑覆盖率核对）
 5. path.json 分叉        （VAULT_OK 判定 + 并发锁）
 6. 逐条写入             （skill 仓 + 网站仓，每条跑 yarn sync）
 7. 网站仓 commit         （若 VAULT_OK=true）
 8. 沉淀报告 + skill 仓聚合 commit
+9. 教训回写（条件触发）  （用户指出差异大 / 要求重写时走）
 ```
 
 ## 硬约束
 
+- **档位先行**——进入 discovery 前先选 Tier 1/2/3
 - **写入前必须整批 review**——用户确认后才落盘
+- **Tier 3 写入前必须覆盖率核对 ≥ 80%**——未达标打断询问补齐 / 降档 / 手动放行
 - **AI 自动填元信息需一次性授权**（Y/N/逐条决定）
 - **双仓独立 commit**，不 push，由用户手动
 - **新 tag / category 必须先改 taxonomy.json 再写条目**
 - **每次沉淀产生报告**，落盘到 `assets/sediment-history/<author>/<date-topic>/`
+- **Skill 可自迭代**——沉淀结果出错时区分"一次小错"与"模式错"，模式错回写到对应 workflow 文件并登记 `lessons-loopback.md`
 
 ---
 
@@ -96,7 +160,9 @@ style-vault-sediment/
 ├── README.md                             本文件
 ├── references/
 │   ├── README.md                         workflow 索引
-│   ├── shared-workflow.md                共享 8 步主干
+│   ├── shared-workflow.md                共享 8 步主干 + step 9 教训回写
+│   ├── depth-tiers.md                    3 档深度（精髓 / 基础 / 全量）
+│   ├── lessons-loopback.md               skill 自迭代 · 教训回写清单
 │   ├── sediment-from-project.md          Create 起点 1：本地项目
 │   ├── sediment-from-web.md              Create 起点 2：在线资源
 │   ├── sediment-from-scratch.md          Create 起点 3：从零创作
@@ -155,7 +221,9 @@ style-vault-sediment/
 ## 相关链接
 
 - [SKILL.md](SKILL.md) · 入口路由表
-- [references/shared-workflow.md](references/shared-workflow.md) · 8 步主干
+- [references/shared-workflow.md](references/shared-workflow.md) · 8 步主干 + step 9 教训回写
+- [references/depth-tiers.md](references/depth-tiers.md) · 3 档深度定义 + 硬下限 checklist
+- [references/lessons-loopback.md](references/lessons-loopback.md) · skill 自迭代机制 + 已回写教训清单
 - [references/README.md](references/README.md) · workflow 索引
 - 兄弟 skill：[style-vault](../style-vault/)（消费者必装的读 skill）
 - 网站仓：https://github.com/garveyhu/style-vault

@@ -126,6 +126,31 @@ grep -rn "关键词" ~/.agents/skills/style-vault-sediment/{SKILL.md,references/
 | 2026-04-24 | 第一次 skillhub 沉淀只按 Tier 2 硬推 15 条，没做全路由枚举就收工，漏 10/12 主路由 | [depth-tiers.md · Tier 3 硬下限 checklist](depth-tiers.md) | 2026-04-24-skillhub / tier3 |
 | 2026-04-24 | 写 skill-article-detail 条目时只读文件头 150 行（state/hooks），没通读 JSX 渲染，凭印象套了"长文 + sidebar"模板，漏掉安装命令条/SUMMARY box/SKILL.md pill/timeline 评论 6 处核心结构 | [sediment-from-project.md · 写 page 条目前的硬规矩](sediment-from-project.md) | 2026-04-24-skillhub-tier3 + 后续修正 |
 | 2026-04-24 | 虽然上一条规矩已生效，但还是连续 4 页（publish/IM/me/edit）重蹈覆辙——说明读 JSX 的强制不够靠前 | 同上（规矩本身够，但 AI 执行时没自检，增加"每次写 page 前先答 4 问"自检 checkbox）| 2026-04-24 用户指出 4 页差异 |
+| 2026-04-24 | 写 preview tsx 时用 Antd `<Button type="primary">` 没覆盖 `colorPrimary`，直接出 `#1677ff` 默认蓝；用 `<Tag color="blue">` / hardcoded `bg-blue-50` / `text-blue-500`——这些都是"用了 antd/tailwind 默认色没对齐被沉淀站的主色覆盖"的同一类错 | [见下方"preview 写 antd 组件的硬规矩"节](#preview-写-antd-组件的硬规矩必做) | 2026-04-24 用户指出 user-public-profile / profile-edit-form / admin table & toolbar 有大量默认蓝 |
+| 2026-04-24 | 写 user-public-profile 时加了 tabs + 2 列内容，真实页是纯 profile header 无 tabs——凭印象套了"用户主页 = header + tabs"的刻板印象 | 并入上面"通读 JSX"规矩——**每个 page 源码的 return 块必须从头读到尾，不允许脑补存在本无的结构** | 2026-04-24 同上 |
+
+---
+
+## preview 写 antd 组件的硬规矩（必做）
+
+**惨痛教训**（2026-04-24）：写预览时直接用了 Antd / tailwind 默认颜色 → 最终 preview 里到处是 `#1677ff`（antd 默认 primary 蓝）、`bg-blue-50/50`（默认选中行蓝）、`<Tag color="blue">` 等，完全违背被沉淀站"slate + teal"的主色。**用户一眼看出"默认色的廉价感"**。
+
+### 硬规矩
+
+1. **preview 里用 Antd 组件必须包一层 `<ConfigProvider theme={{ token: { colorPrimary: '<被沉淀站主色>' } }}>`**。不允许裸用 `type="primary"`——会直接渲染 antd 默认蓝 `#1677ff`
+2. **不允许用 `<Tag color="blue">` / `"purple"` / `"geekblue"` 等 antd 预设色名**——这些都是预设的调色，和被沉淀站无关。要么 `color="default"` + 自定义 className，要么用具体 hex
+3. **不允许硬编码 tailwind 的 `bg-blue-*` / `text-blue-*` / `text-indigo-500`**（除非被沉淀站本身用了这个色——先在源码里 grep 确认）
+4. **preview 调色表必须从被沉淀站的"主色 tokens"取值**，不能从 antd 默认色 / tailwind 默认色 / lucide 图标随手填的色里找
+5. **写 antd 表格的 `ant-table-row-selected` 背景时先查源码**——skillhub 真实用 `bg-slate-100/60`（不是 antd 默认的 `bg-blue-50`），很多网站也会覆盖
+
+### 自检问题（写 preview 前自问）
+
+- [ ] 这个 preview 里每一个"蓝色"都有源码依据吗？（源码里能 grep 到对应的类）
+- [ ] 用了 Antd Button/Input/Select 的 `type="primary"` 时，有 ConfigProvider 包着吗？
+- [ ] 用 Tag 的 `color=` 时，这个色是被沉淀站真用了的，还是 antd 预设？
+- [ ] Modal / Popover 里的"确定"按钮用了 hardcoded `#1677ff` 吗？（违规）
+
+任一答不上 → 去源码 grep 确认该色是否合法。
 
 ---
 
