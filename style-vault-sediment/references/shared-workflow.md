@@ -419,23 +419,15 @@ plan.md 已落盘在 <path>，可在修复后重跑。
 
 ---
 
-## 步骤 7 · 双仓聚合 commit
+## 步骤 7 · 网站仓 commit（skill 仓延后到步骤 8）
 
 **仅当 步骤 6 全绿**。
 
-### Commit message 模板
+本步骤**只处理网站仓的 commit**。skill 仓的 commit 延后到步骤 8 末尾做——等 `report.md` / `source.md` 落盘后一次聚合，避免 amend，单 commit 拿到所有新增内容。
 
-**skill 仓**（create 模式）：
+### 网站仓 commit message 模板
 
-```
-feat(style-vault): add <主题> (N 条: X tokens + Y blocks + Z styles + ...)
-
-<正文：简述新增条目的作用、起点、依赖关系>
-
-Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
-```
-
-**网站仓**（create 模式）：
+**create 模式**：
 
 ```
 feat(preview): add <主题> preview (N 条)
@@ -445,28 +437,13 @@ feat(preview): add <主题> preview (N 条)
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 ```
 
-**modify 模式**：`refactor(style-vault): modify <id>` / `refactor(preview): update <id> preview`
+**modify 模式**：`refactor(preview): update <id> preview`
 
-**delete 模式**：`feat(style-vault): remove <id>` / `feat(preview): remove <id> preview`
+**delete 模式**：`feat(preview): remove <id> preview`
 
-### 执行
+### 执行（仅 VAULT_OK=true）
 
 ```bash
-# skill 仓
-cd ~/.agents/skills
-git add style-vault/references/<涉及的 MD>
-git add style-vault-sediment/assets/sediment-history/<author>/<date-topic>/plan.md
-# 注意 report.md 在步骤 8 落盘后再 add + amend，或留到步骤 8 之后另起 commit
-git commit -m "$(cat <<'EOF'
-feat(style-vault): add <主题> (...)
-
-<正文>
-
-Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
-EOF
-)"
-
-# 网站仓（仅 VAULT_OK=true）
 cd "$VAULT"
 git add frontend/src/preview/<涉及的 tsx>
 git commit -m "$(cat <<'EOF'
@@ -479,15 +456,27 @@ EOF
 )"
 ```
 
+**VAULT_OK=false** 时跳过本步骤，直接进步骤 8。
+
 **不 push**。保留给用户。
 
-### report.md 的 commit 时机
+### skill 仓 commit message 模板（步骤 8 使用）
 
-推荐做法：**步骤 8 落盘 report.md 后，再做一个单独的小 commit 或 amend 到 skill 仓的 commit**。
+下面是步骤 8 末尾要用的模板，提前放这里方便对照：
 
-更简单的做法：**先在步骤 8 落盘 report.md，再整体 add + commit**（把步骤 7 的 skill 仓 commit 延后到步骤 8 结束，但网站仓 commit 先做）。本 skill 推荐后者——步骤 8 结束再 skill 仓 commit，一次把 references/ + sediment-history/*.md 全部纳入。
+**create 模式**：
 
-实施时请选其一并在当次对话里保持一致。
+```
+feat(style-vault): add <主题> (N 条: X tokens + Y blocks + Z styles + ...)
+
+<正文：简述新增条目的作用、起点、依赖关系>
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+```
+
+**modify 模式**：`refactor(style-vault): modify <id>`
+
+**delete 模式**：`feat(style-vault): remove <id>`
 
 ---
 
@@ -569,28 +558,33 @@ EOF
 <AI 精炼提取的关键对话片段>
 ```
 
-### 释放并发锁
+### skill 仓聚合 commit（步骤 7 延后的）
 
-```bash
-rm -f "$VAULT/.style-vault-lock"
-```
-
-### 最后一次 skill 仓 commit
-
-若步骤 7 采用"延后 skill 仓 commit"策略：
+把 `references/` 下所有新增/修改/删除的条目 + `sediment-history/` 下的 plan.md / report.md / source.md 作为**同一个 commit** 提交：
 
 ```bash
 cd ~/.agents/skills
 git add style-vault/references/<涉及的 MD>
 git add style-vault-sediment/assets/sediment-history/<author>/<date-topic>/
 git commit -m "$(cat <<'EOF'
-feat(style-vault): add <主题> (...)
+feat(style-vault): add <主题> (N 条: X tokens + Y blocks + Z styles + ...)
 
-<正文>
+<正文：起点、依赖关系、元信息填写方式的简述>
 
 Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 EOF
 )"
+```
+
+**不 push**。保留给用户。
+
+**modify 模式** commit subject：`refactor(style-vault): modify <id>`
+**delete 模式** commit subject：`feat(style-vault): remove <id>`
+
+### 释放并发锁
+
+```bash
+rm -f "$VAULT/.style-vault-lock"
 ```
 
 ### 打印给用户
