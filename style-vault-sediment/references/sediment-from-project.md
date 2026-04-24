@@ -24,6 +24,37 @@ PROJECT=$(realpath "<用户给的路径>")
 
 ---
 
+## 档位门 · step 0（必做）
+
+进入所有 discovery 前，**先问用户挖掘深度**（见 [depth-tiers.md](depth-tiers.md)）。
+
+```
+本次沉淀想要多深？
+
+  1) 精髓级（5–8 条 · 20–30 min）
+  2) 基础级（12–18 条 · 1–1.5 h）  ← 默认
+  3) 全量级（30–50+ 条 · 3–4 h）
+
+回 1 / 2 / 3（默认 2）。
+```
+
+**档位决定后续 discovery 强度**：
+
+| discovery 步骤 | Tier 1 | Tier 2 | Tier 3 |
+|---|:---:|:---:|:---:|
+| 技术栈识别 | 必 | 必 | 必 |
+| Style 推断（主色 + 字体 + 气质） | 必 | 必 | 必 |
+| **全路由枚举** | 可选 | 建议 | **必** |
+| 组件识别（文件名匹配） | 采样 | 完整 | 完整 |
+| **跨文件 className 模式扫描** | 跳过 | 建议 | **必** |
+| **表单 / 状态 / 动效清单** | 跳过 | 选做 | **必** |
+| 六层反向归类输出沉淀计划 | 必 | 必 | 必 |
+| **Tier 3 覆盖率核对表（≥80%）** | — | — | **必** |
+
+档位选完把目标条目区间（Tier 1: 5–8 / Tier 2: 12–18 / Tier 3: 30–50+）记在工作集里，后面 step 2.5 / 3.5 决定是否跑、step 4 review 要卡区间。
+
+---
+
 ## 技术栈识别 checklist
 
 逐项扫，把命中结果汇总成**技术栈指纹**：
@@ -83,6 +114,54 @@ stack: [react-antd-tailwind]
 build: vite
 css: tailwind + css-variables
 ```
+
+---
+
+## 全路由枚举 · step 0.5
+
+**Tier 3 必做** · Tier 2 建议做 · Tier 1 可跳过。
+
+### 为什么要做
+
+上一版沉淀漏掉了 skill 详情 / 实践广场 / 实践详情 / 发布 / 消息 / 编辑资料 / 管理概览——根因是抽样式扫描而非全路由枚举。做过这一步后，漏路由会变成**显式缺口**而不是"忘了看"。
+
+### 怎么做
+
+根据路由方案，grep 以下来源之一：
+
+```bash
+# React Router (v6+): 从 createBrowserRouter / routes 配置文件找
+grep -rhE "path\s*:\s*['\"]" "$PROJECT/src/router" "$PROJECT/src/routes" 2>/dev/null
+grep -rhE "<Route\s+path=" "$PROJECT/src" 2>/dev/null
+
+# 按目录约定枚举（react-router-dom v7 动态路由 / 约定式 routes）
+find "$PROJECT/src/system" -maxdepth 4 -name "index.tsx" -path "*/pages/*" 2>/dev/null
+find "$PROJECT/src/pages" -maxdepth 3 -name "*.tsx" 2>/dev/null
+
+# Next.js App Router
+find "$PROJECT/src/app" "$PROJECT/app" -name "page.tsx" -o -name "page.jsx" 2>/dev/null
+
+# Next.js Pages Router
+find "$PROJECT/src/pages" "$PROJECT/pages" -maxdepth 4 -name "*.tsx" -o -name "*.jsx" 2>/dev/null
+```
+
+### 产物：路由清单表
+
+| Route | File | 职能 | page 条目候选 |
+|---|---|---|---|
+| `/` → `/discover` | `discovery/home/index.tsx` | 发现 / 首页 | `pages/landing/<slug>` |
+| `/skills/:slug` | `skill/pages/detail/index.tsx` | 技能详情 | `pages/detail/<slug>` |
+| `/practice` | `practice/pages/index.tsx` | 实践广场 | `pages/list-table/<slug>` 或 `pages/content-reader/<slug>` |
+| `/practice/:id` | `practice/pages/detail/index.tsx` | 实践详情 | `pages/detail/<slug>` |
+| `/practice/create` | `practice/pages/create/index.tsx` | 发布实践 | `pages/form-flow/<slug>` |
+| `/publish` | `skill/pages/publish/index.tsx` | 发布技能 | `pages/form-flow/<slug>` |
+| `/messages` | `message/pages/index.tsx` | 消息会话 | `pages/content-reader/<slug>` |
+| `/me` | `me/pages/index.tsx` | 个人中心 | `pages/dashboard/<slug>` 或 `pages/detail/<slug>` |
+| `/me/edit` | `me/pages/edit/index.tsx` | 编辑资料 | `pages/form-flow/<slug>` |
+| `/admin` | `admin/pages/index.tsx` | 管理后台 | `pages/list-table/<slug>` |
+| `/login` | `auth/pages/login/index.tsx` | 登录 / 注册 | `pages/auth/<slug>` |
+
+Tier 3 必须给每个主路由至少一条 page 条目候选（覆盖率 ≥ 80%）。如果 2 条路由视觉几乎相同（比如两个不同的详情页），可以合并为 1 条 page 并在正文列出适用场景。
 
 ---
 
@@ -157,6 +236,124 @@ find "$PROJECT" -name "Layout.tsx" -o -name "Shell.tsx" -o -name "AppShell*.tsx"
 
 ---
 
+## 跨文件 className 模式扫描 · step 2.5
+
+**Tier 3 必做** · Tier 2 建议做 · Tier 1 跳过。
+
+### 为什么要做
+
+上一版漏掉了 skillhub "所有按钮 / 输入框统一黑白配色" 这种**负空间一致性**——它不在任何一个组件里，而是分布在十几个文件的 className 组合里。文件级扫描看不到这个，必须做**跨文件出现频次**统计。
+
+### 怎么做
+
+```bash
+# 1) 拉出所有 className 字面量
+grep -rhoE 'className="[^"]+"' "$PROJECT/src" 2>/dev/null \
+  > /tmp/classnames.txt
+
+# 2) 统计重复的原始组合（完全一致的类字符串）
+sort /tmp/classnames.txt | uniq -c | sort -rn | head -40
+
+# 3) 针对性搜索候选全局模式
+grep -rE 'bg-\[#1a1a1a\]|bg-slate-900|bg-gray-900' "$PROJECT/src" \
+  | awk -F: '{print $1}' | sort -u | wc -l    # 统一深色 CTA 出现的独立文件数
+
+grep -rE 'focus:border-[a-z]+-\d+.*focus:ring-' "$PROJECT/src" \
+  | awk -F: '{print $1}' | sort -u | wc -l    # 统一 focus 样式
+
+grep -rE 'rounded-(xl|2xl)' "$PROJECT/src" | wc -l    # 软圆角家族
+
+grep -rE 'active:scale-9\d' "$PROJECT/src" | wc -l    # 统一 tap 缩放
+```
+
+### 模式阈值
+
+**是全局模式** ⇔ className 组合（或其核心关键字）**同时满足**：
+- 出现 ≥ 5 次
+- 横跨 ≥ 3 个文件
+- 语义上"做同一件事"（都是 CTA 底色 / 都是 focus / 都是 tap 缩放 ...）
+
+### 产物：全局模式清单
+
+| 模式 | 出现次数 | 文件数 | 该沉淀为 |
+|---|---|---|---|
+| `bg-[#1a1a1a] text-white active:scale-95` | 12 | 8 | `components/buttons/dark-primary-cta` |
+| `border-gray-200 focus:border-teal-300 focus:ring-2 focus:ring-teal-100 rounded-xl` | 9 | 6 | `components/inputs/soft-teal-focus` |
+| `rounded-2xl border border-gray-200 bg-white hover:border-teal-200 hover:shadow-md` | 7 | 5 | `tokens/radius/soft-card` 或直接进 block |
+| `text-xs font-bold uppercase tracking-wider text-gray-400` | 11 | 7 | `tokens/typography/meta-caps`（可选） |
+
+**Tier 3 要求**：至少产出 3 条全局模式，每条都要在沉淀计划中对应一条 token 或 component 条目。
+
+---
+
+## 表单 / 状态 / 动效清单 · step 3.5
+
+**Tier 3 必做** · Tier 2 选做 · Tier 1 跳过。
+
+### 表单清单
+
+```bash
+# 找所有表单
+grep -rlE '<form\b|onSubmit=' "$PROJECT/src" 2>/dev/null
+```
+
+产出：
+
+| 表单 | 路由 | 字段类型 | 视觉特征 | 沉淀为 |
+|---|---|---|---|---|
+| 登录 / 注册 | `/login` | email + password + toggle | 分屏 + slate 渐变 logo | `blocks/form/auth-split-form` |
+| 发布实践 | `/practice/create` | title + markdown editor + skill picker | 宽正文 + editor 卡片 | `blocks/form/long-article-compose` |
+| 发布技能 | `/publish` | file upload + metadata | 拖拽区 + 进度 | `blocks/form/upload-archive` |
+| 编辑资料 | `/me/edit` | nickname + avatar + bio | 两列 + avatar picker | `blocks/form/profile-edit` |
+
+### 状态清单
+
+```bash
+# loading
+grep -rlE 'animate-pulse|<Spin\s|isLoading' "$PROJECT/src" 2>/dev/null
+
+# empty
+grep -rlE '<Empty\b|"暂无|"未找到|"还没有' "$PROJECT/src" 2>/dev/null
+
+# error
+grep -rlE '"加载失败|bg-rose-|text-rose-|role="alert"' "$PROJECT/src" 2>/dev/null
+```
+
+产出：
+
+| 状态 | 位置 | 视觉特征 | 沉淀为 |
+|---|---|---|---|
+| Loading skeleton | 首页技能网格 | `h-48 animate-pulse rounded-2xl` | `blocks/feedback/skeleton-card` |
+| Empty 无搜索结果 | 发现页 | `border-dashed + Box icon` | `blocks/feedback/empty-state` |
+| Error 加载失败 | 全局 | `bg-rose-50 text-rose-700 border` | `components/indicators/error-banner` |
+| Pulse dot 正常 | footer | emerald + glow shadow + animate-pulse | `components/indicators/pulse-dot` |
+
+### 动效清单
+
+```bash
+# CSS keyframes
+grep -rnE '@keyframes\s+\w+' "$PROJECT/src" 2>/dev/null
+
+# framer-motion 模式
+grep -rnE 'whileHover=|whileTap=|whileInView=|initial=|animate=' "$PROJECT/src" 2>/dev/null | head -40
+
+# Tailwind animate 工具
+grep -rhoE 'animate-\[[^\]]+\]|animate-pulse|animate-spin' "$PROJECT/src" 2>/dev/null | sort -u
+```
+
+产出：
+
+| 名称 | 来源 | 类型 | 沉淀到 |
+|---|---|---|---|
+| `flow-right` 14s linear | `index.less:42` | CSS keyframe | `tokens/motion/<slug>` |
+| `fadeIn` 4px translateY | `index.less:49` | CSS keyframe | `tokens/motion/<slug>` |
+| `shimmer` 骨架 | `index.less:37` | CSS keyframe | `tokens/motion/<slug>` |
+| `whileHover y:-4 duration:0.2` | `home:463` | framer-motion | `tokens/motion/<slug>` |
+| `whileTap scale:0.97` | `home:76` | framer-motion | `tokens/motion/<slug>` |
+| SVG border trace `stroke-dashoffset` | `home:34` | SVG + ResizeObserver | `components/buttons/<slug>` |
+
+---
+
 ## 层级反向归类表
 
 把扫到的文件映射到资产层级：
@@ -173,7 +370,7 @@ find "$PROJECT" -name "Layout.tsx" -o -name "Shell.tsx" -o -name "AppShell*.tsx"
 | 整个项目视觉主张 | `styles/<bucket>/<slug>` | 风格聚合 |
 | 整个项目产品定位 | `products/<slug>` | 产品描述 |
 
-**注意**：不是每一层都必须建。小项目可能只值得沉淀 1 token + 1 style；大项目可能 6 层全填。由 AI 分析后提建议，用户在步骤 4 review 决定。
+**注意**：不是每一层都必须建。小项目可能只值得沉淀 1 token + 1 style；大项目可能 6 层全填。由 AI 分析后提建议，用户在步骤 4 review 决定。**条目数必须落在档位目标区间内**（Tier 1: 5–8 / Tier 2: 12–18 / Tier 3: 30–50+）。
 
 ### refs 关系
 
@@ -248,7 +445,12 @@ components/buttons/<slug>
 
 ## 汇入共享主流程
 
-沉淀计划就绪后，**汇入 [shared-workflow.md 步骤 2](shared-workflow.md#步骤-2--授权-auto-fill)**。
+沉淀计划就绪后：
+
+- **Tier 1 / 2** → 直接汇入 [shared-workflow.md 步骤 2](shared-workflow.md#步骤-2--授权-auto-fill)
+- **Tier 3** → 汇入前先完成**覆盖率核对表**（见 [depth-tiers.md#Tier-3-硬下限-checklist](depth-tiers.md)）：
+  - 主路由 / 全局模式 / 表单 / 状态 覆盖率都 ≥ 80% 才可继续
+  - 未达标 → 打断让用户决策：补齐缺口 / 降到 Tier 2 / 手动放行
 
 接下来的 8 步（授权 auto-fill → 生成完整方案 → 整批 review → path.json 分叉 → 逐条写入 → 双仓 commit → 沉淀报告）**由 shared-workflow 统一处理**，本分支不再参与。
 

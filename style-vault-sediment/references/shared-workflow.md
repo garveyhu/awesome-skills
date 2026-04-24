@@ -228,6 +228,7 @@ AI 自动填：[1] [2] [3]
 作者：links
 模式：create | modify | delete
 起点：from-web (https://dribbble.com/shots/xxx)
+档位：Tier 2 · 基础级（目标 12–18 条）
 
 ## 目标
 <一句话说明>
@@ -246,6 +247,12 @@ mint-table → cold-mint
 - AI 自动填: tokens/palettes/cold-mint, blocks/display/mint-table
 - 用户手填: styles/saas-tool/cold-mint-saas
 
+## Tier 3 覆盖率（仅 Tier 3 填）
+- 路由 N/N
+- 全局模式 K/K
+- 表单 F/F
+- 状态 S/S
+
 ## 执行状态
 ☑ 用户已确认 · 待写入
 ```
@@ -260,6 +267,38 @@ mint-table → cold-mint
 ### 错误路径
 
 **整批 reject** → 放弃所有改动，**不写任何文件**、不 commit、**`plan.md` 不落盘**。结束。
+
+### Tier 3 覆盖率核对（仅 Tier 3 · 在"贴写入预览"之前必跑）
+
+如果档位是 Tier 3，步骤 4 一开始必须先贴覆盖率核对表：
+
+```
+=== Tier 3 覆盖率核对 ===
+路由       N/N → XX%
+全局模式   K/K → XX%
+表单       F/F → XX%
+状态       S/S → XX%
+
+门槛：全部 ≥ 80%
+```
+
+- **全部 ≥ 80%** → 进入整批 review 正常流程
+- **任一 < 80%** → 打断用户，选项：
+  1. 补齐缺口（回到 sediment-from-project.md 的 step 0.5 / 2.5 / 3.5 补扫 / 补条目）
+  2. 降到 Tier 2（移除超出 Tier 2 范围的条目，以 Tier 2 流程继续）
+  3. 手动放行（在沉淀报告里显式标注"Tier 3 覆盖率 XX% 未达标，用户手动放行"）
+
+用户未明确选项时不要默认放行——缺口不补的默认值是"降到 Tier 2"。
+
+### 档位区间校验（所有档位 · review 之前必做）
+
+同时要校验**条目数**是否落在档位目标区间：
+
+| 档位 | 目标区间 | 越界动作 |
+|---|---|---|
+| Tier 1 | 5–8（超 10 要砍） | > 10 → 列出"可砍候选"让用户选删哪些 |
+| Tier 2 | 12–18（超 22 要砍） | > 22 → 同上 |
+| Tier 3 | 30–50+（无上限，下限 ≥ 30） | < 30 → 问补齐或降档 |
 
 ---
 
@@ -492,6 +531,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 日期：2026-04-24
 模式：create | modify | delete
 起点：from-web (https://dribbble.com/shots/xxx)
+档位：Tier 2 · 基础级（目标 12–18 · 实际 N 条）
 作者：links
 
 ## 涉及条目（N 条）
@@ -508,6 +548,15 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 - AI 自动填（授权）：`tokens/palettes/cold-mint`、`blocks/display/mint-table`
 - 用户手改：`styles/saas-tool/cold-mint-saas` 的 tags.aesthetic
 - 纯手填：无
+
+## Tier 3 覆盖率（仅 Tier 3 填）
+
+| 维度 | 目标 | 实际 | 覆盖率 |
+|---|---|---|---|
+| 路由 | 11 | 10 | 91% ✅ |
+| 全局模式 | 5 | 5 | 100% ✅ |
+| 表单 | 4 | 4 | 100% ✅ |
+| 状态 | 4 | 3 | 75% ⚠️（用户手动放行）|
 
 ## 分类决策说明
 
@@ -607,6 +656,8 @@ rm -f "$VAULT/.style-vault-lock"
 | **步骤 3 AI 填了字典里没有的 tag** | 打断用户："`<tag>` 不在 taxonomy.json，请先改字典或换已有 slug" |
 | **步骤 5.a git config user.name 为空** | 让用户手工输入 author slug 到 prompt，存入 `.author-config.json` |
 | **步骤 6 VAULT_OK=false 时依然有用户给的网站相关指令** | 忽略并在沉淀报告注明"未联动网站（VAULT_OK=false）" |
+| **Tier 3 覆盖率核对不达标** | 打断三选：补齐缺口 / 降到 Tier 2 / 手动放行。默认值"降到 Tier 2"。放行需在 report.md 显式标注。|
+| **档位区间越界（条目数超上限 / 低于下限）** | review 前打断：超上限列"可砍候选"，低于下限问补齐或降档 |
 
 ---
 
@@ -622,6 +673,8 @@ rm -f "$VAULT/.style-vault-lock"
 6. **锁释放必达**：不管成功失败，步骤 5 上的锁在步骤 8 或异常出口一定要释放。
 7. **作者 slug 只问一次**：`.author-config.json` 存在就别再问。
 8. **新 tag / category 必须先改字典**：步骤 3 若 AI 想填字典里没的值，打断，不自己偷改 taxonomy.json。
+9. **档位区间要卡**：步骤 4 在贴 review 前校验条目数是否在档位目标区间（Tier 1: 5–8 / Tier 2: 12–18 / Tier 3: 30–50+），越界打断。
+10. **Tier 3 覆盖率门槛**：步骤 4 在贴 review 前跑覆盖率核对，任一维度 < 80% 打断询问。
 
 ---
 

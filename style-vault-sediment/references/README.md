@@ -5,6 +5,7 @@
 ## 共享主干（被所有路径共用）
 
 - [shared-workflow.md](shared-workflow.md) · 8 步通用主流程：加载字典 → 授权 auto-fill → 生成方案 → 整批 review → path.json 分叉 → 逐条写入 → 聚合 commit → 沉淀报告
+- [depth-tiers.md](depth-tiers.md) · 3 档深度（精髓 / 基础 / 全量）· 每档条目区间 + 强制 discovery checklist + Tier 3 覆盖率门槛
 
 ## Create 分支（按起点选一）
 

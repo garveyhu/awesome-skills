@@ -47,9 +47,21 @@ style-vault 的**写入端 skill**。全部新增 / 修改 / 删除操作都从�
 
 用户回复后路由到对应 `sediment-from-*.md`。
 
+### 进入对应分支前，先问深度档位
+
+所有 create 分支进入自己的 discovery 前，**第一步一律是问档位**（见 [depth-tiers.md](references/depth-tiers.md)）：
+
+- **Tier 1 · 精髓**（5–8 条 · 20–30 min）：最独特视觉点
+- **Tier 2 · 基础**（12–18 条 · 1–1.5 h）：可启动同风格新产品的最小系统 · **默认档**
+- **Tier 3 · 全量**（30–50+ 条 · 3–4 h）：每条路由独立 page + 模式 / 表单 / 状态 / 动效全扫
+
+档位决定各分支 discovery 的强度与硬下限（例如 Tier 3 必须产出路由清单 / 全局模式清单 / 表单清单 / 状态清单，且 ≥ 80% 覆盖率才能继续）。
+
 ## 共享原则（所有路径都遵守）
 
+- **档位先行**：进入任何 create discovery 前必须先选 Tier 1/2/3（[depth-tiers.md](references/depth-tiers.md)）
 - **写入前必须让用户 review 整批方案**（[shared-workflow 步骤 4](references/shared-workflow.md)）
+- **Tier 3 写入前必须覆盖率核对 ≥ 80%**，未达标打断询问补齐或降档
 - **元信息 AI 自动填需一次性授权**（步骤 2），可选 Y / N / 逐条决定
 - **双仓独立 commit，同一次沉淀各仓聚合为一个 commit**，不 push
 - **沉淀报告是每次写入的收尾**，同时落盘到 `assets/sediment-history/`
@@ -58,6 +70,7 @@ style-vault 的**写入端 skill**。全部新增 / 修改 / 删除操作都从�
 ## 入口索引
 
 - [共享主流程 shared-workflow.md](references/shared-workflow.md)
+- [深度档位 depth-tiers.md](references/depth-tiers.md)
 - [Create 分支一览](references/README.md)
 - 沉淀历史归档：`assets/sediment-history/<author>/<date-topic>/`
 - 查询工具（读侧）：`style-vault/scripts/taxonomy.py`
