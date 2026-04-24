@@ -128,6 +128,7 @@ grep -rn "关键词" ~/.agents/skills/style-vault-sediment/{SKILL.md,references/
 | 2026-04-24 | 虽然上一条规矩已生效，但还是连续 4 页（publish/IM/me/edit）重蹈覆辙——说明读 JSX 的强制不够靠前 | 同上（规矩本身够，但 AI 执行时没自检，增加"每次写 page 前先答 4 问"自检 checkbox）| 2026-04-24 用户指出 4 页差异 |
 | 2026-04-24 | 写 preview tsx 时用 Antd `<Button type="primary">` 没覆盖 `colorPrimary`，直接出 `#1677ff` 默认蓝；用 `<Tag color="blue">` / hardcoded `bg-blue-50` / `text-blue-500`——这些都是"用了 antd/tailwind 默认色没对齐被沉淀站的主色覆盖"的同一类错 | [见下方"preview 写 antd 组件的硬规矩"节](#preview-写-antd-组件的硬规矩必做) | 2026-04-24 用户指出 user-public-profile / profile-edit-form / admin table & toolbar 有大量默认蓝 |
 | 2026-04-24 | 写 user-public-profile 时加了 tabs + 2 列内容，真实页是纯 profile header 无 tabs——凭印象套了"用户主页 = header + tabs"的刻板印象 | 并入上面"通读 JSX"规矩——**每个 page 源码的 return 块必须从头读到尾，不允许脑补存在本无的结构** | 2026-04-24 同上 |
+| 2026-04-24 | 写 `blocks/form/profile-edit-form` 时被"form"这个名字带偏，直接写成"头像 + input 字段 + 保存按钮"的长表单，真实 skillhub `/me/edit` 是 **iOS 列表点击模式**（每行点击弹独立 modal，没保存按钮）| [见下方"block/page 命名不能带偏抽象"节](#blockpage-命名不能带偏抽象必做) | 2026-04-24 用户指出 profile-edit-form 不对 |
 
 ---
 
@@ -151,6 +152,29 @@ grep -rn "关键词" ~/.agents/skills/style-vault-sediment/{SKILL.md,references/
 - [ ] Modal / Popover 里的"确定"按钮用了 hardcoded `#1677ff` 吗？（违规）
 
 任一答不上 → 去源码 grep 确认该色是否合法。
+
+---
+
+## block/page 命名不能带偏抽象（必做）
+
+**惨痛教训**（2026-04-24）：写 `blocks/form/profile-edit-form` 时因为命名里有 "form"，直接套了"标准长表单 + 保存按钮"的刻板印象，而真实 skillhub 的"编辑资料"**根本不是 form 范式**——是 iOS 设置列表点击模式（每行点击弹独立 modal，没保存按钮）。**命名和实际形态脱钩**的情况下如果只看名字写实现，结果必然错。
+
+### 硬规矩
+
+1. **不允许根据 id 里的关键词（"form" / "card" / "list" / "modal" / "hero" / "sidebar" ...）推断实现形态**——id 是归类 slug，不是实现规范
+2. **必须先看源码 JSX 确认真实形态**：是 form？是列表？是 grid？是 modal stack？真实用的是什么交互模式？
+3. **如果真实形态和命名暗示不一致，必须在 MD 开头用一句话说清差异**：
+   > "名字叫 form，但**本质不是传统表单**——skillhub 真实用的是 iOS 列表点击模式。如果你想做传统长表单 + 保存按钮那种形态，这个 block 不是；那种该另开一个 block。"
+4. **已有条目发现命名被带偏后**：**不重命名**（保持 id 稳定），但 MD 必须显式标注真实形态 + 反例提醒
+
+### 自检问题（写 block/page 前自问）
+
+- [ ] 我根据 id 的哪些关键词做了"这是 xxx 形态"的推断？真实源码支持吗？
+- [ ] 源码里这个交互的**顶级容器元素**是什么？（`<form>` / `<div divide-y>` / `<Modal>` / `<Tabs>` / ...）
+- [ ] 这个页/块有没有明显的"保存" / "提交" / "确定"按钮？位置在哪？（form 通常底部或顶部右；列表式通常没有）
+- [ ] 真实交互是一次性输入全字段 submit，还是点一行改一字段？
+
+任一答错 → 停下来重读源码，别被 id 名字带偏。
 
 ---
 
