@@ -106,8 +106,9 @@ export function PreviewRow({ items }: { items: Item[] }) {
 1. **`grid-template-columns` 用 inline style 动态生成** `repeat(${cols}, minmax(0, 1fr))` —— 不能用 Tailwind JIT 的 `grid-cols-${N}`（JIT 不识别动态类，除非 safelist）
 2. **`minmax(0, 1fr)` 的 min=0 很关键** —— 否则内容撑破网格、`truncate` 失效
 3. **实现用 `useSyncExternalStore`** 而非 `useEffect + useState`——React 18+ 推荐的外部状态订阅方式，避免 tearing
-4. **SSR fallback 用 lg（4）** —— 最通用的桌面尺寸，hydration 后再校正
-5. **slice 必须在 render 里做** —— 而非 `useMemo([cols, items])`，保持依赖清晰
+4. **`getSnapshot` 必须返回原语或稳定引用** —— 不允许返回 `{ cols, label }` 这种每次新对象。React 用 `Object.is` 比较，新对象永远 !== 旧的 → 触发 rerender → 再 call snapshot → 再得新对象 → **无限循环、页面白屏**、控制台 "The result of getSnapshot should be cached to avoid an infinite loop"。派生值（如断点 label）应在 hook 外层计算
+5. **SSR fallback 用 lg（4）** —— 最通用的桌面尺寸，hydration 后再校正
+6. **slice 必须在 render 里做** —— 而非 `useMemo([cols, items])`，保持依赖清晰
 
 ## 反模式
 
@@ -115,6 +116,7 @@ export function PreviewRow({ items }: { items: Item[] }) {
 - ❌ 用 `auto-fit` + slice——两套机制打架，结果不可预期
 - ❌ 给数据量小的情况加 "fallback 最少 N 张"——那就违背了"数据量 = 列数"的承诺
 - ❌ 用 `useEffect` 监听 window resize——tearing 风险 + 首帧错位
+- ❌ `getSnapshot` 返回 `{ cols, label }` 这种新对象——**必定无限循环白屏**，必须只返回原语
 
 ## 坑
 

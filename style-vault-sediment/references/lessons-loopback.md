@@ -130,6 +130,7 @@ grep -rn "关键词" ~/.agents/skills/style-vault-sediment/{SKILL.md,references/
 | 2026-04-24 | 写 user-public-profile 时加了 tabs + 2 列内容，真实页是纯 profile header 无 tabs——凭印象套了"用户主页 = header + tabs"的刻板印象 | 并入上面"通读 JSX"规矩——**每个 page 源码的 return 块必须从头读到尾，不允许脑补存在本无的结构** | 2026-04-24 同上 |
 | 2026-04-24 | 写 `blocks/form/profile-edit-form` 时被"form"这个名字带偏，直接写成"头像 + input 字段 + 保存按钮"的长表单，真实 skillhub `/me/edit` 是 **iOS 列表点击模式**（每行点击弹独立 modal，没保存按钮）| [见下方"block/page 命名不能带偏抽象"节](#blockpage-命名不能带偏抽象必做) | 2026-04-24 用户指出 profile-edit-form 不对 |
 | 2026-04-24 | preview 组件在卡片缩略图里**反复 mount** 时，任何"mount 时的异步动画"都会被反复触发放大可见——具体表现两类：(a) `scrollIntoView({smooth})` / framer-motion `initial→animate` / CSS `transition from→to` 等进场动画；(b) macOS overlay scrollbar 在程序化 `scrollTop = N` 时系统级"淡入再淡出"动画。用户切分类时整屏卡片反复闪 | [见下方"preview 组件是静态快照 · 禁止 mount 时异步动画"节](#preview-组件是静态快照--禁止-mount-时异步动画必做) | 2026-04-24 用户连续指出 StyleCard scale 闪、IM 滚动条抖动、macOS overlay 滚动条渐隐 |
+| 2026-04-24 | `useSyncExternalStore` 的 `getSnapshot` 返回**每次新构造的对象** `{ cols, label }` → React `Object.is` 比较每次都不等 → 判定 store 变了触发 rerender → 再 call snapshot 又得新对象 → **无限循环 Maximum update depth / 页面白屏**。错因是想一次性从 hook 返回多个值，没意识到新对象引用每次都变 | [见下方"useSyncExternalStore snapshot 必须返回原语或稳定引用"节](#usesyncexternalstore-snapshot-必须返回原语或稳定引用必做) | 2026-04-24 用户报白屏 · `fixed-cols-row.tsx` preview |
 
 ---
 
@@ -212,6 +213,60 @@ grep -rn "关键词" ~/.agents/skills/style-vault-sediment/{SKILL.md,references/
 - [ ] 这个 preview 的初始 state 里有"需要测量后修正的值"吗（如 scale / container size）？初始给 `null` 不渲染，`useLayoutEffect` 填完再渲染
 
 任一命中 → 改。缩略卡里的静态感是硬底线，preview 是给 vault 网站做"一眼看风格"用的，不是功能演示。
+
+---
+
+## useSyncExternalStore snapshot 必须返回原语或稳定引用（必做）
+
+**惨痛教训**（2026-04-24 · 前端白屏 · `fixed-cols-row.tsx` preview）：想一次性从 `useCols` hook 返回多个值 `{ cols, label }`，直接让 `getSnapshot` 构造新对象返回：
+
+```ts
+function snapshot() {
+  for (const bp of BREAKPOINTS) {
+    if (window.matchMedia(bp.query).matches) return { cols: bp.cols, label: bp.label };
+  }
+  return { cols: 1, label: 'base' };
+}
+```
+
+每次调用产生**新对象引用**。React 内部用 `Object.is(prev, next)` 判定"store 变了没"——新对象 `!==` 旧的 → 每次 rerender 后都认为变了 → 又调 `getSnapshot` → 又得新对象 → **infinite loop**，浏览器控制台报：
+
+> The result of getSnapshot should be cached to avoid an infinite loop
+> Uncaught Error: Maximum update depth exceeded.
+
+整个 BrowseCategoryPage 白屏。
+
+### 硬规矩
+
+1. **`getSnapshot` 必须返回原语（number / string / boolean）或稳定引用（module-level 常量 / cached object / Map 取值）**
+2. **绝不允许 `getSnapshot` 内 `return { ... }` 或 `return [...]` 新建对象/数组**
+3. **需要多字段返回时**：
+   - 选项 a · 返回原语，派生值在 hook 外层算：
+     ```ts
+     function useColsState() {
+       const cols = useSyncExternalStore(subscribe, getSnapshot, () => 4);
+       return { cols, label: LABEL_MAP[cols] };  // 每次 rerender 新对象，但 cols 变才 rerender
+     }
+     ```
+   - 选项 b · 用 module-level Map 缓存：
+     ```ts
+     const CACHE = new Map<number, { cols: number; label: string }>();
+     function getSnapshot() {
+       const cols = computeCols();
+       if (!CACHE.has(cols)) CACHE.set(cols, { cols, label: LABEL_MAP[cols] });
+       return CACHE.get(cols)!;  // 同 cols → 同引用
+     }
+     ```
+4. **`getServerSnapshot` 也必须返回原语或 module-level 常量**，不是每次新建
+
+### 自检问题（写 useSyncExternalStore 前自问）
+
+- [ ] 我的 `getSnapshot` 里有 `return { ... }` 或 `return [...]` 吗？**必定无限循环**
+- [ ] 我的 `getSnapshot` 返回的是 number / string / boolean 之一吗？是 → 安全
+- [ ] 如果要返回对象，是否用 module-level 常量或 Map 缓存保证同输入 → 同引用？
+- [ ] `getServerSnapshot` 是否也满足上述条件？
+
+任一答"不是" → 改。这个坑非常隐蔽（HMR 里可能没事，build 后才炸），测试覆盖必须包括首屏加载 + 多次状态切换。
 
 ---
 
