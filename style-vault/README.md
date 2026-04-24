@@ -28,11 +28,13 @@ graph TB
     C ==>|yarn sync：镜像 taxonomy + 扫描 references| A
 ```
 
-| 项目 | 位置 | 作用 |
+| 项目 | 类型 | 作用 |
 |---|---|---|
-| **style-vault skill**（本仓） | `~/.agents/skills/style-vault/` | AI 消费风格 + 查询分类字典 |
-| **style-vault-sediment skill** | `~/.agents/skills/style-vault-sediment/` | AI 沉淀 / 修改 / 删除风格 |
-| **style-vault web** | `~/Coding/Archer/style-vault/` | 浏览网站 + prompt 卡片分发 |
+| **style-vault skill**（本仓） | Claude Code skill | AI 消费风格 + 查询分类字典 |
+| **style-vault-sediment skill** | Claude Code skill | AI 沉淀 / 修改 / 删除风格 |
+| **style-vault web** | React + FastAPI 仓库 | 浏览网站 + prompt 卡片分发 |
+
+skill 装到你 Claude Code 的 skills 目录下（两个 skill 互为兄弟目录）。具体路径取决于你的配置，下文用 `<skill-dir>/style-vault/` 等表示。
 
 ---
 
@@ -101,10 +103,11 @@ AI 执行：
 
 ```bash
 # 依赖：Python 3 + PyYAML（pip install pyyaml）
-python3 ~/.agents/skills/style-vault/scripts/taxonomy.py overview
-python3 ~/.agents/skills/style-vault/scripts/taxonomy.py item products/acme-cold-saas
-python3 ~/.agents/skills/style-vault/scripts/taxonomy.py search --aesthetic minimal --mood cold
-python3 ~/.agents/skills/style-vault/scripts/taxonomy.py history
+# 在 skill 根目录下运行：
+python3 scripts/taxonomy.py overview
+python3 scripts/taxonomy.py item products/acme-cold-saas
+python3 scripts/taxonomy.py search --aesthetic minimal --mood cold
+python3 scripts/taxonomy.py history
 ```
 
 ---
@@ -137,5 +140,5 @@ sediment skill 运行时会：
 - [references/README.md](references/README.md) · 6 层 frontmatter 规范 + 正文章节顺序
 - [assets/taxonomy.json](assets/taxonomy.json) · 分类字典真相源（编辑它是**新增 tag / category 的唯一正道**）
 - [scripts/taxonomy.py](scripts/taxonomy.py) · 查询 CLI
-- 兄弟 skill：[style-vault-sediment](../style-vault-sediment/)
-- 网站仓：`~/Coding/Archer/style-vault/`
+- 兄弟 skill：[style-vault-sediment](../style-vault-sediment/)（创作者写 skill）
+- 网站仓：https://github.com/garveyhu/style-vault

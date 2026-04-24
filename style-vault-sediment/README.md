@@ -26,11 +26,13 @@ graph TB
     C ==>|yarn sync：镜像 taxonomy + 扫描 references| A
 ```
 
-| 项目 | 位置 | 作用 |
+| 项目 | 类型 | 作用 |
 |---|---|---|
-| **style-vault skill** | `~/.agents/skills/style-vault/` | AI 消费风格 + 查询分类字典 |
-| **style-vault-sediment skill**（本仓） | `~/.agents/skills/style-vault-sediment/` | AI 沉淀 / 修改 / 删除风格 |
-| **style-vault web** | `~/Coding/Archer/style-vault/` | 浏览网站 + prompt 卡片分发 |
+| **style-vault skill** | Claude Code skill | AI 消费风格 + 查询分类字典 |
+| **style-vault-sediment skill**（本仓） | Claude Code skill | AI 沉淀 / 修改 / 删除风格 |
+| **style-vault web** | React + FastAPI 仓库 | 浏览网站 + prompt 卡片分发 |
+
+两个 skill 装到你 Claude Code 的 skills 目录下（互为兄弟目录）。具体路径取决于你的配置。
 
 ---
 
@@ -141,7 +143,7 @@ style-vault-sediment/
 
 ### 按需写入 `style-vault web`
 
-沉淀时判断 `~/.agents/path.json` + 网站仓 marker，成立则：
+沉淀时判断 `path.json`（存放网站仓路径的配置文件，skill 约定位置见 [shared-workflow.md](references/shared-workflow.md)）+ 网站仓 marker，成立则：
 - 写 `frontend/src/preview/<id>.tsx`
 - 跑 `cd $VAULT/frontend && yarn sync` 做校验
 - 双仓独立 commit
@@ -155,5 +157,5 @@ style-vault-sediment/
 - [SKILL.md](SKILL.md) · 入口路由表
 - [references/shared-workflow.md](references/shared-workflow.md) · 8 步主干
 - [references/README.md](references/README.md) · workflow 索引
-- 兄弟 skill：[style-vault](../style-vault/)
-- 网站仓：`~/Coding/Archer/style-vault/`
+- 兄弟 skill：[style-vault](../style-vault/)（消费者必装的读 skill）
+- 网站仓：https://github.com/garveyhu/style-vault
