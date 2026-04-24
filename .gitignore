@@ -24,6 +24,8 @@
 !spechub-best-practices/**
 !style-vault/
 !style-vault/**
+!style-vault-sediment/
+!style-vault-sediment/**
 !solution-vault/
 !solution-vault/**
 !self-improving-workflow/
