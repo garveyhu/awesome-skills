@@ -14,17 +14,36 @@ uses:
   - tokens/typography/pairs/inter-jetbrains-duo
   - tokens/motion/gentle-flow
   - tokens/shadow/ambient-float
+  - components/buttons/dark-primary-cta
+  - components/buttons/border-trace-cta
+  - components/inputs/soft-form-input
   - components/tags-badges/teal-pill
   - components/avatars-icons/letter-avatar
-  - components/buttons/border-trace-cta
+  - components/indicators/pulse-dot
   - blocks/nav/glass-pill-navbar
   - blocks/marketing/gradient-hero
   - blocks/display/skill-card
   - blocks/display/leaderboard-row
+  - blocks/display/gradient-stat-card
   - blocks/display/table
   - blocks/layout/toolbar-bar
+  - blocks/form/auth-split-form
+  - blocks/form/profile-edit-form
+  - blocks/feedback/skeleton-card
+  - blocks/feedback/empty-state
   - pages/landing/skill-community-home
+  - pages/detail/skill-article-detail
+  - pages/form-flow/skill-publish-wizard
+  - pages/list-table/practice-plaza
+  - pages/detail/practice-post-detail
+  - pages/form-flow/practice-compose
+  - pages/content-reader/im-conversation
+  - pages/dashboard/user-home
+  - pages/form-flow/profile-edit
+  - pages/detail/user-public-profile
+  - pages/auth/auth-split
   - pages/list-table/admin-console
+  - pages/dashboard/admin-overview
 preview: /preview/styles/community-social/skillhub-soft-modernist
 ---
 
