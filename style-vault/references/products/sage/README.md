@@ -9,7 +9,6 @@ category: ai
 refs:
   style: styles/saas-tool/sage-multitheme-data-platform
   pages:
-    - pages/auth/sage/login-emerald-card
     - pages/dashboard/sage/agent-chat-stream
     - pages/list-table/sage/datasource-grid
     - pages/form-flow/sage/rule-set-stepper-modal
@@ -18,6 +17,7 @@ refs:
     - pages/list-table/sage/admin-table-management
     - pages/dashboard/sage/analytics-feedback
     - pages/dashboard/sage/analytics-usage
+    - pages/auth/sage/login-emerald-card
     - pages/empty-error/sage/crt-tv-404
   blocks:
     - blocks/nav/sage/themed-sidebar-shell
