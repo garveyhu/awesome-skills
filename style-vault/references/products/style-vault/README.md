@@ -13,6 +13,7 @@ refs:
     - pages/detail/style-vault/sticky-toc-product
     - pages/detail/style-vault/sidebar-preview-detail
     - pages/list-table/style-vault/category-row-browse
+    - pages/list-table/style-vault/sticky-filter-product-list
     - pages/dashboard/style-vault/profile-collections
   blocks:
     - blocks/marketing/style-vault/cool-blob-hero
@@ -20,6 +21,7 @@ refs:
     - blocks/display/style-vault/floating-cover-row
     - blocks/layout/style-vault/browser-chrome-frame
     - blocks/nav/style-vault/sticky-platform-topbar
+    - blocks/filters/style-vault/sticky-chip-filter-panel
   components:
     - components/buttons/style-vault/dark-pill-cta
     - components/buttons/style-vault/ghost-bordered-cta
@@ -52,28 +54,30 @@ Style Vault 是为 AI 编码协作打造的设计风格库——把"风格"按�
 - **Mono 撑数字**：所有索引（01/02/03）/ ID 字串 / 数字徽标用 mono —— 编辑节奏锚点
 - **单字族打天下**：Inter 一种字，靠尺寸 + letter-spacing + uppercase tracking 拉层级，不引第二种字族
 
-## 组成（Tier 2 · 20 条聚合）
+## 组成（Tier 2 · 22 条聚合）
 
 ### Style
 - `styles/portfolio-studio/style-vault-cool-editorial` · 整站调性
 
-### Pages · 5 条
+### Pages · 6 条
 
 | 路由 | Page | 用途 |
 |---|---|---|
 | `/` | `pages/landing/style-vault/editorial-cool-landing` | 落地页（hero + Logo 墙 + 3 段价值叙事 + manifesto + footer） |
+| `/products` | `pages/list-table/style-vault/sticky-filter-product-list` | 产品集（260px sticky 玻璃感筛选 + 1fr 浮起作品照行卡列表） |
 | `/products/:slug` | `pages/detail/style-vault/sticky-toc-product` | 产品详情（cover hero + sticky 数字 TOC + masonry 分段） |
 | `/item/*` | `pages/detail/style-vault/sidebar-preview-detail` | 单条 item 详情（340px sidebar + 右列 chrome 预览框） |
 | `/browse` | `pages/list-table/style-vault/category-row-browse` | 浏览页（双 sticky 导航 + 每类一行卡片） |
 | `/profile` | `pages/dashboard/style-vault/profile-collections` | 个人中心（头像 hero + 类型 tab + 收藏网格 + 编辑 modal） |
 
-### Blocks · 5 条
+### Blocks · 6 条
 
 - `blocks/marketing/style-vault/cool-blob-hero` · 占首屏 hero（双 blob + fade-up cascade + dark CTA）
 - `blocks/display/style-vault/preview-thumb-card` · 1440 虚拟视口缩放卡片（StyleCard）
 - `blocks/display/style-vault/floating-cover-row` · 浮起作品照行卡（产品列表）
 - `blocks/layout/style-vault/browser-chrome-frame` · mac dot 浏览器 chrome + 视口选择器
 - `blocks/nav/style-vault/sticky-platform-topbar` · sticky 玻璃感顶栏 + 视口绝对居中 platform pill
+- `blocks/filters/style-vault/sticky-chip-filter-panel` · 260px sticky 玻璃感筛选面板（4 组 chip toggle + category 6 色 dot + 清除态）
 
 ### Components · 5 条
 

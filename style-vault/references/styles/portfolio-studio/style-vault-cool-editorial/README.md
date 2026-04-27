@@ -26,10 +26,12 @@ uses:
   - blocks/display/style-vault/floating-cover-row
   - blocks/layout/style-vault/browser-chrome-frame
   - blocks/nav/style-vault/sticky-platform-topbar
+  - blocks/filters/style-vault/sticky-chip-filter-panel
   - pages/landing/style-vault/editorial-cool-landing
   - pages/detail/style-vault/sticky-toc-product
   - pages/detail/style-vault/sidebar-preview-detail
   - pages/list-table/style-vault/category-row-browse
+  - pages/list-table/style-vault/sticky-filter-product-list
   - pages/dashboard/style-vault/profile-collections
 preview: /preview/styles/portfolio-studio/style-vault-cool-editorial
 ---
