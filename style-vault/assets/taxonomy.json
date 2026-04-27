@@ -23,7 +23,8 @@
     "content":      { "zh": "内容",     "dot": "#22d3ee", "order": 2 },
     "lifestyle":    { "zh": "生活",     "dot": "#f59e0b", "order": 3 },
     "social":       { "zh": "社交",     "dot": "#ec4899", "order": 4 },
-    "commerce":     { "zh": "电商",     "dot": "#10b981", "order": 5 }
+    "commerce":     { "zh": "电商",     "dot": "#10b981", "order": 5 },
+    "design":       { "zh": "设计",     "dot": "#6366f1", "order": 6 }
   },
   "tag": {
     "aesthetic": {
