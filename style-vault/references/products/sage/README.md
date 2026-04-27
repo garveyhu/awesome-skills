@@ -11,7 +11,13 @@ refs:
   pages:
     - pages/dashboard/sage/agent-chat-stream
     - pages/list-table/sage/datasource-grid
+    - pages/list-table/sage/collection-list
+    - pages/detail/sage/collection-detail
+    - pages/detail/sage/datasource-detail-tabs
     - pages/form-flow/sage/rule-set-stepper-modal
+    - pages/form-flow/sage/datasource-new-form
+    - pages/settings/sage/ai-model-config
+    - pages/settings/sage/space-core-config
     - pages/list-table/sage/agent-store-split-tabs
     - pages/list-table/sage/space-management-split
     - pages/list-table/sage/admin-table-management
@@ -25,20 +31,27 @@ refs:
     - blocks/nav/sage/space-switcher-dropdown
     - blocks/nav/sage/revolver-menu-fab
     - blocks/nav/sage/command-palette
+    - blocks/nav/sage/conversation-history-modal
+    - blocks/nav/sage/user-menu-popout
     - blocks/layout/sage/management-layout-header
     - blocks/layout/sage/sidebar-detail-split
     - blocks/feedback/sage/spin-fullscreen-loader
     - blocks/feedback/sage/delete-confirm-modal
     - blocks/feedback/sage/admin-overlay-modal
+    - blocks/feedback/sage/vector-test-modal
     - blocks/marketing/sage/auth-emerald-card
     - blocks/form/sage/chat-composer
+    - blocks/form/sage/user-assignment-transfer
+    - blocks/form/sage/row-column-rule-builder
     - blocks/display/sage/datasource-card
+    - blocks/display/sage/chart-card-tabs
   components:
     - components/buttons/sage/theme-bg-cta
     - components/buttons/sage/icon-circle-ghost
     - components/buttons/sage/stop-pulse-button
     - components/inputs/sage/glow-border-textarea
     - components/inputs/sage/icon-prefix-input
+    - components/inputs/sage/sql-editor-monaco
     - components/avatars-icons/sage/themed-circle-avatar
     - components/indicators/sage/crystal-progress-bar
     - components/indicators/sage/hairline-scrollbar
