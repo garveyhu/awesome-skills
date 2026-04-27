@@ -64,8 +64,8 @@ def load_items() -> list[dict]:
     items: list[dict] = []
     for md in sorted(REFS_DIR.rglob("*.md")):
         rel = md.relative_to(REFS_DIR)
-        # skip meta folders / files starting with _
-        if any(seg.startswith("_") for seg in rel.parts):
+        # skip meta folders / files starting with _ — but _shared/ is a real namespace dir
+        if any(seg.startswith("_") and seg != "_shared" for seg in rel.parts):
             continue
         # skip top-level README
         if rel.name == "README.md" and len(rel.parts) == 1:
