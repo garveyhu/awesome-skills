@@ -2,7 +2,7 @@
 id: products/style-vault
 type: product
 name: Style Vault · 风格库
-description: 为 AI 编码而造的设计风格库——六个层级（token / component / block / page / style / product），AI 复用每条资产时自带风格不出 AI 味
+description: 为 AI 编码协作而造的设计风格库——六个层级（token / component / block / page / style / product），帮开发者在 AI 编码现场快速还原一种成熟视觉语言
 platforms: [web]
 theme: light
 category: design
@@ -43,7 +43,7 @@ uses: []
 
 ## 设计叙事
 
-Style Vault 是为 AI 编码协作打造的设计风格库——把"风格"按粒度切成六层，每条资产带 Prompt 模板，让 AI 写出的代码自带风格而非"AI slop"美学。
+Style Vault 是为 AI 编码协作打造的设计风格库——把"风格"按粒度切成六层，每条资产都带一份精心调好的 Prompt 模板。开发者只需粘一段给 AI，就能在编码现场快速还原一种成熟的视觉语言。
 
 - **作品才是主角**：所有视觉决策让位于"让作品被看见"——dark CTA 同屏 1 个、cyan accent ≤ 3 处、blob 只在 hero
 - **白上叠白靠 hairline**：白卡叠在 #fafafa 浅底上，靠 1px slate hairline 区分；hover 才用三层柔投影把卡片浮起
