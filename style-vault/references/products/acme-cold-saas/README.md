@@ -9,15 +9,15 @@ category: productivity
 refs:
   style: styles/saas-tool/cold-industrial-saas
   pages:
-    - pages/landing/saas-landing
+    - pages/landing/acme/saas-landing
   blocks:
-    - blocks/layout/toolbar-bar
-    - blocks/display/table
+    - blocks/layout/skillhub/toolbar-bar
+    - blocks/display/skillhub/table
   components:
-    - components/buttons/ghost-button
+    - components/buttons/acme/ghost-button
   tokens:
-    palette: tokens/palettes/slate-cyan-ice
-    typography: tokens/typography/pairs/ibm-plex-duo
+    palette: tokens/palettes/acme/slate-cyan-ice
+    typography: tokens/typography/pairs/acme/ibm-plex-duo
 tags:
   aesthetic: [minimal, industrial]
   mood: [cold, serious]

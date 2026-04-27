@@ -35,6 +35,8 @@ Pages 位于第二层（「整页」）。和相邻层的边界：
 ## 命名约定
 
 - 二级目录 kebab-case：`landing`、`list-table`、`empty-error`
-- 条目单文件：`pages/<bucket>/<slug>.md`
-- 条目多文件：`pages/<bucket>/<slug>/README.md`，条目 id 为文件夹路径
+- **三级 namespace 强制**（见 [../README.md · Namespace 子目录](../README.md#namespace-子目录强制)）：
+  - 单文件：`pages/<bucket>/<namespace>/<slug>.md`
+  - 多文件：`pages/<bucket>/<namespace>/<slug>/README.md`，id 取文件夹路径（pages 默认走多文件）
+  - `<namespace>` = product 短名（如 `acme` / `skillhub`）；通用件归 `_shared`
 - slug 全程 kebab-case

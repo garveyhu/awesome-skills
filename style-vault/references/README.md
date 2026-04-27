@@ -19,10 +19,34 @@
 
 **ID = 路径**（不含 `.md` 扩展名）。
 
-- 单文件条目：`blocks/display/table.md` → id = `blocks/display/table`
+- 单文件条目：`blocks/display/skillhub/table.md` → id = `blocks/display/skillhub/table`
 - 文件夹条目：`products/acme-cold-saas/README.md` → id = `products/acme-cold-saas`（取文件夹路径）
 - 所有路径段 kebab-case
 - 冲突时加语义后缀（`table-striped` / `table-compact`），不用 `-v2`
+
+### Namespace 子目录（强制）
+
+`tokens` / `components` / `blocks` / `pages` 这 4 层在 bucket 下**必须**有一级 namespace 目录：
+
+```
+<layer>/<bucket>/<namespace>/<slug>[.md | /README.md]
+```
+
+- `<namespace>` = 拥有此条目的产品的短名（与 `products/<slug>` 末段对应：`acme` / `skillhub` / ...）
+- 唯一例外：`_shared`——不被任何 product 关联的中性件
+- `styles/` 和 `products/` 层不带 namespace（styles 已用 `<form>/<slug>` 二级桶；product 自身就是 namespace 源头）
+
+**归属判定**（写入新条目时强制问自己）：
+
+> 这条会被某个 product 关联吗？
+> - 是 → 归 `<namespace>/`，namespace = 那个 product 的短名
+> - 否（确定通用，多 style 可注入色字而成立） → 归 `_shared/`
+
+**实战经验**：默认归 product namespace，只有"色字完全由上层注入、本身完全中性"才进 `_shared/`。多个 product 引用同一条优先归"视觉真正绑定的那个 product"，错引用的另一方走 unlink。
+
+### 跨 namespace 引用
+
+允许：一个 product 可以 `refs` 别 namespace 下的条目（包括 `_shared/`）。引用时写完整 id，sync 只校验目标存在，不校验 namespace 一致。
 
 ## Frontmatter 规范
 
@@ -74,12 +98,12 @@ theme: dark
 category: productivity
 refs:
   style: styles/saas-tool/cold-industrial-saas
-  pages: [pages/landing/saas-landing]
-  blocks: [blocks/display/table]
-  components: [components/buttons/ghost-button]
+  pages: [pages/landing/acme/saas-landing]
+  blocks: [blocks/display/skillhub/table]
+  components: [components/buttons/acme/ghost-button]
   tokens:
-    palette: tokens/palettes/slate-cyan-ice
-    typography: tokens/typography/pairs/ibm-plex-duo
+    palette: tokens/palettes/acme/slate-cyan-ice
+    typography: tokens/typography/pairs/acme/ibm-plex-duo
 tags:
   aesthetic: [minimal, industrial]
   mood: [cold, serious]
@@ -91,7 +115,7 @@ Block（场景块）：
 
 ```yaml
 ---
-id: blocks/display/table
+id: blocks/display/skillhub/table
 type: block
 name: Admin Table
 description: 管理后台无边框表格
@@ -102,7 +126,7 @@ tags:
   mood: [calm, serious]
   stack: [react-antd-tailwind]
 uses: []
-preview: /preview/blocks/display/table
+preview: /preview/blocks/display/skillhub/table
 ---
 ```
 

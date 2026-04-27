@@ -393,17 +393,21 @@ echo "<topic>" > "$LOCK"
 
 ### 写入位置
 
+**id 必须含 namespace 段**（tokens / components / blocks / pages 这 4 层）：`<layer>/<bucket>/<namespace>/<slug>`。`<namespace>` 优先 = 关联 product 的短名（如 `acme` / `skillhub`）；无产品关联用 `_shared`。详见 [style-vault/references/README.md · Namespace 子目录](../../style-vault/references/README.md#namespace-子目录强制)。
+
 **skill 仓**（根 `~/.agents/skills/`）：
 
 - 文件形：`style-vault/references/<id>.md`
-  - 例：`style-vault/references/tokens/palettes/cold-mint.md`
-- 文件夹形（product / 复杂 style）：`style-vault/references/<id>/README.md`
-  - 例：`style-vault/references/products/mint-analytics/README.md`
+  - 例：`style-vault/references/tokens/palettes/acme/slate-cyan-ice.md`
+  - 例：`style-vault/references/components/buttons/_shared/ghost-button.md`
+- 文件夹形（product / style / pages）：`style-vault/references/<id>/README.md`
+  - 例：`style-vault/references/pages/auth/acme/auth-cold-split/README.md`
+  - 例：`style-vault/references/products/acme-cold-saas/README.md`（product 不带 namespace）
 
 **网站仓**（根 `$VAULT`，仅 `VAULT_OK=true` 时）：
 
 - preview tsx：`$VAULT/frontend/src/preview/<id>.tsx`
-  - 例：`$VAULT/frontend/src/preview/tokens/palettes/cold-mint.tsx`
+  - 例：`$VAULT/frontend/src/preview/tokens/palettes/acme/slate-cyan-ice.tsx`
 
 ### 单条写入子步骤
 

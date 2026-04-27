@@ -9,43 +9,43 @@ category: productivity
 refs:
   style: styles/community-social/skillhub-soft-modernist
   pages:
-    - pages/landing/skill-community-home
-    - pages/detail/skill-article-detail
-    - pages/form-flow/skill-publish-wizard
-    - pages/list-table/practice-plaza
-    - pages/detail/practice-post-detail
-    - pages/form-flow/practice-compose
-    - pages/content-reader/im-conversation
-    - pages/dashboard/user-home
-    - pages/form-flow/profile-edit
-    - pages/detail/user-public-profile
-    - pages/auth/auth-split
-    - pages/list-table/admin-console
-    - pages/dashboard/admin-overview
+    - pages/landing/skillhub/skill-community-home
+    - pages/detail/skillhub/skill-article-detail
+    - pages/form-flow/skillhub/skill-publish-wizard
+    - pages/list-table/skillhub/practice-plaza
+    - pages/detail/skillhub/practice-post-detail
+    - pages/form-flow/skillhub/practice-compose
+    - pages/content-reader/skillhub/im-conversation
+    - pages/dashboard/skillhub/user-home
+    - pages/form-flow/skillhub/profile-edit
+    - pages/detail/skillhub/user-public-profile
+    - pages/auth/skillhub/auth-split
+    - pages/list-table/skillhub/admin-console
+    - pages/dashboard/skillhub/admin-overview
   blocks:
-    - blocks/nav/glass-pill-navbar
-    - blocks/marketing/gradient-hero
-    - blocks/display/skill-card
-    - blocks/display/leaderboard-row
-    - blocks/display/gradient-stat-card
-    - blocks/display/table
-    - blocks/layout/toolbar-bar
-    - blocks/form/auth-split-form
-    - blocks/form/profile-edit-form
-    - blocks/feedback/skeleton-card
-    - blocks/feedback/empty-state
+    - blocks/nav/skillhub/glass-pill-navbar
+    - blocks/marketing/skillhub/gradient-hero
+    - blocks/display/skillhub/skill-card
+    - blocks/display/skillhub/leaderboard-row
+    - blocks/display/skillhub/gradient-stat-card
+    - blocks/display/skillhub/table
+    - blocks/layout/skillhub/toolbar-bar
+    - blocks/form/skillhub/auth-split-form
+    - blocks/form/skillhub/profile-edit-form
+    - blocks/feedback/skillhub/skeleton-card
+    - blocks/feedback/skillhub/empty-state
   components:
-    - components/buttons/dark-primary-cta
-    - components/buttons/border-trace-cta
-    - components/inputs/soft-form-input
-    - components/tags-badges/teal-pill
-    - components/avatars-icons/letter-avatar
-    - components/indicators/pulse-dot
+    - components/buttons/skillhub/dark-primary-cta
+    - components/buttons/skillhub/border-trace-cta
+    - components/inputs/skillhub/soft-form-input
+    - components/tags-badges/skillhub/teal-pill
+    - components/avatars-icons/skillhub/letter-avatar
+    - components/indicators/skillhub/pulse-dot
   tokens:
-    palette: tokens/palettes/skillhub-teal-mist
-    typography: tokens/typography/pairs/inter-jetbrains-duo
-    motion: tokens/motion/gentle-flow
-    shadow: tokens/shadow/ambient-float
+    palette: tokens/palettes/skillhub/skillhub-teal-mist
+    typography: tokens/typography/pairs/skillhub/inter-jetbrains-duo
+    motion: tokens/motion/skillhub/gentle-flow
+    shadow: tokens/shadow/skillhub/ambient-float
 tags:
   aesthetic: [minimal, editorial]
   mood: [calm, confident]
@@ -75,23 +75,23 @@ SkillHub 的视觉是"社区 × 工具"双重身份的平衡：
 
 | 路由 | Page 条目 | 用途 |
 |---|---|---|
-| `/` → `/discover` | `pages/landing/skill-community-home` | 发现首页（hero + 榜单 + 网格）|
-| `/skills/:slug` | `pages/detail/skill-article-detail` | 技能详情（markdown + sidebar）|
-| `/skills/submit` | `pages/form-flow/skill-publish-wizard` | 发布技能向导 |
-| `/practice` | `pages/list-table/practice-plaza` | 实践广场 |
-| `/practice/:id` | `pages/detail/practice-post-detail` | 实践详情（单栏长文）|
-| `/practice/create` | `pages/form-flow/practice-compose` | 发布实践编辑器 |
-| `/messages` | `pages/content-reader/im-conversation` | 消息会话 |
-| `/me` | `pages/dashboard/user-home` | 用户中心 |
-| `/me/edit` | `pages/form-flow/profile-edit` | 编辑资料 |
-| `/users/:id` | `pages/detail/user-public-profile` | 他人主页 |
-| `/login` + `/register` | `pages/auth/auth-split` | 登录分屏 |
-| `/admin` | `pages/list-table/admin-console` | 管理后台（Tabs 骨架）|
-| `/admin` overview tab | `pages/dashboard/admin-overview` | 运营概览（渐变 stat card）|
+| `/` → `/discover` | `pages/landing/skillhub/skill-community-home` | 发现首页（hero + 榜单 + 网格）|
+| `/skills/:slug` | `pages/detail/skillhub/skill-article-detail` | 技能详情（markdown + sidebar）|
+| `/skills/submit` | `pages/form-flow/skillhub/skill-publish-wizard` | 发布技能向导 |
+| `/practice` | `pages/list-table/skillhub/practice-plaza` | 实践广场 |
+| `/practice/:id` | `pages/detail/skillhub/practice-post-detail` | 实践详情（单栏长文）|
+| `/practice/create` | `pages/form-flow/skillhub/practice-compose` | 发布实践编辑器 |
+| `/messages` | `pages/content-reader/skillhub/im-conversation` | 消息会话 |
+| `/me` | `pages/dashboard/skillhub/user-home` | 用户中心 |
+| `/me/edit` | `pages/form-flow/skillhub/profile-edit` | 编辑资料 |
+| `/users/:id` | `pages/detail/skillhub/user-public-profile` | 他人主页 |
+| `/login` + `/register` | `pages/auth/skillhub/auth-split` | 登录分屏 |
+| `/admin` | `pages/list-table/skillhub/admin-console` | 管理后台（Tabs 骨架）|
+| `/admin` overview tab | `pages/dashboard/skillhub/admin-overview` | 运营概览（渐变 stat card）|
 
 ### Blocks
-- Nav：`blocks/nav/glass-pill-navbar` · 全站玻璃 pill 导航
-- Marketing：`blocks/marketing/gradient-hero` · 流光 hero
+- Nav：`blocks/nav/skillhub/glass-pill-navbar` · 全站玻璃 pill 导航
+- Marketing：`blocks/marketing/skillhub/gradient-hero` · 流光 hero
 - Display：`skill-card` · `leaderboard-row` · `gradient-stat-card` · `table`（复用）
 - Form：`auth-split-form` · `profile-edit-form`
 - Layout：`toolbar-bar`（复用）

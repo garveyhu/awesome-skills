@@ -60,6 +60,7 @@ style-vault 的**写入端 skill**。全部新增 / 修改 / 删除操作都从�
 ## 共享原则（所有路径都遵守）
 
 - **档位先行**：进入任何 create discovery 前必须先选 Tier 1/2/3（[depth-tiers.md](references/depth-tiers.md)）
+- **Namespace 归属强制**：tokens / components / blocks / pages 这 4 层每条新条目都必须落到 `<bucket>/<namespace>/<slug>` 形态。`<namespace>` 优先选关联 product 的短名（`acme` / `skillhub` / ...），无产品关联才用 `_shared`。判定见 [style-vault/references/README.md · Namespace 子目录](../style-vault/references/README.md#namespace-子目录强制)。
 - **写入前必须让用户 review 整批方案**（[shared-workflow 步骤 4](references/shared-workflow.md)）
 - **Tier 3 写入前必须覆盖率核对 ≥ 80%**，未达标打断询问补齐或降档
 - **元信息 AI 自动填需一次性授权**（步骤 2），可选 Y / N / 逐条决定

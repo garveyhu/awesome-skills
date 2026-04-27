@@ -10,40 +10,40 @@ tags:
   mood: [calm, confident]
   stack: [react-antd-tailwind]
 uses:
-  - tokens/palettes/skillhub-teal-mist
-  - tokens/typography/pairs/inter-jetbrains-duo
-  - tokens/motion/gentle-flow
-  - tokens/shadow/ambient-float
-  - components/buttons/dark-primary-cta
-  - components/buttons/border-trace-cta
-  - components/inputs/soft-form-input
-  - components/tags-badges/teal-pill
-  - components/avatars-icons/letter-avatar
-  - components/indicators/pulse-dot
-  - blocks/nav/glass-pill-navbar
-  - blocks/marketing/gradient-hero
-  - blocks/display/skill-card
-  - blocks/display/leaderboard-row
-  - blocks/display/gradient-stat-card
-  - blocks/display/table
-  - blocks/layout/toolbar-bar
-  - blocks/form/auth-split-form
-  - blocks/form/profile-edit-form
-  - blocks/feedback/skeleton-card
-  - blocks/feedback/empty-state
-  - pages/landing/skill-community-home
-  - pages/detail/skill-article-detail
-  - pages/form-flow/skill-publish-wizard
-  - pages/list-table/practice-plaza
-  - pages/detail/practice-post-detail
-  - pages/form-flow/practice-compose
-  - pages/content-reader/im-conversation
-  - pages/dashboard/user-home
-  - pages/form-flow/profile-edit
-  - pages/detail/user-public-profile
-  - pages/auth/auth-split
-  - pages/list-table/admin-console
-  - pages/dashboard/admin-overview
+  - tokens/palettes/skillhub/skillhub-teal-mist
+  - tokens/typography/pairs/skillhub/inter-jetbrains-duo
+  - tokens/motion/skillhub/gentle-flow
+  - tokens/shadow/skillhub/ambient-float
+  - components/buttons/skillhub/dark-primary-cta
+  - components/buttons/skillhub/border-trace-cta
+  - components/inputs/skillhub/soft-form-input
+  - components/tags-badges/skillhub/teal-pill
+  - components/avatars-icons/skillhub/letter-avatar
+  - components/indicators/skillhub/pulse-dot
+  - blocks/nav/skillhub/glass-pill-navbar
+  - blocks/marketing/skillhub/gradient-hero
+  - blocks/display/skillhub/skill-card
+  - blocks/display/skillhub/leaderboard-row
+  - blocks/display/skillhub/gradient-stat-card
+  - blocks/display/skillhub/table
+  - blocks/layout/skillhub/toolbar-bar
+  - blocks/form/skillhub/auth-split-form
+  - blocks/form/skillhub/profile-edit-form
+  - blocks/feedback/skillhub/skeleton-card
+  - blocks/feedback/skillhub/empty-state
+  - pages/landing/skillhub/skill-community-home
+  - pages/detail/skillhub/skill-article-detail
+  - pages/form-flow/skillhub/skill-publish-wizard
+  - pages/list-table/skillhub/practice-plaza
+  - pages/detail/skillhub/practice-post-detail
+  - pages/form-flow/skillhub/practice-compose
+  - pages/content-reader/skillhub/im-conversation
+  - pages/dashboard/skillhub/user-home
+  - pages/form-flow/skillhub/profile-edit
+  - pages/detail/skillhub/user-public-profile
+  - pages/auth/skillhub/auth-split
+  - pages/list-table/skillhub/admin-console
+  - pages/dashboard/skillhub/admin-overview
 preview: /preview/styles/community-social/skillhub-soft-modernist
 ---
 
@@ -131,7 +131,7 @@ preview: /preview/styles/community-social/skillhub-soft-modernist
 ### 组合规则
 - 全局只留 1 个 BorderTraceButton，其它 CTA 用纯黑 / ghost
 - 榜单后必接网格，两种"列表"形态不混用
-- 表格区域（管理 / 详情）必须用 `blocks/display/table` + `blocks/layout/toolbar-bar` 组合，不要自己写
+- 表格区域（管理 / 详情）必须用 `blocks/display/skillhub/table` + `blocks/layout/skillhub/toolbar-bar` 组合，不要自己写
 - 所有头像降级：真实 URL 不在 → LetterAvatar
 
 ## 反模式

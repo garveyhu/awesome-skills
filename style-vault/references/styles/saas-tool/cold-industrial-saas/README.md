@@ -10,10 +10,10 @@ tags:
   mood: [cold, serious]
   stack: [react-antd-tailwind]
 uses:
-  - tokens/palettes/slate-cyan-ice
-  - tokens/typography/pairs/ibm-plex-duo
-  - components/buttons/ghost-button
-  - pages/landing/saas-landing
+  - tokens/palettes/acme/slate-cyan-ice
+  - tokens/typography/pairs/acme/ibm-plex-duo
+  - components/buttons/acme/ghost-button
+  - pages/landing/acme/saas-landing
 preview: /preview/styles/saas-tool/cold-industrial-saas
 ---
 
@@ -34,7 +34,7 @@ preview: /preview/styles/saas-tool/cold-industrial-saas
 - 把 uses 里的 Tokens 注入 CSS 变量：
   - `--font-sans` / `--font-mono` ← ibm-plex-duo
   - `--color-bg` / `--color-fg` / `--color-accent` ← slate-cyan-ice
-- pages/landing/saas-landing 直接套用后只需覆盖变量
+- pages/landing/acme/saas-landing 直接套用后只需覆盖变量
 - ghost-button 作为次要 CTA；primary CTA 用 slate-cyan-ice 的 accent 作填色
 
 ## 反模式

@@ -55,6 +55,8 @@ skill 的核心价值不在"能查到什么"，而是 **"拿到一个 id，就�
    ```
    路径错误立刻报错，不要猜替代。判断文件夹 vs 单文件：看该层的 `_CATEGORY.md` 的命名约定。
 
+   **id 形态**：tokens / components / blocks / pages 这 4 层 id 必含 namespace 段，形如 `<layer>/<bucket>/<namespace>/<slug>`（如 `components/buttons/acme/cyan-cta` 或 `tokens/layout/_shared/responsive-grid`）。详见 [references/README.md · Namespace 子目录](references/README.md#namespace-子目录强制)。
+
 3. **递归读 `refs` / `uses` 链**
    - **products** 用 `refs`（显式声明 style / pages / blocks / components / tokens）
    - 其它层用 `uses`（依赖列表）

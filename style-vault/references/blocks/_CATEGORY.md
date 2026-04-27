@@ -47,6 +47,8 @@ Blocks 位于第三层（「整段」）。和相邻层的边界：
 ## 命名约定
 
 - 二级目录 kebab-case：`hero`、`pricing-table`、`modal-content`
-- 条目单文件：`blocks/<bucket>/<slug>.md`
-- 条目多文件：`blocks/<bucket>/<slug>/README.md`，条目 id 为文件夹路径
+- **三级 namespace 强制**（见 [../README.md · Namespace 子目录](../README.md#namespace-子目录强制)）：
+  - 单文件：`blocks/<bucket>/<namespace>/<slug>.md`
+  - 多文件：`blocks/<bucket>/<namespace>/<slug>/README.md`，id 取文件夹路径
+  - `<namespace>` = product 短名（如 `acme` / `skillhub`）；通用件归 `_shared`
 - slug 全程 kebab-case
