@@ -28,6 +28,7 @@ uses:
   - blocks/nav/style-vault/sticky-platform-topbar
   - blocks/filters/style-vault/sticky-chip-filter-panel
   - blocks/search/style-vault/cmd-k-search-panel
+  - blocks/feedback/style-vault/full-screen-loader
   - pages/landing/style-vault/editorial-cool-landing
   - pages/detail/style-vault/sticky-toc-product
   - pages/detail/style-vault/sidebar-preview-detail
