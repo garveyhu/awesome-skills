@@ -10,9 +10,9 @@
 
 用户触发语示例：
 
-- `删 tokens/palettes/slate-cyan-ice`
-- `删掉 components/buttons/ghost-button`
-- 批量：`删 blocks/display/table, components/buttons/ghost-button`
+- `删 tokens/palettes/acme/slate-cyan-ice`
+- `删掉 components/buttons/acme/ghost-button`
+- 批量：`删 blocks/display/skillhub/table, components/buttons/acme/ghost-button`
 - 模糊：`把 slate cyan 那个 palette 删了`（走 `search --name` 反查，同 [modify-workflow 入口参数](modify-workflow.md#入口参数id-识别)）
 
 **入口参数处理**：
@@ -32,14 +32,14 @@
 
 **例 1 · 删 token**
 
-删：`tokens/palettes/cold-mint`
+删：`tokens/palettes/mint-analytics/cold-mint`
 
-引用者：`blocks/display/mint-table`，它的 frontmatter：
+引用者：`blocks/display/mint-analytics/mint-table`，它的 frontmatter：
 
 ```yaml
 refs:
   tokens:
-    palette: tokens/palettes/cold-mint  # ← 这一条指向被删 id
+    palette: tokens/palettes/mint-analytics/cold-mint  # ← 这一条指向被删 id
 ```
 
 cascade 动作：把 `refs.tokens.palette` **清空**（把 key 整条删掉，或根据 taxonomy 约定设为 null）。mint-table 本身**保留**。
@@ -53,15 +53,15 @@ refs:
 
 **例 2 · 删 block，被 product 引用**
 
-删：`blocks/display/table`
+删：`blocks/display/acme/saas-data-table`
 
 引用者：`products/acme-cold-saas`，它的 frontmatter：
 
 ```yaml
 refs:
   blocks:
-    - blocks/layout/toolbar-bar
-    - blocks/display/table       # ← 这一项被清
+    - blocks/nav/acme/saas-cold-topbar
+    - blocks/display/acme/saas-data-table       # ← 这一项被清
 ```
 
 cascade 动作：从 `refs.blocks` 数组里**移除这一项**（不是整个数组）。product 本身保留。
@@ -71,12 +71,12 @@ cascade 动作：从 `refs.blocks` 数组里**移除这一项**（不是整个�
 ```yaml
 refs:
   blocks:
-    - blocks/layout/toolbar-bar
+    - blocks/nav/acme/saas-cold-topbar
 ```
 
 **例 3 · 同时删多条，互相引用**
 
-删：`[tokens/palettes/cold-mint, blocks/display/mint-table]`
+删：`[tokens/palettes/mint-analytics/cold-mint, blocks/display/mint-analytics/mint-table]`
 
 若 `mint-table` 引用了 `cold-mint`——这两条都在删除列表，**无需 cascade**（引用者本身也被删）。只需处理被删集合**之外**的引用者。
 
@@ -107,9 +107,9 @@ python3 ~/.agents/skills/style-vault/scripts/taxonomy.py \
 
 ```json
 {
-  "id": "tokens/palettes/cold-mint",
+  "id": "tokens/palettes/mint-analytics/cold-mint",
   "usedBy": [
-    {"id": "blocks/display/mint-table", "field": "refs.tokens.palette"},
+    {"id": "blocks/display/mint-analytics/mint-table", "field": "refs.tokens.palette"},
     {"id": "styles/saas-tool/cold-mint-saas", "field": "refs.tokens.palette"}
   ]
 }
@@ -122,16 +122,16 @@ python3 ~/.agents/skills/style-vault/scripts/taxonomy.py \
 ```
 === 反向引用检查 ===
 
-[1] tokens/palettes/cold-mint
+[1] tokens/palettes/mint-analytics/cold-mint
     被 2 条引用：
-    - blocks/display/mint-table · refs.tokens.palette
+    - blocks/display/mint-analytics/mint-table · refs.tokens.palette
     - styles/saas-tool/cold-mint-saas · refs.tokens.palette
 
-[2] components/buttons/ghost-button
+[2] components/buttons/acme/ghost-button
     被 1 条引用：
     - products/acme-cold-saas · refs.components[0]
 
-[3] blocks/display/table
+[3] blocks/display/skillhub/table
     无引用方（可直接删）
 ```
 

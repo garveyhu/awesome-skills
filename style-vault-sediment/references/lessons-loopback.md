@@ -131,6 +131,9 @@ grep -rn "关键词" ~/.agents/skills/style-vault-sediment/{SKILL.md,references/
 | 2026-04-24 | 写 `blocks/form/profile-edit-form` 时被"form"这个名字带偏，直接写成"头像 + input 字段 + 保存按钮"的长表单，真实 skillhub `/me/edit` 是 **iOS 列表点击模式**（每行点击弹独立 modal，没保存按钮）| [见下方"block/page 命名不能带偏抽象"节](#blockpage-命名不能带偏抽象必做) | 2026-04-24 用户指出 profile-edit-form 不对 |
 | 2026-04-24 | preview 组件在卡片缩略图里**反复 mount** 时，任何"mount 时的异步动画"都会被反复触发放大可见——具体表现两类：(a) `scrollIntoView({smooth})` / framer-motion `initial→animate` / CSS `transition from→to` 等进场动画；(b) macOS overlay scrollbar 在程序化 `scrollTop = N` 时系统级"淡入再淡出"动画。用户切分类时整屏卡片反复闪 | [见下方"preview 组件是静态快照 · 禁止 mount 时异步动画"节](#preview-组件是静态快照--禁止-mount-时异步动画必做) | 2026-04-24 用户连续指出 StyleCard scale 闪、IM 滚动条抖动、macOS overlay 滚动条渐隐 |
 | 2026-04-24 | `useSyncExternalStore` 的 `getSnapshot` 返回**每次新构造的对象** `{ cols, label }` → React `Object.is` 比较每次都不等 → 判定 store 变了触发 rerender → 再 call snapshot 又得新对象 → **无限循环 Maximum update depth / 页面白屏**。错因是想一次性从 hook 返回多个值，没意识到新对象引用每次都变 | [见下方"useSyncExternalStore snapshot 必须返回原语或稳定引用"节](#usesyncexternalstore-snapshot-必须返回原语或稳定引用必做) | 2026-04-24 用户报白屏 · `fixed-cols-row.tsx` preview |
+| 2026-04-27 | 旧 flat slug `<bucket>/<base-name>` 在多 product 共存下必撞——同语义的 cyan-cta（acme） / dark-primary-cta（skillhub）抢 buttons/ 命名位，AI 消费时无从区分。**根因是 base-name 没绑风格世界**| 已通过 namespace 机制（路径中间一级 `<namespace>/`）解决 · 不再回写新规则；本条仅作历史记录 | 2026-04-27 acme rebuild |
+| 2026-04-27 | review 后期才发现新增的 cyan-cta / status-pulse 跟已有 dark-primary-cta / pulse-dot 视觉/语义重叠——差点引入冗余条目。**根因是生成 frontmatter 前没扫同 bucket 已存在条目** | [shared-workflow.md · 步骤 3.b 重名 grep](shared-workflow.md#3b--重名-grep必做--写-frontmatter-之前) | 2026-04-27 acme rebuild |
+| 2026-04-27 | skill 仓 commit 用 `git add -A` 把无关的循环 symlink `wiki-creator/wiki-creator` 拉进 commit，事后单独打 chore commit 修。**根因是 skill 仓多 skill 共存时 -A 会污染** | [shared-workflow.md · 精确 add 硬规矩](shared-workflow.md#精确-add-硬规矩必做--skill--vault-两仓都遵守) | 2026-04-27 acme rebuild |
 
 ---
 

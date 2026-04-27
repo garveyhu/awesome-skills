@@ -60,10 +60,10 @@
 
 ### 示例（对 skillhub）
 
-1. `tokens/palettes/skillhub-teal-mist`
-2. `tokens/typography/pairs/inter-jetbrains-duo`
-3. `components/buttons/border-trace-cta`（最独特）
-4. `blocks/marketing/gradient-hero`（流光 hero）
+1. `tokens/palettes/skillhub/skillhub-teal-mist`
+2. `tokens/typography/pairs/skillhub/inter-jetbrains-duo`
+3. `components/buttons/skillhub/border-trace-cta`（最独特）
+4. `blocks/marketing/skillhub/gradient-hero`（流光 hero）
 5. `styles/community-social/skillhub-soft-modernist`
 6. `products/skillhub`
 
@@ -120,38 +120,38 @@
 === 路由清单 ===
 | Route | File | 职能 | 是否沉淀为独立 page? |
 |---|---|---|---|
-| / → /discover | discovery/home/index.tsx | 发现 | ✅ skill-community-home |
-| /skills/:slug | skill/pages/detail/... | 技能详情 | ✅ skill-article-detail |
-| /practice | practice/pages/index.tsx | 实践广场 | ✅ practice-plaza |
-| /practice/:id | practice/pages/detail/... | 实践详情 | ✅ practice-post-detail |
-| /practice/create | practice/pages/create/... | 发布实践 | ✅ form-long-article |
-| /publish | skill/pages/publish/... | 发布技能 | ✅ form-upload-archive |
-| /messages | message/pages/... | 消息会话 | ✅ im-conversation |
-| /me | me/pages/... | 个人中心 | ✅ user-profile |
-| /me/edit | me/pages/edit/... | 编辑资料 | ✅ form-profile-edit |
-| /admin | admin/pages/... | 管理后台 | ✅ admin-console |
-| /login | auth/pages/login/... | 登录注册 | ✅ auth-split |
+| / → /discover | discovery/home/index.tsx | 发现 | ✅ pages/landing/skillhub/skill-community-home |
+| /skills/:slug | skill/pages/detail/... | 技能详情 | ✅ pages/detail/skillhub/skill-article-detail |
+| /practice | practice/pages/index.tsx | 实践广场 | ✅ pages/list-table/skillhub/practice-plaza |
+| /practice/:id | practice/pages/detail/... | 实践详情 | ✅ pages/detail/skillhub/practice-post-detail |
+| /practice/create | practice/pages/create/... | 发布实践 | ✅ pages/form-flow/skillhub/practice-compose |
+| /publish | skill/pages/publish/... | 发布技能 | ✅ pages/form-flow/skillhub/skill-publish-wizard |
+| /messages | message/pages/... | 消息会话 | ✅ pages/content-reader/skillhub/im-conversation |
+| /me | me/pages/... | 个人中心 | ✅ pages/dashboard/skillhub/user-home |
+| /me/edit | me/pages/edit/... | 编辑资料 | ✅ pages/form-flow/skillhub/profile-edit |
+| /admin | admin/pages/... | 管理后台 | ✅ pages/list-table/skillhub/admin-console |
+| /login | auth/pages/login/... | 登录注册 | ✅ pages/auth/skillhub/auth-split |
 | 覆盖率 | | | 11/11 = 100% |
 
 === 全局模式清单 ===
 | 模式 | 出现次数 | 文件数 | 沉淀为 |
 |---|---|---|---|
-| `bg-[#1a1a1a] text-white ... active:scale-95` | 12 | 8 | components/buttons/dark-primary-cta |
-| `border-gray-200 focus:border-teal-300 focus:ring-2 focus:ring-teal-100 rounded-xl` | 9 | 6 | components/inputs/soft-teal-focus |
+| `bg-[#1a1a1a] text-white ... active:scale-95` | 12 | 8 | components/buttons/skillhub/dark-primary-cta |
+| `border-gray-200 focus:border-teal-300 focus:ring-2 focus:ring-teal-100 rounded-xl` | 9 | 6 | components/inputs/skillhub/soft-form-input |
 | ...（至少 3 条）
 
 === 表单清单 ===
 | 表单 | 路由 | 字段类型 | 沉淀为 |
 |---|---|---|---|
-| 登录 / 注册 | /login | email + password + toggle | blocks/form/auth-split-form |
-| 发布实践 | /practice/create | title + markdown editor + skill picker | blocks/form/long-article-compose |
+| 登录 / 注册 | /login | email + password + toggle | blocks/form/skillhub/auth-split-form |
+| 发布实践 | /practice/create | title + markdown editor + skill picker | blocks/form/skillhub/long-article-compose |
 | ...
 
 === 状态清单 ===
 | 状态 | 位置 | 视觉特征 | 沉淀为 |
 |---|---|---|---|
-| Loading skeleton | 首页技能网格 | h-48 animate-pulse | blocks/feedback/skeleton-card |
-| Empty | 无搜索结果 | border-dashed + Box icon | blocks/feedback/empty-state |
+| Loading skeleton | 首页技能网格 | h-48 animate-pulse | blocks/feedback/skillhub/skeleton-card |
+| Empty | 无搜索结果 | border-dashed + Box icon | blocks/feedback/skillhub/empty-state |
 | Error | 加载失败 | bg-rose-50 text-rose-700 | components/indicators/error-banner |
 | Pulse dot | systems operational | emerald w-1.5 shadow glow | components/indicators/pulse-dot |
 
@@ -161,7 +161,7 @@
 | flow-right 14s | index.less:42 | CSS keyframe | tokens/motion/gentle-flow |
 | fadeIn 4px | index.less:49 | CSS keyframe | tokens/motion/gentle-flow |
 | whileHover y:-4 | home:463 | framer-motion | tokens/motion/gentle-flow
-| BorderTrace ResizeObserver | home:34 | SVG + RO | components/buttons/border-trace-cta
+| BorderTrace ResizeObserver | home:34 | SVG + RO | components/buttons/skillhub/border-trace-cta
 | ...
 ```
 

@@ -80,6 +80,36 @@ python3 ~/.agents/skills/style-vault/scripts/taxonomy.py overview --json
 
 **目的**：把各 create 分支（或 modify / delete）产出的"沉淀计划"扩展成**完整的写入方案**——每条条目要有完整的 frontmatter + 正文骨架，不是只有 id 列表。
 
+### 3.a · namespace 归属判定（必做 · 写 frontmatter 之前）
+
+**所有** tokens / components / blocks / pages 类条目必须先确定 namespace（路径中间段）。规则见 [style-vault/references/README.md · Namespace 子目录](../../style-vault/references/README.md#namespace-子目录强制)。
+
+判定流程：
+1. 这条条目最终会被某个 `products/<slug>` 的 refs 引用吗？
+   - **是** → namespace = 那个 product 的短名（`acme` / `skillhub` / ...）
+   - **否（确定通用，跨 style 都成立）** → namespace = `_shared`
+2. 同一条被 ≥ 2 个 product 引用时，归"视觉真正绑定"的那个，错引用方走 unlink
+3. 拿不准时**优先归 product namespace**（用户原话："只要被产品关联都优先和产品绑定"）
+
+> id 形态：`<layer>/<bucket>/<namespace>/<slug>`（`styles/` 与 `products/` 层不带 namespace）
+
+### 3.b · 重名 grep（必做 · 写 frontmatter 之前）
+
+**惨痛教训**（2026-04-27 acme rebuild）：差点新增 `cyan-cta` 时没发现 `dark-primary-cta` 已存在，新增 `status-pulse` 没发现 `pulse-dot` 已存在——同 bucket 跨 namespace 的近义条目幸亏 review 时撞上才发现。
+
+**硬规矩**：每条新增条目在生成 frontmatter 前必须 grep 同 bucket 下的所有近义 slug。
+
+```bash
+# 例：要新增 components/buttons/acme/cyan-cta，先扫所有 buttons/
+ls ~/.agents/skills/style-vault/references/components/buttons/*/
+
+# 或用 taxonomy.py 列同类：
+python3 ~/.agents/skills/style-vault/scripts/taxonomy.py search --type component --json \
+  | grep -E '"id":\s*"components/buttons/'
+```
+
+发现近义条目（如 `dark-primary-cta` vs `cyan-cta` 都是 primary CTA）→ 在新条目 README 必须加 "**与 X 区分**" 章节，明确两者在风格世界 / 视觉语言上的差异。否则 AI 消费时容易选错。
+
 ### 依赖拓扑序
 
 写入顺序**严格按底层到上层**：
@@ -96,21 +126,19 @@ tokens → components → blocks → pages → styles → products
 
 ```markdown
 ---
-id: blocks/display/mint-table
+id: blocks/display/mint-analytics/mint-table
 type: block
-category: productivity
 tags:
   aesthetic: [minimal]
   mood: [calm]
   stack: [react-tailwind]
 platforms: [web]
-theme: [light]
+theme: light
 name: 薄荷表格
 description: 低饱和配色的紧凑数据表格
-refs:
-  tokens:
-    palette: tokens/palettes/cold-mint
-preview: frontend/src/preview/blocks/display/mint-table.tsx
+uses:
+  - tokens/palettes/mint-analytics/cold-mint
+preview: /preview/blocks/display/mint-analytics/mint-table
 ---
 
 # 薄荷表格
@@ -164,24 +192,24 @@ preview: frontend/src/preview/blocks/display/mint-table.tsx
 ```
 === 写入预览 (N 条，按依赖拓扑序) ===
 
-[1] tokens/palettes/cold-mint
-    type: token         category: —
+[1] tokens/palettes/mint-analytics/cold-mint              ← namespace: mint-analytics
+    type: token
     tags: {aesthetic: [organic], mood: [calm], stack: [react-tailwind]}
-    platforms: [web]    theme: [light]
+    platforms: [web]    theme: light
     name: 冷薄荷调色板
     description: 低饱和薄荷绿 + 冷灰中性
-    preview: frontend/src/preview/tokens/palettes/cold-mint.tsx
+    preview: /preview/tokens/palettes/mint-analytics/cold-mint
     --- 正文 50 字预览 ---
     ## Tokens: --mint-50 #F0FDF4 / --mint-200 #A7F3D0 / --mint-500 #10B981 / --slate-60...
 
-[2] blocks/display/mint-table
-    type: block         category: productivity
+[2] blocks/display/mint-analytics/mint-table              ← namespace: mint-analytics
+    type: block
     tags: {aesthetic: [minimal], mood: [calm], stack: [react-tailwind]}
-    platforms: [web]    theme: [light]
-    refs: tokens.palette = tokens/palettes/cold-mint
+    platforms: [web]    theme: light
+    uses: [tokens/palettes/mint-analytics/cold-mint]
     name: 薄荷表格
     description: 低饱和配色的紧凑数据表格
-    preview: frontend/src/preview/blocks/display/mint-table.tsx
+    preview: /preview/blocks/display/mint-analytics/mint-table
     --- 正文 50 字预览 ---
     ## 视觉特征：密度中等，行高 44px，zebra 用 mint-50…
 
@@ -234,17 +262,17 @@ AI 自动填：[1] [2] [3]
 <一句话说明>
 
 ## 涉及条目（依赖拓扑序）
-1. tokens/palettes/cold-mint
-2. blocks/display/mint-table
+1. tokens/palettes/mint-analytics/cold-mint
+2. blocks/display/mint-analytics/mint-table
 3. styles/saas-tool/cold-mint-saas
 4. products/mint-analytics
 
 ## 依赖关系
-mint-analytics → cold-mint-saas → [mint-table, cold-mint]
-mint-table → cold-mint
+mint-analytics → cold-mint-saas → [mint-analytics/mint-table, mint-analytics/cold-mint]
+mint-analytics/mint-table → mint-analytics/cold-mint
 
 ## 元信息填写方式
-- AI 自动填: tokens/palettes/cold-mint, blocks/display/mint-table
+- AI 自动填: tokens/palettes/mint-analytics/cold-mint, blocks/display/mint-analytics/mint-table
 - 用户手填: styles/saas-tool/cold-mint-saas
 
 ## Tier 3 覆盖率（仅 Tier 3 填）
@@ -503,6 +531,26 @@ EOF
 
 **不 push**。保留给用户。
 
+### 精确 add 硬规矩（必做 · skill + vault 两仓都遵守）
+
+**惨痛教训**（2026-04-27 acme rebuild · namespace 迁移）：`git add -A` 把 skill 仓里别的 skill 残留的循环 symlink `wiki-creator/wiki-creator` 拉进了 commit，事后单独打 chore commit 修。
+
+**硬规矩**：
+
+1. **绝不允许** skill 仓用 `git add -A` / `git add .`——skill 仓多 skill 共存（style-vault / style-vault-sediment / 其它），别人的状态会被误带入
+2. **必须按路径精确 add**：
+   ```bash
+   # skill 仓
+   cd ~/.agents/skills
+   git add style-vault/references/<本次改动子路径>
+   git add style-vault-sediment/assets/sediment-history/<本次 batch>
+
+   # 网站仓（推荐同样精确 add）
+   cd "$VAULT"
+   git add frontend/src/preview/ frontend/src/data/registry.json
+   ```
+3. **commit 前 `git status --short` 自检**——确认 staging 里**所有**条目都属本次沉淀，遇陌生路径立刻 `git restore --staged <path>` 移除
+
 ### skill 仓 commit message 模板（步骤 8 使用）
 
 下面是步骤 8 末尾要用的模板，提前放这里方便对照：
@@ -542,14 +590,14 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 
 | 操作 | 类型 | ID | 名称 | 分类 / 标签 |
 |---|---|---|---|---|
-| 新增 | token | tokens/palettes/cold-mint | 冷薄荷调色板 | aesthetic: [organic] · mood: [calm] |
-| 新增 | block | blocks/display/mint-table | 薄荷表格 | aesthetic: [minimal] · mood: [calm] · stack: [react-tailwind] |
+| 新增 | token | tokens/palettes/mint-analytics/cold-mint | 冷薄荷调色板 | aesthetic: [organic] · mood: [calm] |
+| 新增 | block | blocks/display/mint-analytics/mint-table | 薄荷表格 | aesthetic: [minimal] · mood: [calm] · stack: [react-tailwind] |
 | 新增 | style | styles/saas-tool/cold-mint-saas | 冷薄荷 SaaS | aesthetic: [minimal, organic] · mood: [calm] |
 | 新增 | product | products/mint-analytics | Mint 分析后台 | category: productivity |
 
 ## 元信息来源
 
-- AI 自动填（授权）：`tokens/palettes/cold-mint`、`blocks/display/mint-table`
+- AI 自动填（授权）：`tokens/palettes/mint-analytics/cold-mint`、`blocks/display/mint-analytics/mint-table`
 - 用户手改：`styles/saas-tool/cold-mint-saas` 的 tags.aesthetic
 - 纯手填：无
 

@@ -10,14 +10,29 @@
 
 用户触发语示例：
 
-- `改 tokens/palettes/slate-cyan-ice 的 description`
-- `把 blocks/display/table 的 aesthetic 加上 organic`
+- `改 tokens/palettes/acme/slate-cyan-ice 的 description`
+- `把 blocks/display/skillhub/table 的 aesthetic 加上 organic`
 - `把 slate cyan 那个 palette 的 mood 改成 calm`（模糊——靠 name 反查）
 - `重写 products/acme-cold-saas 的"视觉特征"章节`
 
 ### 入口参数：id 识别
 
-**精确 id**（形如 `<type>/<category>/<slug>` 或 `<type>s/<slug>`）→ 直接用。
+**精确 id** → 直接用。当前的 id 形态：
+
+| 层 | 形态 | 例子 |
+|---|---|---|
+| product | `products/<slug>` | `products/acme-cold-saas` |
+| style | `styles/<form>/<slug>` | `styles/saas-tool/cold-industrial-saas` |
+| token / component / block / page | `<layer>/<bucket>/<namespace>/<slug>` | `components/buttons/acme/cyan-cta` · `tokens/layout/_shared/responsive-grid` |
+
+**用户给了不带 namespace 的旧 id**（如 `components/buttons/ghost-button`）→ 不要直接报"找不到"，先 grep 同 bucket 下所有 namespace：
+
+```bash
+ls ~/.agents/skills/style-vault/references/components/buttons/*/ghost-button.md 2>/dev/null
+# 命中 1 条 → 自动补 namespace 段，告诉用户"我找到 components/buttons/acme/ghost-button"
+# 命中多条（同 base-name 跨 namespace）→ 列给用户选
+# 命中 0 条 → 走 search --name 模糊反查
+```
 
 **模糊 id / 只给了名字** → 用 `search --name` 反查：
 
@@ -116,10 +131,10 @@ tags:
 
 refs:
   style:     styles/saas-tool/cold-industrial-saas
-  tokens.palette:    tokens/palettes/slate-cyan-ice
-  tokens.typography: tokens/typography/pairs/ibm-plex-duo
-  blocks:    [blocks/layout/toolbar-bar, blocks/display/table]
-  components: [components/buttons/ghost-button]
+  tokens.palette:    tokens/palettes/acme/slate-cyan-ice
+  tokens.typography: tokens/typography/pairs/acme/ibm-plex-duo
+  blocks:    [blocks/nav/acme/saas-cold-topbar, blocks/display/acme/saas-data-table]
+  components: [components/buttons/acme/ghost-button, components/buttons/acme/cyan-cta]
 
 preview:     /preview/products/acme-cold-saas
 _path:       products/acme-cold-saas/README.md
