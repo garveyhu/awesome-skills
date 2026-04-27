@@ -31,9 +31,17 @@ preview: /preview/blocks/layout/style-vault/browser-chrome-frame
 **预览区**：`flex justify-center bg-slate-50 p-4`，内层 `max-w-{viewport}`，`overflow-auto rounded-md border border-slate-200 bg-white`，`maxHeight: 72vh`，`transition: max-width 240ms ease`
 
 **视口选择器**（顶部独立工具条，不在 chrome 内）：
-- 5 档：375 手机 / 768 平板 / 1024 桌面 / 1440 大屏 / full 全宽
-- 用 antd `<Select>` 改造，每条 option 显示 icon + 标签 + px 值
-- 右侧 `全屏预览` ghost-bordered-cta + 当前视口标记（emerald-500 圆点）
+
+形态走 antd `<Select>` 大尺寸下拉（**不是 inline button group**），关键参数：
+- `size="large"` · `style={{ width: 200 }}` · `popupMatchSelectWidth={200}`
+- `suffixIcon={null}` —— 去掉默认 chevron，让胶囊视觉更干净
+- 5 档 option：375 手机 · 768 平板 · 1024 桌面 · 1440 大屏 · full 全宽
+- 每条 option 三段 layout：
+  - `h-6 w-6 rounded-md bg-slate-100 text-slate-600` icon 容器（mobile/tablet/desktop/expand 图标）
+  - `flex-1 text-[13px] font-medium` 中文标签
+  - `text-[11px] text-slate-400` 右对齐 px 值（如 `375 px` / `响应式`）
+
+右侧 `全屏预览` 走 ghost-bordered-cta md 档；最右边 `ml-auto` 是当前视口标记 —— `h-1.5 w-1.5 rounded-full bg-emerald-500` 小绿点 + `text-[12px] text-slate-400` 文字。
 
 ## 核心代码骨架
 
@@ -50,7 +58,26 @@ return (
   <div className="space-y-4">
     {/* viewport toolbar */}
     <div className="flex items-center gap-3">
-      <Select value={viewport} onChange={setViewport} options={VIEWPORT_OPTIONS} ... />
+      <Select<ViewportKey>
+        value={viewport}
+        onChange={(v) => setViewport(v)}
+        size="large"
+        suffixIcon={null}
+        popupMatchSelectWidth={200}
+        style={{ width: 200 }}
+        options={VIEWPORT_OPTIONS.map((v) => ({
+          value: v.value,
+          label: (
+            <div className="flex items-center gap-2">
+              <span className="flex h-6 w-6 items-center justify-center rounded-md bg-slate-100 text-slate-600">
+                {v.icon}
+              </span>
+              <span className="flex-1 text-[13px] font-medium">{v.label}</span>
+              <span className="text-[11px] text-slate-400">{v.desc}</span>
+            </div>
+          ),
+        }))}
+      />
       <button className="ghost-bordered-cta">全屏预览</button>
       <div className="ml-auto flex items-center gap-1 text-[12px] text-slate-400">
         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />

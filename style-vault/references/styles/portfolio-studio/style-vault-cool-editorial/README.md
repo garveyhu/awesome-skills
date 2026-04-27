@@ -18,6 +18,7 @@ uses:
   - components/buttons/style-vault/ghost-bordered-cta
   - components/tags-badges/style-vault/cyan-dot-meta-pill
   - components/toggles/style-vault/editorial-underline-tab
+  - components/overlays/style-vault/spring-toast
   - blocks/marketing/style-vault/cool-blob-hero
   - blocks/display/style-vault/preview-thumb-card
   - blocks/display/style-vault/floating-cover-row
@@ -25,7 +26,9 @@ uses:
   - blocks/nav/style-vault/sticky-platform-topbar
   - pages/landing/style-vault/editorial-cool-landing
   - pages/detail/style-vault/sticky-toc-product
+  - pages/detail/style-vault/sidebar-preview-detail
   - pages/list-table/style-vault/category-row-browse
+  - pages/dashboard/style-vault/profile-collections
 preview: /preview/styles/portfolio-studio/style-vault-cool-editorial
 ---
 

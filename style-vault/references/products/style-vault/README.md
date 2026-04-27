@@ -11,7 +11,9 @@ refs:
   pages:
     - pages/landing/style-vault/editorial-cool-landing
     - pages/detail/style-vault/sticky-toc-product
+    - pages/detail/style-vault/sidebar-preview-detail
     - pages/list-table/style-vault/category-row-browse
+    - pages/dashboard/style-vault/profile-collections
   blocks:
     - blocks/marketing/style-vault/cool-blob-hero
     - blocks/display/style-vault/preview-thumb-card
@@ -23,6 +25,7 @@ refs:
     - components/buttons/style-vault/ghost-bordered-cta
     - components/tags-badges/style-vault/cyan-dot-meta-pill
     - components/toggles/style-vault/editorial-underline-tab
+    - components/overlays/style-vault/spring-toast
   tokens:
     palette: tokens/palettes/style-vault/slate-cyan-cool
     typography: tokens/typography/pairs/style-vault/inter-editorial-display
@@ -44,18 +47,20 @@ Style Vault 是为 AI 编码协作打造的设计风格库——把"风格"按�
 - **Mono 撑数字**：所有索引（01/02/03）/ ID 字串 / 数字徽标用 mono —— 编辑节奏锚点
 - **单字族打天下**：Inter 一种字，靠尺寸 + letter-spacing + uppercase tracking 拉层级，不引第二种字族
 
-## 组成（Tier 2 · 17 条聚合）
+## 组成（Tier 2 · 20 条聚合）
 
 ### Style
 - `styles/portfolio-studio/style-vault-cool-editorial` · 整站调性
 
-### Pages · 3 条
+### Pages · 5 条
 
 | 路由 | Page | 用途 |
 |---|---|---|
 | `/` | `pages/landing/style-vault/editorial-cool-landing` | 落地页（hero + Logo 墙 + 3 段价值叙事 + manifesto + footer） |
 | `/products/:slug` | `pages/detail/style-vault/sticky-toc-product` | 产品详情（cover hero + sticky 数字 TOC + masonry 分段） |
+| `/item/*` | `pages/detail/style-vault/sidebar-preview-detail` | 单条 item 详情（340px sidebar + 右列 chrome 预览框） |
 | `/browse` | `pages/list-table/style-vault/category-row-browse` | 浏览页（双 sticky 导航 + 每类一行卡片） |
+| `/profile` | `pages/dashboard/style-vault/profile-collections` | 个人中心（头像 hero + 类型 tab + 收藏网格 + 编辑 modal） |
 
 ### Blocks · 5 条
 
@@ -65,12 +70,13 @@ Style Vault 是为 AI 编码协作打造的设计风格库——把"风格"按�
 - `blocks/layout/style-vault/browser-chrome-frame` · mac dot 浏览器 chrome + 视口选择器
 - `blocks/nav/style-vault/sticky-platform-topbar` · sticky 玻璃感顶栏 + 视口绝对居中 platform pill
 
-### Components · 4 条
+### Components · 5 条
 
 - `components/buttons/style-vault/dark-pill-cta` · slate-900 rounded-full 主 CTA（带深柔投影）
 - `components/buttons/style-vault/ghost-bordered-cta` · 1.5px 描边幽灵次 CTA（hover 收紧）
 - `components/tags-badges/style-vault/cyan-dot-meta-pill` · 玻璃感 uppercase tracking pill
 - `components/toggles/style-vault/editorial-underline-tab` · scaleX cyan→slate-900 渐变 underline tab
+- `components/overlays/style-vault/spring-toast` · spring overshoot 顶部居中胶囊操作回执
 
 ### Tokens · 4 条
 
