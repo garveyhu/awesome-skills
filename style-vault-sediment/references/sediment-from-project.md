@@ -389,6 +389,68 @@ Tier 2 / Tier 3 写 page / 复杂 block 条目前，**必须满足以下全部**
 
 ---
 
+## preview 写 icon 的硬规矩：**用源码同款 icon 库，禁用 emoji 替代**（必做）
+
+**惨痛教训**（2026-04-27 · sage tier3）：38 条 preview 全部用 emoji（👤 🛡 ⚙ 💾 📦 🧩 📊 💬 🔑 🌿 🦊 ⭐ 🐱 ☕ 🤖 🐬 🐘 ⚡ 🔍 🔱 📑 🔎 ✎ 🗑 ✓ ✕ ⋯ ▾ ◀ ➤ ↻ ↪ ↵ ↔ 🌐 🎙 🎯 🦄 🐱 ↗ ▶ 🌍 ⌘ ⊞ ⊕ ✖ ⚠ 🙈 👁）替代源码的 lucide-react 图标。用户原话：**"网站的 icon 选型也是风格的一部分，你随意改为 emoji 完全变味了"**。
+
+emoji 是跨平台彩色字符（macOS / Windows / 不同浏览器渲染各异，自带 padding / 颜色 / 风格），lucide-react 是统一线性灰阶矢量；两者根本不是同一种视觉语言。
+
+### 硬规矩
+
+1. **preview .tsx 必须用源码同款 icon 库**，sage / 大多数现代项目 = `lucide-react`；style-vault 网站已装 `lucide-react`，import 即用，**不需要为节省字数走 emoji 捷径**
+2. **不允许任何 emoji 字符**出现在 preview 里代替按钮 / 头像 / 数据库 logo / 状态符号等任何 UI 元素位置（emoji 只允许在"emoji 是源码内容"的场景，如 chat 文案、表情选择器、用户输入演示）
+3. **不允许把"装饰性 ASCII 字符"** 当 icon 用：`▾ ◀ ▶ ➤ ↵ ↪ ⋯ ✓ ✖ ⊞ ⊕` 这些都要换成对应的 lucide：ChevronDown / ChevronLeft / ChevronRight / ArrowRight / CornerDownLeft / LogOut / MoreHorizontal / Check / X / LayoutGrid / Plus
+4. **品牌 / 数据库 / 第三方 logo** 如果源码用了具体图片资源（如 sage 的 `iconMysql / iconPostgresql` png），preview 至少要还原"灰底 + 字母简写"或"产品官方 SVG mark"的占位形态，不是 🐬 🐘 ⚡ 这种 emoji
+5. **icon size / strokeWidth 要跟源码对齐**：sage 大量用 `size={14|16|18|20}`、stroke 默认 2，不要 size=24 默认
+6. **icon 颜色** 跟着源码：要么 `themeClasses.text` 主题色，要么 `text-slate-400/500/600/700` 中性灰，**不允许 inline 写 `color: '#xxx'` 跟主题脱钩**
+
+### 自检问题（写 preview .tsx 前自问）
+
+- [ ] preview 里有任何 emoji 字符（U+1F300 以上 / U+2600 范围）吗？是 → 必须替换为 lucide
+- [ ] 我用了 `▾ ◀ ▶ ➤ ⋯ ✓ ✖` 等 ASCII 装饰符号当 icon 吗？是 → 必须换 lucide
+- [ ] 我 import lucide-react 了吗？开头第一行应该是 `import { Send, Settings, ... } from 'lucide-react'`
+- [ ] icon size / stroke / color 是否对齐源码？数据库 logo / 头像 / 状态符号有没有用源码同款资源形态？
+
+任一答错 → 别提交，先改 preview。
+
+---
+
+## preview 必须深度还原源码具体数值（必做）
+
+**惨痛教训**（2026-04-27 · sage tier3）：preview 写得过于"示意化"——`padding: 18`（源码 `p-5` = 20px）/ `borderRadius: 12`（源码 `rounded-xl` = 12px ✓ 偶尔对）/ `fontSize: 14`（源码 `text-base` = 16px）/ inline color 不查 themeClasses... 这些"差不多就行"加起来 → 整页面气质漂移。用户原话：**"现在很多风格有点没绝对还原"**。
+
+skill .md 里的"视觉特征"已列出具体数值，但 preview .tsx 落地时被随手改成了"差不多的视觉"——这是**两份产物没对齐**。
+
+### 硬规矩
+
+1. **preview .tsx 的关键 padding / margin / borderRadius / fontSize / lineHeight / gap / fontWeight / shadow** 必须与同条目的 skill .md "视觉特征" 完全一致（**不允许 ±2px / ±1 size 这种"几乎一样"**）
+2. **写 preview 前，必须把 skill .md 的"视觉特征"打开放在工作集里**，每个数值都查表后再填 inline style
+3. **box-shadow / backdrop-blur / 渐变** 必须 1:1 拷贝 className 里的真实数值，例如 `shadow-2xl` = `0 25px 50px -12px rgba(0,0,0,0.25)` 不是随手 `0 10px 20px rgba(0,0,0,0.1)`
+4. **Tailwind 简写要查表**：
+   - `rounded-xl` = 12px / `rounded-2xl` = 16px / `rounded-3xl` = 24px / `rounded-[24px]` = 24px
+   - `text-xs` = 12px / `text-sm` = 14px / `text-base` = 16px / `text-lg` = 18px / `text-xl` = 20px / `text-2xl` = 24px / `text-3xl` = 30px
+   - `font-medium` = 500 / `font-semibold` = 600 / `font-bold` = 700
+   - `shadow-sm` = `0 1px 2px 0 rgba(0,0,0,0.05)` / `shadow` = `0 1px 3px 0 / 0 1px 2px -1px` / `shadow-md` / `shadow-lg` / `shadow-xl` / `shadow-2xl` 各自 hex
+   - `gap-2` = 8 / `gap-3` = 12 / `gap-4` = 16
+   - `p-3` = 12 / `p-4` = 16 / `p-5` = 20 / `p-6` = 24 / `p-8` = 32
+   - `space-y-4` = 16 vertical gap
+5. **颜色 hex** 必须用源码出现过的——不允许 `#10b981` 凭印象（源码可能是 `#34d399` / `#059669` 不同明度阶）；slate-* / gray-* / blue-* 都要查 Tailwind 调色阶
+6. **rgb 灰阶 / 主题色 hex** 不要四舍五入：源码 `rgb(231,231,231)` 就是 231 不是 230
+7. **真实组件结构** 也要还原：源码 `flex items-center gap-3` 嵌套在 `relative` 内 → preview 也要这样嵌；不要展平成单层
+
+### 自检问题（写 preview .tsx 前自问）
+
+- [ ] 我打开同条目 skill .md 的"视觉特征"节作为参照了吗？
+- [ ] 这一处 `padding: N` / `borderRadius: N` 是从源码哪个 className 翻译来的？
+- [ ] 我用的颜色 hex 在源码里能 grep 到吗？
+- [ ] preview 截图旁边放上真实站截图，能看出"这是同一个站"吗？还是"差不多但味道不对"？
+
+任一答不上 → 停下来对照源码改。
+
+---
+
+
+
 ## 层级反向归类表
 
 把扫到的文件映射到资产层级：

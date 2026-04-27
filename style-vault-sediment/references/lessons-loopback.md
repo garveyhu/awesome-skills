@@ -134,6 +134,8 @@ grep -rn "关键词" ~/.agents/skills/style-vault-sediment/{SKILL.md,references/
 | 2026-04-27 | 旧 flat slug `<bucket>/<base-name>` 在多 product 共存下必撞——同语义的 cyan-cta（acme） / dark-primary-cta（skillhub）抢 buttons/ 命名位，AI 消费时无从区分。**根因是 base-name 没绑风格世界**| 已通过 namespace 机制（路径中间一级 `<namespace>/`）解决 · 不再回写新规则；本条仅作历史记录 | 2026-04-27 acme rebuild |
 | 2026-04-27 | review 后期才发现新增的 cyan-cta / status-pulse 跟已有 dark-primary-cta / pulse-dot 视觉/语义重叠——差点引入冗余条目。**根因是生成 frontmatter 前没扫同 bucket 已存在条目** | [shared-workflow.md · 步骤 3.b 重名 grep](shared-workflow.md#3b--重名-grep必做--写-frontmatter-之前) | 2026-04-27 acme rebuild |
 | 2026-04-27 | skill 仓 commit 用 `git add -A` 把无关的循环 symlink `wiki-creator/wiki-creator` 拉进 commit，事后单独打 chore commit 修。**根因是 skill 仓多 skill 共存时 -A 会污染** | [shared-workflow.md · 精确 add 硬规矩](shared-workflow.md#精确-add-硬规矩必做--skill--vault-两仓都遵守) | 2026-04-27 acme rebuild |
+| 2026-04-27 | sage tier3 沉淀的 38 条 preview .tsx 全部用 emoji（👤🛡⚙💾📦🧩📊🐬🐘等）替代源码使用的 lucide-react 图标。**根因是 preview 里"省事用 emoji"被默认接受**——但 icon 选型本身是风格的一部分，emoji 跟线性矢量是两种视觉语言，整套风格立刻变味 | [sediment-from-project.md · preview 写 icon 的硬规矩](sediment-from-project.md#preview-写-icon-的硬规矩用源码同款-icon-库禁用-emoji-替代必做) | 2026-04-27-sage |
+| 2026-04-27 | sage tier3 preview 的 padding / borderRadius / fontSize / shadow / 颜色 hex 大量"凭印象差不多"——和 skill .md 里写的"视觉特征"具体数值脱节，整套气质漂移。**根因是没把 skill .md 的"视觉特征"放进工作集就直接写 preview** | [sediment-from-project.md · preview 必须深度还原源码具体数值](sediment-from-project.md#preview-必须深度还原源码具体数值必做) | 2026-04-27-sage |
 
 ---
 
