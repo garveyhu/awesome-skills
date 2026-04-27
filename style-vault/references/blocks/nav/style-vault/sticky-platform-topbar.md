@@ -41,7 +41,8 @@ preview: /preview/blocks/nav/style-vault/sticky-platform-topbar
 紧跟 `产品集` link 后，是触发全站搜索浮层的胶囊：
 
 ```
-[🔍 搜索风格]   ← rounded-full · h-9 · border-slate-200 · 玻璃白底 · 13px medium slate-500
+[⌕ 搜索风格]   ← rounded-full · h-9 · border-slate-200 · 玻璃白底 · 13px medium slate-500
+              ← icon = `<SearchOutlined>` from @ant-design/icons · 14px
               ← hover：border-slate-300 + bg-white + text-slate-900
               ← click：searchPanel.open() · 唤起 cmd-k-search-panel
 ```

@@ -25,7 +25,7 @@ preview: /preview/blocks/search/style-vault/cmd-k-search-panel
 
 ```
 ┌──────────────────────────────────────────────────────┐
-│  [🔍]  搜索风格            ⊗  全部 Web iOS Android   │  ← toolbar · 17px input
+│  [⌕]  搜索风格            ⊗  全部 Web iOS Android   │  ← toolbar · `<SearchOutlined>` 20px slate-400
 ├──────────────────────────────────────────────────────┤
 │  最近 · [ blob ] [ cta ] [ editorial ]                │  ← chips · localStorage 持久
 ├──────────┬───────────────────────────────────────────┤
