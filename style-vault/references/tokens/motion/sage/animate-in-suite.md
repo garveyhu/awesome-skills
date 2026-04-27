@@ -1,7 +1,7 @@
 ---
 id: tokens/motion/sage/animate-in-suite
 type: token
-name: Sage Tailwind animate-in 套件
+name: 动效入场套件
 description: tailwindcss-animate 提供的 fade-in / zoom-in / slide-in 标准过渡集合，sage 整站弹层入场基线
 platforms: [web]
 theme: light

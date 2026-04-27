@@ -1,7 +1,7 @@
 ---
 id: pages/dashboard/sage/agent-chat-stream
 type: page
-name: Agent Chat Stream
+name: 智能体问答主页
 description: ChatPage 主舞台——header (model select + title + more) + 消息流 + ChatInput + QuestionNavSidebar
 platforms: [web]
 theme: light

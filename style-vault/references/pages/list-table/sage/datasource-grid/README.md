@@ -1,7 +1,7 @@
 ---
 id: pages/list-table/sage/datasource-grid
 type: page
-name: 数据源 Grid（含 New / Detail）
+name: 数据源网格页
 description: 4 列 datasource card 网格 + filter + add，合并 list / new / detail 三路由的统一外壳
 platforms: [web]
 theme: light

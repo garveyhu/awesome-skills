@@ -1,7 +1,7 @@
 ---
 id: blocks/layout/sage/sidebar-detail-split
 type: block
-name: 侧栏 + 主区分屏布局
+name: 侧栏分屏布局
 description: 280px Sidebar + 主区 styled-components 布局骨架，SpaceManagement / AgentStorePage 等管理页通用
 platforms: [web]
 theme: light

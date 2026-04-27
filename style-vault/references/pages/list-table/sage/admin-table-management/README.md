@@ -1,7 +1,7 @@
 ---
 id: pages/list-table/sage/admin-table-management
 type: page
-name: Admin Table Management
+name: 管理后台通用表格
 description: ManagementLayout + Antd Table + 操作列 通用模板，UserManagement / RoleManagement / Collections 共用
 platforms: [web]
 theme: light

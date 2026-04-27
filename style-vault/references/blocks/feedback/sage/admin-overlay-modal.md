@@ -1,7 +1,7 @@
 ---
 id: blocks/feedback/sage/admin-overlay-modal
 type: block
-name: Admin 全屏 Overlay
+name: 管理后台浮层
 description: bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl 全屏管理面板 + 右上角关闭，sage 所有 admin 模块的统一外壳
 platforms: [web]
 theme: light

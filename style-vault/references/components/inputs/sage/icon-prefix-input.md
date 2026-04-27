@@ -1,7 +1,7 @@
 ---
 id: components/inputs/sage/icon-prefix-input
 type: component
-name: 前缀图标 Input
+name: 前缀图标输入框
 description: pl-10 + 绝对定位 lucide 图标的表单输入，sage 登录页 / 注册码 / 部分 admin 表单的标准款
 platforms: [web]
 theme: light

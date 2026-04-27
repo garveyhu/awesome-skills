@@ -1,7 +1,7 @@
 ---
 id: pages/list-table/sage/space-management-split
 type: page
-name: Space Management Split
+name: 工作区管理分屏
 description: 280 sidebar (空间列表) + 主区 (空间详情 + 成员表 + 角色 + Tab)，AgentStorePage 同款骨架
 platforms: [web]
 theme: light

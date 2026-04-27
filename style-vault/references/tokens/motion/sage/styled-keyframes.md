@@ -1,7 +1,7 @@
 ---
 id: tokens/motion/sage/styled-keyframes
 type: token
-name: Sage 7 段 styled-components keyframes
+name: 七段装饰性动画
 description: bling/earthSpin/snowFall/wobble/shimmer/pulse/stripes 七段专属 keyframes，承载 RevolverMenu 飘雪与 CrystalProgress 流光
 platforms: [web]
 theme: light

@@ -1,7 +1,7 @@
 ---
 id: pages/auth/sage/login-emerald-card
 type: page
-name: Sage 登录页
+name: 登录页
 description: slate-50 全屏背景 + 居中卡片 + emerald CTA + 注册码可选 + 右上语言切换
 platforms: [web]
 theme: light

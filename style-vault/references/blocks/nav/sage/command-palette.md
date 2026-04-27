@@ -1,7 +1,7 @@
 ---
 id: blocks/nav/sage/command-palette
 type: block
-name: Cmd+P 命令面板
+name: 命令面板
 description: Linear / Raycast 风全局命令面板，分组列表 + 键盘导航 + 状态栏，admin 专属
 platforms: [web]
 theme: light

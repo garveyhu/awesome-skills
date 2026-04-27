@@ -1,7 +1,7 @@
 ---
 id: blocks/feedback/sage/spin-fullscreen-loader
 type: block
-name: 全屏 Spin 加载
+name: 全屏加载
 description: AntD Spin + 主题色注入 + slate-50 背景 + 可选 fullScreen 占据 100vh
 platforms: [web]
 theme: light

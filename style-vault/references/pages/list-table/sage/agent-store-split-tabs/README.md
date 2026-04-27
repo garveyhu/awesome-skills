@@ -1,7 +1,7 @@
 ---
 id: pages/list-table/sage/agent-store-split-tabs
 type: page
-name: Agent Store Split Tabs
+name: 智能体商店分屏
 description: 280px sidebar agent list + 主区 ContentHeader + Tabs (config / run) + AgentConfigModal
 platforms: [web]
 theme: light

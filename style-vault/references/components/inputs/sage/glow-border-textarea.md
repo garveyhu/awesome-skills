@@ -1,7 +1,7 @@
 ---
 id: components/inputs/sage/glow-border-textarea
 type: component
-name: 霓虹光晕 textarea
+name: 霓虹光晕输入框
 description: rounded-[24px] textarea + 双层 box-shadow 主题色 focus 光晕，sage Chat 主输入框的灵魂
 platforms: [web]
 theme: light

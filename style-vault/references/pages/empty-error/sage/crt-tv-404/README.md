@@ -1,7 +1,7 @@
 ---
 id: pages/empty-error/sage/crt-tv-404
 type: page
-name: CRT 电视机 404
+name: 复古电视机 404
 description: 复古橘色 CRT 电视机 + 天线 + 旋钮 + 喇叭 + 彩条信号干扰屏 + 4 0 4 大字阴影
 platforms: [web]
 theme: light

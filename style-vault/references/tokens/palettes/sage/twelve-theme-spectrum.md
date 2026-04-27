@@ -1,7 +1,7 @@
 ---
 id: tokens/palettes/sage/twelve-theme-spectrum
 type: token
-name: Sage 十二主题色谱
+name: 十二主题色谱
 description: 12 个用户可切换主题色 × 3 档明度（hex / light / selection），驱动整站 119 处动态着色
 platforms: [web]
 theme: light

@@ -1,7 +1,7 @@
 ---
 id: tokens/palettes/sage/neutral-rgb-ladder
 type: token
-name: Sage 9 阶 RGB 灰阶
+name: 九阶手调灰阶
 description: bg-[rgb(231..252)] 9 个手调灰阶 + slate 体系，承载 sage 整站背景与 hover/selected 微差
 platforms: [web]
 theme: light

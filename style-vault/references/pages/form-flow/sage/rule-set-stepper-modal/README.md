@@ -1,7 +1,7 @@
 ---
 id: pages/form-flow/sage/rule-set-stepper-modal
 type: page
-name: 规则集 Stepper Modal
+name: 规则集分步弹窗
 description: 1200px 大弹窗 + Steps + 双段（规则配置 / 用户分配）+ 嵌套 Card + Transfer 用户穿梭框
 platforms: [web]
 theme: light

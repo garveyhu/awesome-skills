@@ -1,7 +1,7 @@
 ---
 id: components/indicators/sage/crystal-progress-bar
 type: component
-name: Crystal 玻璃进度条
+name: 玻璃质感进度条
 description: 10px 圆角条 + 玻璃反光 + 对角条纹 + shimmer 流光 + pulse 阴影呼吸的复合进度组件
 platforms: [web]
 theme: light

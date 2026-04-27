@@ -1,7 +1,7 @@
 ---
 id: components/buttons/sage/stop-pulse-button
 type: component
-name: 停止生成 · 脉冲按钮
+name: 停止生成脉冲按钮
 description: 三层 ping/pulse + 渐变 sheen + 白色内嵌方块，告诉用户"AI 正在跑，按这里中止"
 platforms: [web]
 theme: light

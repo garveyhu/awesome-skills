@@ -1,7 +1,7 @@
 ---
 id: components/buttons/sage/theme-bg-cta
 type: component
-name: 主题色 CTA
+name: 主题色主按钮
 description: 用 ${themeClasses.bg} ${themeClasses.bgHover} 动态着色的圆/方角主按钮，整站发送 / 提交 / 主操作
 platforms: [web]
 theme: light

@@ -1,7 +1,7 @@
 ---
 id: blocks/form/sage/chat-composer
 type: block
-name: Chat 消息输入器
+name: 消息输入器
 description: 整体 ChatInput 模块——glow border textarea + skill bar + voice + send/stop，sage 主聊天页输入腰带
 platforms: [web]
 theme: light

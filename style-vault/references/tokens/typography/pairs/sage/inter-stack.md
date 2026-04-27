@@ -1,7 +1,7 @@
 ---
 id: tokens/typography/pairs/sage/inter-stack
 type: token
-name: Sage Inter 单字体栈
+name: Inter 单字体栈
 description: Inter 本地字体替代 Google Fonts + sans 单字体策略，让中文 fallback 接管 CJK 字
 platforms: [web]
 theme: light

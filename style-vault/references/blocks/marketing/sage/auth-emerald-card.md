@@ -1,7 +1,7 @@
 ---
 id: blocks/marketing/sage/auth-emerald-card
 type: block
-name: Emerald 登录卡片
+name: 登录卡片
 description: max-w-md 居中卡片 + emerald CTA + 图标前缀输入 + 注册码切换，sage 登录页核心模块
 platforms: [web]
 theme: light

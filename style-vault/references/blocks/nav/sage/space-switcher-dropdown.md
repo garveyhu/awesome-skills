@@ -1,7 +1,7 @@
 ---
 id: blocks/nav/sage/space-switcher-dropdown
 type: block
-name: 空间切换 Dropdown
+name: 空间切换下拉
 description: LayoutGrid icon + Antd Dropdown + 当前空间高亮（注入 selectionColor 背景 + Check 图标）
 platforms: [web]
 theme: light

@@ -1,8 +1,8 @@
 ---
 id: styles/saas-tool/sage-multitheme-data-platform
 type: style
-name: Sage 多主题色数据平台
-description: 12 主题色用户切换 + 9 阶手调灰阶 + Inter + 雪人 FAB 彩蛋的 AI 数据分析整套设计语言
+name: 多主题切换工作台
+description: 12 主题色用户切换 + 9 阶手调灰阶 + 单字体 Inter + 一处装饰彩蛋的 SaaS 工具型整套设计语言
 platforms: [web]
 theme: light
 tags:
