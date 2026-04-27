@@ -29,6 +29,11 @@ refs:
   tokens:
     palette: tokens/palettes/style-vault/slate-cyan-cool
     typography: tokens/typography/pairs/style-vault/inter-editorial-display
+    motion: tokens/motion/style-vault/editorial-flow
+    gradient: tokens/gradient/style-vault/cool-blob-decor
+    layout:
+      - tokens/layout/_shared/fixed-cols-row
+      - tokens/layout/_shared/responsive-grid
 tags:
   aesthetic: [minimal, editorial]
   mood: [calm, cold, confident]
@@ -78,12 +83,14 @@ Style Vault 是为 AI 编码协作打造的设计风格库——把"风格"按�
 - `components/toggles/style-vault/editorial-underline-tab` · scaleX cyan→slate-900 渐变 underline tab
 - `components/overlays/style-vault/spring-toast` · spring overshoot 顶部居中胶囊操作回执
 
-### Tokens · 4 条
+### Tokens · 6 条（4 自有 + 2 复用）
 
 - `tokens/palettes/style-vault/slate-cyan-cool` · 配色（slate 全阶 + cyan 单点 + #fafafa 底）
 - `tokens/typography/pairs/style-vault/inter-editorial-display` · 字体（Inter 单字族 + display 字距 + ss01 features）
 - `tokens/gradient/style-vault/cool-blob-decor` · 双 blob 漂浮装饰（**signature 元素**）
 - `tokens/motion/style-vault/editorial-flow` · 标志 cubic-bezier(0.2,0.7,0.2,1) + fade-up cascade + 卡片浮起
+- `tokens/layout/_shared/fixed-cols-row` · 一行快照（useCols + slice · BrowsePage 用）
+- `tokens/layout/_shared/responsive-grid` · 弹性自适应栅格（auto-fit / auto-fill 双模式 · ProfilePage 用）
 
 ## 复刻要点
 
