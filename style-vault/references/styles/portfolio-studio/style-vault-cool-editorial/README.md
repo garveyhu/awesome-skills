@@ -14,6 +14,8 @@ uses:
   - tokens/typography/pairs/style-vault/inter-editorial-display
   - tokens/gradient/style-vault/cool-blob-decor
   - tokens/motion/style-vault/editorial-flow
+  - tokens/layout/_shared/fixed-cols-row
+  - tokens/layout/_shared/responsive-grid
   - components/buttons/style-vault/dark-pill-cta
   - components/buttons/style-vault/ghost-bordered-cta
   - components/tags-badges/style-vault/cyan-dot-meta-pill

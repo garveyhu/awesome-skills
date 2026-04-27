@@ -13,6 +13,7 @@ uses:
   - tokens/palettes/style-vault/slate-cyan-cool
   - tokens/typography/pairs/style-vault/inter-editorial-display
   - tokens/motion/style-vault/editorial-flow
+  - tokens/layout/_shared/fixed-cols-row
 preview: /preview/blocks/display/style-vault/preview-thumb-card
 ---
 

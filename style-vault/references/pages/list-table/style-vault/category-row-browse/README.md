@@ -9,6 +9,8 @@ tags:
   aesthetic: [minimal, editorial]
   mood: [calm, confident]
   stack: [react-antd-tailwind]
+uses:
+  - tokens/layout/_shared/fixed-cols-row
 preview: /preview/pages/list-table/style-vault/category-row-browse
 ---
 

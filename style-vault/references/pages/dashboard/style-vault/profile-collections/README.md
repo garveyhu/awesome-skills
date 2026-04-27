@@ -9,6 +9,8 @@ tags:
   aesthetic: [minimal, editorial]
   mood: [calm, confident]
   stack: [react-antd-tailwind]
+uses:
+  - tokens/layout/_shared/responsive-grid
 preview: /preview/pages/dashboard/style-vault/profile-collections
 ---
 
