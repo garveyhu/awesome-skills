@@ -22,6 +22,7 @@ refs:
     - blocks/layout/style-vault/browser-chrome-frame
     - blocks/nav/style-vault/sticky-platform-topbar
     - blocks/filters/style-vault/sticky-chip-filter-panel
+    - blocks/search/style-vault/cmd-k-search-panel
   components:
     - components/buttons/style-vault/dark-pill-cta
     - components/buttons/style-vault/ghost-bordered-cta
@@ -54,7 +55,7 @@ Style Vault 是为 AI 编码协作打造的设计风格库——把"风格"按�
 - **Mono 撑数字**：所有索引（01/02/03）/ ID 字串 / 数字徽标用 mono —— 编辑节奏锚点
 - **单字族打天下**：Inter 一种字，靠尺寸 + letter-spacing + uppercase tracking 拉层级，不引第二种字族
 
-## 组成（Tier 2 · 22 条聚合）
+## 组成（Tier 2 · 23 条聚合）
 
 ### Style
 - `styles/portfolio-studio/style-vault-cool-editorial` · 整站调性
@@ -70,14 +71,15 @@ Style Vault 是为 AI 编码协作打造的设计风格库——把"风格"按�
 | `/browse` | `pages/list-table/style-vault/category-row-browse` | 浏览页（双 sticky 导航 + 每类一行卡片） |
 | `/profile` | `pages/dashboard/style-vault/profile-collections` | 个人中心（头像 hero + 类型 tab + 收藏网格 + 编辑 modal） |
 
-### Blocks · 6 条
+### Blocks · 7 条
 
 - `blocks/marketing/style-vault/cool-blob-hero` · 占首屏 hero（双 blob + fade-up cascade + dark CTA）
 - `blocks/display/style-vault/preview-thumb-card` · 1440 虚拟视口缩放卡片（StyleCard）
 - `blocks/display/style-vault/floating-cover-row` · 浮起作品照行卡（产品列表）
 - `blocks/layout/style-vault/browser-chrome-frame` · mac dot 浏览器 chrome + 视口选择器
-- `blocks/nav/style-vault/sticky-platform-topbar` · sticky 玻璃感顶栏 + 视口绝对居中 platform pill
+- `blocks/nav/style-vault/sticky-platform-topbar` · sticky 玻璃感顶栏 + 视口绝对居中 platform pill + 搜索胶囊触发
 - `blocks/filters/style-vault/sticky-chip-filter-panel` · 260px sticky 玻璃感筛选面板（4 组 chip toggle + category 6 色 dot + 清除态）
+- `blocks/search/style-vault/cmd-k-search-panel` · ⌘K 全站搜索浮层（字段加权 + 类型 sidebar + 平台 facet + 键盘 ↑↓Enter + localStorage 历史）
 
 ### Components · 5 条
 

@@ -2,7 +2,7 @@
 id: blocks/nav/style-vault/sticky-platform-topbar
 type: block
 name: Sticky 平台切换顶栏
-description: sticky bg-white/95 backdrop-blur 顶栏 + 视口绝对居中的 platform underline tab + 右侧登录 / 头像
+description: sticky bg-white/95 backdrop-blur 顶栏 · 浏览/产品集 nav + 搜索胶囊触发器 + 视口绝对居中的 platform underline tab + 右侧登录/头像
 platforms: [web]
 theme: light
 tags:
@@ -14,6 +14,7 @@ uses:
   - tokens/typography/pairs/style-vault/inter-editorial-display
   - components/buttons/style-vault/dark-pill-cta
   - components/toggles/style-vault/editorial-underline-tab
+  - blocks/search/style-vault/cmd-k-search-panel
 preview: /preview/blocks/nav/style-vault/sticky-platform-topbar
 ---
 
@@ -27,13 +28,27 @@ preview: /preview/blocks/nav/style-vault/sticky-platform-topbar
 
 **三段布局（关键技巧）**：
 ```
-[ Logo + 浏览/产品集 nav ]   [ flex-1 撑开 ]   [ 登录/头像 ]
+[ Logo + 浏览/产品集 nav + 搜索胶囊 ]  [ flex-1 撑开 ]  [ 登录/头像 ]
         ←------- 视口绝对居中的 platform pill（独立绝对定位层） -------→
 ```
 
-- 左：logo 36×36 + 主导航 `浏览 / 产品集` 文本 nav（13px medium slate-600 → hover slate-900）
+- 左：logo 36×36 + 主导航 `浏览 / 产品集` 文本 nav（13px medium slate-600 → hover slate-900）+ **搜索胶囊触发**
 - 中：**绝对定位居中**——而不是用 flexbox space-between——`absolute inset-y-0 left-0 right-0 flex justify-center`，pointer-events-none 父 + pointer-events-auto 子 —— 这样 platform pill 永远在视口正中，不被左右内容拉扯
 - 右：未登录 → `dark-pill-cta sm` "登录"；已登录 → 头像（带绿色在线指示点） + click 弹大 dropdown
+
+### 搜索胶囊（产品集右）
+
+紧跟 `产品集` link 后，是触发全站搜索浮层的胶囊：
+
+```
+[🔍 搜索风格]   ← rounded-full · h-9 · border-slate-200 · 玻璃白底 · 13px medium slate-500
+              ← hover：border-slate-300 + bg-white + text-slate-900
+              ← click：searchPanel.open() · 唤起 cmd-k-search-panel
+```
+
+**有意不放快捷键提示**（`⌘K` badge / `Press / to search` 等）—— 视觉噪音，且实际很少用户被这种 hint 教学。快捷键工作但不显示，让 TopBar 保持极简。
+
+icon 用 `<SearchOutlined />`（@ant-design/icons），14px 比 nav 文字稍小一档，不抢视觉。
 
 **Logo hover**：`scale-105` 300ms transition
 
@@ -64,6 +79,15 @@ return (
       <nav className="hidden items-center gap-7 md:flex">
         <Link to="/browse" className="text-[13px] font-medium text-slate-600 hover:text-slate-900">浏览</Link>
         <Link to="/products" className="text-[13px] font-medium text-slate-600 hover:text-slate-900">产品集</Link>
+        <button
+          type="button"
+          onClick={() => searchPanel.open()}
+          aria-label="搜索"
+          className="inline-flex h-9 items-center gap-2 rounded-full border border-slate-200 bg-white/60 px-4 text-[13px] font-medium text-slate-500 transition hover:border-slate-300 hover:bg-white hover:text-slate-900"
+        >
+          <SearchOutlined className="text-[14px]" />
+          搜索风格
+        </button>
       </nav>
 
       {/* spacer */}
