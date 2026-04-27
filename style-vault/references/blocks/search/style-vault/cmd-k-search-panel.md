@@ -147,17 +147,61 @@ useEffect(() => {
 | 键 | 行为 |
 |---|---|
 | `↑/↓` | 在 `flatNav[]` 上导航；`flatNav` = popular（仅 type=all 空 query 时）+ 当前 visible items |
-| `Enter` | 打开 `flatNav[kbIdx]` 或 `flatNav[0]` |
+| `Enter` | 打开 `flatNav[kbIdx]` 或 `flatNav[0]`（**当前 tab**）· 关闭面板 |
+| `⌘/Ctrl+Enter` | 打开 `flatNav[kbIdx]` 在**新窗口**（`window.open(path, '_blank', 'noopener')`）· **保留面板**让用户继续搜 |
 | `Esc` | 关闭面板 |
 
 `scrollIntoView({ block: 'nearest' })` 跟随 active row 移动，避免出可视区。
 
 ## 路由跳转
 
-- `id.startsWith('products/')` → `nav('/products/{slug}')`
-- 其它 → `nav('/item/{id}')`
+- `id.startsWith('products/')` → 路径 `/products/{slug}`
+- 其它 → 路径 `/item/{id}`
 
-跳转前 `pushRecent(q)` 把当前 query 写进 localStorage —— 只有"成功打开了某条"才记录，**避免乱搜也污染历史**。
+### 三种打开方式
+
+每条结果（包括热门推荐卡 / query mode 行 / bucket 分组行）都支持：
+
+| 触发 | 行为 |
+|---|---|
+| 普通 `click` / `Enter` | 当前 tab `nav(path)` · 关闭面板 |
+| `⌘/Ctrl + click` / `⌘/Ctrl + Enter` | 新 tab `window.open(path, '_blank', 'noopener')` · **不关面板** |
+| **中键 click**（鼠标） | 视同 `⌘+click` —— 新 tab 打开 · 不关面板（`onAuxClick` + `e.button === 1`）|
+
+**关键**：⌘+click 不关闭面板的设计是有意的 —— 用户用 ⌘+click 通常是"快速预览多个"行为，关闭再打开会打断节奏。
+
+跳转前 `pushRecent(q)` 把当前 query 写进 localStorage —— 只有"成功打开了某条"才记录，**避免乱搜也污染历史**。`⌘+click` 也算"打开"，照样写入历史。
+
+### 实现要点
+
+```tsx
+function openItem(id: string, ev?: { metaKey?: boolean; ctrlKey?: boolean }) {
+  const path = id.startsWith('products/')
+    ? `/products/${id.replace(/^products\//, '')}`
+    : `/item/${id}`;
+  if (ev?.metaKey || ev?.ctrlKey) {
+    window.open(path, '_blank', 'noopener');
+    return;  // 保留面板
+  }
+  nav(path);
+  onClose();
+}
+
+// 行 button
+<button
+  onClick={(e) => onOpen(id, e)}
+  onAuxClick={(e) => {
+    if (e.button === 1) {
+      e.preventDefault();
+      onOpen(id, { metaKey: true });
+    }
+  }}
+>...</button>
+```
+
+`onAuxClick` 中 `e.preventDefault()` 是必须的——否则浏览器在某些场景下会把中键 click 当成"打开链接"的默认行为，但对 `<button>` 没意义，反而会导致页面滚动 / 手势触发。
+
+`window.open` 第三参数 `noopener` 防止 `window.opener` 引用，是基本安全实践。
 
 ## 适配指南
 
