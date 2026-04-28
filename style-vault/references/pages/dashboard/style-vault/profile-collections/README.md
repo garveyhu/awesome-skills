@@ -11,6 +11,7 @@ tags:
   stack: [react-antd-tailwind]
 uses:
   - tokens/layout/_shared/responsive-grid
+  - tokens/layout/_shared/scroll-state-system
 preview: /preview/pages/dashboard/style-vault/profile-collections
 ---
 
@@ -64,25 +65,7 @@ preview: /preview/pages/dashboard/style-vault/profile-collections
 - 每条用 `StyleCard`（即 `blocks/display/style-vault/preview-thumb-card`），点击：
   - `type === 'product'` → 跳 `/products/{slug}`
   - 其它 → 跳 `/item/{id}`
-- **IO sentinel 懒加载**：grid 抽成 `<FavGrid items={current.items} cacheKey={\`profile:fav:${current.type}\`} />` 内部用 `useInfiniteList`，sentinel 距底 300px 自动追加；`cacheKey: profile:fav:${type}` 跨 tab 切换保留每 tab 的翻页位置。收藏数较少时不触发，体验和原来全量渲染一致
-
-```tsx
-function FavGrid({ items, cacheKey, onClick }) {
-  const cols = useCols();
-  const { visible, sentinelRef, hasMore, visibleCount, total } = useInfiniteList(
-    items, cols, { rowsPerPage: 4, cacheKey }
-  );
-  return (
-    <div style={{ overflowAnchor: 'none' }}>
-      <ResponsiveGrid mode="fixed" min={300} gap={20} style={{ overflowAnchor: 'none' }}>
-        {visible.map((item) => <StyleCard key={item.id} item={item} onClick={() => onClick(item)} />)}
-      </ResponsiveGrid>
-      {hasMore && <div ref={sentinelRef} aria-hidden style={{ height: 1 }} />}
-      {/* 计数 / End 标签同 BrowseCategoryPage */}
-    </div>
-  );
-}
-```
+- **滚动 / 懒加载**：走 [`tokens/layout/_shared/scroll-state-system`](../../../../tokens/layout/_shared/scroll-state-system.md)，grid 抽成 `<FavGrid cacheKey={\`profile:fav:${current.type}\`} />` 内部用 `useInfiniteList`。每 tab 自己的翻页进度跨切换保留；收藏数较少时不触发懒加载，体验和原来全量渲染一致。详细机制见 token 条目。
 
 ### 空态
 

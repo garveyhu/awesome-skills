@@ -13,6 +13,7 @@ uses:
   - blocks/nav/style-vault/sticky-platform-topbar
   - blocks/filters/style-vault/sticky-chip-filter-panel
   - blocks/display/style-vault/floating-cover-row
+  - tokens/layout/_shared/scroll-state-system
 preview: /preview/pages/list-table/style-vault/sticky-filter-product-list
 ---
 
@@ -86,6 +87,15 @@ preview: /preview/pages/list-table/style-vault/sticky-filter-product-list
 两个不同空态文案 —— **平台维度无产品**（用户的设备选择无内容）vs **筛选条件无匹配**（已加筛选条件）—— 文案差异是用户排错的关键线索。
 
 空态卡片：`rounded-2xl border border-dashed border-slate-200 bg-white p-16 text-center text-slate-400`。
+
+## 滚动行为
+
+走 [`tokens/layout/_shared/scroll-state-system`](../../../../tokens/layout/_shared/scroll-state-system.md) 的 4 场景契约。本页落到的是**场景 B + C**：
+
+- **B · Click 入详情** —— 用户从行卡点进 `/products/<slug>`，PUSH 到全新 pathname → `byPath` miss → `target=0` + 30 帧钉顶。详情页一定置顶不留尾
+- **C · 后退还原** —— 详情页按返回 / 浏览器后退键回到 `/products` → `useNavigationType()='POP'` → `byKey` 精准还原到刚才的滚动条位置（不是 top）
+
+产品集本页通常 ≤ 12 条，**不挂 `useInfiniteList`**（场景 D 不适用）—— 数据量不到一屏的列表挂懒加载等于多余复杂度。
 
 ## 适配指南
 

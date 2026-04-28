@@ -11,6 +11,7 @@ tags:
   stack: [react-antd-tailwind]
 uses:
   - tokens/layout/_shared/fixed-cols-row
+  - tokens/layout/_shared/scroll-state-system
 preview: /preview/pages/list-table/style-vault/category-row-browse
 ---
 
@@ -101,48 +102,34 @@ preview: /preview/pages/list-table/style-vault/category-row-browse
 - "查看更多"必须文字链 + 箭头组合 —— 不要换 button（破坏 editorial）
 - 当类目数据为空时**整段不渲染**（`if (items.length === 0) return null`）—— 不显示空标题占位
 
-## 二级类别页（/browse/:type）的懒加载
+## 二级类别页（/browse/:type）的滚动行为
 
-`/browse` 是"每类一行 + 查看更多"的概览节奏；点查看更多进二级（`/browse/style` 等）就是单类别的全量浏览。二级页用 IntersectionObserver sentinel 自动懒加载（不是手动翻页按钮，也不是 `content-visibility: auto`）：
+走 [`tokens/layout/_shared/scroll-state-system`](../../../../tokens/layout/_shared/scroll-state-system.md) 的 4 场景契约：
 
 ```tsx
-const { visible, sentinelRef, hasMore, visibleCount, total } = useInfiniteList(
-  filteredItems, cols, { rowsPerPage: 4, cacheKey: `browse:${type}` }
+const { visible, sentinelRef, hasMore } = useInfiniteList(
+  filteredItems, cols, { cacheKey: `browse:${type}` }
 );
 
 return (
   <div style={{ overflowAnchor: 'none' }}>
-    <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, overflowAnchor: 'none' }}>
-      {visible.map((item) => <StyleCard key={item.id} item={item} ... />)}
+    <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${cols}, 1fr)`, overflowAnchor: 'none' }}>
+      {visible.map((item) => <StyleCard key={item.id} item={item} />)}
     </div>
-    {hasMore ? (
-      <>
-        <div ref={sentinelRef} aria-hidden style={{ height: 1 }} />
-        <div className="mt-8 flex items-center justify-center">
-          <span className="text-[11px] text-slate-400 font-medium tracking-[0.18em] uppercase">
-            {visibleCount} / {total}
-          </span>
-        </div>
-      </>
-    ) : (
-      <div className="mt-12 flex items-center justify-center">
-        <span className="text-[11px] text-slate-300 ...">· {total} · End ·</span>
-      </div>
-    )}
+    {hasMore && <div ref={sentinelRef} aria-hidden style={{ height: 1 }} />}
   </div>
 );
 ```
 
-### 为什么这样设计
+本页落到的 4 场景里其中 3 个：
 
-- **新增条目永远追加在视口下方** → 浏览器渲染上半屏不位移 → 视觉稳定。`overflowAnchor: 'none'` 同步禁掉浏览器自带 anchor 反弹。
-- **`cacheKey: browse:${type}`** → 用户在 5 个类别 tab 间切换，每个 tab 的翻页位置（`visibleCount`）保留在模块顶层 `Map` 里，切回来不用从头翻
-- **`rootMargin: '300px 0px'`** → 用户滚到距底 300px 时就已经在加载下一批，几乎感觉不到"等待"
-- **rAF double 锁** → 一次 IO 触发只加载一批，避免 sentinel 还在视口里时连续触发刷出 N 批
+| 场景 | 这里怎么体现 |
+|---|---|
+| A · Tab 间记忆 | `cacheKey: browse:${type}` 让 5 个类别 tab 各自记住翻页进度；`ScrollToTop` 同步靠 `byPath` 还原滚动条位置 |
+| C · 后退还原 | 用户从 `/item/<id>` 后退回 `/browse/style`，`ScrollToTop` 走 `byKey` 精准还原到点击那张卡时的滚动条位置 |
+| D · 懒加载零位移 | sentinel 距底 300px 触发加载，新内容追加在视口下方，已渲染区不位移 |
 
-### 为什么不用 `content-visibility: auto`
-
-试过：全量渲染所有卡 + 估算 `containIntrinsicSize` 占位高度。问题是估算的占位高度（如 320px）和真实卡片高度（310–380px 浮动）不一致 → 浏览器在 viewport 内外切换渲染态时 document 总高频繁抖动 → 滚动条跳。**视口下方追加内容的 IO 模式才是稳定方案**。
+详细机制 / 配置值 / 反模式见 token 条目，本条只声明使用。
 
 ## 反模式
 
