@@ -2,7 +2,7 @@
 id: blocks/nav/style-vault/sticky-platform-topbar
 type: block
 name: Sticky 平台切换顶栏
-description: sticky bg-white/95 backdrop-blur 顶栏 · 浏览/产品集 nav + 搜索胶囊触发器 + 视口绝对居中的 platform underline tab + 右侧登录/头像
+description: sticky bg-white/95 backdrop-blur 顶栏 · 浏览/产品集 路径激活下划线 nav + 搜索胶囊触发器 + 视口绝对居中的 platform underline tab + 右侧登录/头像
 platforms: [web]
 theme: light
 tags:
@@ -32,9 +32,25 @@ preview: /preview/blocks/nav/style-vault/sticky-platform-topbar
         ←------- 视口绝对居中的 platform pill（独立绝对定位层） -------→
 ```
 
-- 左：logo 36×36 + 主导航 `浏览 / 产品集` 文本 nav（13px medium slate-600 → hover slate-900）+ **搜索胶囊触发**
+- 左：logo 36×36 + 主导航 `浏览 / 产品集` **路径激活下划线 nav**（复用 `sv-underline-tab` 13px 小档，`data-on` 跟随 pathname）+ **搜索胶囊触发**
 - 中：**绝对定位居中**——而不是用 flexbox space-between——`absolute inset-y-0 left-0 right-0 flex justify-center`，pointer-events-none 父 + pointer-events-auto 子 —— 这样 platform pill 永远在视口正中，不被左右内容拉扯
 - 右：未登录 → `dark-pill-cta sm` "登录"；已登录 → 头像（带绿色在线指示点） + click 弹大 dropdown
+
+### 主导航激活态（关键细节）
+
+`浏览` / `产品集` 不是普通文本 link，是和平台切换、CategoryTabs 共用同一套 `.sv-underline-tab` 视觉语言：
+
+- `data-on={pathname === '/browse' || pathname.startsWith('/browse/')}` 让 `/browse*` 都激活「浏览」
+- 同理 `/products` / `/products/*` 激活「产品集」
+- 永远有且仅有一个主入口高亮（路径不属于这两个域时两个都不亮，符合"我不在浏览/产品集语义"）
+
+**对称 padding**：`.sv-underline-tab` 自带 `padding-bottom: 10px`（给下划线让位），用在 72px `items-center` 容器里时文字会偏上。配合 `pt-2.5`（10px）对称 padding-top 让文字盒视觉居中：
+
+```tsx
+<Link className="sv-underline-tab pt-2.5" data-on={...}>浏览</Link>
+```
+
+不加 `pt-2.5` 文字会比相邻搜索胶囊（`h-9` 36px）的几何中心高 5px，肉眼能看出来。
 
 ### 搜索胶囊（产品集右）
 
@@ -78,8 +94,20 @@ return (
         <img src="/logo.svg" className="h-9 w-9 transition-transform duration-300 group-hover:scale-105" />
       </Link>
       <nav className="hidden items-center gap-7 md:flex">
-        <Link to="/browse" className="text-[13px] font-medium text-slate-600 hover:text-slate-900">浏览</Link>
-        <Link to="/products" className="text-[13px] font-medium text-slate-600 hover:text-slate-900">产品集</Link>
+        <Link
+          to="/browse"
+          className="sv-underline-tab pt-2.5"
+          data-on={pathname === '/browse' || pathname.startsWith('/browse/')}
+        >
+          浏览
+        </Link>
+        <Link
+          to="/products"
+          className="sv-underline-tab pt-2.5"
+          data-on={pathname === '/products' || pathname.startsWith('/products/')}
+        >
+          产品集
+        </Link>
         <button
           type="button"
           onClick={() => searchPanel.open()}
@@ -121,7 +149,8 @@ return (
 - **必须** `pointer-events-none` 父 + `pointer-events-auto` 子——否则中间 absolute 层会拦下 logo 区点击
 - 高度严格 72px——配合 `min-h-[calc(100vh-72px)]` 的 hero / `top-[72px]` 的 sticky CategoryTabs
 - 玻璃感来自 `bg-white/95 backdrop-blur-xl`——8% 半透 + 强 blur，hero blob 浮过时既能透出又不糊
-- 所有 nav text 13px medium slate-600/900——**不要**升 14px（破坏紧凑感）
+- 所有 nav text 13px medium slate-400/900（`.sv-underline-tab` 默认色）——**不要**升 14px（破坏紧凑感）
+- 主导航 `pt-2.5` 是必填项，省略后文字会偏上 5px，和搜索胶囊不齐
 
 ## 反模式
 

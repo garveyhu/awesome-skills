@@ -19,7 +19,7 @@ preview: /preview/blocks/search/style-vault/cmd-k-search-panel
 
 # Cmd-K Search Panel
 
-> Style Vault 的全站搜索浮层 —— "一个面板能找到所有东西"。⌘K 唤起 · 输入即时搜 · 键盘可导航 · 永远关闭后再打开是新会话
+> Style Vault 的全站搜索浮层 —— "一个面板能找到所有东西"。⌘K 唤起 · 输入即时搜 · 键盘可导航 · 主动关闭 = 清状态新会话；点结果跳转 = 跨导航保留，浏览器后退自动复活
 
 ## 视觉特征
 
@@ -109,17 +109,94 @@ function score(item, q) {
 
 ```ts
 let isOpen = false;
+// 跨 mount 持久化：用户点结果跳详情后回退能续上
+let storedQ = '';
+let storedType: TypeFilter = 'all';
+let storedPlatform: 'all' | PlatformSel = 'all';
+// 标记"因点击结果而临时关闭" · 浏览器 POP 时自动复活面板
+let pendingReopen = false;
+
 const listeners = new Set<() => void>();
 function emit() { listeners.forEach(l => l()); }
 
 export const searchPanel = {
-  open:   () => { isOpen = true;  emit(); },
-  close:  () => { isOpen = false; emit(); },
-  toggle: () => { isOpen = !isOpen; emit(); },
+  open:   () => { isOpen = true;  pendingReopen = false; emit(); },
+  close:  () => { isOpen = false; pendingReopen = false; emit(); },  // 主动关 = 清意图
+  closeForNavigation: () => {                                          // 临时关 = 保留意图
+    isOpen = false; pendingReopen = true; emit();
+  },
+  toggle: () => { isOpen = !isOpen; if (isOpen) pendingReopen = false; emit(); },
 };
 ```
 
 任何组件 `import { searchPanel } from '...'` 直接 `searchPanel.open()` 即可。**不需要 Context Provider 包裹**，避免树深度增长。
+
+## 跨导航持久化（连续搜索的关键）
+
+用户的搜索行为是高频连续的：搜 → 点结果 → 看一眼 → 后退继续搜 → 再点。如果每次 panel 关闭都重置 q/type/platform，每次回退都得重新打字 —— 体验断裂。
+
+设计三件事保证连续：
+
+### 1. module-level `storedQ / storedType / storedPlatform`
+
+PanelInner 内部 state 用 module 单例 hydrate 初值，每次 setState 同步写回 module：
+
+```tsx
+function PanelInner({ onClose }) {
+  const [q, setQ] = useState(storedQ);
+  const [type, setType] = useState<TypeFilter>(storedType);
+  const [platform, setPlatform] = useState<'all' | PlatformSel>(storedPlatform);
+
+  useEffect(() => { storedQ = q; }, [q]);
+  useEffect(() => { storedType = type; }, [type]);
+  useEffect(() => { storedPlatform = platform; }, [platform]);
+  // ...
+}
+```
+
+PanelInner unmount 后状态留在 module 闭包里，下次 mount 还能续上。
+
+### 2. `closeForNavigation` 而非 `close`
+
+点击结果项的 `openItem` **不能调 `close()`**（那会清掉 `pendingReopen`）：
+
+```tsx
+function openItem(id, ev) {
+  if (ev?.metaKey || ev?.ctrlKey) {
+    window.open(path, '_blank', 'noopener');  // 新窗口：面板保留
+    return;
+  }
+  searchPanel.closeForNavigation();   // 临时关：保留 q/type/platform + 设 pendingReopen
+  nav(path);
+}
+```
+
+### 3. wrapper 监听 `useNavigationType()`，POP 时自动复活
+
+```tsx
+export function SearchPanel() {
+  const { key } = useLocation();
+  const navType = useNavigationType();
+
+  useEffect(() => {
+    if (navType === 'POP' && pendingReopen && !isOpen) {
+      searchPanel.open();
+    }
+  }, [key, navType]);
+  // ...
+}
+```
+
+行为矩阵：
+
+| 操作 | pendingReopen 变化 | 下次 POP 是否复活 |
+|---|---|---|
+| `open()` (⌘K / 快捷键 / 手动唤起) | 清掉 | 否 |
+| `close()` (ESC / 遮罩点击) | 清掉 | 否 |
+| `closeForNavigation()` (点结果跳转) | 设 true | **是** |
+| ⌘+click 结果（新窗口） | 不变（面板没关） | 维持原状态 |
+
+**关键**：POP 复活只消费一次 `pendingReopen` 就清；用户复活后再 ESC 就回到清状态。
 
 ## 全局快捷键
 
@@ -183,8 +260,8 @@ function openItem(id: string, ev?: { metaKey?: boolean; ctrlKey?: boolean }) {
     window.open(path, '_blank', 'noopener');
     return;  // 保留面板
   }
+  searchPanel.closeForNavigation();  // 临时关 · 保留 q/type/platform · 设 pendingReopen
   nav(path);
-  onClose();
 }
 
 // 行 button
@@ -220,3 +297,4 @@ function openItem(id: string, ev?: { metaKey?: boolean; ctrlKey?: boolean }) {
 - 不要展现"X 条结果"counter 在面板顶部 —— 信息已分布在 sidebar 计数和分组 header，重复
 - 不要把搜索面板的 platform facet 联动到 TopBar 全局 platform —— 搜索是临时态，改全局会让用户找不回原来的浏览上下文
 - 不要给"最近"chips 加 close icon —— 历史是被动累积的，主动管理过细让面板变工具箱
+- 不要在 `openItem` 里直接调 `onClose()`（=> `searchPanel.close()`）—— 那会清掉 `pendingReopen`，浏览器后退就续不上 q/type/platform。必须走 `closeForNavigation()`

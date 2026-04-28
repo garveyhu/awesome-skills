@@ -43,8 +43,8 @@ preview: /preview/pages/list-table/style-vault/category-row-browse
 
 - TopBar 72px sticky `top-0`（来自 `blocks/nav/style-vault/sticky-platform-topbar`）
 - CategoryTabs 56px sticky `top-[72px] z-40`，背景 `bg-[#fafafa]/90 backdrop-blur-md`
-  - 5 个 tab：风格 / 页面 / 模块 / 组件 / 原语（路由 `/browse/style` 等）
-  - 在 `/browse` 总览页**不激活任何 tab**（用 useLocation 从 pathname 取 active）
+  - **6 个 tab：总览 / 风格 / 页面 / 模块 / 组件 / 原语**（路由 `/browse` + `/browse/style` 等）
+  - **永远有且仅有一个 tab 激活**：`/browse` 激活「总览」；`/browse/:type` 激活对应类型 tab；用 useLocation regex `^/browse/([^/?]+)` 取 active key，没匹配上就 fallback `'all'`
   - 大档 16px tab `sv-underline-tab--lg`
 
 ### Per-type Section
@@ -101,9 +101,54 @@ preview: /preview/pages/list-table/style-vault/category-row-browse
 - "查看更多"必须文字链 + 箭头组合 —— 不要换 button（破坏 editorial）
 - 当类目数据为空时**整段不渲染**（`if (items.length === 0) return null`）—— 不显示空标题占位
 
+## 二级类别页（/browse/:type）的懒加载
+
+`/browse` 是"每类一行 + 查看更多"的概览节奏；点查看更多进二级（`/browse/style` 等）就是单类别的全量浏览。二级页用 IntersectionObserver sentinel 自动懒加载（不是手动翻页按钮，也不是 `content-visibility: auto`）：
+
+```tsx
+const { visible, sentinelRef, hasMore, visibleCount, total } = useInfiniteList(
+  filteredItems, cols, { rowsPerPage: 4, cacheKey: `browse:${type}` }
+);
+
+return (
+  <div style={{ overflowAnchor: 'none' }}>
+    <div className="grid gap-4" style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`, overflowAnchor: 'none' }}>
+      {visible.map((item) => <StyleCard key={item.id} item={item} ... />)}
+    </div>
+    {hasMore ? (
+      <>
+        <div ref={sentinelRef} aria-hidden style={{ height: 1 }} />
+        <div className="mt-8 flex items-center justify-center">
+          <span className="text-[11px] text-slate-400 font-medium tracking-[0.18em] uppercase">
+            {visibleCount} / {total}
+          </span>
+        </div>
+      </>
+    ) : (
+      <div className="mt-12 flex items-center justify-center">
+        <span className="text-[11px] text-slate-300 ...">· {total} · End ·</span>
+      </div>
+    )}
+  </div>
+);
+```
+
+### 为什么这样设计
+
+- **新增条目永远追加在视口下方** → 浏览器渲染上半屏不位移 → 视觉稳定。`overflowAnchor: 'none'` 同步禁掉浏览器自带 anchor 反弹。
+- **`cacheKey: browse:${type}`** → 用户在 5 个类别 tab 间切换，每个 tab 的翻页位置（`visibleCount`）保留在模块顶层 `Map` 里，切回来不用从头翻
+- **`rootMargin: '300px 0px'`** → 用户滚到距底 300px 时就已经在加载下一批，几乎感觉不到"等待"
+- **rAF double 锁** → 一次 IO 触发只加载一批，避免 sentinel 还在视口里时连续触发刷出 N 批
+
+### 为什么不用 `content-visibility: auto`
+
+试过：全量渲染所有卡 + 估算 `containIntrinsicSize` 占位高度。问题是估算的占位高度（如 320px）和真实卡片高度（310–380px 浮动）不一致 → 浏览器在 viewport 内外切换渲染态时 document 总高频繁抖动 → 滚动条跳。**视口下方追加内容的 IO 模式才是稳定方案**。
+
 ## 反模式
 
 - 不要把每行用 `overflow-x-auto` 横滑（破坏断点列数 = 整齐网格的特性）
 - 不要把 CategoryTabs 改成 chip 实色（变成 community 风）
 - 不要给 section header 加 background—— editorial 节奏
-- 不要 BrowsePage 总览也激活某个 tab（活在所有 tab 上方的"全景"）
+- 不要让 CategoryTabs 在 `/browse` 时一个 tab 都不激活 —— 用户会"不知道自己在哪个模块"。永远要有视觉锚点（"总览"就是为这个加的）
+- 二级页不要用 `content-visibility: auto` 替代 IO sentinel —— 估算占位高度 vs 真实高度的偏差会让滚动条跳
+- 二级页不要用手动翻页按钮 —— 移动端 / 大屏滚动用户都习惯无缝懒加载

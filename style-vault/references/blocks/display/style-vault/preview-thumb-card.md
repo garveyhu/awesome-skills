@@ -70,11 +70,15 @@ export function PreviewThumbCard({ item, onClick }) {
     <article onClick={onClick} className="sv-card group ...">
       <div ref={ref} style={{ height: SIZE_BY_TYPE[item.type].h }} className="relative overflow-hidden bg-slate-50">
         {scale !== null && PreviewComp && (
-          <div className="sv-card-preview-inner pointer-events-none absolute origin-top-left"
-               style={{
-                 width: PREVIEW_VIRTUAL_WIDTH, height: PREVIEW_VIRTUAL_HEIGHT,
-                 transform: `scale(${scale})`,
-               }}>
+          <div
+            className="sv-card-preview-inner pointer-events-none absolute origin-top-left"
+            style={{
+              width: PREVIEW_VIRTUAL_WIDTH, height: PREVIEW_VIRTUAL_HEIGHT,
+              transform: `scale(${scale})`,
+            }}
+            aria-hidden
+            inert  /* ← 禁焦点：见下方"防焦点劫持" */
+          >
             <PreviewComp />
           </div>
         )}
@@ -94,11 +98,20 @@ export function PreviewThumbCard({ item, onClick }) {
 .sv-card:hover .sv-card-preview-inner { transform: scale(1.05) translateZ(0); }
 ```
 
+## 防焦点劫持（重要）
+
+预览容器 **必须** `inert`。原因：部分预览组件本身有 `autoFocus`（如命令面板的搜索 input、对话历史 modal 的输入框、列表行的 inline rename input）。卡片懒加载渲染瞬间，input 自动获得焦点 → 浏览器立即 "scroll focused element into view" → **整页滚到那张新卡的位置**。用户视角是"懒加载触发，页面突然跳到末尾"。
+
+`pointer-events-none` 阻止鼠标交互但**不阻止程序焦点**；`aria-hidden` 影响无障碍但**不阻止焦点**；只有 `inert` 把整个子树从焦点 / 交互树里完全摘除。React 19 原生支持 JSX `inert` 属性。
+
+独立预览页 `/preview/<id>` 是直接 mount，不在 `inert` 父级里，autoFocus 还能正常工作 —— 只有缩略图 mount 上下文需要禁。
+
 ## 适配指南
 
 - 卡片宽度变化场景（用 `useCols` 做断点列数）必须 ResizeObserver——否则切分类会闪
 - type 圆点 6 色（purple/rose/indigo/cyan/emerald/amber）—— 颜色映射来自 `palette.type-dot`，**不要**自己改
 - 在 BrowsePage 中用 `gridTemplateColumns: repeat(${cols}, minmax(0,1fr))` —— 不要用 columns CSS（masonry 会破坏 useLayoutEffect 同步测量）
+- 预览容器**必须** `inert`（见上方）—— 不加这条会让带 autoFocus 的 preview 在懒加载时把整页拽到末尾
 
 ## 反模式
 
@@ -106,3 +119,4 @@ export function PreviewThumbCard({ item, onClick }) {
 - 不要给卡片加 `scale(1.02)` 整卡放大（违反 editorial-flow motion）
 - 不要在 hover 切边框颜色——本设计是"投影制造层次"
 - 不要把虚拟视口改成 1280/1920——下游 preview tsx 都按 1440 写
+- 不要省略 `inert`，也不要换成 `tabIndex={-1}`（只阻止 Tab 导航，不阻止 `autoFocus` 的程序聚焦）

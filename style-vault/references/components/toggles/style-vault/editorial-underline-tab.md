@@ -22,8 +22,8 @@ preview: /preview/components/toggles/style-vault/editorial-underline-tab
 ## 视觉特征
 
 两档尺寸：
-- **小（13px）** —— 用在 TopBar 平台切换（Web / iOS / Android）
-- **大（16px）** —— 用在 sticky CategoryTabs（风格 / 页面 / 模块 / 组件 / 原语）
+- **小（13px）** —— 用在 TopBar 平台切换（Web / iOS / Android）+ TopBar 主导航（浏览 / 产品集，路径激活）
+- **大（16px · `--lg`）** —— 用在 sticky CategoryTabs（总览 / 风格 / 页面 / 模块 / 组件 / 原语）
 
 文字色三态：
 - idle `text-slate-400` (#94a3b8)
@@ -111,6 +111,21 @@ export function EditorialUnderlineTab({
 - 配 `sticky top-x bg-[#fafafa]/90 backdrop-blur-md` 容器使用——切换时 active 下划线不被 hero 吞掉
 - 下划线渐变 **不要**改方向（始终 cyan→slate-900）；不要换颜色——这条渐变是身份标志
 - 在 dark panel 上要把字色翻转：idle `text-slate-500` / hover `text-slate-300` / active `text-white`
+
+### `items-center` 容器对称居中
+
+`.sv-underline-tab` 自带 `padding-bottom: 10px`（小档）/ `14px`（大档）给下划线让位。在 `items-baseline` 容器（如 TopBar 中央 platform pill / CategoryTabs 顶部 baseline-aligned 行）里没问题——baseline 和文字底对齐，padding-bottom 在 baseline 下方不影响视觉。
+
+但放进 `items-center` 容器（如 TopBar 主导航 nav，需要和 36px 高的搜索胶囊一起垂直居中）时，盒子相对文字不对称 → 文字偏上。**必须补对称的 padding-top**：
+
+```tsx
+{/* 小档配 items-center */}
+<Link className="sv-underline-tab pt-2.5" ...>浏览</Link>
+{/* 大档配 items-center（少见） */}
+<NavLink className="sv-underline-tab sv-underline-tab--lg pt-3.5" ...>...</NavLink>
+```
+
+`pt-2.5` = 10px，对应小档 padding-bottom；`pt-3.5` = 14px，对应大档。
 
 ## 反模式
 
