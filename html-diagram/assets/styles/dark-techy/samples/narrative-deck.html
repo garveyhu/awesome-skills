@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ACME Distributed CMS · v1 Architecture Proposal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --bg-base: #0b0f17;
+      --bg-grid: rgba(255,255,255,0.02);
+      --bg-panel: rgba(255,255,255,0.04);
+      --bg-card: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.08);
+
+      --c-primary: #5eead4;
+      --c-accent:  #818cf8;
+      --c-warn:    #fbbf24;
+      --c-danger:  #fb7185;
+      --c-mute:    #94a3b8;
+
+      --l-pull:   #38bdf8;
+      --l-push:   #fb923c;
+      --l-bi:     #c084fc;
+
+      --s-prep:   #94a3b8;
+      --s-pilot:  #fb7185;
+      --s-batch:  #fbbf24;
+      --s-mid:    #818cf8;
+      --s-final:  #5eead4;
+
+      --text-1: rgba(255,255,255,0.96);
+      --text-2: rgba(255,255,255,0.65);
+      --text-3: rgba(255,255,255,0.4);
+
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 30% 20%, rgba(94,234,212,0.05), transparent 50%),
+        radial-gradient(circle at 70% 80%, rgba(129,140,248,0.05), transparent 50%),
+        var(--bg-base);
+      color: var(--text-1);
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      min-height: 100vh;
+      overflow-x: auto;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(var(--bg-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ---------- Section ---------- */
+    .section { margin-top: 56px; position: relative; z-index: 2; }
+    .section-title { display: flex; align-items: baseline; gap: 12px; margin-bottom: 22px; }
+    .section-title .num {
+      font-size: 12px; font-family: ui-monospace, SFMono-Regular, monospace;
+      color: var(--c-primary); letter-spacing: 1px;
+    }
+    .section-title h2 { font-size: 22px; font-weight: 600; margin: 0; color: var(--text-1); }
+    .section-title .lead { font-size: 13px; color: var(--text-2); margin-left: 4px; }
+
+    /* ---------- Panel ---------- */
+    .panel {
+      position: relative;
+      background: var(--bg-panel);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 48px 24px 24px;
+      backdrop-filter: blur(8px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+      display: flex; flex-wrap: wrap; gap: 16px;
+      align-items: flex-start; align-content: flex-start;
+      min-height: 140px;
+    }
+    .panel::before {
+      content: attr(data-title);
+      position: absolute; top: 16px; left: 24px;
+      font-size: 14px; font-weight: 500;
+      color: var(--text-2); letter-spacing: 0.5px;
+    }
+
+    /* ---------- Node ---------- */
+    .node {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      backdrop-filter: blur(8px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+      transition: transform 120ms var(--ease-out),
+                  border-color 120ms var(--ease-out),
+                  box-shadow 120ms var(--ease-out);
+      user-select: none;
+    }
+    .node:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.18);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 24px rgba(0,0,0,0.4);
+    }
+
+    .node[data-type="platform"] { width: 320px; min-height: 130px; border-radius: 16px; }
+    .node[data-type="service"]  { width: 220px; min-height: 90px; }
+    .node[data-type="region"]   { width: 100%; min-height: 100px; }
+    .node[data-type="table"]    { width: 220px; min-height: 56px; border-radius: 8px; border-style: dashed; }
+    .node[data-type="api"]      { width: 220px; min-height: 44px; border-radius: 999px;
+                                   font-family: ui-monospace, SFMono-Regular, monospace; }
+
+    .node[data-tone="primary"] { border-color: color-mix(in oklab, var(--c-primary) 60%, transparent); }
+    .node[data-tone="accent"]  { border-color: color-mix(in oklab, var(--c-accent)  60%, transparent); }
+    .node[data-tone="warn"]    { border-color: color-mix(in oklab, var(--c-warn)    60%, transparent); }
+    .node[data-tone="danger"]  { border-color: color-mix(in oklab, var(--c-danger)  60%, transparent); }
+    .node[data-tone="mute"]    { border-color: var(--border); }
+
+    .node[data-tone="primary"] .dot { background: var(--c-primary); box-shadow: 0 0 8px var(--c-primary); }
+    .node[data-tone="accent"]  .dot { background: var(--c-accent);  box-shadow: 0 0 8px var(--c-accent); }
+    .node[data-tone="warn"]    .dot { background: var(--c-warn);    box-shadow: 0 0 8px var(--c-warn); }
+    .node[data-tone="danger"]  .dot { background: var(--c-danger);  box-shadow: 0 0 8px var(--c-danger); }
+    .node[data-tone="mute"]    .dot { background: var(--c-mute); }
+
+    .node .header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .node .dot { width: 6px; height: 6px; border-radius: 999px; flex: none;
+                 animation: dot-pulse 2s ease-in-out infinite; }
+    .node .title { font-size: 14px; font-weight: 600; color: var(--text-1); }
+    .node .subtitle { font-size: 11.5px; color: var(--text-2); margin-top: 2px; line-height: 1.45; }
+    .node .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .node .chip {
+      font-size: 10.5px; padding: 2px 8px; border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text-3);
+      border: 1px solid var(--border);
+    }
+    .node[data-type="platform"]::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 16px; right: 16px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--c-primary), transparent);
+      border-radius: 0 0 999px 999px;
+      opacity: 0.6;
+      animation: top-bar-pulse 4s ease-in-out infinite;
+    }
+    .node[data-type="platform"][data-tone="accent"]::before {
+      background: linear-gradient(90deg, transparent, var(--c-accent), transparent);
+    }
+    @keyframes top-bar-pulse {
+      0%, 100% { opacity: 0.5; }
+      50%      { opacity: 0.85; }
+    }
+    @keyframes dot-pulse {
+      0%, 100% { transform: scale(1); }
+      50%      { transform: scale(1.18); }
+    }
+
+    /* ---------- SVG link layer ---------- */
+    .link-path { fill: none; stroke-linecap: round;
+                 transition: stroke 200ms ease, opacity 200ms ease; }
+    .link-pull { stroke: var(--l-pull); stroke-width: 1.5; }
+    .link-push { stroke: var(--l-push); stroke-width: 1.5; stroke-dasharray: 6 4; }
+    .link-bi   { stroke: var(--l-bi);   stroke-width: 2; }
+
+    /* ---------- Pain card ---------- */
+    .pain-card {
+      position: relative;
+      background: rgba(251,113,133,0.04);
+      border: 1px solid color-mix(in oklab, var(--c-danger) 50%, transparent);
+      border-radius: 14px;
+      padding: 20px 22px;
+      backdrop-filter: blur(8px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+      transition: transform 120ms var(--ease-out), border-color 120ms var(--ease-out);
+    }
+    .pain-card:hover { transform: translateY(-2px); border-color: var(--c-danger); }
+    .pain-card .badge {
+      display: inline-block;
+      font-size: 11px; padding: 2px 8px; border-radius: 999px;
+      background: rgba(251,113,133,0.12);
+      color: var(--c-danger);
+      letter-spacing: 0.4px;
+      margin-bottom: 10px;
+      border: 1px solid color-mix(in oklab, var(--c-danger) 30%, transparent);
+    }
+    .pain-card h3 { font-size: 17px; font-weight: 600; margin: 0 0 10px 0; color: var(--text-1); }
+    .pain-card p  { font-size: 12.5px; color: var(--text-2); margin: 0 0 12px 0; line-height: 1.55; }
+    .pain-card ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+    .pain-card li { font-size: 11.5px; color: var(--text-2);
+                    padding-left: 14px; position: relative; line-height: 1.5; }
+    .pain-card li::before {
+      content: ''; position: absolute; left: 2px; top: 7px;
+      width: 4px; height: 4px; border-radius: 999px;
+      background: var(--c-danger); opacity: 0.6;
+    }
+
+    /* ---------- Feat card ---------- */
+    .feat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      backdrop-filter: blur(8px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+      transition: transform 120ms var(--ease-out), border-color 120ms var(--ease-out);
+    }
+    .feat-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.2); }
+    .feat-card[data-tone="primary"] { border-color: color-mix(in oklab, var(--c-primary) 50%, transparent); }
+    .feat-card[data-tone="accent"]  { border-color: color-mix(in oklab, var(--c-accent)  50%, transparent); }
+    .feat-card[data-tone="warn"]    { border-color: color-mix(in oklab, var(--c-warn)    50%, transparent); }
+    .feat-card[data-tone="mute"]    { border-color: var(--border); }
+    .feat-card .icon-bar { width: 30px; height: 2px; border-radius: 999px; margin-bottom: 12px; }
+    .feat-card[data-tone="primary"] .icon-bar { background: var(--c-primary); box-shadow: 0 0 8px var(--c-primary); }
+    .feat-card[data-tone="accent"]  .icon-bar { background: var(--c-accent);  box-shadow: 0 0 8px var(--c-accent); }
+    .feat-card[data-tone="warn"]    .icon-bar { background: var(--c-warn);    box-shadow: 0 0 8px var(--c-warn); }
+    .feat-card[data-tone="mute"]    .icon-bar { background: var(--c-mute); }
+    .feat-card h3 { font-size: 15px; font-weight: 600; margin: 0 0 8px 0; color: var(--text-1); }
+    .feat-card p  { font-size: 12px; color: var(--text-2); margin: 0; line-height: 1.55; }
+
+    /* ---------- Timeline / Stage card ---------- */
+    .timeline {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 4%; right: 4%; top: 14px;
+      height: 2px;
+      background: linear-gradient(90deg,
+        var(--s-prep) 0%, var(--s-prep) 16%,
+        var(--s-pilot) 24%, var(--s-pilot) 40%,
+        var(--s-batch) 48%, var(--s-batch) 60%,
+        var(--s-mid) 68%, var(--s-mid) 80%,
+        var(--s-final) 88%, var(--s-final) 100%);
+      opacity: 0.4;
+      z-index: 0;
+    }
+    .stage-card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px 16px 16px;
+      backdrop-filter: blur(8px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+      transition: transform 120ms var(--ease-out), border-color 120ms var(--ease-out);
+    }
+    .stage-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.2); }
+    .stage-card .marker {
+      position: absolute;
+      top: 6px; left: 50%; transform: translateX(-50%);
+      width: 18px; height: 18px;
+      border-radius: 999px;
+      border: 3px solid var(--bg-base);
+      z-index: 1;
+    }
+    .stage-card[data-tone="prep"]  .marker { background: var(--s-prep);  box-shadow: 0 0 12px var(--s-prep); }
+    .stage-card[data-tone="pilot"] .marker { background: var(--s-pilot); box-shadow: 0 0 12px var(--s-pilot); }
+    .stage-card[data-tone="batch"] .marker { background: var(--s-batch); box-shadow: 0 0 12px var(--s-batch); }
+    .stage-card[data-tone="mid"]   .marker { background: var(--s-mid);   box-shadow: 0 0 12px var(--s-mid); }
+    .stage-card[data-tone="final"] .marker { background: var(--s-final); box-shadow: 0 0 12px var(--s-final); }
+    .stage-card[data-tone="prep"]  { border-color: color-mix(in oklab, var(--s-prep)  50%, transparent); }
+    .stage-card[data-tone="pilot"] { border-color: color-mix(in oklab, var(--s-pilot) 50%, transparent); }
+    .stage-card[data-tone="batch"] { border-color: color-mix(in oklab, var(--s-batch) 50%, transparent); }
+    .stage-card[data-tone="mid"]   { border-color: color-mix(in oklab, var(--s-mid)   50%, transparent); }
+    .stage-card[data-tone="final"] { border-color: color-mix(in oklab, var(--s-final) 50%, transparent); }
+    .stage-card .stage-name {
+      font-size: 11.5px; font-weight: 500; color: var(--text-3);
+      letter-spacing: 0.4px; margin-bottom: 4px;
+    }
+    .stage-card h4 { font-size: 14px; font-weight: 600; margin: 0 0 6px 0; color: var(--text-1); }
+    .stage-card .duration {
+      font-size: 11px; padding: 2px 8px; border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text-2);
+      display: inline-block; margin-bottom: 10px;
+      border: 1px solid var(--border);
+      font-family: ui-monospace, SFMono-Regular, monospace;
+    }
+    .stage-card p { font-size: 11.5px; color: var(--text-2); line-height: 1.5; margin: 0; }
+
+    /* ---------- YAGNI card ---------- */
+    .yagni-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 16px 18px;
+      transition: transform 120ms var(--ease-out), border-color 120ms var(--ease-out);
+    }
+    .yagni-card:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.18); }
+    .yagni-card .x {
+      display: inline-block;
+      width: 18px; height: 18px;
+      border-radius: 999px;
+      background: rgba(148,163,184,0.12);
+      color: var(--c-mute);
+      font-size: 11px; font-weight: 600;
+      text-align: center; line-height: 18px;
+      margin-bottom: 8px;
+    }
+    .yagni-card h4 { font-size: 13.5px; font-weight: 600; margin: 0 0 6px 0; color: var(--text-2); }
+    .yagni-card p  { font-size: 11.5px; color: var(--text-3); line-height: 1.5; margin: 0; }
+
+    /* ---------- Legend (fixed left) ---------- */
+    .legend {
+      position: fixed;
+      left: 16px; top: 50%;
+      transform: translateY(-50%);
+      width: 224px;
+      background: rgba(15,19,28,0.78);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 16px 14px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      z-index: 50;
+      font-size: 11px;
+      max-height: calc(100vh - 32px);
+      overflow-y: auto;
+    }
+    .legend h4 {
+      font-size: 10.5px; font-weight: 500; color: var(--text-3);
+      letter-spacing: 1px; margin: 0 0 10px 0; text-transform: uppercase;
+    }
+    .legend h4:not(:first-child) { margin-top: 16px; }
+    .legend .item {
+      display: flex; align-items: center; gap: 9px;
+      margin-bottom: 7px; color: var(--text-2); line-height: 1.45;
+      font-size: 11.5px;
+    }
+    .legend .swatch {
+      width: 13px; height: 13px; border-radius: 3px; flex: none;
+      border: 1.5px solid rgba(255,255,255,0.12);
+    }
+    .legend .swatch.s-primary { background: color-mix(in oklab, var(--c-primary) 30%, var(--bg-card)); border-color: var(--c-primary); }
+    .legend .swatch.s-accent  { background: color-mix(in oklab, var(--c-accent)  30%, var(--bg-card)); border-color: var(--c-accent); }
+    .legend .swatch.s-warn    { background: color-mix(in oklab, var(--c-warn)    30%, var(--bg-card)); border-color: var(--c-warn); }
+    .legend .swatch.s-danger  { background: color-mix(in oklab, var(--c-danger)  30%, var(--bg-card)); border-color: var(--c-danger); }
+    .legend .swatch.s-mute    { background: var(--bg-card); border-color: var(--c-mute); }
+
+    .legend .swatch.s-stage-prep  { background: var(--s-prep);  border-color: var(--s-prep); }
+    .legend .swatch.s-stage-pilot { background: var(--s-pilot); border-color: var(--s-pilot); }
+    .legend .swatch.s-stage-batch { background: var(--s-batch); border-color: var(--s-batch); }
+    .legend .swatch.s-stage-mid   { background: var(--s-mid);   border-color: var(--s-mid); }
+    .legend .swatch.s-stage-final { background: var(--s-final); border-color: var(--s-final); }
+
+    .legend .line-sample { width: 26px; height: 2px; flex: none; border-radius: 999px; }
+    .legend .line-sample.line-pull { background: var(--l-pull); }
+    .legend .line-sample.line-bi   { background: var(--l-bi); }
+    .legend .line-sample.line-push { background: repeating-linear-gradient(90deg, var(--l-push) 0 4px, transparent 4px 7px); height: 2px; }
+
+    .legend .tier-stack { display: flex; flex-direction: column; gap: 0; margin-top: 2px; }
+    .legend .tier-item {
+      font-size: 11.5px; font-weight: 600;
+      padding: 3px 0; letter-spacing: 0.3px;
+    }
+    .legend .tier-item.t-primary { color: var(--c-primary); }
+    .legend .tier-item.t-accent  { color: var(--c-accent); }
+    .legend .tier-item.t-warn    { color: var(--c-warn); }
+    .legend .tier-arrow {
+      text-align: center; font-size: 12px;
+      color: var(--text-3); line-height: 1; margin: 2px 0;
+    }
+
+    @media (max-width: 1400px) { .legend { display: none; } }
+
+    /* ---------- Hero ---------- */
+    header.hero {
+      text-align: center; margin-bottom: 32px; position: relative; z-index: 2;
+      animation: fade-up 600ms 200ms var(--ease-out) both;
+    }
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Enter animations ---------- */
+    @keyframes panel-enter {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .panel.entering, .pain-card.entering, .feat-card.entering, .stage-card.entering, .yagni-card.entering { opacity: 0; }
+    .panel.enter, .pain-card.enter, .feat-card.enter, .stage-card.enter, .yagni-card.enter {
+      animation: panel-enter 500ms var(--ease-out) forwards;
+    }
+    @keyframes node-enter {
+      from { opacity: 0; clip-path: inset(0 100% 0 0); }
+      to   { opacity: 1; clip-path: inset(0 0 0 0); }
+    }
+    .node.entering { opacity: 0; }
+    .node.enter    { animation: node-enter 600ms var(--ease-out) forwards; }
+    @keyframes link-draw {
+      from { stroke-dashoffset: var(--len, 1000); }
+      to   { stroke-dashoffset: 0; }
+    }
+    .link-path.entering { stroke-dashoffset: var(--len, 1000); stroke-dasharray: var(--len, 1000); }
+    .link-path.enter    { animation: link-draw 700ms var(--ease-out) forwards; }
+
+    /* ---------- Reduced motion + fallback ---------- */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        transition-duration: 1ms !important;
+      }
+    }
+    @supports not (backdrop-filter: blur(8px)) {
+      .panel, .node, .pain-card, .feat-card, .stage-card { backdrop-filter: none; }
+    }
+
+    /* ---------- Layout helpers ---------- */
+    #app { position: relative; z-index: 1; }
+    #links-svg { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+    .arch-wrap { position: relative; }
+    .arch-stack { display: flex; flex-direction: column; gap: 24px; position: relative; z-index: 2; }
+    .edges-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 100%; }
+    .edges-grid .node[data-type="region"] { width: 100%; }
+
+    @media (max-width: 1100px) {
+      .timeline { grid-template-columns: repeat(2, 1fr); }
+      .timeline::before { display: none; }
+      .edges-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <!-- ============ Legend (fixed left) ============ -->
+  <aside class="legend">
+    <h4>Node tones</h4>
+    <div class="item"><span class="swatch s-primary"></span>primary · platform / source</div>
+    <div class="item"><span class="swatch s-accent"></span>accent · service / hub-core</div>
+    <div class="item"><span class="swatch s-warn"></span>warn · pilot / batch</div>
+    <div class="item"><span class="swatch s-danger"></span>danger · complex / hotspot</div>
+    <div class="item"><span class="swatch s-mute"></span>mute · placeholder</div>
+
+    <h4>Link kinds</h4>
+    <div class="item"><span class="line-sample line-pull"></span>pull · scheduled fetch</div>
+    <div class="item"><span class="line-sample line-bi"></span>bi · two-way</div>
+    <div class="item"><span class="line-sample line-push"></span>push · async write</div>
+
+    <h4>Tier (top → bottom)</h4>
+    <div class="tier-stack">
+      <div class="tier-item t-primary">Origin · upstream source</div>
+      <div class="tier-arrow">↓</div>
+      <div class="tier-item t-accent">Hub · pull / clean / push</div>
+      <div class="tier-arrow">↓</div>
+      <div class="tier-item t-warn">Edge · 4 isolated regions</div>
+    </div>
+
+    <h4>Stage palette</h4>
+    <div class="item"><span class="swatch s-stage-prep"></span>Stage 0 · prep</div>
+    <div class="item"><span class="swatch s-stage-pilot"></span>Stage 1 · pilot</div>
+    <div class="item"><span class="swatch s-stage-batch"></span>Stage 2 · batch</div>
+    <div class="item"><span class="swatch s-stage-mid"></span>Stage 3 · mid</div>
+    <div class="item"><span class="swatch s-stage-final"></span>Stage 4 · final</div>
+  </aside>
+
+  <div id="app" class="relative max-w-[1480px] mx-auto px-8 py-10">
+
+    <!-- ============ Hero ============ -->
+    <header class="hero">
+      <div class="text-xs tracking-widest mb-3"
+           style="color: var(--c-primary); opacity: 0.7">
+        ACME · WAVE-STACK · v1 ARCHITECTURE PROPOSAL
+      </div>
+      <h1 class="text-5xl font-semibold tracking-tight"
+          style="color: var(--c-primary); text-shadow: 0 0 28px rgba(94,234,212,0.35)">
+        Multi-Region Content Registry
+      </h1>
+      <p class="mt-4 text-base" style="color: var(--text-2)">
+        v1 · Unified codebase + Edge observability + Central monitor · 6-month evolution
+      </p>
+      <p class="mt-1 text-sm" style="color: var(--text-3)">
+        From 4-codebase chaos to single-pane visibility across all regions
+      </p>
+    </header>
+
+    <!-- ============ Section 01 · Pain ============ -->
+    <section class="section">
+      <div class="section-title">
+        <span class="num">01 / pain</span>
+        <h2>Three sources of pain</h2>
+        <span class="lead">Why we're rebuilding</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5" id="pain-grid"></div>
+    </section>
+
+    <!-- ============ Section 02 · Blueprint ============ -->
+    <section class="section arch-wrap">
+      <div class="section-title">
+        <span class="num">02 / blueprint</span>
+        <h2>The new wave-stack</h2>
+        <span class="lead">Origin → Hub → Edges, with a central pulse</span>
+      </div>
+
+      <svg id="links-svg">
+        <defs>
+          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge>
+              <feMergeNode in="blur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+      </svg>
+
+      <div class="arch-stack" id="arch-stack">
+        <div class="panel" data-title="● Layer 1 · Origin tier" id="panel-origin"></div>
+        <div class="panel" data-title="● Layer 2 · Aggregation Hub" id="panel-hub"></div>
+        <div class="panel" data-title="● Layer 3 · Edge regions" id="panel-edges">
+          <div class="edges-grid" id="edges-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Section 03 · Capabilities ============ -->
+    <section class="section">
+      <div class="section-title">
+        <span class="num">03 / capabilities</span>
+        <h2>Four pillars</h2>
+        <span class="lead">What you actually get</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5" id="feat-grid"></div>
+    </section>
+
+    <!-- ============ Section 04 · Timeline ============ -->
+    <section class="section">
+      <div class="section-title">
+        <span class="num">04 / path</span>
+        <h2>5-stage rollout</h2>
+        <span class="lead">~6 months end-to-end</span>
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </section>
+
+    <!-- ============ Section 05 · YAGNI ============ -->
+    <section class="section">
+      <div class="section-title">
+        <span class="num">05 / boundaries</span>
+        <h2>Not doing</h2>
+        <span class="lead">Explicit YAGNI</span>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" id="yagni-grid"></div>
+    </section>
+
+    <footer class="mt-20 mb-4 text-center" style="color: var(--text-3); font-size: 11px; letter-spacing: 1px;">
+      ACME DISTRIBUTED CMS · WAVE-STACK v1 · DESIGN DRAFT · SAMPLE
+    </footer>
+  </div>
+
+  <script>
+    const DATA = {
+      pains: [
+        { badge: "Pain 01", title: "Code sprawl",
+          desc: "Sync logic lives in 4 different stacks: Python ETL, Java middleware, region-side schedulers, custom branches.",
+          bullets: [
+            "Python ETL handles API pulls & external pushes",
+            "Java middleware does in-region cleansing",
+            "Two regions run their own schedulers",
+            "No single source of truth for sync semantics"
+          ] },
+        { badge: "Pain 02", title: "Zero observability",
+          desc: "Debugging means VPN + grep across 10 GB logs in 6 isolated regions. User reports take half a day to triage.",
+          bullets: [
+            "Logs scattered across 6 region jump-boxes",
+            "No structured events, no correlation IDs",
+            "No way to ask 'what happened to record X?'",
+            "Failures detected via complaint, not alert"
+          ] },
+        { badge: "Pain 03", title: "No central view",
+          desc: "Each region is a silo. No unified health, no cross-region search, no alerting, no dashboard.",
+          bullets: [
+            "6 regions, 0 dashboards",
+            "Health checks live in Slack threads",
+            "No SLO, no error budget",
+            "Stakeholders fly blind"
+          ] }
+      ],
+
+      arch: {
+        nodes: [
+          { id: "origin",  layer: "origin", type: "platform", tone: "primary",
+            title: "ACME Origin", subtitle: "Central content registry · upstream of all data",
+            chips: ["HTTPS API", "Token auth"] },
+
+          { id: "hub",         layer: "hub", type: "platform", tone: "accent",
+            title: "Aggregation Hub", subtitle: "Region orchestrator + central buffer",
+            chips: ["Stateless", "Multi-tenant"] },
+          { id: "commonpub",   layer: "hub", type: "service",  tone: "mute",
+            title: "commonpub", subtitle: "Pulls from Origin · scheduled",
+            chips: ["cron", "1m / 5m"] },
+          { id: "scheduler",   layer: "hub", type: "service",  tone: "accent",
+            title: "scheduler", subtitle: "Fans out to all edge regions" },
+          { id: "registry-db", layer: "hub", type: "table",    tone: "mute",
+            title: "registry_db", subtitle: "Postgres · cleansed snapshot" },
+
+          { id: "alpha",  layer: "edge", type: "region", tone: "danger",
+            title: "Region Alpha", subtitle: "Self-managed scheduler · full pipeline" },
+          { id: "beta",   layer: "edge", type: "region", tone: "warn",
+            title: "Region Beta",  subtitle: "Pilot · standard ETL · dual-run" },
+          { id: "gamma",  layer: "edge", type: "region", tone: "accent",
+            title: "Region Gamma", subtitle: "Batch standard · sunkids middleware" },
+          { id: "delta",  layer: "edge", type: "region", tone: "mute",
+            title: "Region Delta", subtitle: "Init-only mode · bootstrap once" }
+        ],
+        links: [
+          { id: "l1",  from: "origin",      to: "commonpub",   kind: "pull" },
+          { id: "l2",  from: "commonpub",   to: "registry-db", kind: "bi"   },
+          { id: "l3",  from: "scheduler",   to: "registry-db", kind: "bi"   },
+          { id: "l4",  from: "hub",         to: "scheduler",   kind: "bi"   },
+          { id: "l5",  from: "hub",         to: "commonpub",   kind: "bi"   },
+          { id: "l6",  from: "scheduler",   to: "alpha",       kind: "push" },
+          { id: "l7",  from: "scheduler",   to: "beta",        kind: "push" },
+          { id: "l8",  from: "scheduler",   to: "gamma",       kind: "push" },
+          { id: "l9",  from: "scheduler",   to: "delta",       kind: "push" }
+        ]
+      },
+
+      feats: [
+        { tone: "primary", title: "Unified codebase",
+          desc: "4 sync codebases collapse into 3 mono-repos. One repo per concern: pull, transform, push." },
+        { tone: "accent",  title: "Edge observability",
+          desc: "wave-collector SDK emits structured events to a per-region Postgres. 30-day retention, GIN-indexed." },
+        { tone: "warn",    title: "Central monitor",
+          desc: "1-minute polling from each /wave-bridge into a central Postgres. One URL → all regions' health." },
+        { tone: "mute",    title: "Hybrid ID tracing",
+          desc: "Each event carries a JSONB id-bag. Any ID (source, business key, biz pk) → full chain trace." }
+      ],
+
+      stages: [
+        { tone: "prep",  name: "Stage 0 · prep",  duration: "2–3 weeks",
+          title: "Foundations", desc: "Test coverage, SDK MVP, bridge MVP, central prototype, offline tar bundles." },
+        { tone: "pilot", name: "Stage 1 · pilot", duration: "4–6 weeks",
+          title: "Region Beta end-to-end", desc: "Standard ETL flow; legacy stack dual-runs 2 weeks; cut over on parity." },
+        { tone: "batch", name: "Stage 2 · batch", duration: "6–8 weeks",
+          title: "Bulk replicate", desc: "Region Gamma / Delta / Epsilon onboarded in parallel using the pilot template." },
+        { tone: "mid",   name: "Stage 3 · mid",   duration: "4–6 weeks",
+          title: "Mid-complexity", desc: "Region Zeta and edge cases — special branches, custom data types." },
+        { tone: "final", name: "Stage 4 · final", duration: "6–12 weeks",
+          title: "Region Alpha", desc: "Self-managed branch reincorporated; the most divergent region last." }
+      ],
+
+      yagni: [
+        { title: "No Kafka / OTel / K8s",
+          desc: "Stack is FastAPI + Postgres + Docker Compose. No streaming brokers, no service mesh." },
+        { title: "No HA / cross-region txns",
+          desc: "Each region is independent. Central is read-only aggregator. No coordinated transactions." },
+        { title: "No core rewrites",
+          desc: "Existing internal cores (waveflow, etlflow) are black-boxed and used as-is." },
+        { title: "No light theme / mobile",
+          desc: "Dark only. Desktop only (≥ 1280 px). YAGNI for stakeholders' demo and ops dashboards." }
+      ]
+    };
+
+    /* ---------- Render ---------- */
+    function el(tag, cls, html) {
+      const e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (html != null) e.innerHTML = html;
+      return e;
+    }
+
+    function renderNode(n) {
+      const node = el('div', 'node entering');
+      node.dataset.type = n.type;
+      node.dataset.tone = n.tone;
+      node.dataset.id   = n.id;
+      const head = el('div', 'header');
+      head.appendChild(el('span', 'dot'));
+      head.appendChild(el('span', 'title', n.title));
+      node.appendChild(head);
+      if (n.subtitle) node.appendChild(el('div', 'subtitle', n.subtitle));
+      if (n.chips && n.chips.length) {
+        const c = el('div', 'chips');
+        n.chips.forEach(t => c.appendChild(el('span', 'chip', t)));
+        node.appendChild(c);
+      }
+      return node;
+    }
+
+    function renderArch() {
+      DATA.arch.nodes.forEach(n => {
+        const target = n.layer === 'origin' ? document.getElementById('panel-origin')
+                     : n.layer === 'hub'    ? document.getElementById('panel-hub')
+                                            : document.getElementById('edges-grid');
+        target.appendChild(renderNode(n));
+      });
+    }
+
+    function layoutLinks() {
+      const svg = document.getElementById('links-svg');
+      const archWrap = document.querySelector('.arch-wrap');
+      if (!archWrap) return;
+      const wrap = archWrap.getBoundingClientRect();
+      svg.setAttribute('width',  wrap.width);
+      svg.setAttribute('height', wrap.height);
+      svg.style.width  = wrap.width  + 'px';
+      svg.style.height = wrap.height + 'px';
+
+      [...svg.querySelectorAll('.link-path, .particle')].forEach(e => e.remove());
+
+      DATA.arch.links.forEach(link => {
+        const a = document.querySelector(`.node[data-id="${link.from}"]`);
+        const b = document.querySelector(`.node[data-id="${link.to}"]`);
+        if (!a || !b) return;
+        const ar = a.getBoundingClientRect();
+        const br = b.getBoundingClientRect();
+        const x1 = (ar.left + ar.right) / 2 - wrap.left;
+        const y1 = (ar.top  + ar.bottom) / 2 - wrap.top;
+        const x2 = (br.left + br.right) / 2 - wrap.left;
+        const y2 = (br.top  + br.bottom) / 2 - wrap.top;
+        const dy = y2 - y1;
+        const cx1 = x1, cy1 = y1 + dy * 0.5;
+        const cx2 = x2, cy2 = y2 - dy * 0.5;
+        const d = `M ${x1} ${y1} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${x2} ${y2}`;
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', d);
+        path.setAttribute('class', `link-path link-${link.kind} entering`);
+        path.dataset.id = link.id;
+        const len = Math.hypot(x2 - x1, y2 - y1) * 1.4;
+        path.style.setProperty('--len', len);
+        path.id = 'path-' + link.id;
+        svg.appendChild(path);
+
+        if (link.kind !== 'bi') {
+          const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          c.setAttribute('r', 3);
+          c.setAttribute('fill', link.kind === 'pull' ? 'var(--l-pull)' : 'var(--l-push)');
+          c.setAttribute('filter', 'url(#glow)');
+          c.setAttribute('class', 'particle');
+          const am = document.createElementNS('http://www.w3.org/2000/svg', 'animateMotion');
+          am.setAttribute('dur', (3 + Math.random() * 1.5) + 's');
+          am.setAttribute('repeatCount', 'indefinite');
+          am.setAttribute('begin', (Math.random() * 2) + 's');
+          const mp = document.createElementNS('http://www.w3.org/2000/svg', 'mpath');
+          mp.setAttributeNS('http://www.w3.org/1999/xlink', 'href', '#path-' + link.id);
+          am.appendChild(mp);
+          c.appendChild(am);
+          svg.appendChild(c);
+        }
+      });
+    }
+
+    function renderPains() {
+      const grid = document.getElementById('pain-grid');
+      DATA.pains.forEach(p => {
+        const card = el('div', 'pain-card entering');
+        card.innerHTML = `
+          <span class="badge">${p.badge}</span>
+          <h3>${p.title}</h3>
+          <p>${p.desc}</p>
+          <ul>${p.bullets.map(b => `<li>${b}</li>`).join('')}</ul>
+        `;
+        grid.appendChild(card);
+      });
+    }
+    function renderFeats() {
+      const grid = document.getElementById('feat-grid');
+      DATA.feats.forEach(f => {
+        const card = el('div', 'feat-card entering');
+        card.dataset.tone = f.tone;
+        card.innerHTML = `
+          <div class="icon-bar"></div>
+          <h3>${f.title}</h3>
+          <p>${f.desc}</p>
+        `;
+        grid.appendChild(card);
+      });
+    }
+    function renderStages() {
+      const tl = document.getElementById('timeline');
+      DATA.stages.forEach(s => {
+        const card = el('div', 'stage-card entering');
+        card.dataset.tone = s.tone;
+        card.innerHTML = `
+          <div class="marker"></div>
+          <div class="stage-name">${s.name}</div>
+          <h4>${s.title}</h4>
+          <span class="duration">${s.duration}</span>
+          <p>${s.desc}</p>
+        `;
+        tl.appendChild(card);
+      });
+    }
+    function renderYagni() {
+      const grid = document.getElementById('yagni-grid');
+      DATA.yagni.forEach(y => {
+        const card = el('div', 'yagni-card entering');
+        card.innerHTML = `
+          <span class="x">×</span>
+          <h4>${y.title}</h4>
+          <p>${y.desc}</p>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function triggerEnter() {
+      const groups = [
+        ['.pain-card',  80],
+        ['.panel',     120],
+        ['.node',       40],
+        ['.link-path',  80],
+        ['.feat-card',  80],
+        ['.stage-card', 80],
+        ['.yagni-card', 60]
+      ];
+      let baseDelay = 200;
+      groups.forEach(([sel, step]) => {
+        const els = [...document.querySelectorAll(sel + '.entering')];
+        els.forEach((e, i) => {
+          setTimeout(() => {
+            e.classList.remove('entering');
+            e.classList.add('enter');
+          }, baseDelay + i * step);
+        });
+        baseDelay += Math.min(els.length * step, 600) + 100;
+      });
+    }
+
+    /* ---------- Boot ---------- */
+    renderPains();
+    renderArch();
+    renderFeats();
+    renderStages();
+    renderYagni();
+    requestAnimationFrame(() => {
+      layoutLinks();
+      requestAnimationFrame(triggerEnter);
+    });
+    window.addEventListener('resize', layoutLinks);
+  </script>
+</body>
+</html>

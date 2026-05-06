@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Serverless Web App · System Architecture</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base:      #020617;
+      --bg-grid:      rgba(148, 163, 184, 0.06);
+      --bg-card:      rgba(15, 23, 42, 0.6);
+      --bg-card-soft: rgba(15, 23, 42, 0.35);
+      --border:       rgba(148, 163, 184, 0.15);
+      --border-soft:  rgba(148, 163, 184, 0.08);
+
+      --c-frontend:   #06b6d4;   /* cyan */
+      --c-backend:    #10b981;   /* emerald */
+      --c-database:   #8b5cf6;   /* violet */
+      --c-cloud:      #f59e0b;   /* amber */
+      --c-security:   #f43f5e;   /* rose */
+      --c-external:   #94a3b8;   /* slate */
+
+      --text-1:       #e2e8f0;
+      --text-2:       #94a3b8;
+      --text-3:       #64748b;
+
+      --status-ok:    #10b981;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background-color: var(--bg-base);
+      background-image:
+        linear-gradient(var(--bg-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px);
+      background-size: 40px 40px;
+      color: var(--text-1);
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, "Cascadia Code",
+                   "PingFang SC", monospace;
+      min-height: 100vh;
+      padding: 48px 32px;
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    /* ---------- Header ---------- */
+    header { margin-bottom: 36px; }
+    .meta-tag {
+      font-size: 11px;
+      color: var(--c-frontend);
+      letter-spacing: 2.5px;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-1);
+      letter-spacing: -0.5px;
+      margin: 0;
+    }
+    .status-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      color: var(--text-2);
+      letter-spacing: 1.2px;
+      margin-top: 14px;
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--status-ok);
+      box-shadow: 0 0 8px currentColor;
+      animation: status-pulse 2s ease-in-out infinite;
+    }
+    .status-dot.status-ok { color: var(--status-ok); }
+    @keyframes status-pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50%      { transform: scale(1.25); opacity: 0.7; }
+    }
+    .separator { color: var(--text-3); }
+
+    /* ---------- Diagram wrapper ---------- */
+    .diagram-wrap {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-card-soft);
+      padding: 24px 16px;
+      margin-bottom: 36px;
+    }
+
+    svg.architecture {
+      width: 100%;
+      max-width: 1100px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* SVG node styles */
+    .node-rect {
+      fill: var(--bg-card);
+      stroke-width: 1.5;
+      rx: 6;
+    }
+    .node-rect.cat-frontend { stroke: var(--c-frontend); }
+    .node-rect.cat-backend  { stroke: var(--c-backend); }
+    .node-rect.cat-database { stroke: var(--c-database); }
+    .node-rect.cat-cloud    { stroke: var(--c-cloud); }
+    .node-rect.cat-security { stroke: var(--c-security); }
+    .node-rect.cat-external { stroke: var(--c-external); }
+
+    .node-label {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 13px;
+      fill: var(--text-1);
+      font-weight: 600;
+      text-anchor: middle;
+    }
+    .node-sublabel {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 9.5px;
+      letter-spacing: 1.2px;
+      text-anchor: middle;
+      font-weight: 500;
+    }
+    .sub-frontend { fill: var(--c-frontend); }
+    .sub-backend  { fill: var(--c-backend); }
+    .sub-database { fill: var(--c-database); }
+    .sub-cloud    { fill: var(--c-cloud); }
+    .sub-security { fill: var(--c-security); }
+    .sub-external { fill: var(--c-external); }
+
+    /* SVG flow lines */
+    .flow-line {
+      fill: none;
+      stroke-width: 1.5;
+      stroke-dasharray: 5 5;
+    }
+    .flow-line.solid { stroke-dasharray: none; }
+    .flow-line.cat-frontend { stroke: var(--c-frontend); }
+    .flow-line.cat-backend  { stroke: var(--c-backend); }
+    .flow-line.cat-database { stroke: var(--c-database); }
+    .flow-line.cat-cloud    { stroke: var(--c-cloud); }
+    .flow-line.cat-security { stroke: var(--c-security); }
+    .flow-line.cat-external { stroke: var(--c-external); }
+
+    .flow-label {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 9.5px;
+      letter-spacing: 1px;
+      fill: var(--text-2);
+    }
+
+    /* ---------- Legend ---------- */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px 24px;
+      padding: 14px 18px;
+      border: 1px solid var(--border-soft);
+      border-radius: 6px;
+      margin-top: 16px;
+      background: var(--bg-card-soft);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10.5px;
+      color: var(--text-2);
+      letter-spacing: 1.2px;
+    }
+    .legend-swatch {
+      width: 12px; height: 12px;
+      border-radius: 2px;
+      border-width: 1.5px;
+      border-style: solid;
+      background: var(--bg-card);
+    }
+    .legend-item.cat-frontend .legend-swatch { border-color: var(--c-frontend); }
+    .legend-item.cat-backend  .legend-swatch { border-color: var(--c-backend); }
+    .legend-item.cat-database .legend-swatch { border-color: var(--c-database); }
+    .legend-item.cat-cloud    .legend-swatch { border-color: var(--c-cloud); }
+    .legend-item.cat-security .legend-swatch { border-color: var(--c-security); }
+    .legend-item.cat-external .legend-swatch { border-color: var(--c-external); }
+
+    /* ---------- Summary grid ---------- */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+    .summary-card {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 22px 20px;
+      background: var(--bg-card);
+      transition: border-color 200ms ease, transform 200ms ease;
+    }
+    .summary-card:hover {
+      border-color: var(--c-frontend);
+      transform: translateY(-1px);
+    }
+    .card-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--text-3);
+      font-weight: 500;
+    }
+    .card-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-1);
+      margin-top: 8px;
+      letter-spacing: -0.3px;
+    }
+    .card-desc {
+      font-size: 11px;
+      color: var(--text-2);
+      margin-top: 10px;
+      line-height: 1.55;
+    }
+
+    @media (max-width: 760px) {
+      .summary-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 22px; }
+      body { padding: 32px 16px; }
+    }
+
+    /* ---------- Footer ---------- */
+    footer {
+      border-top: 1px solid var(--border-soft);
+      padding-top: 18px;
+    }
+    .footer-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 10.5px;
+      color: var(--text-3);
+      letter-spacing: 1.2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 1ms !important;
+        transition-duration: 1ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- ============ Header ============ -->
+    <header>
+      <div class="meta-tag">SYSTEM ARCHITECTURE / v1.0</div>
+      <h1>Serverless Web Application</h1>
+      <div class="status-bar">
+        <span class="status-dot status-ok"></span>
+        <span>STATUS: OPERATIONAL</span>
+        <span class="separator">·</span>
+        <span>UPDATED 2026-05-06</span>
+        <span class="separator">·</span>
+        <span>REGION: AP-NORTHEAST-1</span>
+      </div>
+    </header>
+
+    <!-- ============ Main SVG ============ -->
+    <div class="diagram-wrap">
+      <svg class="architecture" viewBox="0 0 1100 720" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow-frontend" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" fill="#06b6d4"/>
+          </marker>
+          <marker id="arrow-backend" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" fill="#10b981"/>
+          </marker>
+          <marker id="arrow-database" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" fill="#8b5cf6"/>
+          </marker>
+          <marker id="arrow-cloud" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" fill="#f59e0b"/>
+          </marker>
+          <marker id="arrow-security" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" fill="#f43f5e"/>
+          </marker>
+          <marker id="arrow-external" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" fill="#94a3b8"/>
+          </marker>
+        </defs>
+
+        <!-- ===== Column dividers (subtle) ===== -->
+        <line x1="220" y1="40" x2="220" y2="700" stroke="rgba(148,163,184,0.05)" stroke-dasharray="2 4"/>
+        <line x1="440" y1="40" x2="440" y2="700" stroke="rgba(148,163,184,0.05)" stroke-dasharray="2 4"/>
+        <line x1="660" y1="40" x2="660" y2="700" stroke="rgba(148,163,184,0.05)" stroke-dasharray="2 4"/>
+        <line x1="880" y1="40" x2="880" y2="700" stroke="rgba(148,163,184,0.05)" stroke-dasharray="2 4"/>
+
+        <!-- ===== Column labels ===== -->
+        <text x="110" y="40" class="node-sublabel sub-external">CLIENT</text>
+        <text x="330" y="40" class="node-sublabel sub-frontend">EDGE</text>
+        <text x="550" y="40" class="node-sublabel sub-cloud">GATEWAY</text>
+        <text x="770" y="40" class="node-sublabel sub-backend">COMPUTE</text>
+        <text x="990" y="40" class="node-sublabel sub-database">DATA</text>
+
+        <!-- ===== Nodes ===== -->
+        <!-- n1 Browser (external) -->
+        <g>
+          <rect class="node-rect cat-external" x="35" y="320" width="160" height="64"/>
+          <text x="115" y="346" class="node-label">Browser</text>
+          <text x="115" y="368" class="node-sublabel sub-external">EXTERNAL · CLIENT</text>
+        </g>
+
+        <!-- n2 CloudFront (frontend) -->
+        <g>
+          <rect class="node-rect cat-frontend" x="255" y="240" width="170" height="64"/>
+          <text x="340" y="266" class="node-label">CloudFront</text>
+          <text x="340" y="288" class="node-sublabel sub-frontend">FRONTEND · CDN</text>
+        </g>
+
+        <!-- n3 S3 Static Site (frontend) -->
+        <g>
+          <rect class="node-rect cat-frontend" x="255" y="400" width="170" height="64"/>
+          <text x="340" y="426" class="node-label">S3 · Static</text>
+          <text x="340" y="448" class="node-sublabel sub-frontend">FRONTEND · ASSETS</text>
+        </g>
+
+        <!-- n4 Cognito (security) -->
+        <g>
+          <rect class="node-rect cat-security" x="475" y="120" width="170" height="64"/>
+          <text x="560" y="146" class="node-label">Cognito</text>
+          <text x="560" y="168" class="node-sublabel sub-security">SECURITY · AUTH</text>
+        </g>
+
+        <!-- n5 API Gateway (cloud) -->
+        <g>
+          <rect class="node-rect cat-cloud" x="475" y="320" width="170" height="64"/>
+          <text x="560" y="346" class="node-label">API Gateway</text>
+          <text x="560" y="368" class="node-sublabel sub-cloud">CLOUD · REST</text>
+        </g>
+
+        <!-- n6 Lambda · API (backend) -->
+        <g>
+          <rect class="node-rect cat-backend" x="695" y="240" width="170" height="64"/>
+          <text x="780" y="266" class="node-label">Lambda · API</text>
+          <text x="780" y="288" class="node-sublabel sub-backend">BACKEND · HANDLER</text>
+        </g>
+
+        <!-- n7 Lambda · Worker (backend) -->
+        <g>
+          <rect class="node-rect cat-backend" x="695" y="400" width="170" height="64"/>
+          <text x="780" y="426" class="node-label">Lambda · Worker</text>
+          <text x="780" y="448" class="node-sublabel sub-backend">BACKEND · ASYNC</text>
+        </g>
+
+        <!-- n8 DynamoDB (database) -->
+        <g>
+          <rect class="node-rect cat-database" x="915" y="160" width="170" height="64"/>
+          <text x="1000" y="186" class="node-label">DynamoDB</text>
+          <text x="1000" y="208" class="node-sublabel sub-database">DATABASE · KV</text>
+        </g>
+
+        <!-- n9 S3 Bucket (database) -->
+        <g>
+          <rect class="node-rect cat-database" x="915" y="320" width="170" height="64"/>
+          <text x="1000" y="346" class="node-label">S3 · Bucket</text>
+          <text x="1000" y="368" class="node-sublabel sub-database">DATABASE · BLOB</text>
+        </g>
+
+        <!-- n10 SQS (cloud) -->
+        <g>
+          <rect class="node-rect cat-cloud" x="915" y="480" width="170" height="64"/>
+          <text x="1000" y="506" class="node-label">SQS</text>
+          <text x="1000" y="528" class="node-sublabel sub-cloud">CLOUD · QUEUE</text>
+        </g>
+
+        <!-- ===== Flow lines (left → right data flow) ===== -->
+        <!-- Browser → CloudFront -->
+        <path class="flow-line solid cat-external" d="M 195 352 L 245 272" marker-end="url(#arrow-external)"/>
+        <text x="200" y="312" class="flow-label" transform="rotate(-25 215 305)">HTTPS</text>
+
+        <!-- Browser → S3 Static (via CloudFront, conceptual) -->
+        <path class="flow-line cat-external" d="M 195 360 L 245 432" marker-end="url(#arrow-external)"/>
+
+        <!-- Browser → API Gateway (direct API) -->
+        <path class="flow-line cat-external" d="M 195 352 Q 335 352 465 352" marker-end="url(#arrow-external)"/>
+        <text x="280" y="345" class="flow-label">REST</text>
+
+        <!-- CloudFront → S3 Static (origin) -->
+        <path class="flow-line cat-frontend" d="M 340 304 L 340 396" marker-end="url(#arrow-frontend)"/>
+        <text x="350" y="354" class="flow-label">ORIGIN</text>
+
+        <!-- API Gateway → Cognito (auth check) -->
+        <path class="flow-line cat-security" d="M 560 320 L 560 188" marker-end="url(#arrow-security)"/>
+        <text x="570" y="258" class="flow-label">AUTH</text>
+
+        <!-- API Gateway → Lambda · API -->
+        <path class="flow-line cat-cloud solid" d="M 645 344 L 695 280" marker-end="url(#arrow-cloud)"/>
+        <text x="650" y="316" class="flow-label">INVOKE</text>
+
+        <!-- API Gateway → Lambda · Worker (async) -->
+        <path class="flow-line cat-cloud" d="M 645 360 L 695 424" marker-end="url(#arrow-cloud)"/>
+
+        <!-- Lambda · API → DynamoDB -->
+        <path class="flow-line cat-backend solid" d="M 865 256 L 915 200" marker-end="url(#arrow-backend)"/>
+        <text x="870" y="232" class="flow-label">READ</text>
+
+        <!-- Lambda · API → S3 Bucket -->
+        <path class="flow-line cat-backend" d="M 865 280 L 915 348" marker-end="url(#arrow-backend)"/>
+
+        <!-- Lambda · Worker → SQS -->
+        <path class="flow-line cat-backend" d="M 865 440 L 915 504" marker-end="url(#arrow-backend)"/>
+        <text x="870" y="478" class="flow-label">CONSUME</text>
+
+        <!-- Lambda · Worker → DynamoDB (write) -->
+        <path class="flow-line cat-backend solid" d="M 865 416 Q 900 320 920 220" marker-end="url(#arrow-backend)"/>
+
+      </svg>
+
+      <!-- Inline legend -->
+      <div class="legend">
+        <div class="legend-item cat-frontend"><span class="legend-swatch"></span><span>FRONTEND</span></div>
+        <div class="legend-item cat-backend"><span class="legend-swatch"></span><span>BACKEND</span></div>
+        <div class="legend-item cat-database"><span class="legend-swatch"></span><span>DATABASE</span></div>
+        <div class="legend-item cat-cloud"><span class="legend-swatch"></span><span>CLOUD</span></div>
+        <div class="legend-item cat-security"><span class="legend-swatch"></span><span>SECURITY</span></div>
+        <div class="legend-item cat-external"><span class="legend-swatch"></span><span>EXTERNAL</span></div>
+      </div>
+    </div>
+
+    <!-- ============ Summary Grid ============ -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="card-label">REQUEST FLOW</div>
+        <div class="card-value">5 stages</div>
+        <div class="card-desc">Client → CloudFront → API Gateway → Lambda → DynamoDB / S3</div>
+      </div>
+      <div class="summary-card">
+        <div class="card-label">COMPONENTS</div>
+        <div class="card-value">10 nodes</div>
+        <div class="card-desc">2 frontend · 2 backend · 2 database · 2 cloud · 1 security · 1 external</div>
+      </div>
+      <div class="summary-card">
+        <div class="card-label">LATENCY</div>
+        <div class="card-value">~120ms p99</div>
+        <div class="card-desc">Edge cache hit-rate 94%, cold-start &lt; 200ms</div>
+      </div>
+    </div>
+
+    <!-- ============ Footer ============ -->
+    <footer>
+      <div class="footer-meta">
+        <span>GENERATED 2026-05-06</span>
+        <span class="separator">·</span>
+        <span>HTML-DIAGRAM / SLATE-MONO-GRID</span>
+        <span class="separator">·</span>
+        <span>SINGLE-FILE</span>
+        <span class="separator">·</span>
+        <span>SAMPLE</span>
+      </div>
+    </footer>
+
+  </div>
+</body>
+</html>

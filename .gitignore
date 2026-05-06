@@ -32,6 +32,8 @@
 !self-improving-workflow/**
 !notion-chat-archiver/
 !notion-chat-archiver/**
+!html-diagram/
+!html-diagram/**
 
 # Still ignore packaged .skill files
 *.skill
