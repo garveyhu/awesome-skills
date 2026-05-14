@@ -1,21 +1,44 @@
-# Docker Templates Reference
+# 单镜像模板（degenerate case）
+
+> ⚠️ 单镜像只用于"genuinely tiny"的项目。任何稍微复杂一点的项目都走 [multi-image.md](multi-image.md)。
+>
+> 单镜像用于：纯前端静态站、单文件 Python 脚本服务、镜像 < 500MB 且不需要 tar 离线分发的场景。
 
 模板变量说明：
-- `{project}` — 项目名，如 `sage`、`onesub`
-- `{version}` — 镜像版本，如 `1.0.0`
-- `{PORT}` — 对外暴露端口（Nginx，如 `80`、`5273`）
-- `{API_PORT}` — FastAPI 内部端口（如 `8000`、`5275`）
-- `{DB_PORT}` — 嵌入式 MariaDB 端口（如 `3306`、`5274`）
-- `{prefix}` — URL 前缀（如 `sage`，访问路径为 `/sage/`）
-- `{namespace}` — 镜像仓库命名空间，如 `ai`、`complex`
-- `{registry}` — 私有仓库地址，如 `192.168.1.91:9528`
-- `{module.app}` — Python 启动模块，如 `sage.app`、`app.main:app`
+- `{project}` — 项目名，如 `myapp`
+- `{version}` — 镜像版本
+- `{PORT}` — 对外暴露端口
+- `{API_PORT}` — FastAPI 内部端口
+- `{DB_PORT}` — 嵌入式 MariaDB 端口
+- `{prefix}` — URL 前缀
+- `{namespace}` — 镜像仓库命名空间
+- `{registry}` — 私有仓库地址
+- `{module.app}` — Python 启动模块
+
+单镜像下三区结构仍然保留（一致性 > 简洁），只是 images/ 下只有一个 Dockerfile：
+
+```
+docker/
+├── README.md
+├── images/
+│   ├── Dockerfile               ← 单文件，不带 .base/.code 后缀
+│   ├── entrypoint.sh
+│   ├── nginx.conf
+│   └── .env / .env.example      ← 只有一个 {PROJECT_UPPER}_TAG
+├── containers/
+│   ├── docker-compose.yml       ← 没有 build 壳服务，没有 init 容器
+│   └── <env>/docker-compose.yml
+└── scripts/
+    ├── build-images.sh          ← 单镜像版本，不接受 target 参数
+    ├── push-images.sh           ← 同上
+    └── run-local.sh             ← 同上
+```
 
 ---
 
 ## Dockerfile — 全栈（React + FastAPI + uv workspaces）
 
-三阶段构建：前端构建 → 后端依赖构建 → 最终运行镜像。
+三阶段构建：前端 → 后端依赖 → 运行时。
 
 ```dockerfile
 # ========================
@@ -33,33 +56,28 @@ COPY frontend/ ./
 RUN yarn build
 
 # ========================
-# Stage 2: Backend Deps (uv workspace)
+# Stage 2: Backend Deps
 # ========================
 FROM python:3.11-slim AS backend-builder
 WORKDIR /app
 
-# 阿里云 apt 镜像（国内加速，bookworm 格式）
 RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
     apt-get update && apt-get install -y build-essential && rm -rf /var/lib/apt/lists/*
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
-# 先复制所有 pyproject.toml + uv.lock（利用 Docker 层缓存，依赖不变就不重新安装）
 COPY backend/pyproject.toml backend/uv.lock ./
 COPY backend/{subpkg1}/pyproject.toml ./{subpkg1}/
 COPY backend/{subpkg2}/pyproject.toml ./{subpkg2}/
-# ... 每个 workspace 子包重复一行
 
-# 创建占位目录（uv sync --no-install-project 需要目录存在）
 RUN for pkg in {subpkg1} {subpkg2}; do \
     mkdir -p $pkg/src && touch $pkg/src/__init__.py $pkg/README.md; done
 
-# 安装依赖（--frozen 锁定版本，--no-install-project 只装依赖不装项目，--no-dev 排除开发依赖）
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project --no-dev
 
 # ========================
-# Stage 3: Runtime Image
+# Stage 3: Runtime
 # ========================
 FROM python:3.11-slim
 WORKDIR /app
@@ -67,56 +85,46 @@ WORKDIR /app
 RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
     apt-get update && apt-get install -y \
     nginx \
-    # [如果使用嵌入式 MariaDB，取消注释以下两行]
-    # mariadb-server \
-    # mariadb-client \
-    curl vim net-tools iproute2 && \
+    # 嵌入式 MariaDB（按需取消注释）：
+    # mariadb-server mariadb-client \
+    curl vim && \
     rm -rf /var/lib/apt/lists/*
 
-# [嵌入式 MariaDB：初始化目录权限]
+# 嵌入式 MariaDB 目录权限：
 # RUN mkdir -p /var/run/mysqld /var/lib/mysql /var/log/mysql && \
 #     chown -R mysql:mysql /var/run/mysqld /var/lib/mysql /var/log/mysql
 
-# [嵌入式 MariaDB：自定义端口配置]
+# MariaDB 端口配置：
 # RUN printf "[mariadbd]\nport = {DB_PORT}\nbind-address = 0.0.0.0\n" \
-#     > /etc/mysql/mariadb.conf.d/99-port.cnf && \
-#     chmod 644 /etc/mysql/mariadb.conf.d/99-port.cnf
+#     > /etc/mysql/mariadb.conf.d/99-port.cnf
 
-# 从 builder 阶段复制 uv 和虚拟环境
 COPY --from=backend-builder /bin/uv /bin/uv
 COPY --from=backend-builder /app/.venv /app/.venv
-
-# 从 frontend-builder 复制构建产物
 COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
 
-# 复制后端源码（每个 workspace 子包）
+# 后端源码（每个 workspace 子包）
 COPY backend/{subpkg1}/src /app/{subpkg1}/src
 COPY backend/{subpkg1}/pyproject.toml /app/{subpkg1}/
 COPY backend/{subpkg2}/src /app/{subpkg2}/src
 COPY backend/{subpkg2}/pyproject.toml /app/{subpkg2}/
-# ... 重复
-
-# 复制根配置
 COPY backend/pyproject.toml backend/uv.lock /app/
 COPY backend/alembic.ini /app/
 COPY backend/migrations /app/migrations
 COPY backend/config /app/config
 
-# 复制 nginx + 启动脚本
-COPY docker/nginx.conf /etc/nginx/nginx.conf
-COPY docker/entrypoint.sh /entrypoint.sh
+# nginx + 启动脚本
+COPY docker/images/nginx.conf /etc/nginx/nginx.conf
+COPY docker/images/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# 运行时数据目录（通过 volume 挂载持久化）
 RUN mkdir -p /app/logs /app/data
 
-ENV PYTHONPATH=/app
-ENV PATH="/app/.venv/bin:$PATH"
-ENV TZ=Asia/Shanghai
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app \
+    PATH="/app/.venv/bin:$PATH" \
+    TZ=Asia/Shanghai \
+    PYTHONUNBUFFERED=1
 
 EXPOSE {PORT}
-# [嵌入式 MariaDB] EXPOSE {DB_PORT}
 
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=60s \
     CMD curl -f http://localhost:{API_PORT}/ping || exit 1
@@ -128,12 +136,7 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 ## Dockerfile — 纯后端（FastAPI + uv）
 
-两阶段构建，无前端，无 nginx。
-
 ```dockerfile
-# ========================
-# Stage 1: Backend Deps
-# ========================
 FROM python:3.11-slim AS builder
 WORKDIR /app
 
@@ -146,14 +149,11 @@ COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project --no-dev
 
-# ========================
-# Stage 2: Runtime Image
-# ========================
 FROM python:3.11-slim
 WORKDIR /app
 
 RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
-    apt-get update && apt-get install -y curl vim && rm -rf /var/lib/apt/lists/*
+    apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /bin/uv /bin/uv
 COPY --from=builder /app/.venv /app/.venv
@@ -166,13 +166,12 @@ COPY pyproject.toml uv.lock ./
 
 RUN mkdir -p /app/logs /app/data
 
-ENV PYTHONPATH=/app
-ENV PATH="/app/.venv/bin:$PATH"
-ENV TZ=Asia/Shanghai
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app \
+    PATH="/app/.venv/bin:$PATH" \
+    TZ=Asia/Shanghai \
+    PYTHONUNBUFFERED=1
 
 EXPOSE {API_PORT}
-
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 --start-period=30s \
     CMD curl -f http://localhost:{API_PORT}/ping || exit 1
 
@@ -183,12 +182,7 @@ CMD ["python", "-m", "{module.app}"]
 
 ## Dockerfile — 纯前端（React 静态站）
 
-两阶段构建，最终只有 nginx + 静态文件。
-
 ```dockerfile
-# ========================
-# Stage 1: Build
-# ========================
 FROM node:20-slim AS builder
 WORKDIR /app
 
@@ -200,15 +194,11 @@ RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \
 COPY . ./
 RUN yarn build
 
-# ========================
-# Stage 2: Serve
-# ========================
 FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
-COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
+COPY docker/images/nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE {PORT}
-
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
     CMD wget -q --spider http://localhost:{PORT}/ || exit 1
 
@@ -217,20 +207,16 @@ CMD ["nginx", "-g", "daemon off;"]
 
 ---
 
-## entrypoint.sh — 全栈（支持嵌入式 MariaDB 切换）
+## entrypoint.sh — 全栈（嵌入式 MariaDB 双模式）
 
 ```bash
 #!/bin/bash
 set -e
 
 echo "=== {project} {version} ==="
-echo "Starting at $(date)"
 
 mkdir -p /app/logs /app/data
 
-# ========================
-# 数据库模式
-# ========================
 USE_EMBEDDED="${USE_EMBEDDED_DB:-true}"
 
 if [ "$USE_EMBEDDED" = "true" ]; then
@@ -249,36 +235,25 @@ GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '${DB_ROOT_PASS}' WITH G
 FLUSH PRIVILEGES;
 EOF
         service mariadb stop > /dev/null 2>&1
-        echo "[DB] Initialized successfully."
     fi
 
     service mariadb start > /dev/null 2>&1
-    export MYSQL_HOST="127.0.0.1"
-    export MYSQL_PORT="{DB_PORT}"
-    export MYSQL_DB="${DB_NAME}"
-    export MYSQL_USER="root"
-    export MYSQL_PASSWORD="${DB_ROOT_PASS}"
-    echo "[DB] MariaDB started on port {DB_PORT}"
+    export MYSQL_HOST="127.0.0.1" MYSQL_PORT="{DB_PORT}" MYSQL_DB="${DB_NAME}" \
+           MYSQL_USER="root" MYSQL_PASSWORD="${DB_ROOT_PASS}"
 else
     echo "[DB] Mode: External MySQL (${MYSQL_HOST}:${MYSQL_PORT})"
 fi
 
-# ========================
-# Nginx
-# ========================
 echo "[Web] Starting Nginx on port {PORT}..."
 nginx
 
-# ========================
-# FastAPI
-# ========================
 echo "[API] Starting FastAPI on port {API_PORT}..."
 exec python -m {module.app}
 ```
 
 ---
 
-## nginx.conf — 全栈（含 WebSocket + SSE 支持）
+## nginx.conf — 全栈（含 WebSocket + SSE）
 
 ```nginx
 worker_processes 2;
@@ -290,13 +265,10 @@ http {
     sendfile      on;
     keepalive_timeout 65;
 
-    # Gzip 压缩
     gzip on;
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml;
+    gzip_types text/plain text/css application/json application/javascript;
     gzip_min_length 1000;
-    gzip_vary on;
 
-    # WebSocket 升级映射
     map $http_upgrade $connection_upgrade {
         default upgrade;
         ''      close;
@@ -306,16 +278,15 @@ http {
         listen {PORT};
         server_name localhost;
 
-        # 静态资源强缓存（JS/CSS hash 文件名，永不过期）
-        # 使用 root + rewrite 避免 nginx alias+regex 路径丢失问题
-        location ~* ^/{prefix}/assets/.*\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        # 静态资源强缓存
+        location ~* ^/{prefix}/assets/.*\.(js|css|png|jpg|gif|ico|svg|woff2?|ttf|eot)$ {
             root /app/frontend/dist;
             rewrite ^/{prefix}/(.*)$ /$1 break;
             expires 7d;
             add_header Cache-Control "public, immutable";
         }
 
-        # React SPA（alias + named location 解决 try_files 路径问题）
+        # React SPA
         location /{prefix} {
             alias /app/frontend/dist/;
             index index.html;
@@ -327,7 +298,7 @@ http {
             rewrite ^/{prefix}(/.*)?$ /index.html break;
         }
 
-        # API 反向代理（支持 SSE 流式输出 + WebSocket）
+        # API 反向代理
         location /{prefix}/api/ {
             proxy_pass http://127.0.0.1:{API_PORT}/;
             proxy_http_version 1.1;
@@ -338,17 +309,15 @@ http {
             proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
             proxy_set_header X-Forwarded-Proto $scheme;
 
-            # AI 长时响应超时
             proxy_read_timeout 300s;
             proxy_send_timeout 300s;
             proxy_connect_timeout 60s;
 
-            # SSE 流式响应必须关闭缓冲
+            # SSE / 流式响应必须关闭缓冲
             proxy_buffering off;
             proxy_cache off;
         }
 
-        # 根路径重定向
         location = / { return 301 /{prefix}/; }
     }
 }
@@ -356,61 +325,30 @@ http {
 
 ---
 
-## nginx.conf — 纯前端静态站
-
-```nginx
-server {
-    listen {PORT};
-    server_name _;
-
-    root /usr/share/nginx/html;
-    index index.html;
-
-    gzip on;
-    gzip_vary on;
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml image/svg+xml;
-
-    # SPA 路由支持
-    location / {
-        try_files $uri $uri/ /index.html;
-    }
-
-    # 静态资源缓存
-    location ~* \.(?:ico|css|js|gif|jpe?g|png|svg|woff2?|eot|ttf|webp)$ {
-        expires 6M;
-        access_log off;
-        add_header Cache-Control "public, max-age=15552000, immutable";
-    }
-}
-```
-
----
-
-## docker-compose.yml — 本地测试（build-based）
+## docker/containers/docker-compose.yml — 本地开发
 
 ```yaml
+name: {project}
+
 services:
   {project}:
     build:
-      context: ..
-      dockerfile: docker/Dockerfile
-    image: {project}:{version}
+      context: ../..
+      dockerfile: docker/images/Dockerfile
+    image: {project}:${{PROJECT_UPPER}_TAG}
     container_name: {project}
     ports:
       - "{PORT}:{PORT}"
-      # [嵌入式 MariaDB] - "{DB_PORT}:{DB_PORT}"
+      # 嵌入式 MariaDB：- "{DB_PORT}:{DB_PORT}"
     volumes:
-      - ./logs:/app/logs
-      - ./data:/app/data
-      # [嵌入式 MariaDB]
-      # - ./resources/mysql/data:/var/lib/mysql
-      # - ./resources/mysql/logs:/var/log/mysql
-      # [ChromaDB / DiskCache 等]
-      # - ./resources/chromadb:/app/resources/chromadb
-      # - ./resources/diskcache:/app/resources/diskcache
+      - ./data/logs:/app/logs
+      - ./data/app:/app/data
+      # 嵌入式 MariaDB：
+      # - ./data/mysql/data:/var/lib/mysql
+      # - ./data/mysql/logs:/var/log/mysql
     environment:
       - TZ=Asia/Shanghai
-      # [嵌入式 MariaDB]
+      # 嵌入式 MariaDB：
       # - USE_EMBEDDED_DB=true
       # - DB_ROOT_PASSWORD=changeme
       # - DB_NAME={project}
@@ -425,217 +363,181 @@ services:
 
 ---
 
-## docker-compose.prod.yml — 生产部署（image-based）
+## docker/containers/<env>/docker-compose.yml — 生产部署
 
 ```yaml
+name: {project}-{env}
+
 services:
   {project}:
-    image: {registry}/{namespace}/{project}:{version}
-    container_name: {project}
+    image: {registry}/{namespace}/{project}:${{PROJECT_UPPER}_TAG}
+    container_name: {project}-{env}
     ports:
       - "{HOST_PORT}:{PORT}"
     volumes:
-      - ./logs:/app/logs
-      - ./data:/app/data
-      # [嵌入式 MariaDB]
-      # - ./resources/mysql/data:/var/lib/mysql
-      # - ./resources/mysql/logs:/var/log/mysql
+      - ./data/logs:/app/logs
+      - ./data/app:/app/data
+      # 嵌入式 MariaDB：
+      # - ./data/mysql/data:/var/lib/mysql
+      # - ./data/mysql/logs:/var/log/mysql
     environment:
       - TZ=Asia/Shanghai
-      # [嵌入式 MariaDB]
       # - USE_EMBEDDED_DB=true
-      # - DB_ROOT_PASSWORD=changeme
-      # - DB_NAME={project}
+      # - DB_ROOT_PASSWORD={prod-pass}
     restart: always
 ```
 
-> 此文件放在服务器 `/apps/{project}/` 目录下，`./` 路径即解析为该目录。
-
 ---
 
-## .dockerignore
+## .dockerignore（项目根）
+
+控制 `docker build .` 时拷给 daemon 的 build context。**关键作用两个**：
+1. **不要把宿主机的运行时数据进 context**（`docker/containers/data/` 下可能有几个 GB 的 mariadb 数据，拷给 docker daemon 巨慢且会被误打进镜像）
+2. **不要把凭据进镜像**（`.registry.env` / `images/.env` 真值不能泄进镜像）
 
 ```
-# Git
-.git
-.gitignore
+# ============================================================================
+# .dockerignore — 控制 docker build 时拷给 daemon 的 build context
+# ============================================================================
 
-# Python
+# Git / VCS / IDE
+.git
+.idea
+.vscode
+*.iml
+
+# 构建产物（builder 阶段会重新生成）
+**/target/
+**/build/
+packages/
 **/__pycache__/
 **/*.pyc
-**/*.pyo
 **/.venv/
 **/*.egg-info/
-**/.ruff_cache/
 **/.pytest_cache/
 **/.mypy_cache/
+**/.ruff_cache/
 
-# Node
+# Node / 前端
 **/node_modules/
 **/dist/
-**/build/
-**/.npm/
-**/.yarn/
 
-# 运行时数据（通过 volume 挂载，不打进镜像）
-docker/resources/
-docker/logs/
-docker/data/
+# 运行时数据（绝不能打进镜像，dev 跑时 volume 挂载产生）
+**/logs/
+**/data/
+docker/containers/data/
+docker/containers/*/data/
 
-# IDE / OS
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
-*.swp
+# 真值 / 凭据（不要泄进镜像）
+docker/images/.env
+docker/scripts/.registry.env
+docker/.env
 
-# Agent / CI 文件
-.claude/
-.gemini/
-.github/
-*.skill
-
-# 文档（保留 docker/DEPLOY.md）
+# 文档（保留 docker/README.md 没意义；Dockerfile 不需要）
 docs/
 *.md
-!docker/DEPLOY.md
+!docker/README.md
 
-# 日志
+# 日志 / OS / 杂项
 *.log
+*.tmp
+derby.log
+.DS_Store
+**/.DS_Store
+*.swp
 
 # 测试
 **/tests/
+
+# 反向例外：保留 docker/（COPY docker/images/entrypoint.sh 等需要）
+# 上面的 .env / data/ 等敏感子目录已显式排除
+!docker/
 ```
 
 ---
 
-## DEPLOY.md — docker/ 目录说明文档模板
-
-生成时根据实际项目填充，放在 `docker/DEPLOY.md`：
-
-```markdown
-# {project} Docker 构建与部署
-
-## 项目信息
-
-| 项目 | 说明 |
-|------|------|
-| 类型 | 全栈 / 纯后端 / 纯前端 |
-| 技术栈 | React + FastAPI / FastAPI / React |
-| 镜像名 | {registry}/{namespace}/{project}:{version} |
-| 对外端口 | {PORT}（Nginx / API / Nginx） |
-| API 端口 | {API_PORT}（容器内部） |
-| 数据库 | SQLite / 嵌入式 MariaDB:{DB_PORT} / 外部 MySQL |
-
-## 目录结构
+## .gitignore（项目根）
 
 ```
-docker/
-├── Dockerfile
-├── entrypoint.sh
-├── nginx.conf
-├── docker-compose.yml      ← 本地测试
-├── docker-compose.prod.yml ← 生产部署
-└── DEPLOY.md               ← 本文档
+# ============================================================================
+# 构建产物 / IDE
+# ============================================================================
+**/target/
+**/*.iml
+/.idea/
+/.vscode/
+/build/
+/packages/
+/logs/
+/data/
+
+# ============================================================================
+# 日志 / 杂项
+# ============================================================================
+*.log
+*.tmp
+.DS_Store
+
+# ============================================================================
+# Docker 三区结构
+# ============================================================================
+# 镜像 tag 真值（.env.example 入库；真值含密码 / 内部地址，不入）
+docker/images/.env
+# dev 跑时挂载的运行时数据（mariadb / 日志等，体积可能很大）
+docker/containers/data/
+docker/containers/*/data/
+# 仓库凭据
+docker/scripts/.registry.env
 ```
 
-## 本地测试
+> ⚠️ **常见踩坑**：`.gitignore` 漏写 `docker/containers/data/` → `git add -A` 一次把几个 GB 的 mariadb 运行时数据全 commit 入库，commit 巨大、反向修复成本高（要 `git rm --cached -r` 撤掉 + 重做 commit）。新建 docker 项目第一步就把这两个 ignore 文件写好。
+
+---
+
+## docker/images/.env.example
+
+```env
+{PROJECT_UPPER}_TAG={version}
+```
+
+---
+
+## 单镜像下的脚本简化
+
+`build-images.sh`：
 
 ```bash
-# 1. 创建本地持久化目录（首次执行）
-mkdir -p ./docker/{logs,data}
-# 如果使用嵌入式 MariaDB：
-# mkdir -p ./docker/{logs,resources/{mysql/{data,logs}}}
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"; cd "$ROOT"
 
-# 2. 构建并启动
-cd docker
-docker-compose build && docker-compose up -d --force-recreate
+[ -f docker/images/.env ] || cp docker/images/.env.example docker/images/.env
+set -a; . docker/images/.env; set +a
 
-# 3. 验证
-docker-compose logs -f
-curl http://localhost:{PORT}/ping
+echo "→ building {project}:${{PROJECT_UPPER}_TAG}"
+docker build -t "{project}:${{PROJECT_UPPER}_TAG}" -f docker/images/Dockerfile .
 
-# 4. 停止
-docker-compose down         # 保留数据
-docker-compose down -v      # 清除数据
+echo "✅ done"
 ```
 
-## 推送镜像
+`run-local.sh`：
 
 ```bash
-# 首次使用需配置 buildx 多架构支持
-docker buildx create --use --platform linux/amd64,linux/arm64
-docker buildx inspect --bootstrap
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"; cd "$ROOT"
 
-# 登录仓库
-docker login {registry}
+[ -f docker/images/.env ] || cp docker/images/.env.example docker/images/.env
 
-# 构建并推送（多架构）
-docker buildx build \
-  --platform linux/amd64,linux/arm64 \
-  -t {registry}/{namespace}/{project}:{version} \
-  -f docker/Dockerfile \
-  --push .
+mkdir -p docker/containers/data/{logs,app}
 
-# 或导出 tar（离线部署）
-docker buildx build \
-  --platform linux/amd64 \
-  --output type=docker,dest={project}-{version}-amd64.tar \
-  -f docker/Dockerfile .
+"${ROOT}/docker/scripts/build-images.sh"
+
+DC="docker compose --env-file docker/images/.env -f docker/containers/docker-compose.yml"
+$DC down --remove-orphans 2>/dev/null || true
+$DC up -d --remove-orphans
+
+echo "🎉 {project} 已启动 → http://localhost:{PORT}"
 ```
 
-## 生产部署
-
-```bash
-# 服务器上执行
-
-# 1. 创建目录
-sudo mkdir -p /apps/{project}/{logs,data}
-# 如果使用嵌入式 MariaDB：
-# sudo mkdir -p /apps/{project}/resources/{mysql/{data,logs}}
-
-# 2. 权限（出现权限问题时执行）
-sudo chmod -R 777 /apps/{project}
-sudo chown -R root:root /apps/{project}
-
-# 3. 将 docker-compose.prod.yml 放到 /apps/{project}/
-
-# 4. 拉取并启动
-cd /apps/{project}
-docker login {registry}
-docker-compose -f docker-compose.prod.yml pull
-docker-compose -f docker-compose.prod.yml up -d --force-recreate
-
-# 5. 验证
-docker ps
-docker-compose -f docker-compose.prod.yml logs -f
-```
-
-## 常用运维命令
-
-```bash
-# 查看日志
-docker logs {project} -f --tail 100
-
-# 进入容器
-docker exec -it {project} bash
-
-# 重启服务
-docker restart {project}
-
-# 查看资源占用
-docker stats {project}
-
-# 清理无用镜像（释放磁盘）
-docker image prune -f
-```
-
-## 环境变量
-
-| 变量 | 默认值 | 说明 |
-|------|--------|------|
-| `TZ` | `Asia/Shanghai` | 时区 |
-| `USE_EMBEDDED_DB` | `true` | 是否使用嵌入式 MariaDB |
-| `DB_ROOT_PASSWORD` | `changeme` | MariaDB root 密码（**生产必须修改**） |
-| `DB_NAME` | `{project}` | 数据库名 |
-```
+`push-images.sh` 类似多镜像版，去掉 case 分支即可。

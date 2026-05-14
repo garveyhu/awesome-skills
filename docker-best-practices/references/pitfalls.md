@@ -243,7 +243,50 @@ c. Harbor project 设置了"禁止覆盖 tag"，推相同 tag 会失败。bump �
 
 ---
 
-## 11. `run-local.sh` 第二次跑报 `container name already in use`
+## 11. dev 改了代码 run-local.sh 后页面还是旧版本
+
+**现象**：本地改了 java / python 代码 → `./docker/scripts/run-local.sh code` → 看到 code 镜像被重新 build（同 tag 1.4.0，新内容） → compose down + up 完成 → 但访问页面还是旧逻辑。
+
+**根因**：dev compose 的 init 容器保留了 `.version` skip 逻辑：
+
+```yaml
+code-init:
+  image: {project}-code:${CODE_TAG}
+  environment: [TAG=${CODE_TAG}]
+  command: >
+    sh -c '
+      if [ "$$(cat /target/.version 2>/dev/null)" = "$$TAG" ]; then
+        echo "code $$TAG already synced, skip";   # ← 这里跳过了
+      else
+        ...
+      fi
+    '
+```
+
+`.version` 文件里是 `1.4.0`，TAG 也是 `1.4.0`，匹配 → 跳过 cp → volume 里还是上次的旧代码。
+
+**修复**：dev compose 的 init 容器**直接去掉 .version skip**，每次都全量 cp：
+
+```yaml
+code-init:
+  image: {project}-code:${CODE_TAG}
+  volumes: [code-data:/target]
+  command: >
+    sh -c '
+      rm -rf /target/* /target/.[!.]* 2>/dev/null || true;
+      cp -a /export/. /target/;
+      echo "code synced";
+    '
+  restart: "no"
+```
+
+**生产 compose 保留 skip**：因为生产升级**总会** bump tag（1.4.0 → 1.4.1），`.version` 不匹配自然触发重 cp。restart 没 bump tag 时跳过节省时间（避免每次重启重 cp 1GB venv）。
+
+**为什么 dev 不能像生产那样靠 bump tag 触发**：dev 改代码每次都 bump 太烦人；同 tag 重 build + 全量 cp 是 dev 场景下"语义最一致"的做法。代价是 init 每次跑一次 cp（dev 的 code 通常 ~200MB，秒级完成，可以接受）。
+
+---
+
+## 12. `run-local.sh` 第二次跑报 `container name already in use`
 
 **现象**：第一次跑 `./scripts/run-local.sh` 成功，第二次跑报：
 
@@ -275,3 +318,36 @@ docker compose up -d --remove-orphans
 ```
 
 注意 orphan 判定基于**同项目名下当前 compose 文件未声明的 service**，不会误删其它项目（不同目录 / 不同 `-p` 指定项目名）的容器。
+
+---
+
+## 13. `git add -A` 把 mariadb 运行时数据全 commit 入库
+
+**现象**：dev 跑过一次 `run-local.sh` 后做 `git add -A && git commit`，commit message 显示 `285 files changed`，里面全是 `docker/containers/data/mysql/data/**/*.ibd` `*.frm` 这种 mariadb 内部文件。push 上去会被同事吐槽（commit 巨大、影响 clone 速度）。
+
+**根因**：`.gitignore` 没把 `docker/containers/*/data/` 这条加上。dev compose 里 mariadb / 日志走 bind mount 挂到 `docker/containers/data/`（按"compose 文件同级 data/"约定），跑一次后 mysql 数据文件、日志文件就在那里堆着——`git add -A` 一把全收。
+
+**修复（已发生）**：
+
+```bash
+# 撤回 commit 但保留改动
+git reset --soft HEAD~1
+
+# .gitignore 加规则（templates.md 有完整模板）
+cat >> .gitignore <<'EOF'
+docker/containers/data/
+docker/containers/*/data/
+docker/images/.env
+docker/scripts/.registry.env
+EOF
+
+# 把已 staging 的运行时数据从 git index 移除（保留本地文件）
+git rm --cached -r docker/containers/data
+git rm --cached docker/images/.env docker/scripts/.registry.env
+
+# 重新 commit
+git add -A
+git commit -m "..."
+```
+
+**预防（首选）**：用本 skill 创建 docker 项目时，`.gitignore` + `.dockerignore` **同步生成**。模板见 [templates.md](templates.md)。两个 ignore 缺一不可——`.dockerignore` 漏 `docker/containers/*/data/` 会让 build context 拖到几个 GB 拖慢 build。
