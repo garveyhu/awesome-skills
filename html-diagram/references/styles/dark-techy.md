@@ -256,7 +256,7 @@ body::before {
 
 **用途**：dark-techy 风格的拓扑/架构图必备。提供 4 类语义对照表，让阅读者快速理解节点配色 / 链路语义 / 层级关系 / 特殊标记。
 
-**容器规范**：
+**容器规范**（含默认折叠按钮 + < 1400px 自动收缩为窄条）：
 
 ```css
 .legend {
@@ -274,16 +274,58 @@ body::before {
   font-size: 11px;
   max-height: calc(100vh - 32px);
   overflow-y: auto;
+  transition: width 240ms var(--ease-out), padding 240ms var(--ease-out);
+}
+.legend.collapsed { width: 36px; padding: 8px 6px; overflow: hidden; }
+.legend.collapsed .legend-content { display: none; }
+.legend-toggle {
+  position: absolute; top: 8px; right: 8px;
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 11px; font-family: inherit;
+  transition: background 120ms var(--ease-out);
+}
+.legend-toggle:hover { background: rgba(255,255,255,0.08); color: var(--text-1); }
+.legend.collapsed .legend-toggle { position: static; margin: 0 auto; }
+@media (max-width: 1400px) {
+  .legend:not(.collapsed) { display: none; }
+  .legend.collapsed { display: block; }
 }
 ```
 
-**< 1400px 自动隐藏**：`@media (max-width: 1400px) { .legend { display: none; } }`
+**配套 JS（自调用 IIFE，进 `<script>` 块开头）**：
 
-### 标准结构（4 个分组，按顺序）
+```js
+(function initLegendToggle() {
+  const legend = document.getElementById('legend');
+  const btn = document.getElementById('legend-toggle');
+  if (!legend || !btn) return;
+  try {
+    if (localStorage.getItem('legend-collapsed') === '1') {
+      legend.classList.add('collapsed');
+      btn.textContent = '▶';
+    }
+  } catch (e) {}
+  btn.addEventListener('click', () => {
+    const collapsed = legend.classList.toggle('collapsed');
+    btn.textContent = collapsed ? '▶' : '◀';
+    try { localStorage.setItem('legend-collapsed', collapsed ? '1' : '0'); } catch (e) {}
+  });
+})();
+```
+
+### 标准结构（4 个分组，按顺序 · 默认带 toggle 按钮 + content wrapper）
 
 ```html
-<aside class="legend">
-  <h4>Node tones</h4>           <!-- 1. 5 tone 色彩语义 -->
+<aside class="legend" id="legend">
+  <button class="legend-toggle" id="legend-toggle" aria-label="Toggle legend">◀</button>
+  <div class="legend-content">
+    <h4>Node tones</h4>           <!-- 1. 5 tone 色彩语义 -->
   <div class="item"><span class="swatch s-primary"></span>primary · 用途</div>
   <div class="item"><span class="swatch s-accent"></span>accent · 用途</div>
   <div class="item"><span class="swatch s-warn"></span>warn · 用途</div>
@@ -306,10 +348,12 @@ body::before {
 
   <h4>Markers</h4>              <!-- 4. 特殊标记说明（可选） -->
   <div class="item"><span class="marker-star">★</span>说明文字</div>
+  </div><!-- /.legend-content -->
 </aside>
 ```
 
 含 timeline 的 deck，再加第 5 分组 `<h4>Stage palette</h4>`，列 5 个 stage tone 色块。
+**注意 `Stage palette` 也要放在 `.legend-content` 内部**，跟其他 4 组并列；折叠按钮始终在外层 `.legend` 上。
 
 ### Swatch / line-sample CSS
 
@@ -365,7 +409,7 @@ narrative-deck sample 会用到，interactive-link-map 不必。
 
 ## Sample 选用指引
 
-dark-techy 当前有两个 sample，都是该风格的真实应用实例。AI 改填时按内容形态选最贴近的：
+dark-techy 当前有三个 sample，都是该风格的真实应用实例。AI 改填时按内容形态选最贴近的：
 
 ### `narrative-deck.html` — 长滚动叙事 deck
 
@@ -374,7 +418,7 @@ dark-techy 当前有两个 sample，都是该风格的真实应用实例。AI �
 - 主图区只有一处，含 panel 三层 + SVG 链路 + 粒子流
 - 含全套卡组件 + timeline + 进场动画
 - **适合**：方案论证、向上汇报、白皮书 hero、长文 deck
-- **不适合**：纯拓扑图（用 interactive-link-map）
+- **不适合**：纯拓扑图（用 interactive-link-map / topology-poster）
 
 ### `interactive-link-map.html` — 单屏交互拓扑
 
@@ -385,10 +429,29 @@ dark-techy 当前有两个 sample，都是该风格的真实应用实例。AI �
 - **适合**：服务拓扑、依赖关系图、运维排查工具、故障演练
 - **不适合**：方案叙事（用 narrative-deck）
 
+### `topology-poster.html` — 单页 1920×1080 网络架构海报
+
+- 信息架构：head 标题 + 多个 zone 区块（用 `<section class="zone">` 给每个网络/域划框）+ 节点 absolute 定位 + SVG 弧线连接 + 底部 channels 跨网通道说明 + 底部 LEGEND + PROJECTS & PORTS 端口总览
+- 单页固定 1920×1080，`.stage` 用 `transform: scale()` 自动适应 viewport（fit 公式：`Math.min(innerWidth/1920, innerHeight/1080)`）
+- 节点全部 `position:absolute` 配 inline `style="left:Xpx;top:Ypx;width:Wpx;height:Hpx"`，SVG 端点用绝对坐标对齐节点边框
+- 关键组件：
+  - `.zone` — 虚线 dashed border + zone-label（mono 大写 + 中文小字）作为网络/域边界
+  - `.node` / `.nv` / `.featured` — 横节点 / 竖节点 / 带 ★ 角标的关键节点
+  - `.db-merged` — DB 容器，顶部色带 + 内部 split 多个 half 子库
+  - `.ext` — 虚线节点表示外部数据源
+  - `.aura` — plate-style 多模块汇聚框
+  - SVG `<path class="lk ...">` + cubic bezier + marker（`markerUnits=userSpaceOnUse` 固定大小箭头）+ `<animateMotion>` 粒子流
+  - 底部 `.channels`（跨网通道 5/4+1 分组卡）+ `.bot-row` 双块（LEGEND 图例 + PROJECTS & PORTS 端口 chip flow）
+  - 顶部 `.toolbar` 右上角浮动 button：暗/亮主题切换（`[data-theme]` 双套 token + localStorage）+ PNG 导出（`modern-screenshot@4.7.0`）
+- **适合**：跨网/多区域系统架构图、政务/企业内网拓扑、向领导/运维 review 的对账图、A3 打印 / 大屏展示
+- **不适合**：单一系统内部模块依赖（用 interactive-link-map）；方案叙事多 section（用 narrative-deck）
+
 ### 选 sample 决策
 
 ```
-上下文是"实体 + 关系网络"，关注节点间连接？
+上下文是"多网络/多区域 + 静态拓扑展示 + 需 1920×1080 单页"？
+  └─ topology-poster
+上下文是"单系统内部 + 实体 + 关系网络"，关注 hover/click 交互？
   └─ interactive-link-map
 上下文是"方案论证 / 多章节叙事"，含痛点/蓝图/路径/边界？
   └─ narrative-deck
@@ -487,3 +550,493 @@ dark-techy 当前有两个 sample，都是该风格的真实应用实例。AI �
 ```
 
 仅此一项。其它 CSS 全部内联。零构建链。
+
+---
+
+## 进阶模式（基于实战沉淀）
+
+下面这些模式不是每张图都必须用，但当你的图遇到对应场景时，**抄这套 pattern 比从头设计省 1 小时**。每条都来自真实重构（"政务婴育同步架构图 v2"）的踩坑教训。
+
+### 1. 多 tier 分层 panel · 突出层级关系
+
+**场景**：单 panel 内有明显的层级关系（顶 / 中 / 底；或网关层 → 业务层 → 数据层），平铺会让阅读者误以为"同级"。
+
+**反模式（不要做）**：
+```html
+<!-- 4 个组件平铺一排，看起来像 4 个独立系统 -->
+<section class="panel">
+  <div class="node">A</div>
+  <div class="node">B</div>
+  <div class="node">C</div>
+  <div class="node">D</div>
+</section>
+```
+
+**正解**：用嵌套的 `.tier` 容器表达层级，每个 tier 一个标签 + 一组节点：
+
+```html
+<section class="panel">
+  <div class="tier" data-tier="bridge">
+    <div class="tier-label"><span class="num">01</span><span>桥接层 · 对外暴露</span></div>
+    <div class="tier-body">…1 个节点撑满…</div>
+  </div>
+  <div class="tier" data-tier="biz">
+    <div class="tier-label"><span class="num">03</span><span>业务层 · 三件套</span></div>
+    <div class="tier-body">…3 个节点平排…</div>
+  </div>
+  <div class="tier" data-tier="db">
+    <div class="tier-label"><span class="num">04</span><span>数据层</span></div>
+    <div class="tier-body">…2 个数据库一起…</div>
+  </div>
+</section>
+```
+
+```css
+.panel { display: grid; grid-template-columns: 1fr; gap: 22px; padding-top: 48px; }
+.tier {
+  padding: 14px 16px 16px;
+  border-radius: 14px;
+  border: 1px dashed rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.012);
+  border-left: 3px solid /* 按 tier 染不同色 */;
+}
+.tier-label { display: flex; align-items: center; gap: 10px;
+              font-size: 11.5px; color: var(--text-3); margin-bottom: 10px; }
+.tier-label .num { /* mono 编号 chip */ }
+.tier-body { display: grid; gap: 14px; grid-template-columns: 1fr; }
+.tier[data-tier="biz"] .tier-body { grid-template-columns: repeat(3, 1fr); }
+.tier[data-tier="db"]  .tier-body { grid-template-columns: 1fr 1fr; }
+```
+
+**配色策略**：每个 tier 的 `border-left` 用一种 tone（紫 / 蓝 / 青 / 灰），形成"自上而下"的色彩降序。
+
+### 2. 复合主节点 · 含内部模块（platform with modules）
+
+**场景**：要表达"一个系统平台，里面有 N 个组件"，**不能**用 N 个 `.node` 平铺（视觉上是 N 个独立系统，破坏层级），要做成**一个突出大节点 + 内部 modules chip 风格**。
+
+**关键**：不要把这种节点跟普通 `.node` 共用 class，否则 `.node[data-type="platform"] { width: 360px }` 会限死宽度。
+
+```html
+<div class="aura-node" data-tone="accent">
+  <div class="aura-head">
+    <span class="aura-title">Aura · 全域监控平台</span>
+    <span class="aura-sub">React + FastAPI + 中央数据库</span>
+    <span class="aura-pin">★ 中央监控</span>
+  </div>
+  <div class="aura-modules">
+    <div class="aura-mod" data-kind="ui"><span class="ico">◧</span><div class="body">…</div></div>
+    <div class="aura-mod" data-kind="service"><span class="ico">⚙</span><div class="body">…</div></div>
+    <div class="aura-mod" data-kind="db"><span class="ico">▤</span><div class="body">…</div></div>
+    <div class="aura-mod" data-kind="alert"><span class="ico">!</span><div class="body">…</div></div>
+  </div>
+</div>
+```
+
+```css
+.aura-node {
+  display: block;                  /* 不继承 panel 的 flex */
+  width: 100% !important;          /* 强制撑满（防被父 grid/flex 压缩）*/
+  max-width: none !important;
+  box-sizing: border-box;
+  padding: 26px 30px 24px;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 12% -20%, rgba(192,132,252,0.18), transparent 55%),
+    linear-gradient(135deg, rgba(192,132,252,0.05), rgba(129,140,248,0.04)),
+    var(--bg-card);
+  border: 1.5px solid color-mix(in oklab, var(--c-accent) 55%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    0 0 36px color-mix(in oklab, var(--c-accent) 14%, transparent);
+  animation: aura-breath 5.2s ease-in-out infinite;
+}
+.aura-modules {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+@media (max-width: 1100px) { .aura-modules { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px)  { .aura-modules { grid-template-columns: 1fr; } }
+.aura-mod {
+  min-width: 0;                    /* 允许内容收缩，防字竖排 */
+  display: flex; gap: 10px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.aura-mod .ico {
+  flex: none; width: 28px; height: 28px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  /* 按 data-kind 配 background / color */
+}
+@keyframes aura-breath {
+  0%, 100% { box-shadow: inset 0 1px 0 rgba(255,255,255,0.08),
+                          0 0 36px color-mix(in oklab, var(--c-accent) 14%, transparent); }
+  50%      { box-shadow: inset 0 1px 0 rgba(255,255,255,0.10),
+                          0 0 56px color-mix(in oklab, var(--c-accent) 28%, transparent); }
+}
+```
+
+**踩坑提醒**：
+- 如果 modules 字"竖排成一列字"，99% 是子项 `min-width: 0` 没设，被 grid 强制成极窄列
+- 如果整个节点只占父容器 1/3，95% 是父级 `.panel` 的 `display: flex` 没被覆盖；用 `#panel-xxx { display: block !important; }`
+
+### 3. 节点视觉差异化 · 项目 vs 数据库 vs 端口
+
+**场景**：单 panel 里同时有"软件项目"、"数据库"、"对外端口"三类，全部用同一个圆角矩形会看起来"都是一样的盒子"，丢失语义。
+
+**做法**：用 type 触发不同视觉，并加 prefix icon：
+
+```css
+/* 项目（service）— 左侧 3px 渐变高亮条 + 渐变背景 */
+.node[data-type="service"] {
+  background: linear-gradient(90deg, color-mix(in oklab, var(--c-primary) 8%, transparent) 0%, transparent 30%), var(--bg-card);
+}
+.node[data-type="service"]::after {
+  content: ''; position: absolute;
+  left: 0; top: 12%; bottom: 12%;
+  width: 3px; border-radius: 0 3px 3px 0;
+  background: color-mix(in oklab, var(--c-primary) 70%, transparent);
+  box-shadow: 0 0 8px color-mix(in oklab, var(--c-primary) 50%, transparent);
+}
+.node[data-type="service"] .title::before { content: '⚙ '; color: var(--c-primary); font-size: 11px; }
+
+/* 数据库（table）— 圆柱视觉（顶部弧条 + 条纹纹理）*/
+.node[data-type="table"] {
+  border: 1px solid rgba(148,163,184,0.35);
+  background:
+    repeating-linear-gradient(0deg,
+      rgba(148,163,184,0.04) 0 1px,
+      transparent 1px 6px),
+    rgba(255,255,255,0.025);
+  padding-top: 22px;
+}
+.node[data-type="table"]::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 14px;
+  background: rgba(148,163,184,0.12);
+  border-bottom: 1px solid rgba(148,163,184,0.25);
+  border-radius: 12px 12px 0 0;
+}
+.node[data-type="table"]::after {
+  content: '▤'; position: absolute;
+  top: 6px; left: 12px; font-size: 10px;
+  color: var(--c-mute); letter-spacing: 1px;
+}
+
+/* API 端口（api）— 不要用胶囊形（容易超框）·
+ * 长名字（"WaveBridge · 桥接器"）必须用 service type，胶囊容易溢出。
+ * api type 只用于真正的短端口名（"/health"、":8443"）*/
+.node[data-type="api"] {
+  background: linear-gradient(90deg, rgba(94,234,212,0.06), rgba(56,189,248,0.04)), var(--bg-card);
+  border-color: color-mix(in oklab, var(--c-primary) 50%, transparent);
+}
+```
+
+**踩坑提醒**：长中文标题（含项目名 + 子标题）配 `type="api"` 的胶囊形（`border-radius: 999px`）会溢出 — 这种情况一律用 `service` type。
+
+### 4. 区域分组 · 按业务维度切分（非随机平铺）
+
+**场景**：N 个区域 / 实例平铺成一片网格，看不出分类（"市级 / 区级"、"接入方式 A / B / C"）。
+
+**做法**：在 DATA 里给 region 加 `group` 字段，render 时按 group 切块，每块一个 `.region-group` 容器（彩色左边条 + 块标题）：
+
+```html
+<div class="regions-grid">
+  <div class="region-group">
+    <div class="region-group-label">
+      <span class="num">市</span>
+      <span>市级 · 1 个</span>
+    </div>
+    <div class="region-group-body">… nodes …</div>
+  </div>
+  <div class="region-group">
+    <div class="region-group-label"><span class="num">区·接市</span><span>杭州下属区 · 4 个</span></div>
+    <div class="region-group-body">… nodes …</div>
+  </div>
+</div>
+```
+
+```css
+.regions-grid { display: flex; flex-direction: column; gap: 18px; }
+.region-group {
+  padding: 14px 16px 16px;
+  border-radius: 12px;
+  border: 1px dashed rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.012);
+}
+.region-group:nth-child(1) { border-left: 3px solid color-mix(in oklab, var(--c-accent) 50%, transparent); }
+.region-group:nth-child(2) { border-left: 3px solid color-mix(in oklab, #38bdf8 50%, transparent); }
+.region-group:nth-child(3) { border-left: 3px solid color-mix(in oklab, var(--c-warn) 50%, transparent); }
+.region-group-body {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+@media (max-width: 1100px) { .region-group-body { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 780px)  { .region-group-body { grid-template-columns: repeat(2, 1fr); } }
+```
+
+### 5. 反向代理 / 网关 panel · 多行域名分级
+
+**场景**：列出多个域名 / 端点 / 实例，混在一行不可读。
+
+**做法**：用 `.proxy-row` + `.proxy-tag` 分级，每行一个 tag + 该级别的所有 url：
+
+```html
+<section class="panel" data-layer="proxy">
+  <div class="proxy-title"><span class="dot"></span>● Layer 2 · 反向代理网关 · 公司域名出口</div>
+  <div class="proxy-body">
+    <div class="proxy-row">
+      <span class="proxy-tag tag-city">市级 · 1</span>
+      <span class="url">syzh.bridge.iktapp.com</span>
+      <span class="proxy-note">善育在杭</span>
+    </div>
+    <div class="proxy-row">
+      <span class="proxy-tag tag-region">区级 · 10</span>
+      <span class="url">gs.bridge.iktapp.com</span> ·
+      …
+    </div>
+    <div class="proxy-row proxy-foot">
+      <span style="color: var(--text-3)">认证：HMAC + nonce 防重放 · 60s 时间窗</span>
+    </div>
+  </div>
+</section>
+```
+
+```css
+.proxy-body { font-family: ui-monospace, monospace; font-size: 12px;
+              display: flex; flex-direction: column; gap: 8px; }
+.proxy-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 6px; }
+.proxy-row.proxy-foot {
+  padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.06);
+  font-family: -apple-system, "PingFang SC", system-ui, sans-serif;
+}
+.proxy-tag {
+  flex: none;
+  font-size: 11px; padding: 2px 9px; border-radius: 999px;
+  font-family: -apple-system, "PingFang SC", system-ui, sans-serif;
+}
+.tag-city   { background: rgba(192,132,252,0.10); color: var(--c-accent); border: 1px solid color-mix(in oklab, var(--c-accent) 35%, transparent); }
+.tag-region { background: rgba(56,189,248,0.10); color: #38bdf8; border: 1px solid color-mix(in oklab, #38bdf8 35%, transparent); }
+.url { color: var(--c-primary); }
+.proxy-note { color: var(--text-3); font-size: 11.5px;
+              font-family: -apple-system, "PingFang SC", system-ui, sans-serif; }
+```
+
+### 6. 可折叠侧栏 Legend
+
+**场景**：左侧 fixed legend 在窄屏遮挡内容、用户想看图时不能临时收起。
+
+**做法**：legend 加一个 toggle 按钮 + `localStorage` 记住状态：
+
+```html
+<aside class="legend" id="legend">
+  <button class="legend-toggle" id="legend-toggle">◀</button>
+  <div class="legend-content">
+    <h4>Node tones</h4> …
+  </div>
+</aside>
+```
+
+```css
+.legend {
+  /* 原 fixed-left 200-224px 样式 */
+  transition: width 240ms var(--ease-out), padding 240ms var(--ease-out);
+}
+.legend.collapsed { width: 36px; padding: 8px 6px; overflow: hidden; }
+.legend.collapsed .legend-content { display: none; }
+.legend-toggle {
+  position: absolute; top: 8px; right: 8px;
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.legend.collapsed .legend-toggle { position: static; margin: 0 auto; }
+@media (max-width: 1400px) {
+  .legend:not(.collapsed) { display: none; }
+  .legend.collapsed { display: block; }
+}
+```
+
+```js
+function initLegendToggle() {
+  const legend = document.getElementById('legend');
+  const btn = document.getElementById('legend-toggle');
+  if (!legend || !btn) return;
+  try {
+    if (localStorage.getItem('legend-collapsed') === '1') {
+      legend.classList.add('collapsed');
+      btn.textContent = '▶';
+    }
+  } catch (e) {}
+  btn.addEventListener('click', () => {
+    const collapsed = legend.classList.toggle('collapsed');
+    btn.textContent = collapsed ? '▶' : '◀';
+    try { localStorage.setItem('legend-collapsed', collapsed ? '1' : '0'); } catch (e) {}
+  });
+}
+```
+
+### 7. 弹性进场 · 突出主节点
+
+**场景**：一个突出的主节点（如 Aura）需要"权重感"，普通的 clip-path 擦出太平淡。
+
+**做法**：用 cubic-bezier 反弹曲线 + scale + blur 过渡：
+
+```css
+@keyframes aura-pop {
+  0%   { opacity: 0; transform: translateY(14px) scale(0.92); filter: blur(4px); }
+  60%  { opacity: 1; transform: translateY(-3px) scale(1.02); filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+.aura-node.entering { opacity: 0; transform: translateY(14px) scale(0.92); }
+.aura-node.enter    { animation: aura-pop 720ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+```
+
+入场错峰：核心主节点（aura）先弹出 → 然后基础设施 + 业务节点常规 stagger。
+
+### 8. 整体居中校验
+
+**反模式**：内容左对齐贴边，右侧大片空白（panel max-width 没生效）
+
+**做法**：
+- 顶层 `<div id="app" class="relative max-w-[1600px] mx-auto px-8 py-10">`
+- 所有 panel 直接是它的子元素（不要包嵌套 grid 撑出对齐问题）
+- Layer 1/2/3 全宽堆叠，Layer 4（区域汇总）单独最下方（不要跟 Layer 3 并排）
+
+### 9. 命名一致性 · 中文 vs 英文混用规则
+
+- **节点 title**：可以中英混杂（`Aura · 全域监控平台` / `WaveBridge · 桥接器`），破折号分隔产品代号 + 中文角色
+- **节点 subtitle / description**：纯中文（描述用语言）
+- **chip / 标签**：技术栈用英文（`React`、`FastAPI`、`:8443`），中文角色用中文（`双语言`、`异步`）
+- **section title**：中文（`新架构全景` / `关键能力`）
+- **legend 标题**：英文 UPPERCASE（`Node tones / Link kinds / Tier / Markers`）— 这是 dark-techy 的工程文档调性
+
+避免出现"半中半英奇怪混搭"（`Web Dashboard` 在中文卡里、`Aggregator` 没翻译）—— 业务文档优先用中文（"监控视图 / 聚合服务 / 中央数据库 / 告警引擎"），保留代号用英文。
+
+### 10. ID 稳定性 vs 显示文本
+
+设计 DATA 时分清两类字段：
+- `id`：稳定，用于 `link.from / to` 引用，**不轻易改**（改一处要全文搜替换）
+- `title / subtitle / label / note`：可随时改，仅影响显示
+
+如果项目改名（如 `wave-bridge` → `WaveBridge`），把改动限制在 `title`，**不要动 `id: "stack-bridge"`**，否则连线会断。
+
+---
+
+## Layer 4 (区域汇总) 在 deck 末尾的呈现规则
+
+如果是"省 / 市 / 区"三级分层架构，**省级通常不属于改造范围**（它是上游数据源），不要把省级也做成 region 节点占据 Layer 4 的网格 — 会让阅读者误以为省级也部署了我们的代码。
+
+正确做法：
+- panel-proxy（反代）只列**自己部署 bridge 的层级**（市 + 区，不列省）
+- panel-regions（Layer 4）只放**自己部署 stack 的实例**（市 + 10 个区，不放省级）
+- 省级"数据源"角色用左侧 hero 文案 / 痛点段落体现，不进架构图主体
+
+---
+
+## topology-poster 专属经验（基于跨网架构图沉淀）
+
+`topology-poster.html` 是 dark-techy 风格在"单页 1920×1080 网络架构海报"形态下的完整实例。下面是这套形态独有的规则与踩坑：
+
+### A. 整体布局：固定 1920×1080 + scale 自适应
+
+- `.stage` 设 `width:1920px;height:1080px;transform-origin:center center`，所有节点用 absolute + inline `style="left:X;top:Y;width:W;height:H"` 精确摆位
+- viewport 自适应通过 `transform: scale(k)` 实现，`k = Math.min(innerWidth/1920, innerHeight/1080)`，绑定 resize/load 事件
+- 不要让节点用相对布局或 flex 排版，**架构图位置就是设计**，相对布局会让 SVG 端点对不齐
+
+### B. 网络/域分组用 `<section class="zone">`
+
+- 每个网络（如政务网 / 卫生网 / 公司内网）一个 `.zone`，虚线 dashed border + zone-label（mono UPPERCASE + 中文小字）
+- zone 与节点同层（absolute），节点摆在 zone 视觉框内但 DOM 上不嵌套（避免坐标系混乱）
+- zone 颜色编码：每个 zone 用一个 brand color (`--c1/--c2/--cm` 等) 作 border + label color，节点不染色（节点按 type 染色）
+
+### C. 节点形状语言扩展
+
+`.node` (横节点) + `.nv` (竖节点，120 宽全高站列，适合"采集器/桥接器"这种独占一列的关键件) + `.featured` (带 ★ 角标关键节点) + `.db-merged` (DB 容器，顶部色带 + 内部 split 多 half) + `.ext` (虚线节点表示外部数据源) + `.aura` (plate 多模块汇聚框)
+
+**关键 trick**：
+- `.node{display:flex;flex-direction:column;justify-content:center}` 让内容垂直居中，避免上下大空白
+- 节点 height 必须**贴合内容**而非给固定值留白 — height 多 30+px 视觉上松垮
+- `.nv` 是独占一列的"采集器/桥接器"型节点，**内容贴顶 `justify-content:flex-start`** 而非居中（否则一列内容居中导致大块空白）
+- `.featured .star` 用 `position:absolute;top:-9px;left:12px;z-index:2` 浮在节点上方外（不挤 row1），node 必须 `overflow:visible`
+- 不要在 row1 里塞太多内容（icon + name + chip 已饱和），**节点宽度不够时**先减小 padding-left / icon size / chip font，再考虑加宽
+- logo 全部 base64 inline data URI（不依赖外部文件，方便分享）；用 `sips -Z 96` 缩到 96px 再 base64，单 logo ~10KB
+
+### D. SVG 连线：必须严格对齐节点边框
+
+- 所有 `<path class="lk ...">` 端点坐标必须**精确落在节点 border 上**（不是中心，不在节点内）
+- 给每条 path 加 inline `fill="none"`（CSS 类 `.lk{fill:none}` 在某些导出库里会被忽略，cubic bezier 会被当作 filled 渲染成黑色色块）
+- Cubic bezier `M x1 y1 C cx1 cy1 cx2 cy2 x2 y2` — **末端 tangent** = `(x2 - cx2, y2 - cy2)`，决定箭头方向；想让箭头水平指右就让 `cx2 < x2 且 cy2 == y2`；想斜上指就让 `cy2 > y2 略 cx2 < x2`
+- 弧度由 `cx1 / cy1` 控制，让 control1 落在起点附近横向延伸（避免变成直线）
+
+### E. Marker（箭头）固定大小
+
+```html
+<marker id="mp" viewBox="0 0 10 10" refX="10" refY="5"
+        markerWidth="12" markerHeight="12"
+        markerUnits="userSpaceOnUse" orient="auto">
+  <path d="M0 0 L10 5 L0 10z" fill="var(--lp)"/>
+</marker>
+```
+
+- `markerUnits="userSpaceOnUse"` 让箭头**大小恒定**（默认 strokeWidth 模式会让不同粗细的线条箭头大小不一）
+- `refX=10` 让箭头尖正好在 path endpoint
+- `<path class="lk" stroke-linecap="butt">` 而非 round —— round cap 会让 stroke 末端延伸 stroke-width/2 超出 endpoint，导致箭头后面"漏一截线"
+- 粒子流 `<animateMotion>` 配 `<animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.08;0.88;1">` 让粒子在终点前淡出，不会从箭头后露出
+
+### F. Line label（线条说明）紧贴线条 + 一列对齐
+
+- label 是 SVG `<text class="lbl">` 不是 HTML — 跟着 SVG 坐标系
+- 多条平行/分叉线条的 label **x 坐标一列对齐**（如全部 x=540 紧贴 ETLFlow 节点右边），y 各贴自己线条起点上方 5-10px
+- `.lbl.h{fill:var(--lh)}` 等定义让 label 颜色跟线条颜色一致（用户能看出"这个 label 属于哪根线"）
+- label 不要遮挡节点 — 放在节点边框外侧 + 线条贴附位置
+
+### G. 底部三段式说明
+
+1. **CROSS-NET CHANNELS**（跨网通道说明）：top:730 单行 5 列 grid，按通道分组（4 类政务⟷卫生 + 1 类卫生⟷内网），每个 channel card 用对应线条颜色边框
+2. **LEGEND**（图例）：节点色块一行 + 线条样式一行，分两行清晰区分
+3. **PROJECTS & PORTS**（项目端口总览）：按网络分组（gov-net / health-net / corp-net）流式 chip 排列，每组前置 gtag 色标 + name/port 用 `<b>name</b><i>:port</i>` chip，避免方块边框呆板
+
+### H. 主题切换：`[data-theme]` 双套 token
+
+```css
+:root, [data-theme="dark"] { --bg:#0a0e16; --c1:#5eead4; --t1:rgba(255,255,255,.96); ... }
+[data-theme="light"]       { --bg:#f4f6fb; --c1:#0d9488; --t1:rgba(15,23,42,.92);   ... }
+```
+
+- 所有颜色用 CSS variable，不硬编码 hex
+- 顶部 toolbar 加 `<button id="btnTheme">` 切换 `body[data-theme]`，`localStorage` 持久化用户选择
+- 避免 `color-mix(in oklab, ...)` 用 hardcoded percent — html2canvas 不支持，但 modern-screenshot 支持
+
+### I. PNG 导出：用 modern-screenshot@4.7.0
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/modern-screenshot@4.7.0/dist/index.min.js"></script>
+```
+
+- UMD global = `window.modernScreenshot`
+- CDN 入口实际是 `dist/index.min.js`，**不是 `dist/index.umd.js`**（jsdelivr 上 `index.umd.js` 404）
+- html-to-image / html2canvas 都有 SVG / color-mix 兼容问题；modern-screenshot 4.x 用 SVG foreignObject + 浏览器原生渲染，兼容现代 CSS（`color-mix(in oklab, ...)` ✓）
+- 调用：`modernScreenshot.domToPng(stage, { width:1920, height:1080, scale:2, backgroundColor, style:{ transform:'none' } })`
+- 已知 limit：`.featured .star` (top:-9 浮在节点外的 ★ 角标) 在 PNG 中**可能被裁掉顶部** — 视为 trade-off 接受，或者让用户截图 viewport 本身
+
+### J. 设计 checklist（每次画完过一遍）
+
+- [ ] 所有节点 width/height 贴合内容，节点内无大块上下空白
+- [ ] 所有 SVG path 端点精确在节点 border 上
+- [ ] 所有 marker 用 `markerUnits=userSpaceOnUse` 大小一致
+- [ ] 所有 path 加 inline `fill="none"`
+- [ ] 所有 label 紧贴线条 + 同色 fill
+- [ ] 节点之间留够 gap 给箭头 + label（至少 30px）
+- [ ] 弧线 control point 让弧度可见而不变直线
+- [ ] 跨网通道 / 端口表 / legend 三段式底部说明齐全
+- [ ] 主题切换 + PNG 导出按钮齐全
+- [ ] logo base64 inline（不依赖外部文件）

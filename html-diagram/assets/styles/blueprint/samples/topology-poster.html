@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>v2 架构 · B 蓝图</title>
+<style>
+  :root{
+    --paper:#f5f1e8; --ink:#1a1a1a; --ink2:#444; --ink3:#777; --line:#2a2a2a;
+    --bd:#2a2a2a; --bdL:#bbb; --bg-c:#fefcf7;
+    --hi-blue:#1d4ed8; --hi-orange:#d97706; --hi-purple:#7e22ce; --hi-pink:#be185d; --hi-green:#15803d; --hi-red:#b91c1c;
+    --tone-svc:#0f766e; --tone-sched:#b45309; --tone-mq:#9d174d; --tone-db:#475569; --tone-mon:#5b21b6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden}
+  body{
+    background:var(--paper);
+    color:var(--ink);font-family:"Hiragino Sans GB","PingFang SC",system-ui,sans-serif;
+    display:flex;align-items:center;justify-content:center
+  }
+  /* 纸张网格底纹 */
+  body::before{content:'';position:fixed;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(160,140,90,.08) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(160,140,90,.08) 1px,transparent 1px);
+    background-size:40px 40px}
+  body::after{content:'';position:fixed;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse at center,transparent 65%,rgba(80,60,30,.12) 100%)}
+  .stage{position:relative;width:1920px;height:1080px;flex:none;transform-origin:center center}
+
+  .head{position:absolute;left:54px;top:28px;right:54px;height:60px;
+        display:flex;align-items:flex-end;justify-content:space-between;
+        border-bottom:1.5px solid var(--ink);padding-bottom:10px}
+  .head .title{font-size:30px;font-weight:700;color:var(--ink);letter-spacing:-.3px}
+  .head .kicker{font-family:"Courier New",monospace;font-size:13px;color:var(--ink3);letter-spacing:3px;margin-right:14px;font-weight:600}
+  .head .sub{font-size:13px;color:var(--ink2);margin-top:5px;font-style:italic}
+  .head .stamp{font-family:"Courier New",monospace;font-size:11px;color:var(--ink3);letter-spacing:1px;
+               border:1.5px solid var(--ink3);padding:4px 10px;border-radius:3px;transform:rotate(-2deg)}
+
+  /* 网络区 — 蓝图大方框（双线边框）*/
+  .zone{position:absolute;border:1.5px solid var(--ink);border-radius:6px;background:rgba(255,255,255,.35)}
+  .zone::before{content:'';position:absolute;inset:3px;border:1px dashed rgba(0,0,0,.18);border-radius:4px;pointer-events:none}
+  .zone-label{position:absolute;top:10px;left:18px;background:var(--paper);padding:0 10px;
+              font-family:"Courier New",monospace;font-size:12px;font-weight:700;letter-spacing:1.5px;color:var(--ink);text-transform:uppercase}
+  .zone-label .cn{font-family:"Hiragino Sans GB","PingFang SC",system-ui;font-size:13px;letter-spacing:.3px;
+                  text-transform:none;color:var(--ink2);margin-left:8px;font-weight:600}
+  #zg{left:280px;top:108px;width:260px;height:760px}
+  #zh{left:560px;top:108px;width:810px;height:760px}
+  #zc{left:1390px;top:108px;width:510px;height:760px}
+
+  /* 外部数据源 */
+  .ext{position:absolute;left:54px;top:340px;width:215px;height:280px;
+       padding:40px 16px 16px;background:var(--bg-c);
+       border:1.5px solid var(--ink);border-radius:6px;text-align:center;
+       box-shadow:3px 3px 0 var(--ink)}
+  .ext::before{content:'';position:absolute;inset:3px;border:1px dotted rgba(0,0,0,.25);border-radius:4px;pointer-events:none}
+  .ext .tag{position:absolute;top:-9px;left:14px;background:var(--paper);padding:0 8px;
+            font-family:"Courier New",monospace;font-size:11px;font-weight:700;letter-spacing:1.5px;color:var(--ink)}
+  .ext .lg{width:62px;height:62px;margin:6px auto 12px;border:1.5px solid var(--ink);border-radius:6px;
+           display:flex;align-items:center;justify-content:center;background:#fff}
+  .ext .lg svg{width:34px;height:34px;color:var(--ink)}
+  .ext .nm{font-size:19px;font-weight:700;color:var(--ink)}
+  .ext .sub{margin-top:8px;font-size:12px;color:var(--ink2);line-height:1.55}
+  .ext .acc{display:inline-block;margin-top:12px;font-family:"Courier New",monospace;font-size:11px;
+            padding:3px 10px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);
+            font-weight:600;border-radius:3px}
+
+  /* 节点 — 白卡片 + 黑细边 + 阴影 */
+  .node{position:absolute;padding:10px 14px 10px 60px;background:var(--bg-c);
+        border:1.5px solid var(--ink);border-radius:5px;
+        box-shadow:2.5px 2.5px 0 var(--ink);overflow:hidden}
+  .node .ic{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:40px;height:40px;
+            border:1.5px solid var(--ink);border-radius:5px;background:#fff;
+            display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .node .ic img{width:34px;height:34px;object-fit:contain}
+  .node .ic svg{width:24px;height:24px;color:var(--ink)}
+  .node .r1{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .node .nm{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:.2px}
+  .node .p{margin-left:auto;font-family:"Courier New",monospace;font-size:10.5px;font-weight:600;
+           padding:1.5px 7px;border:1.5px solid var(--ink);border-radius:3px;color:var(--ink);background:#fff}
+  .node .sb{margin-top:3px;font-size:11.5px;color:var(--ink2);line-height:1.42}
+
+  /* 配色顶部色条（建筑蓝图风：左侧粗色条标识类型）*/
+  .node[data-t]::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px}
+  .node[data-t="p"]::before{background:var(--tone-svc)}
+  .node[data-t="a"]::before{background:var(--tone-mon)}
+  .node[data-t="w"]::before{background:var(--tone-sched)}
+  .node[data-t="m"]::before{background:var(--tone-db)}
+  .node[data-t="mq"]::before{background:var(--tone-mq)}
+  .node[data-t="g"]::before{background:var(--hi-green)}
+  .node .p[data-c="mute"]{background:#f0f0eb;color:var(--ink2)}
+  .node .p[data-c="warn"]{background:#fef3c7;border-color:var(--hi-orange);color:var(--hi-orange)}
+  .node .p[data-c="green"]{background:#d1fae5;border-color:var(--hi-green);color:var(--hi-green)}
+  .node .p[data-c="mq"]{background:#fce7f3;border-color:var(--hi-pink);color:var(--hi-pink)}
+
+  /* 突出（WaveFlow / WaveCollector）— 双线边框 + 星标 */
+  .featured{border-width:2.5px;box-shadow:4px 4px 0 var(--ink),0 0 0 5px var(--paper),0 0 0 7px var(--ink)}
+  .featured .nm{font-size:17px;font-weight:800}
+  .featured .star{position:absolute;top:-9px;right:14px;background:var(--paper);padding:0 8px;
+                  font-family:"Courier New",monospace;font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--ink)}
+
+  /* 竖排节点 */
+  .nv{position:absolute;padding:14px 10px 12px;background:var(--bg-c);border:1.5px solid var(--ink);
+      border-radius:5px;box-shadow:2.5px 2.5px 0 var(--ink);
+      display:flex;flex-direction:column;align-items:center;text-align:center}
+  .nv[data-t]::before{content:'';position:absolute;left:0;top:0;right:0;height:5px}
+  .nv[data-t="a"]::before{background:var(--tone-mon)}
+  .nv[data-t="w"]::before{background:var(--tone-sched)}
+  .nv .icb{width:60px;height:60px;border:1.5px solid var(--ink);border-radius:6px;background:#fff;
+           display:flex;align-items:center;justify-content:center;margin:6px 0 10px;overflow:hidden}
+  .nv .icb img{width:46px;height:46px;object-fit:contain}
+  .nv .nm{font-size:15px;font-weight:700;color:var(--ink);line-height:1.3}
+  .nv .p{font-family:"Courier New",monospace;font-size:11px;font-weight:600;
+         padding:2px 8px;border:1.5px solid var(--ink);border-radius:3px;color:var(--ink);background:#fff;
+         margin:8px 0 4px}
+  .nv .sb{font-size:11px;color:var(--ink2);line-height:1.5;writing-mode:vertical-rl;letter-spacing:.8px;margin-top:8px}
+  .featured.nv{box-shadow:4px 4px 0 var(--ink),0 0 0 5px var(--paper),0 0 0 7px var(--ink)}
+  .featured.nv .star{position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:var(--paper);padding:0 8px;
+                     font-family:"Courier New",monospace;font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--ink);white-space:nowrap}
+
+  /* Aura plate */
+  .aura{position:absolute;padding:16px 20px;background:var(--bg-c);border:2.5px solid var(--ink);border-radius:6px;
+        box-shadow:5px 5px 0 var(--ink);
+        background-image:
+          linear-gradient(135deg,rgba(91,33,182,.08),transparent 60%),
+          linear-gradient(rgba(91,33,182,.04),transparent)}
+  .aura .h1{display:flex;align-items:center;gap:14px;margin-bottom:12px;padding-bottom:10px;border-bottom:1.5px dashed var(--bdL)}
+  .aura .lg{width:42px;height:42px;border:1.5px solid var(--ink);border-radius:6px;background:#fff;
+            display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .aura .lg img{width:36px;height:36px;object-fit:contain}
+  .aura .nm{font-size:19px;font-weight:800;color:var(--ink)}
+  .aura .sb{font-size:12px;color:var(--ink3);font-family:"Courier New",monospace}
+  .aura .st{margin-left:auto;font-family:"Courier New",monospace;font-size:10.5px;font-weight:700;letter-spacing:1.5px;
+            padding:3px 10px;border:1.5px solid var(--tone-mon);color:var(--tone-mon);background:rgba(91,33,182,.06);border-radius:3px}
+  .am{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .am .it{display:flex;gap:9px;align-items:center;padding:8px 11px;border:1px solid var(--ink);border-radius:4px;background:#fff}
+  .am .it .i{flex:none;width:26px;height:26px;border:1px solid var(--ink);border-radius:4px;
+             display:flex;align-items:center;justify-content:center;background:var(--bg-c)}
+  .am .it .i svg{width:15px;height:15px;color:var(--ink)}
+  .am .it .l{font-size:13px;color:var(--ink);font-weight:600}
+  .am .it .pp{margin-left:auto;font-family:"Courier New",monospace;font-size:11px;color:var(--ink2);font-weight:600}
+
+  /* 合并 MySQL 实例（ODS + SaaS 一台实例两个库）*/
+  .db-merged{position:absolute;background:var(--bg-c);border:1.5px solid var(--ink);border-radius:5px;
+             padding:30px 12px 12px;box-shadow:2.5px 2.5px 0 var(--ink)}
+  .db-merged::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--tone-db)}
+  .db-merged .tit{position:absolute;top:8px;left:14px;display:flex;align-items:center;gap:8px;
+                  font-family:"Courier New",monospace;font-size:10.5px;color:var(--ink);font-weight:700;letter-spacing:1px}
+  .db-merged .tit .cn{font-family:"Hiragino Sans GB","PingFang SC",system-ui;font-size:11px;letter-spacing:.3px;
+                      color:var(--ink2);font-weight:600}
+  .db-merged .split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .db-merged .half{padding:9px 11px;background:#fff;border:1.2px dashed var(--ink2);border-radius:4px;
+                   display:flex;gap:9px;align-items:center}
+  .db-merged .half .ic{flex:none;width:30px;height:30px;border:1.2px solid var(--ink);border-radius:5px;background:var(--bg-c);
+                       display:flex;align-items:center;justify-content:center}
+  .db-merged .half .ic svg{width:18px;height:18px;color:var(--ink)}
+  .db-merged .half .info{display:flex;flex-direction:column;gap:1px;min-width:0}
+  .db-merged .half .nm{font-size:13px;font-weight:700;color:var(--ink)}
+  .db-merged .half .sb{font-size:10.5px;color:var(--ink2);font-family:"Courier New",monospace}
+
+  /* 跨网通道说明 */
+  .channels{position:absolute;left:54px;right:54px;top:888px;height:122px;
+            background:var(--bg-c);border:1.5px solid var(--ink);border-radius:5px;padding:14px 22px 12px;
+            box-shadow:3px 3px 0 var(--ink)}
+  .channels .tit{font-family:"Courier New",monospace;font-size:11px;letter-spacing:1.8px;font-weight:700;color:var(--ink);margin-bottom:10px;text-transform:uppercase}
+  .channels .tit .cn{font-family:"Hiragino Sans GB","PingFang SC",system-ui;font-size:13px;letter-spacing:.3px;
+                     text-transform:none;color:var(--ink2);margin-left:8px;font-weight:700}
+  .ch-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .ch{display:flex;flex-direction:column;gap:3px;padding:7px 12px;background:#fff;
+      border:1.5px solid var(--ink);border-radius:4px;font-size:12px;position:relative}
+  .ch::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px}
+  .ch[data-c="g"]::before{background:var(--hi-green)} .ch[data-c="g"] .desc{color:var(--hi-green)}
+  .ch[data-c="lp"]::before{background:var(--hi-blue)} .ch[data-c="lp"] .desc{color:var(--hi-blue)}
+  .ch[data-c="lm"]::before{background:var(--hi-pink)} .ch[data-c="lm"] .desc{color:var(--hi-pink)}
+  .ch[data-c="lb"]::before{background:var(--hi-purple)} .ch[data-c="lb"] .desc{color:var(--hi-purple)}
+  .ch-2col{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+  .ch-group{padding:8px 12px;border-radius:5px;background:#fff;border:1.2px dashed var(--bdL)}
+  .ch-group-tit{font-family:"Hiragino Sans GB","PingFang SC",system-ui;font-size:11.5px;font-weight:700;letter-spacing:.5px;
+                color:var(--ink);margin-bottom:6px;padding-bottom:5px;border-bottom:1px dashed var(--bdL)}
+  .ch-group .ch-list{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .ch-group[data-side="corp"] .ch-list{grid-template-columns:1fr}
+  .ch-group .ch{padding:6px 10px;font-size:11.5px;box-shadow:none}
+  .ch .dir{font-family:"Courier New",monospace;font-size:10.5px;letter-spacing:.4px;color:var(--ink3);font-weight:600;padding-left:8px}
+  .ch .desc{font-weight:700;font-size:12.5px;padding-left:8px}
+  .ch .why{font-size:11px;color:var(--ink2);line-height:1.4;padding-left:8px}
+
+  /* 底部 LEGEND（单行）*/
+  .lgd{position:absolute;left:54px;top:1024px;height:36px;display:flex;align-items:center;gap:16px;
+       font-size:11px;color:var(--ink2);font-weight:600;font-family:"Hiragino Sans GB","PingFang SC",system-ui}
+  .lgd .lr{display:flex;align-items:center;gap:6px}
+  .lgd .sw{width:10px;height:10px;border-radius:2px;flex:none;border:1.4px solid var(--ink)}
+  .lgd .sw.a{background:var(--tone-mon)} .lgd .sw.p{background:var(--tone-svc)}
+  .lgd .sw.w{background:var(--tone-sched)} .lgd .sw.m{background:var(--tone-db)}
+  .lgd .sw.q{background:var(--tone-mq)} .lgd .sw.g{background:var(--hi-green)}
+  .lgd .ln{width:26px;height:2px;flex:none;border-radius:999px}
+  .lgd .ln.lp{background:var(--hi-blue)}
+  .lgd .ln.lh{background:repeating-linear-gradient(90deg,var(--hi-orange) 0 4px,transparent 4px 8px);height:2px}
+  .lgd .ln.lb{background:repeating-linear-gradient(90deg,var(--hi-purple) 0 3px,transparent 3px 6px);height:2px}
+  .lgd .ln.lm{background:repeating-linear-gradient(90deg,var(--hi-pink) 0 5px,transparent 5px 9px);height:2px}
+  .lgd .ln.lg{background:var(--hi-green);height:2.4px}
+
+  .links{position:absolute;inset:0;width:1920px;height:1080px;pointer-events:none;z-index:5}
+  .lk{fill:none;stroke-linecap:round;stroke-width:1.8}
+  .lk.lp{stroke:var(--hi-blue)} .lk.lh{stroke:var(--hi-orange);stroke-dasharray:6 5}
+  .lk.lb{stroke:var(--hi-purple);stroke-dasharray:4 4} .lk.lm{stroke:var(--hi-pink);stroke-dasharray:8 5;stroke-width:2.4}
+  .lk.lg{stroke:var(--hi-green);stroke-width:2.4}
+  .lk.cross{stroke-width:2.6}
+  .lbl{font-family:"Courier New",monospace;font-size:11px;font-weight:600;fill:var(--ink2);pointer-events:none}
+  .lbl.q{fill:var(--hi-pink);font-weight:700} .lbl.g{fill:var(--hi-green);font-weight:700}
+  .lbl.b{fill:var(--hi-purple);font-weight:600} .lbl.lp{fill:var(--hi-blue);font-weight:600}
+  .lbl-bg{fill:var(--bg-c)}
+  .pt{filter:drop-shadow(0 0 3px currentColor)}
+
+  .node,.nv,.aura,.ext{animation:ne 600ms cubic-bezier(.16,1,.3,1) backwards}
+  @keyframes ne{from{opacity:0;transform:translate(-4px,-4px)}to{opacity:1;transform:translate(0,0)}}
+  @media (prefers-reduced-motion:reduce){*{animation-duration:1ms!important;transition-duration:1ms!important}.pt{display:none}}
+</style></head>
+<body>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+  <symbol id="ig" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M3 21h18M3 10h18M5 6l7-4 7 4M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></symbol>
+  <symbol id="idb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14a8 3 0 0 0 16 0V5M4 12a8 3 0 0 0 16 0"/></symbol>
+  <symbol id="ina" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <path d="M5 7h14M5 12h14M5 17h14"/><circle cx="7" cy="7" r="1.5"/><circle cx="13" cy="12" r="1.5"/><circle cx="9" cy="17" r="1.5"/></symbol>
+  <symbol id="ika" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <circle cx="6" cy="12" r="2"/><circle cx="12" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><circle cx="18" cy="12" r="2"/>
+    <path d="M7.6 11l3.2-3.4M10.8 16.4l-3.2-3.4M13.4 7l3.2 3.4M13.4 17l3.2-3.4"/></symbol>
+  <symbol id="ipx" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <rect x="3" y="5" width="8" height="14" rx="1.5"/><rect x="13" y="5" width="8" height="14" rx="1.5"/>
+    <path d="M11 12h2M11 10l2 2l-2 2"/></symbol>
+  <symbol id="idp" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <ellipse cx="7" cy="6" rx="4" ry="2"/><path d="M3 6v8c0 1.1 1.8 2 4 2s4-.9 4-2V6"/>
+    <path d="M14 9l3 3l-3 3M11 12h6"/><ellipse cx="20" cy="6" rx="2.5" ry="1.5"/></symbol>
+  <symbol id="iui" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <rect x="3" y="4" width="18" height="13" rx="1.5"/><path d="M8 21h8M12 17v4"/></symbol>
+  <symbol id="isv" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <path d="M12 3l9 4v6c0 4.5-4 7.5-9 8c-5-.5-9-3.5-9-8V7z"/><path d="M8 12l3 3l5-5"/></symbol>
+  <symbol id="ial" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8M9 20a3 3 0 0 0 6 0"/></symbol>
+  <symbol id="idm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+    <ellipse cx="12" cy="6" rx="7" ry="2.5"/><path d="M5 6v12a7 2.5 0 0 0 14 0V6"/><path d="M5 12a7 2.5 0 0 0 14 0"/></symbol>
+</defs></svg>
+
+<div class="stage" id="st">
+
+<div class="head">
+  <div>
+    <div class="title"><span class="kicker">V2 · WAVE</span>同步链路 · 整体网络架构</div>
+    <div class="sub">外部数据源 + 政务网 / 卫生网 / 公司内网 三网隔离 · 中央 Aura 监控</div>
+  </div>
+  <div class="stamp">BLUEPRINT · 2026</div>
+</div>
+
+<div class="ext">
+  <div class="tag">EXTERNAL · 外部</div>
+  <div class="lg"><svg><use href="#ig"/></svg></div>
+  <div class="nm">浙有善育</div>
+  <div class="sub">省级业务数据源<br/>分页接口 + AES 加密</div>
+  <div class="acc">政务网 可访问</div>
+</div>
+
+<section class="zone" id="zg"><div class="zone-label">GOV-NET<span class="cn">政务网</span></div></section>
+<section class="zone" id="zh"><div class="zone-label">HEALTH-NET<span class="cn">卫生网 · 区端内网</span></div></section>
+<section class="zone" id="zc"><div class="zone-label">CORP-NET<span class="cn">公司内网</span></div></section>
+
+<div class="node" data-t="p" style="left:305px;top:430px;width:220px;height:110px">
+  <span class="ic"><img src="file:///Users/links/Documents/image/logo/ETL.png" alt=""></span>
+  <div class="r1"><span class="nm">ETLFlow</span><span class="p">:9997</span></div>
+  <div class="sb">省源拉取执行器<br/>调 dbproxy 写 ODS · SDK 上报</div>
+</div>
+
+<div class="node" data-t="g" style="left:580px;top:175px;width:220px;height:100px">
+  <span class="ic"><svg><use href="#idp"/></svg></span>
+  <div class="r1"><span class="nm">dbproxy</span><span class="p" data-c="green">https</span></div>
+  <div class="sb">给政务网 ETLFlow 反向<br/>提供 ODS 读写端点</div>
+</div>
+
+<div class="node featured" data-t="w" style="left:820px;top:175px;width:260px;height:140px">
+  <span class="star">★ 调度大脑</span>
+  <span class="ic"><img src="file:///Users/links/Documents/image/logo/waveflow.png" alt=""></span>
+  <div class="r1"><span class="nm">WaveFlow</span><span class="p" data-c="warn">Admin :7004</span></div>
+  <div class="sb">cron + 手动触发 + 任务日志聚合<br/>UI :6004 · 跨网指令出口</div>
+</div>
+
+<div class="node" data-t="p" style="left:580px;top:295px;width:220px;height:96px">
+  <span class="ic"><img src="file:///Users/links/Documents/image/logo/wavetrans.png" alt=""></span>
+  <div class="r1"><span class="nm">WaveTrans</span><span class="p">:5180</span></div>
+  <div class="sb">清洗：ODS → SaaS</div>
+</div>
+
+<!-- 区端 MySQL 实例（ODS + SaaS 合并一台实例两个库）-->
+<div class="db-merged" style="left:580px;top:400px;width:500px;height:130px">
+  <div class="tit">MYSQL · 区端实例<span class="cn">一台实例两个库</span></div>
+  <div class="split">
+    <div class="half">
+      <span class="ic"><svg><use href="#idb"/></svg></span>
+      <div class="info"><span class="nm">前置库 ODS</span><span class="sb">zysy.zysy_jgba 等</span></div>
+    </div>
+    <div class="half">
+      <span class="ic"><svg><use href="#idb"/></svg></span>
+      <div class="info"><span class="nm">业务库 SaaS</span><span class="sb">saas.nursery 等</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="node" data-t="a" style="left:820px;top:545px;width:260px;height:88px">
+  <span class="ic"><svg><use href="#idb"/></svg></span>
+  <div class="r1"><span class="nm">Obs PG</span><span class="p">:8103</span></div>
+  <div class="sb">Collector 观测库 · PostgreSQL</div>
+</div>
+
+<div class="node" data-t="mq" style="left:580px;top:660px;width:220px;height:100px">
+  <span class="ic"><svg><use href="#ika"/></svg></span>
+  <div class="r1"><span class="nm">Kafka MQ</span><span class="p" data-c="mq">:9092</span></div>
+  <div class="sb">政务网 ⟷ 卫生网<br/>调度指令通道</div>
+</div>
+
+<div class="nv featured" data-t="a" style="left:1108px;top:175px;width:120px;height:485px">
+  <span class="star">★ 监控中枢</span>
+  <div class="icb"><img src="file:///Users/links/Documents/image/logo/wavecollector.png" alt=""></div>
+  <div class="nm">Wave<br/>Collector</div>
+  <div class="p">:7006</div>
+  <div class="sb">采集 + readonly 查询</div>
+</div>
+
+<div class="nv" data-t="w" style="left:1240px;top:175px;width:120px;height:485px">
+  <div class="icb"><img src="file:///Users/links/Documents/image/logo/wavebridge.png" alt=""></div>
+  <div class="nm">Wave<br/>Bridge</div>
+  <div class="p">:7007</div>
+  <div class="sb">HMAC 反代 唯一对外</div>
+</div>
+
+<div class="aura" style="left:1410px;top:165px;width:470px;height:240px">
+  <div class="h1">
+    <span class="lg"><img src="file:///Users/links/Documents/image/logo/Aura.png" alt=""></span>
+    <span class="nm">Aura · 全域监控</span>
+    <span class="sb">React + FastAPI</span>
+    <span class="st">★ 中央</span>
+  </div>
+  <div class="am">
+    <div class="it"><span class="i"><svg><use href="#iui"/></svg></span><span class="l">监控视图</span><span class="pp">:6005</span></div>
+    <div class="it"><span class="i"><svg><use href="#isv"/></svg></span><span class="l">聚合服务</span><span class="pp">:7008</span></div>
+    <div class="it"><span class="i"><svg><use href="#idm"/></svg></span><span class="l">MySQL aura</span><span class="pp">:3306</span></div>
+    <div class="it"><span class="i"><svg><use href="#ial"/></svg></span><span class="l">告警引擎</span><span class="pp">·</span></div>
+  </div>
+</div>
+
+<div class="node" data-t="p" style="left:1410px;top:430px;width:470px;height:104px">
+  <span class="ic"><img src="file:///Users/links/Documents/image/logo/ETL.png" alt=""></span>
+  <div class="r1"><span class="nm">ETLFlow-Proxy</span><span class="p">:8104</span></div>
+  <div class="sb">省源 readonly 代理 · 全表索引缓存</div>
+</div>
+
+<svg class="links" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+  <defs>
+    <marker id="mp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 1L9 5L0 9z" fill="var(--hi-blue)"/></marker>
+    <marker id="mh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 1L9 5L0 9z" fill="var(--hi-orange)"/></marker>
+    <marker id="mb" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 1L9 5L0 9z" fill="var(--hi-purple)"/></marker>
+    <marker id="mm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 1L9 5L0 9z" fill="var(--hi-pink)"/></marker>
+    <marker id="mg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 1L9 5L0 9z" fill="var(--hi-green)"/></marker>
+  </defs>
+
+  <path id="yssyetl" class="lk lp" d="M 265 480 C 290 480 290 485 305 485" marker-end="url(#mp)"/>
+  <text class="lbl lp" x="220" y="430">拉省源</text>
+
+  <path id="etldbp" class="lk lg cross" d="M 525 460 C 555 460 555 225 580 225" marker-end="url(#mg)"/>
+  <text class="lbl g" x="430" y="290">① https 写 ODS</text>
+
+  <path class="lk lp" d="M 690 275 L 690 400" marker-end="url(#mp)"/>
+  <path class="lk lp" d="M 690 391 L 690 400" marker-end="url(#mp)"/>
+
+  <!-- WaveTrans ⟷ WaveFlow（注册 + 调度，双向）-->
+  <path class="lk lb" d="M 700 295 C 700 270 750 235 820 235" marker-end="url(#mb)"/>
+  <path class="lk lb" d="M 820 250 C 750 250 700 270 700 295"/>
+  <text class="lbl b" x="700" y="262">注册 + 调度</text>
+
+  <path id="wfka" class="lk lm" d="M 870 315 C 870 500 700 540 700 660" marker-end="url(#mm)"/>
+  <path id="kaetl" class="lk lm cross" d="M 580 710 C 450 710 415 565 415 540" marker-end="url(#mm)"/>
+  <text class="lbl q" x="450" y="755">② mq-kafka 跨网调度</text>
+
+  <path id="etlwf" class="lk lh cross" d="M 525 470 C 720 470 770 280 820 230" marker-end="url(#mh)"/>
+  <text class="lbl lp" x="540" y="218" style="fill:var(--hi-orange)">③ 任务日志 → WaveFlow</text>
+
+  <path id="etlwc" class="lk lh cross" d="M 525 490 C 900 510 1080 380 1108 380" marker-end="url(#mh)"/>
+  <text class="lbl lp" x="850" y="475" style="fill:var(--hi-orange)">④ SDK 上报 → Collector</text>
+
+  <path class="lk lh" d="M 800 322 C 1000 322 1080 360 1108 360" marker-end="url(#mh)"/>
+  <path class="lk lp" d="M 1170 660 C 1170 685 1080 670 1080 633" marker-end="url(#mp)"/>
+  <path class="lk lp" d="M 1240 415 L 1228 415" marker-end="url(#mp)"/>
+
+  <path id="auwb" class="lk lb cross" d="M 1410 285 C 1330 285 1320 200 1300 175" marker-end="url(#mb)"/>
+  <text class="lbl b" x="1232" y="160">⑤ Bridge 反代 · 访问内部数据</text>
+
+  <path class="lk lb" d="M 1645 405 L 1645 430" marker-end="url(#mb)"/>
+  <path id="pxyssy" class="lk lb cross" d="M 1410 480 C 1000 530 600 540 265 500" marker-end="url(#mb)"/>
+  <text class="lbl b" x="780" y="540">代理拉省源</text>
+
+  <circle class="pt" r="3.5" fill="var(--hi-blue)"><animateMotion dur="3.5s" repeatCount="indefinite"><mpath href="#yssyetl"/></animateMotion></circle>
+  <circle class="pt" r="3.5" fill="var(--hi-green)"><animateMotion dur="3.8s" repeatCount="indefinite"><mpath href="#etldbp"/></animateMotion></circle>
+  <circle class="pt" r="3.5" fill="var(--hi-pink)"><animateMotion dur="4s" repeatCount="indefinite"><mpath href="#wfka"/></animateMotion></circle>
+  <circle class="pt" r="3.5" fill="var(--hi-pink)"><animateMotion dur="3.6s" repeatCount="indefinite" begin="0.6s"><mpath href="#kaetl"/></animateMotion></circle>
+  <circle class="pt" r="3.5" fill="var(--hi-orange)"><animateMotion dur="4.2s" repeatCount="indefinite"><mpath href="#etlwf"/></animateMotion></circle>
+  <circle class="pt" r="3.5" fill="var(--hi-orange)"><animateMotion dur="4.5s" repeatCount="indefinite" begin="0.8s"><mpath href="#etlwc"/></animateMotion></circle>
+  <circle class="pt" r="3.5" fill="var(--hi-purple)"><animateMotion dur="5s" repeatCount="indefinite"><mpath href="#auwb"/></animateMotion></circle>
+  <circle class="pt" r="3.5" fill="var(--hi-purple)"><animateMotion dur="6s" repeatCount="indefinite" begin="1s"><mpath href="#pxyssy"/></animateMotion></circle>
+</svg>
+
+<div class="channels">
+  <div class="tit">CROSS-NET CHANNELS<span class="cn">跨网通道 · 政务 ⟷ 卫生（4 类）· 卫生 ⟷ 公司内网（1 类）</span></div>
+  <div class="ch-2col">
+    <div class="ch-group" data-side="health">
+      <div class="ch-group-tit">政务网 ⟷ 卫生网</div>
+      <div class="ch-list">
+        <div class="ch" data-c="g"><span class="desc">① dbproxy https</span><span class="why">ETLFlow 反向读写 ODS</span></div>
+        <div class="ch" data-c="lm"><span class="desc">② mq-kafka 调度</span><span class="why">WaveFlow 下发指令 / 心跳</span></div>
+        <div class="ch" data-c="lp"><span class="desc">③ WaveFlow 反代</span><span class="why">ETLFlow 推任务日志</span></div>
+        <div class="ch" data-c="lp"><span class="desc">④ Collector 反代</span><span class="why">SDK 推动态同步事件</span></div>
+      </div>
+    </div>
+    <div class="ch-group" data-side="corp">
+      <div class="ch-group-tit">卫生网 ⟷ 公司内网</div>
+      <div class="ch-list">
+        <div class="ch" data-c="lb"><span class="desc">⑤ Bridge 反代</span><span class="why">Aura 通过桥接器访问内部数据（事件 / 任务 / SDK 指标 / DB readonly）</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="lgd">
+  <div class="lr"><span class="sw a"></span>监控</div>
+  <div class="lr"><span class="sw p"></span>执行器</div>
+  <div class="lr"><span class="sw w"></span>调度/反代</div>
+  <div class="lr"><span class="sw m"></span>数据库</div>
+  <div class="lr"><span class="sw q"></span>消息队列</div>
+  <div class="lr"><span class="sw g"></span>跨网代理</div>
+  <span style="color:var(--ink3);margin:0 6px">/</span>
+  <div class="lr"><span class="ln lp"></span>业务流</div>
+  <div class="lr"><span class="ln lh"></span>SDK上报</div>
+  <div class="lr"><span class="ln lb"></span>反查</div>
+  <div class="lr"><span class="ln lm"></span>mq-kafka</div>
+  <div class="lr"><span class="ln lg"></span>dbproxy</div>
+</div>
+
+</div>
+<script>
+function fit(){const s=document.getElementById('st');const k=Math.min(innerWidth/1920,innerHeight/1080);s.style.transform=`scale(${k})`}
+addEventListener('resize',fit);addEventListener('load',fit);fit();
+</script>
+</body></html>

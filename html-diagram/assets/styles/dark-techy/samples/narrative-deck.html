@@ -312,7 +312,7 @@
     .yagni-card h4 { font-size: 13.5px; font-weight: 600; margin: 0 0 6px 0; color: var(--text-2); }
     .yagni-card p  { font-size: 11.5px; color: var(--text-3); line-height: 1.5; margin: 0; }
 
-    /* ---------- Legend (fixed left) ---------- */
+    /* ---------- Legend (fixed left, collapsible) ---------- */
     .legend {
       position: fixed;
       left: 16px; top: 50%;
@@ -328,6 +328,27 @@
       font-size: 11px;
       max-height: calc(100vh - 32px);
       overflow-y: auto;
+      transition: width 240ms var(--ease-out), padding 240ms var(--ease-out);
+    }
+    .legend.collapsed { width: 36px; padding: 8px 6px; overflow: hidden; }
+    .legend.collapsed .legend-content { display: none; }
+    .legend-toggle {
+      position: absolute; top: 8px; right: 8px;
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-2);
+      cursor: pointer;
+      font-size: 11px; font-family: inherit;
+      transition: background 120ms var(--ease-out);
+    }
+    .legend-toggle:hover { background: rgba(255,255,255,0.08); color: var(--text-1); }
+    .legend.collapsed .legend-toggle { position: static; margin: 0 auto; }
+    @media (max-width: 1400px) {
+      .legend:not(.collapsed) { display: none; }
+      .legend.collapsed { display: block; }
     }
     .legend h4 {
       font-size: 10.5px; font-weight: 500; color: var(--text-3);
@@ -434,8 +455,10 @@
   </style>
 </head>
 <body>
-  <!-- ============ Legend (fixed left) ============ -->
-  <aside class="legend">
+  <!-- ============ Legend (fixed left, collapsible) ============ -->
+  <aside class="legend" id="legend">
+    <button class="legend-toggle" id="legend-toggle" aria-label="Toggle legend">◀</button>
+    <div class="legend-content">
     <h4>Node tones</h4>
     <div class="item"><span class="swatch s-primary"></span>primary · platform / source</div>
     <div class="item"><span class="swatch s-accent"></span>accent · service / hub-core</div>
@@ -463,6 +486,7 @@
     <div class="item"><span class="swatch s-stage-batch"></span>Stage 2 · batch</div>
     <div class="item"><span class="swatch s-stage-mid"></span>Stage 3 · mid</div>
     <div class="item"><span class="swatch s-stage-final"></span>Stage 4 · final</div>
+    </div><!-- /.legend-content -->
   </aside>
 
   <div id="app" class="relative max-w-[1480px] mx-auto px-8 py-10">
@@ -559,6 +583,25 @@
     </footer>
   </div>
 
+  <script>
+    // ============ Legend toggle ============
+    (function initLegendToggle() {
+      const legend = document.getElementById('legend');
+      const btn = document.getElementById('legend-toggle');
+      if (!legend || !btn) return;
+      try {
+        if (localStorage.getItem('legend-collapsed') === '1') {
+          legend.classList.add('collapsed');
+          btn.textContent = '▶';
+        }
+      } catch (e) {}
+      btn.addEventListener('click', () => {
+        const collapsed = legend.classList.toggle('collapsed');
+        btn.textContent = collapsed ? '▶' : '◀';
+        try { localStorage.setItem('legend-collapsed', collapsed ? '1' : '0'); } catch (e) {}
+      });
+    })();
+  </script>
   <script>
     const DATA = {
       pains: [
