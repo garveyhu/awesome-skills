@@ -13,6 +13,7 @@ preview: /preview/pages/detail/sage/datasource-detail-tabs
 uses:
   - blocks/feedback/sage/vector-test-modal
   - components/inputs/sage/sql-editor-monaco
+  - components/indicators/sage/crystal-progress-bar
 ---
 
 # DataSource Detail (3-Step Tabs)
