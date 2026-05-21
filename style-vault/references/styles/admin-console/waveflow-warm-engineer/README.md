@@ -16,7 +16,58 @@ uses:
   - tokens/border/waveflow/translucent-stone-system
   - tokens/iconography/waveflow/engineer-detail-classes
   - tokens/motion/waveflow/keyframes-suite
+  - tokens/motion/waveflow/three-icosahedron-bg
+  - tokens/texture/waveflow/login-dot-grid-mask
+  - tokens/texture/waveflow/login-floating-geom-quartet
   - tokens/layout/waveflow/data-console-shell
+  - components/buttons/waveflow/cva-engineer-button
+  - components/buttons/waveflow/dark-pill-arrow-cta
+  - components/inputs/waveflow/blue-focus-input
+  - components/inputs/waveflow/underline-bare-input
+  - components/inputs/waveflow/datetime-range-presets
+  - components/toggles/waveflow/emerald-switch
+  - components/selects/waveflow/multi-select-popover
+  - components/indicators/waveflow/status-dot-ring
+  - components/indicators/waveflow/segmented-blocks
+  - components/indicators/waveflow/pulse-ping-dot
+  - components/tags-badges/waveflow/glue-type-badge-duo
+  - components/tags-badges/waveflow/code-status-badge
+  - components/typography-atoms/waveflow/kbd-key-cap
+  - components/typography-atoms/waveflow/meta-caps-mono-pair
+  - blocks/nav/waveflow/tree-line-sidebar
+  - blocks/nav/waveflow/icon-collapsed-sidebar
+  - blocks/nav/waveflow/topbar-search-ping
+  - blocks/nav/waveflow/cmdk-search-modal
+  - blocks/display/waveflow/canonical-table-shell
+  - blocks/display/waveflow/data-table-leftbar-shimmer
+  - blocks/display/waveflow/dashboard-kpi-six-row
+  - blocks/display/waveflow/article-gauge-monitor
+  - blocks/display/waveflow/metric-card-quartet
+  - blocks/display/waveflow/set-card-segmented
+  - blocks/layout/waveflow/master-detail-list-aside
+  - blocks/filters/waveflow/table-toolbar-tri
+  - blocks/form/waveflow/dialog-vertical-form
+  - blocks/form/waveflow/login-editorial-form
+  - blocks/form/waveflow/login-three-decor-right
+  - blocks/form/waveflow/cron-builder-modal
+  - blocks/form/waveflow/stepper-section-form
+  - blocks/feedback/waveflow/top-progress-bar
+  - blocks/feedback/waveflow/empty-dashed-state
+  - blocks/feedback/waveflow/danger-confirm-modal
+  - blocks/feedback/waveflow/log-pre-viewer
+  - blocks/feedback/waveflow/action-dropdown-more
+  - pages/dashboard/waveflow/admin-runtime-report
+  - pages/list-table/waveflow/canonical-section-list
+  - pages/list-table/waveflow/job-mgmt-with-switch
+  - pages/list-table/waveflow/job-log-batch-select
+  - pages/detail/waveflow/jobset-master-detail
+  - pages/form-flow/waveflow/json-build-stepper
+  - pages/dashboard/waveflow/registry-monitor-articles
+  - pages/auth/waveflow/login-editorial-three
+  - pages/empty-error/waveflow/minimal-text-401
+  - pages/empty-error/sage/crt-tv-404
+  - pages/dashboard/waveflow/json-format-ace-dual
+  - pages/detail/waveflow/log-viewer-pre
 preview: /preview/styles/admin-console/waveflow-warm-engineer
 ---
 
