@@ -35,8 +35,11 @@ preview: /preview/blocks/display/waveflow/data-table-leftbar-shimmer
 - **row hover**: `hover:bg-stone-50/60` + `group` 类（给 hover 内行内按钮露出来用）
 - **cell padding**: `px-3 py-2.5`
 - **shimmer 骨架行**：
-  - 表格 200ms 内透明渲染 8 占位行；超 200ms 才显形 `opacity-100 animate-pulse`
-  - 每个 cell 内：`<div className="h-3 rounded bg-stone-100" style={{ width: `${40 + ((i*7 + c.key.length) % 50)}%` }} />` —— 列宽伪随机（40-90%）
+  - 表格 200ms 内透明渲染 8 占位行；超 200ms 才显形 `opacity-100`
+  - 每个 cell 内：`<div className="skeleton h-2 rounded-full" style={{ width: `${40 + ((i*7 + c.key.length) % 50)}%` }} />`
+  - **rounded-full pill 形态 + 暖灰横向 shimmer 波**（不是 animate-pulse opacity）—— 走全局 `.skeleton` 类：`linear-gradient(90deg, #ebe9e3 0%, #f5f4ee 50%, #ebe9e3 100%) + background-size 400px + animation: shimmer 1.6s ease-in-out infinite`，让"波"从左划到右更优雅
+  - height **8px (h-2)**：比之前 h-3 (12px) 更细 pill，配合 rounded-full 视觉是"会动的占位线"
+  - 列宽伪随机（40-90%）
 - **empty 态**：colSpan 全列 + `py-8 text-center text-stone-400` + `flex-col items-center gap-2 emptyText + emptyExtra`
 
 ## 关键代码
@@ -75,7 +78,10 @@ const showSkeleton = useDelayedFlag(isPlaceholder, 200);
 ## 反模式
 
 - ❌ loading 时直接清空 rows——会闪空表
-- ❌ shimmer 用 `bg-gray-200`——和暖底色温不和谐（用 stone-100）
+- ❌ shimmer 用 `animate-pulse + bg-stone-100`——只闪 opacity 不优雅，要用 `.skeleton` 横向 gradient wave
+- ❌ shimmer 占位用矩形 (`rounded` / `rounded-md`)——必须 `rounded-full` pill 形态
+- ❌ shimmer 占位高度 ≥ 12px—— 太"实"像数据条；用 `h-2` (8px) 才像"占位线"
+- ❌ shimmer 用 `bg-gray-200` 渐变——和暖底色温不和谐（用 #ebe9e3 → #f5f4ee → #ebe9e3 三段）
 - ❌ 表头加深色 bg—— 破坏全站轻量感
 - ❌ row 加 zebra (`even:bg-stone-50`)—— waveflow 故意不做斑马纹（密度感够，斑马反而碎）
 - ❌ leftBar 用饱和色 (`bg-red-600`)——4px 窄条用 500 就够，600 太重
