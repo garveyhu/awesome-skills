@@ -62,6 +62,70 @@ preview: /preview/blocks/display/waveflow/canonical-table-shell
 - **三件套垂直无 gap**：TableToolbar 自带 `mb-2.5`、DataTable 包外框、TablePagination 自带 `mt-3`——节奏自然
 - **filter / extra 跟随 toolbar 右对齐**——title 顶左，filter+extra 顶右
 
+## TablePagination 子模式（必看）
+
+分页条**两段**：左 range + pageSize select；右 4-button 翻页器 + **「跳至 N 页」跳转输入**。
+
+### 跳转输入（参考 aura-form-style 方案 B · Linear 风极简）
+
+- **不是框型 input**——而是**虚线下划线** 风格：
+  - `background: transparent`
+  - `border: none` (无 left/right/top)
+  - `border-bottom: 1px dashed stone-300` —— 默认虚线
+  - `focus:border-solid focus:border-blue-500` —— 聚焦时虚线变实线 + 蓝色
+- **尺寸**：`h-[22px] w-8` (22 × 32px) · text-center · `font-mono text-[11.5px] tnum font-medium text-stone-800`
+- **行为**：
+  - 未聚焦显示**当前页码**（不要 placeholder "页码"）
+  - 聚焦清空让用户输入
+  - `onChange` 用 `replace(/[^\d]/g, '')` 仅允许数字
+  - `onBlur` / `Enter` 提交，越界自动夹到 `[1, totalPages]`
+  - 与当前页相同不触发回调（避免无效跳转）
+- **标签**：`<span>跳至</span> <input/> <span>页</span>` 三段，标签 stone-500
+- **仅 `totalPages > 1` 时显示**——单页隐藏避免没意义
+- **margin-left 18px**：与左侧"末页"按钮拉开距离
+
+### 跳转输入核心代码
+
+```tsx
+const JumpInput: React.FC<{ current: number; totalPages: number; onJump: (p: number) => void }> = ({ current, totalPages, onJump }) => {
+  const [val, setVal] = React.useState('');
+  const [editing, setEditing] = React.useState(false);
+
+  const commit = () => {
+    setEditing(false);
+    if (val === '') return;
+    const n = parseInt(val, 10);
+    setVal('');
+    if (!Number.isFinite(n)) return;
+    const clamped = Math.min(Math.max(1, n), totalPages);
+    if (clamped !== current) onJump(clamped);
+  };
+
+  return (
+    <span className="ml-3 flex items-center gap-1.5 text-stone-500">
+      <span>跳至</span>
+      <input
+        type="text" inputMode="numeric"
+        value={editing ? val : String(current)}
+        onFocus={() => { setEditing(true); setVal(''); }}
+        onChange={e => setVal(e.target.value.replace(/[^\d]/g, ''))}
+        onBlur={commit}
+        onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+        className="h-[22px] w-8 border-0 border-b border-dashed border-stone-300 bg-transparent p-0 text-center font-mono text-[11.5px] tnum font-medium text-stone-800 outline-none transition focus:border-solid focus:border-blue-500"
+      />
+      <span>页</span>
+    </span>
+  );
+};
+```
+
+### 反模式
+
+- ❌ 用框型 input（h-7 rounded-md border-stone-300）—— 在 4 翻页 button 旁边显得"重"，破坏极简
+- ❌ 永远显示 placeholder "页码"—— 用户没看到当前页号，仍要去左边数字处确认
+- ❌ 输入框 width > 40px—— 通常 1-3 位数字就够，宽了空荡
+- ❌ 提交后保留输入值—— 跳页后应回到"显示当前页"状态
+
 ## 适配指南
 
 - 复用于所有"单表 + 工具栏"列表页（**项目 / 数据源 / 执行器 / 用户**完全套用）
