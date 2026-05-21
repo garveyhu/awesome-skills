@@ -1,7 +1,7 @@
 ---
 id: styles/admin-console/waveflow-warm-engineer
 type: style
-name: Waveflow 暖工程师
+name: Waveflow · 暖纸数据控制台
 description: 暖白基底 (#fafaf7/#f4f3ee/#fffefb) + 墨黑 ink + blue-600 单一 CTA + Inter / JetBrains Mono / Instrument Serif 三字体 + tabular-nums 紧凑 + editorial 出口 (login serif italic)
 platforms: [web]
 theme: light

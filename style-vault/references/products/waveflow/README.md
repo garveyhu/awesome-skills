@@ -2,7 +2,7 @@
 id: products/waveflow
 type: product
 name: Waveflow · 数据同步与任务调度平台
-description: 暖工业感 admin 控制台 - DataX 任务调度 + 任务集主从 + 多 KPI dashboard + ⌘K 全站搜 + 资源监控 - 内网部署友好（无 CDN）
+description: 暖工业感数据控制台 · 任务编排全流程 + 任务集主从详情 + 6 KPI 实时 dashboard + 多机房资源监控 + 多数据库 JDBC 数据源
 platforms: [web]
 theme: light
 category: productivity
@@ -73,14 +73,13 @@ preview: /preview/pages/dashboard/waveflow/admin-runtime-report
 
 ## 产品定位
 
-Waveflow 是面向**数据团队和运维工程师**的数据同步与任务调度平台 —— 把 xxljob 风格的调度内核包装成现代化暖工业感界面：
+Waveflow 是面向**数据团队和运维工程师**的数据同步与任务调度平台 —— 把企业级调度内核包装成现代化暖工业感界面：
 
-- **DataX 任务全生命周期**：从 Reader/Writer/字段映射 4-step 可视化构建 → 任务模板复用 → 单任务运行/暂停/触发 → 任务集批量管理 → 日志查看与终止
-- **跨网数据同步**：JDBC 数据源管理 + 12 数据库内置支持 (MySQL/PostgreSQL/Oracle/SQL Server/Kingbase/DM/...)
-- **任务调度运维**：6 KPI dashboard（调度量 + 成功率 + 平均耗时 + 在线执行器 + 活跃任务 + 24h 失败）+ 资源监控（CPU/内存/Load gauges）+ 实时 30s 刷新
-- **多用户多权限**：用户管理 + 角色（ROLE_ADMIN）+ 项目隔离
-- **⌘K 全站搜**：任务 / 任务集 / 项目 跨类型搜，amber 高亮，最近搜索 chips
-- **内网友好**：所有字体走 `@fontsource` npm 包静态打包到 dist/assets，运行时无 CDN 依赖
+- **任务编排全流程**：从 Reader / Writer / 字段映射 4-step 可视化构建 → 任务模板复用 → 单任务运行 / 暂停 / 立即触发 → 任务集批量编排 → 日志查看与终止
+- **跨网数据同步**：JDBC 数据源管理 + 12 数据库内置支持 (MySQL / PostgreSQL / Oracle / SQL Server / Kingbase / DM / ClickHouse / Doris / ...)
+- **6 KPI 实时 dashboard**：调度量 + 成功率 + 平均耗时 + 在线执行器 + 活跃任务 + 24h 失败 · 30s 自动刷新 · ECharts 可视化
+- **资源监控**：每台执行器 CPU / 内存 / Load 三 gauge 圆环 · 多机房多节点 article 堆叠
+- **多用户多权限**：用户管理 + 角色 (ROLE_ADMIN) + 项目隔离 + 任务集成员分配
 
 ## 设计叙事
 
