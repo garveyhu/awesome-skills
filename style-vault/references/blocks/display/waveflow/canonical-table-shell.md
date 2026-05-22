@@ -1,8 +1,8 @@
 ---
 id: blocks/display/waveflow/canonical-table-shell
 type: block
-name: 列表页规范外壳
-description: 页面 `h-full px-6 py-4` + rounded-xl border/40 paper bg shadow-soft section + 内部 TableToolbar + DataTable + TablePagination 三件套
+name: 列表页规范外壳（全套）
+description: waveflow 列表页完整设计参考 - 外壳 + toolbar + sortable table + leftBar + GlueType chip + Switch + IconBtn + MoreMenu + shimmer 懒加载 + Pagination + JumpInput · AI 读这一条就齐
 platforms: [web]
 theme: light
 tags:
@@ -12,14 +12,20 @@ tags:
 uses:
   - tokens/palettes/waveflow/warm-paper-ink-blue
   - tokens/shadow/waveflow/soft-card-pop-trio
+  - tokens/iconography/waveflow/engineer-detail-classes
   - blocks/filters/waveflow/table-toolbar-tri
   - blocks/display/waveflow/data-table-leftbar-shimmer
+  - components/toggles/waveflow/emerald-switch
+  - components/tags-badges/waveflow/glue-type-badge-duo
+  - components/typography-atoms/waveflow/meta-caps-mono-pair
 preview: /preview/blocks/display/waveflow/canonical-table-shell
 ---
 
-# Waveflow Canonical Table Shell
+# Waveflow Canonical Table Shell · 全套设计参考
 
-> waveflow 所有列表页（项目 / 数据源 / 任务 / 执行器 / 用户 / 日志 / 任务模板）共用的页面外壳——`h-full px-6 py-4` 外框 + 内部一个 `rounded-xl border border-stone-200/40 bg-[var(--color-paper)] shadow-[var(--shadow-soft)] p-5` 大 section，section 内**自上而下三件套**：TableToolbar / DataTable / TablePagination。
+> waveflow 所有列表页共用的统一外壳。**这一条沉淀对齐源码 `src/components/table/DataTableShowcase.tsx`（1100+ 行 self-contained 参考文件）** —— 把 toolbar / sortable thead / leftBar / GlueType chip / Switch / 派生执行状态色 / IconBtn / MoreHorizontal dropdown / shimmer 懒加载 / Pagination + JumpInput 全部聚合到一个 preview 里。AI 看到这一个就能 100% 复刻全套表格设计。
+
+源码：`waveflow-ui/src/components/table/DataTableShowcase.tsx`（顶部 120 行 JSDoc 写明 15 条视觉规范 + 13 条反模式）。生产代码继续走拆分的 DataTable + TableToolbar + TablePagination 三件套。
 
 ## 页面骨架
 
