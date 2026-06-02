@@ -93,8 +93,8 @@ RUN mkdir -p /var/run/mysqld /var/lib/mysql /var/log/mysql && \
 RUN printf "[mariadbd]\nport = {DB_PORT}\nbind-address = 0.0.0.0\n" \
     > /etc/mysql/mariadb.conf.d/99-port.cnf
 
-# uv（仅 Python 项目，venv builder 阶段需要）
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+# uv（仅 Python 项目，venv builder 阶段需要）——pip 从阿里云装，别用 ghcr（国内多架构不可达，见 cn-mirrors.md）
+RUN pip install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple/ uv
 
 # entrypoint 烧进 base
 COPY docker/images/entrypoint.sh /entrypoint.sh

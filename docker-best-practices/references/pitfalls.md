@@ -128,6 +128,13 @@ docker buildx build \
     --push .
 ```
 
+**相关坑（同属多架构 buildx 拉镜像国内不可达）**：`COPY --from=ghcr.io/astral-sh/uv:latest`
+装 uv，多架构 push 时对每个平台拉 ghcr.io 元数据，国内报
+`failed to fetch anonymous token ... ghcr.io/token ... EOF`（单架构本地 build 因有缓存可能
+侥幸通过，多架构必拉 ghcr → 挂）。**改用 `RUN pip install --no-cache-dir -i
+https://mirrors.aliyun.com/pypi/simple/ uv` 从阿里云装**（见 cn-mirrors.md）；pip 装的 uv 在
+`/usr/local/bin/uv`，多阶段 runtime 用 `COPY --from=builder /usr/local/bin/uv /usr/local/bin/uv`。
+
 ---
 
 ## 5. Apple Silicon 交叉构建 amd64 慢

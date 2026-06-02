@@ -64,7 +64,7 @@ WORKDIR /app
 RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
     apt-get update && apt-get install -y build-essential && rm -rf /var/lib/apt/lists/*
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+RUN pip install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple/ uv
 
 COPY backend/pyproject.toml backend/uv.lock ./
 COPY backend/{subpkg1}/pyproject.toml ./{subpkg1}/
@@ -100,7 +100,7 @@ RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debia
 # RUN printf "[mariadbd]\nport = {DB_PORT}\nbind-address = 0.0.0.0\n" \
 #     > /etc/mysql/mariadb.conf.d/99-port.cnf
 
-COPY --from=backend-builder /bin/uv /bin/uv
+COPY --from=backend-builder /usr/local/bin/uv /usr/local/bin/uv
 COPY --from=backend-builder /app/.venv /app/.venv
 COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
 
@@ -145,7 +145,7 @@ WORKDIR /app
 RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
     apt-get update && apt-get install -y build-essential && rm -rf /var/lib/apt/lists/*
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+RUN pip install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple/ uv
 
 COPY pyproject.toml uv.lock ./
 # 国内 PyPI 镜像（见 references/cn-mirrors.md）——uv 默认走官方源，国内极慢
@@ -159,7 +159,7 @@ WORKDIR /app
 RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debian.sources && \
     apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /bin/uv /bin/uv
+COPY --from=builder /usr/local/bin/uv /usr/local/bin/uv
 COPY --from=builder /app/.venv /app/.venv
 
 COPY src/ ./src/

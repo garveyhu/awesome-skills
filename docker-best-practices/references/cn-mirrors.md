@@ -74,11 +74,21 @@ RUN --mount=type=cache,target=/usr/local/share/.cache/yarn \
 
 ### uv
 
+> **装 uv 用 pip 从阿里云装，别用 `COPY --from=ghcr.io/astral-sh/uv`**——ghcr.io 在国内
+> 经常不可达，尤其多架构 buildx push 拉各架构元数据时报
+> `failed to fetch anonymous token ... ghcr.io/token ... EOF`。单架构本地 build 可能因缓存
+> 侥幸通过，多架构必拉 ghcr → 挂。见 [pitfalls.md](pitfalls.md)。
+
 ```dockerfile
 ENV UV_DEFAULT_INDEX=https://mirrors.aliyun.com/pypi/simple/
+RUN pip install --no-cache-dir -i https://mirrors.aliyun.com/pypi/simple/ uv
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project --no-dev
 ```
+
+> pip 装的 uv 在 `/usr/local/bin/uv`（不是 ghcr 的 `/uv`）。多阶段时 runtime 从 builder 拷：
+> `COPY --from=builder /usr/local/bin/uv /usr/local/bin/uv`。`uv sync` 仍走官方 PyPI 国内慢，
+> 所以 `UV_DEFAULT_INDEX` 必配。
 
 ### pip
 
