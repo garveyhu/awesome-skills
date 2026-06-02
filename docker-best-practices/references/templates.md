@@ -73,6 +73,8 @@ COPY backend/{subpkg2}/pyproject.toml ./{subpkg2}/
 RUN for pkg in {subpkg1} {subpkg2}; do \
     mkdir -p $pkg/src && touch $pkg/src/__init__.py $pkg/README.md; done
 
+# 国内 PyPI 镜像（见 references/cn-mirrors.md）——uv 默认走官方源，国内极慢
+ENV UV_DEFAULT_INDEX=https://mirrors.aliyun.com/pypi/simple/
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project --no-dev
 
@@ -146,6 +148,8 @@ RUN sed -i 's/deb.debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list.d/debia
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 COPY pyproject.toml uv.lock ./
+# 国内 PyPI 镜像（见 references/cn-mirrors.md）——uv 默认走官方源，国内极慢
+ENV UV_DEFAULT_INDEX=https://mirrors.aliyun.com/pypi/simple/
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project --no-dev
 

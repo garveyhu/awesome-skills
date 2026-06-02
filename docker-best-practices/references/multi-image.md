@@ -130,6 +130,8 @@ RUN cp /src/pyproject.toml /src/uv.lock . && \
       touch "$pkg_dir/README.md" "$pkg_dir/src/{project}/__init__.py"; \
     done
 
+# 国内 PyPI 镜像（见 references/cn-mirrors.md）——uv 默认走官方源，国内极慢
+ENV UV_DEFAULT_INDEX=https://mirrors.aliyun.com/pypi/simple/
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project --no-dev
 

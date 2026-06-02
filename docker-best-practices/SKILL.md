@@ -68,6 +68,7 @@ docker/
 - [references/multi-image.md](references/multi-image.md) — 多镜像拆分（init 容器 + named volume + .version skip）
 - [references/scripts.md](references/scripts.md) — 三脚本统一参数协议的实现
 - [references/pitfalls.md](references/pitfalls.md) — buildx HTTP registry / nginx.conf / macOS bash 等踩坑记录
+- [references/cn-mirrors.md](references/cn-mirrors.md) — 国内镜像源单一来源（apt/apk · npm/yarn · uv/pip · maven · go），所有 Dockerfile 照抄此处
 
 ---
 
@@ -238,6 +239,8 @@ docker compose up -d
 
 - [ ] 多阶段构建（最终镜像不含编译依赖）
 - [ ] 每个 `apt-get install` 后 `rm -rf /var/lib/apt/lists/*`
+- [ ] **所有包管理器镜像源照抄 [references/cn-mirrors.md](references/cn-mirrors.md)**（apt/apk · npm/yarn · uv/pip · maven · go 统一配；改镜像只改那一处）
+- [ ] **uv 项目装包前配 `ENV UV_DEFAULT_INDEX`**（默认走官方 PyPI，国内极慢——最易漏）
 - [ ] uv 项目 `uv sync --frozen --no-install-project --no-dev`
 - [ ] `.dockerignore` 排除 `node_modules/`、`.venv/`、`.git/`、`tests/`、`docs/`、`*.log`、`*.tar`
 - [ ] `.dockerignore` **必须排除 `docker/containers/*/data/`**（dev 跑时挂载产生的 mariadb / 日志运行时数据，可能数 GB；进 build context 会拖慢 build 且可能被误打进镜像）
