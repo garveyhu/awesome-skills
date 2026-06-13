@@ -603,6 +603,17 @@
       .markdown-section blockquote[data-callout='caution']   { --cc: #ef4444; }
       /* 表格：圆角卡片 + 淡淡的主题色表头带（仅 6% 强调色）+ 发丝行分隔，克制不用斑马纹 */
       .markdown-section table { display: table; width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 1.5em 0; box-shadow: 0 1px 3px rgba(0, 0, 0, .04); }
+      /* 宽表格：doneEach 给每个表外包一层 .table-wrap 做横向滚动，避免长内容溢出到右侧目录；
+         窄表仍撑满（table width:max-content + min-width:100%）。滚动条默认隐藏、悬停才显示（同右侧目录） */
+      .markdown-section .table-wrap { overflow-x: auto; margin: 1.5em 0; border-radius: 12px; scrollbar-width: thin; scrollbar-color: transparent transparent; transition: scrollbar-color .3s; }
+      .markdown-section .table-wrap > table { width: max-content; min-width: 100%; margin: 0; }
+      .markdown-section .table-wrap:hover { scrollbar-color: #ccc transparent; }
+      body.dark .markdown-section .table-wrap:hover { scrollbar-color: #555 transparent; }
+      .markdown-section .table-wrap::-webkit-scrollbar { height: 8px; }
+      .markdown-section .table-wrap::-webkit-scrollbar-track { background: transparent; }
+      .markdown-section .table-wrap::-webkit-scrollbar-thumb { background: transparent; border-radius: 4px; transition: background .3s; }
+      .markdown-section .table-wrap:hover::-webkit-scrollbar-thumb { background: #ccc; }
+      body.dark .markdown-section .table-wrap:hover::-webkit-scrollbar-thumb { background: #555; }
       .markdown-section table tr, .markdown-section table tr:nth-child(2n) { border: none; background-color: transparent; }
       .markdown-section th {
         background: color-mix(in srgb, var(--accent) 6%, var(--bg-elev));
@@ -996,6 +1007,18 @@
                   title.className = "callout-title";
                   title.textContent = LABEL[type];
                   bq.insertBefore(title, bq.firstChild);
+                });
+              })();
+
+              // 宽表格外包一层 .table-wrap 以横向滚动（避免长内容溢出到右侧目录）
+              (function () {
+                document.querySelectorAll(".markdown-section table").forEach(function (t) {
+                  var p = t.parentNode;
+                  if (!p || (p.classList && p.classList.contains("table-wrap"))) return;
+                  var w = document.createElement("div");
+                  w.className = "table-wrap";
+                  p.insertBefore(w, t);
+                  w.appendChild(t);
                 });
               })();
 

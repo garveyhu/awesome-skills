@@ -166,6 +166,7 @@ Know it exists so you don't fight it and can point it out to the user:
 - **目录树**：渐变标题、分组小标题、选中项淡色 pill、无下划线、**无 emoji**、密度可调。
 - **右侧悬浮目录（`#right-toc`）滚动条自动隐藏**：默认不显示滚动条（thumb 透明 + Firefox `scrollbar-color: transparent`），滚动该目录时淡入、停止约 0.7s 或鼠标移开后淡出（`.scrolling` 类由 scroll 监听加/防抖移除，叠加 `:hover`）——不占视觉、不挤内容。
 - **正文质感**：画布氛围光、软化字色、行内代码 chip、引用 callout、表格圆角卡片、h1–h4 层次。
+- **宽表格横向滚动**：doneEach 给每个 `<table>` 外包一层 `.table-wrap`（`overflow-x:auto`），表 `width:max-content; min-width:100%`——**窄表仍撑满正文列、宽表（含长代码标识符等不可断内容）在正文列内左右滚动**，绝不溢出到右侧悬浮目录。其横向滚动条与右侧目录一致：默认隐藏、悬停 `.table-wrap` 时才淡入。
 - **Mermaid**：跟随亮/暗主题、流程图子图与时序图 Note 一律中性灰蓝（**无黄色塑料感**）、卡片化、点击放大。
 - **性能**：毛玻璃仅在浮层可见时启用、粒子离开封面即停、滚动监听单实例 rAF 节流 → 滚动顺滑。
 
