@@ -449,6 +449,28 @@ skill .md 里的"视觉特征"已列出具体数值，但 preview .tsx 落地时
 
 ---
 
+## preview 必须为 1440×900 卡片画布设计 + 交付前截图比对真实来源（必做）
+
+**惨痛教训**（2026-06-13 · quiver night-studio）：把 page/整屏类条目（`office-command-deck` / `glass-topbar-hud`）的 preview 写成了「文档插图」——任意高度(460px) + 大段标题/说明文字 + 一个示意性的淡菱形 + 光斑代替整间办公室。结果 StyleCard 把每个 preview 渲染在**固定 1440×900 虚拟画布**里、`transform: scale` 缩到卡片宽、再裁到固定高度展示，我那种"留白 + 说明"的 preview 在缩略卡里**空洞变形、跟真实 app 完全不一样**。而且我**没在交付前截图比对真实来源**就交付了（违反"做完就视觉自查"）。
+
+### 硬规矩
+
+1. **preview 必须按 StyleCard 的固定 `1440×900` 虚拟画布设计**：复杂场景类（page / 整屏 / 世界 / dashboard）preview 的根容器用 `width:1440; height:900; position:relative`，把**代表性视觉铺满顶部可见区**。**不允许**大片空白 + 文档式大标题/说明段落（缩略卡只裁顶部一条，留白会被读成"空/坏"）。
+2. **复刻"整页 / 整个产品屏 / 世界"类条目时，必须忠实重建真实场景**——移植源码的渲染逻辑（布局 / 家具 / 角色 / 状态），**不允许**用"一个示意图 + 文字注解"代替。示意图在画廊卡里读不出风格。
+3. **多个 preview 共用的渲染逻辑放 `preview/_templates/` 下**（该目录被 App 路由收集 + `preview/registry` 双重排除，且 sync 的 walk 跳过 `_` 段），一处实现、多处复用，避免重复与漂移。
+4. **交付 preview 前必须截图比对真实来源**：起 vault dev server，用无头 Chrome 截 preview（`"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new --window-size=1440,900 --screenshot=out.png "http://localhost:<port>/preview/<id>"`）+ 截真实 app / 源站（Tauri 类可直接截其 vite 端口，如 quiver `:1420`），`magick … +append` 并排比对。差异大就改，**不允许**"看代码觉得对"就交付。
+
+### 自检问题（写 / 交付 preview 前自问）
+
+- [ ] 这个 preview 的根容器是 `1440×900` 吗？关键视觉铺满顶部可见区了，还是大片留白 + 说明文字？
+- [ ] 这是"整页 / 整屏 / 世界"类条目吗？我是**忠实重建**了真实场景，还是画了个示意图凑数？
+- [ ] 共用渲染逻辑我放 `_templates/` 复用了，还是在每个 preview 里各搓一份？
+- [ ] 我**截图比对**过 preview 和真实来源吗？并排看像"同一个东西"吗，还是"差很远"？
+
+任一答不上 / 答错 → 别交付，先重建场景 + 截图比对。
+
+---
+
 
 
 ## 层级反向归类表

@@ -138,6 +138,7 @@ grep -rn "关键词" ~/.agents/skills/style-vault-sediment/{SKILL.md,references/
 | 2026-04-27 | sage tier3 preview 的 padding / borderRadius / fontSize / shadow / 颜色 hex 大量"凭印象差不多"——和 skill .md 里写的"视觉特征"具体数值脱节，整套气质漂移。**根因是没把 skill .md 的"视觉特征"放进工作集就直接写 preview** | [sediment-from-project.md · preview 必须深度还原源码具体数值](sediment-from-project.md#preview-必须深度还原源码具体数值必做) | 2026-04-27-sage |
 | 2026-06-13 | quiver 沉淀时撞上**活跃的并发 chameleon 会话**，其半成品条目（未入字典 tag / `@` 开头 YAML）让全量 `yarn sync` 一直无法变绿；差点按"sync 失败就停/回滚"误伤本批 16 条合法条目。**根因是 step 6 错误处理默认"sync 失败 = 本批失败"，没区分全树校验里失败的是本批还是他批/并发会话** | [shared-workflow.md · sync 失败属于他批/并发会话时](shared-workflow.md#sync-失败属于他批--并发会话时不要误伤本批--必做) + 错误矩阵新增行 | 2026-06-13-quiver-night-studio |
 | 2026-06-13 | chameleon Tier3 扇出写入：11 个并行写入子智能体普遍把 `tags.aesthetic`/`mood` 当**自由描述字段**填视觉词组（"右侧滑入"/"neon"/"工程克制" 等 **328 处越界**），非 taxonomy 受控值 → validateTags 全 error + 1 处缺 `tags.stack`（parse 致命）。**根因是委派写入时没把 tags 合法值清单原样写进 agent prompt，agent 没字典就自由发挥** | [shared-workflow.md · 3.c tags 是受控枚举不是描述字段](shared-workflow.md#3c--tags-是受控枚举不是描述字段必做) | 2026-06-13-chameleon |
+| 2026-06-13 | quiver 把 page/整屏类条目的 preview 写成「文档插图」（460px 高 + 大段说明 + 示意性淡菱形代替整间办公室），没意识到 StyleCard 在固定 **1440×900 虚拟画布**裁顶部展示 → 缩略卡里空洞变形、跟真实 app 完全不一样；且**交付前没截图比对真实来源**。**根因是 preview 没按卡片画布设计 + 复杂场景用示意图凑数 + 漏了视觉自查** | [sediment-from-project.md · preview 必须为 1440×900 卡片画布设计 + 交付前截图比对真实来源](sediment-from-project.md#preview-必须为-1440900-卡片画布设计--交付前截图比对真实来源必做) | 2026-06-13-quiver-night-studio |
 
 ---
 
