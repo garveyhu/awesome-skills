@@ -1,0 +1,68 @@
+/* ============================================================
+   anim-kit 样式 —— 动画卡片 + mermaid 点击放大灯箱 + 主题变量
+   兼容两种主题约定：body.dark（docsify skill 默认）/ html[data-theme]
+   动画 JS 从 body 读这些 CSS 变量取色，亮/暗自适应。
+   ============================================================ */
+
+/* —— 主题色变量（亮色默认 + body.dark 覆盖）—— */
+:root {
+  --bg-card: #ffffff;
+  --bg-elev: #f6f8fc;
+  --fg: #1a2236;
+  --fg-soft: #41506e;
+  --fg-mut: #8893ad;
+  --border: #e2e8f3;
+  --accent: #2b8fd6;
+  --accent2: #7c5cf0;
+  --accent3: #10a36a;
+  --warn: #e0920a;
+  --danger: #e11d48;
+  --grad-soft: linear-gradient(120deg, #2b8fd61a, #7c5cf01a);
+  --anim-shadow: 0 8px 30px -14px #1a223622, 0 2px 8px -4px #1a223615;
+}
+body.dark,
+html[data-theme='dark'] {
+  --bg-card: #131a2b;
+  --bg-elev: #111726;
+  --fg: #e6ecff;
+  --fg-soft: #aab4d4;
+  --fg-mut: #6c7795;
+  --border: #1f2940;
+  --accent: #5ed1ff;
+  --accent2: #a78bfa;
+  --accent3: #34d399;
+  --warn: #fbbf24;
+  --danger: #fb7185;
+  --grad-soft: linear-gradient(120deg, #5ed1ff22, #a78bfa22);
+  --anim-shadow: 0 8px 40px -12px #000a, 0 2px 10px -4px #0008;
+}
+
+/* —— 动画卡片 —— */
+.anim {
+  position: relative;
+  margin: 1.8em 0;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--anim-shadow);
+  overflow: hidden;
+  min-height: 120px;
+}
+.anim::after {
+  content: attr(data-caption);
+  position: absolute; left: 14px; bottom: 10px;
+  font-size: 12px; color: var(--fg-mut); pointer-events: none;
+}
+.anim .anim-title {
+  font-size: 13px; font-weight: 650; color: var(--fg);
+  padding: 12px 16px 0; letter-spacing: .3px;
+}
+.anim .anim-stage { padding: 8px 10px 30px; }
+.anim svg { display: block; width: 100%; height: auto; }
+.anim-toolbar { position: absolute; top: 10px; right: 12px; z-index: 5; display: flex; gap: 8px; }
+.anim-btn {
+  font-size: 12px; color: var(--fg-soft); background: var(--bg-elev);
+  border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px; cursor: pointer;
+  transition: color .15s, border-color .15s;
+}
+.anim-btn:hover { color: var(--fg); border-color: var(--accent); }

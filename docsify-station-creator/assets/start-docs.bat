@@ -1,27 +1,27 @@
 @echo off
-setlocal enabledelayedexpansion
+setlocal
+REM 整个 docsify 站点都在 docs\docsify\ ；内容在 docs\* 。用静态服务器从 docs\ 根起服务，访问 /docsify/。
+REM 不要用 `docsify serve`：它要求服务根有 index.html，而我们的 index.html 在子目录。
 
 set "SCRIPT_DIR=%~dp0"
-for %%I in ("%SCRIPT_DIR%..") do set "DOCS_ROOT=%%~fI"
+for %%I in ("%SCRIPT_DIR%..\..") do set "DOCS_ROOT=%%~fI"
+set "PORT=3000"
 
-node --version >nul 2>&1
-if errorlevel 1 (
-    echo Node.js was not detected.
-    echo Please install Node.js ^(>=14^) and rerun this script.
+cd /d "%DOCS_ROOT%"
+echo Serving: %DOCS_ROOT%
+echo -^> Open http://localhost:%PORT%/docsify/
+
+where python >nul 2>&1
+if %errorlevel%==0 (
+    python -m http.server %PORT%
     goto :END
-) else (
-    docsify --version >nul 2>&1
-    if errorlevel 1 (
-        echo Installing docsify-cli...
-        npm install -g docsify-cli
-    )
-
-    echo Launching Docsify server...
-    pushd "%DOCS_ROOT%"
-    docsify serve . --port 3000
-    popd
 )
-
+where npx >nul 2>&1
+if %errorlevel%==0 (
+    npx --yes http-server . -p %PORT% -c-1
+    goto :END
+)
+echo Need python or Node(npx) to start a static server.
 pause
 
 :END
