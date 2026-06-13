@@ -9,6 +9,7 @@ tags:
   aesthetic: [minimal]
   mood: [calm, serious]
   stack: [vanilla-css]
+preview: /preview/tokens/typography/pairs/quiver/sf-system-duo
 ---
 
 # 系统无衬线 + Mono 数字

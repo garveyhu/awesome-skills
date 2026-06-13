@@ -9,6 +9,7 @@ tags:
   aesthetic: [pixel, retro]
   mood: [playful, nostalgic]
   stack: [vanilla-css]
+preview: /preview/tokens/layout/quiver/iso-grid
 ---
 
 # 等距像素网格

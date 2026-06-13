@@ -9,6 +9,7 @@ tags:
   aesthetic: [pixel, retro]
   mood: [playful, nostalgic]
   stack: [vanilla-css]
+preview: /preview/tokens/motion/quiver/pixel-steps
 ---
 
 # 像素步进动效
