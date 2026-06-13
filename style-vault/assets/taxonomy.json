@@ -46,7 +46,8 @@
         "industrial": { "zh": "工业" },
         "swiss":      { "zh": "瑞士风" },
         "luxe":       { "zh": "奢华" },
-        "handdrawn":  { "zh": "手绘" }
+        "handdrawn":  { "zh": "手绘" },
+        "pixel":      { "zh": "像素" }
       }
     },
     "mood": {
