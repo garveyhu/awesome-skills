@@ -110,6 +110,26 @@ python3 ~/.agents/skills/style-vault/scripts/taxonomy.py search --type component
 
 发现近义条目（如 `dark-primary-cta` vs `cyan-cta` 都是 primary CTA）→ 在新条目 README 必须加 "**与 X 区分**" 章节，明确两者在风格世界 / 视觉语言上的差异。否则 AI 消费时容易选错。
 
+### 3.c · tags 是受控枚举，不是描述字段（必做）
+
+**惨痛教训**（2026-06-13 · chameleon Tier3 扇出写入）：把 74 条交给并行写入子智能体后，它们普遍把 `tags.aesthetic` / `tags.mood` 当成自由描述字段，填进"右侧滑入"/"AND/OR胶囊"/"neon"/"retro-future"/"工程克制" 等视觉词组（328 处越界），而非 `taxonomy.json` tag_groups 的受控值 → `yarn sync` 的 validateTags 全是 error，且污染前端按 tag 筛选。根因是扇出写入指引没把"tags 是闭集枚举"讲死——agent 手里没有字典就自由发挥。
+
+#### 硬规矩
+
+1. **`tags.aesthetic` / `tags.mood` / `tags.stack` 一律只能取 `taxonomy.json` tag_groups 里已存在的值**，绝不允许填视觉描述词组 / 中文形容词 / 自造英文 slug。
+2. **委派写入给子智能体时，必须把这三组的合法值清单原样写进每个 agent 的 prompt**（不能只说"用 taxonomy 的值"，agent 没字典就会乱填）。
+3. **想表达"右侧滑入 / 霓虹 / 工程克制"这类视觉特征 → 写进正文 `## 视觉特征`，不是塞进 tags**。tags 只回答"哪种美学流派 / 哪种气质 / 哪个技术栈"。
+4. **不在字典里的新美学/气质值 → 先改 `taxonomy.json` 再用**，绝不在条目里直接造。
+5. **整批写完、sync 之前，必须跑一次"对照 taxonomy 全量校验 tags"**（PyYAML 解析每条 frontmatter + 比对 tag_groups），把越界的批量归一回合法值。
+
+#### 自检问题（生成 / 委派写 frontmatter 前自问）
+
+- [ ] 我给写入子智能体的 prompt 里，有没有**原样列出** aesthetic/mood/stack 的合法值？
+- [ ] 任一 tag 值是"短语 / 形容词 / 带空格的描述"吗？是 → 必越界，挪进 `## 视觉特征`
+- [ ] 写完整批、sync 之前，有没有跑一次对照 taxonomy 的 tags 全量校验？
+
+答不上 → 别 sync，先归一 tags。
+
 ### 依赖拓扑序
 
 写入顺序**严格按底层到上层**：
