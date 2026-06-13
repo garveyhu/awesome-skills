@@ -1,0 +1,233 @@
+{
+ "group": 9,
+ "entries": [
+  {
+   "id": "pages/detail/chameleon/eval-run-detail-master-detail",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/pages/run-compare-page.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/pages/run-detail-page.tsx"
+   ],
+   "visual_spec": "[pages/detail/chameleon/eval-run-detail-master-detail] 见 blocks/layout/chameleon/run-master-detail-rail-overlay。对比页 /datasets/:id/runs/compare?ids= 渲染 RunCompareMatrix。",
+   "descriptions": [
+    "运行详情整页：左 run 列表 rail / 中 run 详情(逐样本得分 + 优化入口) / 右 URL 驱动覆盖物(样本详情 or 优化侧栏)，支持跳运行对比矩阵。"
+   ],
+   "refs_uses": [
+    "blocks/display/chameleon/run-compare-heatmap-matrix",
+    "blocks/layout/chameleon/run-master-detail-rail-overlay"
+   ],
+   "tags_aesthetic": [
+    "eval-run",
+    "master-detail"
+   ],
+   "tags_mood": [
+    "benchmarking",
+    "investigative"
+   ]
+  },
+  {
+   "id": "pages/detail/chameleon/kb-detail-tabbed-workbench",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/pages/kb-detail-page.tsx"
+   ],
+   "visual_spec": "[pages/detail/chameleon/kb-detail-tabbed-workbench] flex gap-4。左 detail-left-tab-rail(见 block)。右主区 SectionCard min-w-0 flex-1 或 service-api 时 flex h-[calc(100vh-5.5rem)] + rounded-xl border bg-[var(--color-paper)]。tab 内容嵌 DocumentTable / HitTestPanel / EvaluationListTab / CollectionsTab / MetadataFieldsTab / ConsistencyTab。",
+   "descriptions": [
+    "KB 详情整页：左竖向 tab 导航(概览/文档/检索测试/评估 + 进阶 元数据/分段集合/一致性/服务API/配置) + 右主区按 tab 切(文档表 / 切块预览 / 检索测试三栏 / 评估列表 / chunk 墙)。知识库 Dify 级工作台。"
+   ],
+   "refs_uses": [
+    "blocks/display/chameleon/kb-hit-test-3pane",
+    "blocks/nav/chameleon/detail-left-tab-rail"
+   ],
+   "tags_aesthetic": [
+    "kb",
+    "tabbed-workbench"
+   ],
+   "tags_mood": [
+    "feature-rich",
+    "organized"
+   ]
+  },
+  {
+   "id": "pages/detail/chameleon/trace-detail-tree-gantt",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/traces/pages/trace-detail-page.tsx"
+   ],
+   "visual_spec": "[pages/detail/chameleon/trace-detail-tree-gantt] 外层 space-y-3。header flex items-center gap-3：返回按钮 rounded-md px-2 py-1 text-[12.5px] stone-500 + ArrowLeft h-3.5；分隔 / stone-300；GitBranch h-3.5 stone-500 + 「Trace 详情」text-[15px] font-medium stone-900 + request_id font-mono text-[11px] stone-500；ViewToggle inline-flex rounded-md border border-stone-200/70 text-[11.5px]，选中 bg-stone-800 text-white / 未选 bg-white stone-600。TreeStats text-[10.5px] stone-500「N 节点 · ok(emerald-600) · err(rose-600)」tnum。树视图 grid-cols-[minmax(0,2fr)_3fr] gap-3，两块 SectionCard !p-3，标题 text-[11.5px] font-medium stone-700。甘特视图上下两 SectionCard。NodeDetail: type 徽标 rounded px-1.5 py-0.5 font-mono text-[10.5px] uppercase(成功 emerald-50/700 失败 rose-50/700) + model_code violet-50/700 + agent_key font-mono + 时间 ml-auto；duration/tokens/ttfb tnum；error 条 rounded border-rose-200 bg-rose-50 text-[11px] rose-700；DetailSection 标题 text-[10.5px] uppercase tracking-wider stone-500 + JsonViewer；spans li rounded border font-mono text-[11px] + 状态 chip(failed rose/否则 emerald)。",
+   "descriptions": [
+    "LangSmith 式 trace 详情：header(返回 + GitBranch + request_id mono + 树/甘特 ViewToggle + 节点统计) → 树视图 grid-cols-[2fr_3fr] 左观测树右节点详情 / 甘特视图 上下分屏。节点详情含 type/model/agent_key 徽标 + duration/tokens/ttfb + Request/Response JsonViewer + spans。"
+   ],
+   "refs_uses": [
+    "blocks/display/chameleon/trace-gantt-timeline",
+    "blocks/display/chameleon/trace-observation-tree"
+   ],
+   "tags_aesthetic": [
+    "split-pane",
+    "trace-detail",
+    "tree-gantt-toggle"
+   ],
+   "tags_mood": [
+    "debuggable",
+    "technical"
+   ]
+  },
+  {
+   "id": "pages/editor/chameleon/workflow-graph-editor",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/pages/graph-editor-page.tsx:156-1902"
+   ],
+   "visual_spec": "[pages/editor/chameleon/workflow-graph-editor] 根 flex h-screen bg-[var(--color-warm)]。画布容器 absolute inset-0 bg-slate-50（冷白替暖白外壳），Background Dots gap 16 size 1 color var(--color-slate-200)。ReactFlow: selectionOnDrag / panOnDrag [1](中键) / panOnScroll / SelectionMode.Partial / selectNodesOnDrag false；defaultEdgeOptions type graphEdge + ArrowClosed 14x14 #d6d3d1；connectionLineComponent GraphConnectionLine。MiniMap !bg-warm-2 bottom-right（inspector 开时 right 340 否则 12，bottom 50）。fitView padding 0.12 minZoom 0.5 maxZoom 1 瞬时（opacity 0→1 防闪）。右悬浮面板 top-16 right-3 bottom-3 rounded-xl border border-stone-200/70 shadow-xl，inspector bg-warm-2/95 backdrop-blur / copilot bg-white；z 竞争 topPanel 决定 z-20/z-10，失焦面板 translate-x-[-14px] translate-y-[10px] 露角。点击放置 cursor-copy + 幽灵跟随。",
+   "descriptions": [
+    "Chameleon 最大的 signature 表面：全屏三栏布局 = 左应用 rail + 中 React Flow 画布（冷白 slate-50 点阵底 + 贝塞尔连线 + 类型色节点卡 + 浮层控件群 + 右键菜单）+ 右悬浮 inspector/AI 助手（z 竞争互斥）。编排/监测 Tab 切换，全套调试闭环（单节点测试 / 整图运行 / 对话调试）+ 发布/版本/导入导出/AI 编排/checklist 体检。waveflow 无画布编辑器，整页 new。"
+   ],
+   "refs_uses": [
+    "blocks/canvas/chameleon/ai-copilot-panel",
+    "blocks/canvas/chameleon/bezier-edge-add",
+    "blocks/canvas/chameleon/canvas-context-menus",
+    "blocks/canvas/chameleon/canvas-floating-controls",
+    "blocks/canvas/chameleon/config-panel-inspector",
+    "blocks/canvas/chameleon/graph-node-card",
+    "blocks/canvas/chameleon/node-palette",
+    "blocks/canvas/chameleon/subflow-group-editor",
+    "blocks/form/chameleon/graph-run-dialog",
+    "blocks/layout/chameleon/version-history-drawer",
+    "blocks/nav/chameleon/graph-app-rail",
+    "tokens/motion/chameleon/canvas-edge-dash-flow",
+    "tokens/palettes/chameleon/node-type-hue-system"
+   ],
+   "tags_aesthetic": [
+    "全屏三栏画布",
+    "冷白点阵",
+    "悬浮面板z竞争",
+    "类型色节点",
+    "调试闭环"
+   ],
+   "tags_mood": [
+    "signature",
+    "信息密集",
+    "工程师",
+    "精密"
+   ]
+  },
+  {
+   "id": "pages/list-table/chameleon/app-card-library",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/agents/pages/agents-page.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/pages/kbs-page.tsx"
+   ],
+   "visual_spec": "[pages/list-table/chameleon/app-card-library] 顶部 kind 过滤 tab(KIND_FILTERS icon + label) + 搜索 Input + 新建。网格见 app-card-gallery-grid。新建应用 Modal: 编排方式 grid sm:2 选择器(chatflow/workflow/comfyui/code)。",
+   "descriptions": [
+    "/agents 应用卡片库：kind 过滤 tab + 搜索 + 卡片网格(代码/对话流/流程/外部统一展示) + 新建应用 Dify 式编排选择器 + 嵌入弹窗。/kbs 知识库库同卡族。Dify 风卡库，区别于 waveflow 表格列表。"
+   ],
+   "refs_uses": [
+    "blocks/display/chameleon/app-card-gallery-grid"
+   ],
+   "tags_aesthetic": [
+    "card-library",
+    "filter-tabs"
+   ],
+   "tags_mood": [
+    "inviting",
+    "product-shelf"
+   ]
+  },
+  {
+   "id": "pages/playground/chameleon/model-compare-chat-lab",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/message-thread.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/pages/playground-page.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/pages/playground-page.tsx:163-747"
+   ],
+   "visual_spec": "[pages/playground/chameleon/model-compare-chat-lab] 单聊 flex：左 aside w-[…] 历史会话(新对话按钮 + 会话项 rounded-md，active bg-white shadow-sm ring-1 ring-stone-200，hover 浮现加入对比 Columns2/删除 Trash2) + 中 main flex-col(顶 bar border-b px-3 py-1.5：预设 Popover Sparkles + 清空 Trash2 hover:rose / MessageThread / Composer border-t p-3) + 右 aside w-72 border-l p-4「运行设置」text-[10.5px] tracking-wide stone-400 + ParamPanel。对比模式 flex h-[calc(100vh-150px)]：左 aside w-56 bg-warm-2/30「对比历史」History h-3 + 列 grid 各 CompareColumn(头 bg-warm-2/30 + 渐变色块 h-4 w-4 rounded gradient violet→blue + 模型名 + 在单聊打开 MessageSquare + 参数 Settings2 + 清空/移除) + 底共享 Composer 广播。KeyPicker SelectTrigger h-7 w-[200px] + KeyRound h-3.5 stone-400 + 名称 truncate + key_prefix font-mono text-[10px] stone-400。\n\n[pages/playground/chameleon/playground-chat-single-compare] 外层 SectionCard !p-0。顶栏: flex items-center gap-3 border-b border-stone-200/70 px-4 py-2.5; h2 text-[14px] font-medium text-stone-900「Playground」; segmented 切换 rounded-lg border border-stone-200 text-[12px], active→bg-blue-50 font-medium text-blue-700 idle→text-stone-500 px-3 py-1。整体高 h-[calc(100vh-150px)]。历史侧栏 aside: w-56(=224) shrink-0 border-r border-stone-200/70 bg-[var(--color-warm-2)]/30。新对话按钮: rounded-md border border-stone-200 bg-white py-1.5 text-[12px] font-medium text-stone-700 + Plus h-3.5 w-3.5。会话项: rounded-md, active→bg-white shadow-sm ring-1 ring-stone-200 idle→hover:bg-white/70; 标题 text-[12px] text-stone-700 truncate; 副 text-[10px] text-stone-400「时间·N 轮」; hover 动作 加入对比(Columns2 hover:bg-violet-50 hover:text-violet-600)/删除(Trash2 hover:bg-rose-50 hover:text-rose-600)。预设 Popover 触发 Sparkles h-3.5 w-3.5「预设」, PopoverContent !w-56 !p-1, 项 hover:bg-stone-100。右栏 aside w-72(=288) border-l p-4, 标题 text-[10.5px] tracking-wide text-stone-400「运行设置」。对比列头 header: bg-[var(--color-warm-2)]/30 px-3 py-2; 列标 h-4 w-4 rounded bg-gradient-to-br from-violet-500 to-blue-500; 模型名 text-[12px] font-medium text-stone-800 + 列号 text-[10.5px] text-stone-400。KeyPicker: SelectTrigger !h-7 !w-[200px] text-[12px] + KeyRound h-3.5 w-3.5 text-stone-400; SelectItem 右侧 key_prefix font-mono text-[10px] text-stone-400。lucide: Columns2/History/KeyRound/MessageSquare/Plus/Settings2/Sparkles/Trash2/X。",
+   "descriptions": [
+    "在线聊天/对比实验室：单聊三栏(左历史会话 + 中消息流 + 右运行设置) 与对比多列(左对比历史 + 多列广播同输入 + 共享 Composer)双模式 + 溯源 KeyPicker(全局一 key 记账) + 预设 + 每列参数 popover。站点旗舰对话页。",
+    "Chameleon 旗舰对话调试台。单聊三栏(左 历史会话侧栏 · 中 对话流+预设 Popover+清空+Composer · 右 ParamPanel 运行设置)；对比模式 N 列并排(列头 渐变方块 + 模型名 + 列号 + 提升单聊/齿轮 Popover 调参/清空/移除)，底部共享 Composer 广播到全部列，左侧对比历史侧栏。顶栏 单聊/对比 segmented 切换 + 溯源 KeyPicker。每条 assistant 消息可开 TraceDrawer 溯源。"
+   ],
+   "refs_uses": [
+    "blocks/chat/chameleon/composer-attach-send",
+    "blocks/chat/chameleon/message-list-bubble-thread",
+    "blocks/chat/chameleon/playground-message-bubbles",
+    "blocks/chat/chameleon/playground-param-panel",
+    "components/avatars-icons/chameleon/gradient-bot-avatar",
+    "tokens/layout/waveflow/data-console-shell",
+    "tokens/palettes/waveflow/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "chat-lab",
+    "multi-column-compare",
+    "workbench",
+    "三栏控制台",
+    "对比多列",
+    "暖白",
+    "渐变列标"
+   ],
+   "tags_mood": [
+    "AI 现代",
+    "experimental",
+    "power-user",
+    "对照分析",
+    "工程克制",
+    "调试台"
+   ]
+  },
+  {
+   "id": "tokens/motion/chameleon/canvas-edge-dash-flow",
+   "layer": "token",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/ai-copilot-panel.tsx:214",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/node-palette.tsx:146",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/graph-edge.tsx:103-130",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/graph-node.tsx:123-129"
+   ],
+   "visual_spec": "[tokens/motion/chameleon/canvas-edge-dash-flow] 边过渡 transition:'stroke 150ms ease, stroke-width 150ms ease, opacity 150ms ease'；高亮边 strokeDasharray='6 4'、active strokeWidth 2.25 / 默认 1.5；fail strokeDasharray='5 3' color #fb7185(默认)/#f43f5e(active)；dimmed opacity 0.35。曲率 getBezierPath curvature=0.2。palette 'animate-in fade-in slide-in-from-left-2 duration-200'；copilot 'animate-in fade-in slide-in-from-right-2 duration-200'。node hover 'hover:-translate-y-px hover:shadow-card transition-all duration-150'；running 边框 animate-pulse；handle hover 从 h-2.5 w-2.5 放大到 h-3.5 w-3.5（transition-all 150ms）。",
+   "descriptions": [
+    "工作流画布专属的连线/面板运动：相邻高亮边走 6/4 流动虚线 + 150ms stroke/width/opacity 过渡；fail 边 5/3 静态虚线；palette 展开 fade-in slide-in-from-left-2 200ms；AI 助手 fade-in slide-in-from-right-2 200ms；node hover -translate-y-px + shadow 升档。waveflow 的 keyframes-suite 是 shimmer/pulse/halo 等通用动效，无画布连线/面板方向滑入，故为 new。"
+   ],
+   "refs_uses": [
+    "tokens/motion/waveflow/keyframes-suite"
+   ],
+   "tags_aesthetic": [
+    "微浮起",
+    "方向滑入",
+    "流动虚线"
+   ],
+   "tags_mood": [
+    "克制",
+    "有反馈",
+    "流畅"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,207 @@
+{
+ "group": 8,
+ "entries": [
+  {
+   "id": "components/tags-badges/chameleon/cva-semantic-badge",
+   "layer": "component",
+   "dedup": "variant",
+   "ref_target": "components/tags-badges/waveflow/code-status-badge",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/badge.tsx:6-29"
+   ],
+   "visual_spec": "[components/tags-badges/chameleon/cva-semantic-badge] base: 'inline-flex items-center rounded-md(6px) border px-2(8px) py-0.5(2px) text-xs(12px) font-medium transition-colors'. 6 variant: default 'border-transparent bg-stone-100 text-stone-700'; primary 'border-transparent bg-primary-100 text-primary-800'(随主题切换); success 'border-transparent bg-emerald-100(#d1fae5) text-emerald-800(#065f46)'; warning 'border-transparent bg-amber-100(#fef3c7) text-amber-800(#92400e)'; danger 'border-transparent bg-red-100(#fee2e2) text-red-800(#991b1b)'; outline 'border-stone-300 text-stone-700'. defaultVariant=default. 区分 waveflow code-status-badge: 圆角 rounded-md 非 rounded、px-2 非 px-1.5、text-xs(12px) 非 text-[11px]、是泛化 variant 而非 code 映射。",
+   "descriptions": [
+    "通用 CVA 标签 6 variant（default/primary/success/warning/danger/outline），浅底深字 + rounded-md。与 waveflow code-status-badge 同浅底深字 chip 语言，但是泛化的 CVA 变体集而非按执行码映射，且圆角 rounded-md（非 waveflow 的 rounded）。primary variant 用 themeable primary-100/800。"
+   ],
+   "refs_uses": [
+    "tokens/palettes/chameleon/themeable-primary-warm-paper"
+   ],
+   "tags_aesthetic": [
+    "minimal"
+   ],
+   "tags_mood": [
+    "serious"
+   ]
+  },
+  {
+   "id": "components/tags-badges/chameleon/orchestration-kind-badge",
+   "layer": "component",
+   "dedup": "variant",
+   "ref_target": "components/tags-badges/waveflow/glue-type-badge-duo",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/orchestration-badge.tsx:9-35"
+   ],
+   "visual_spec": "[components/tags-badges/chameleon/orchestration-kind-badge] chip: span inline-flex shrink-0 rounded(4) px-1.5(6) py-0.5(2) text-[10px](10) font-medium + 色类。配色映射: code 'bg-indigo-50 text-indigo-700'(代码) / chatflow 'bg-sky-50 text-sky-700'(对话编排) / workflow 'bg-violet-50 text-violet-700'(流程编排) / external 'bg-amber-50 text-amber-700'(外部)。无 kind 时 span text-[10.5px](10.5) text-stone-300 显示破折号。\n\n[components/tags-badges/chameleon/orchestration-kind-badge] 徽标: inline-flex shrink-0 rounded(=4) px-1.5 py-0.5 text-[10px] font-medium。色阶(bg/text): 代码 indigo-50/indigo-700; 对话编排 sky-50/sky-700; 流程编排 violet-50/violet-700; 外部 amber-50/amber-700。无值: text-[10.5px] text-stone-300「—」。",
+   "descriptions": [
+    "OrchestrationBadge 由 agent source + graph kind 推导的 4-kind 编排方式 chip（代码/对话编排/流程编排/外部），沿用 waveflow/glue-type-badge-duo 的 light 浅底深字 chip 体系但映射到 4 种编排域配色；无值显示灰破折号。",
+    "由 agent source + 关联 graph kind 推导的编排方式徽标：代码(indigo)/对话编排(sky)/流程编排(violet)/外部(amber)。纯展示，无推导时显「—」灰。与全站徽标体系一致的 10px 软色阶。"
+   ],
+   "refs_uses": [
+    "tokens/palettes/waveflow/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "10px",
+    "industrial",
+    "minimal",
+    "类别色阶",
+    "软色徽标"
+   ],
+   "tags_mood": [
+    "serious",
+    "可扫读",
+    "工程克制"
+   ]
+  },
+  {
+   "id": "components/toggles/chameleon/sliding-thumb-segmented",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/segmented-control.tsx:25-100"
+   ],
+   "visual_spec": "[components/toggles/chameleon/sliding-thumb-segmented] tablist 容器: 'relative flex w-fit items-center gap-0.5(2px) rounded-lg(8px) border border-stone-200 bg-stone-100/70 p-0.5(2px)'。滑块 thumb（absolute, ResizeObserver 测量定位）: 'pointer-events-none absolute left-0 top-0 z-0 rounded-md(6px) bg-paper(#ffffff) shadow-sm transition-[transform,width,height] duration-300 ease-[cubic-bezier(.34,1.4,.5,1)]'（cubic-bezier 含 >1 的 1.4 故有回弹），transform translate(x,y)+width/height 来自实测。选项 button: 'relative z-10 rounded-md font-medium transition-colors disabled:opacity-40' + size sm 'px-3(12px) py-1(4px) text-[12px]' / md 'px-3.5(14px) py-1.5(6px) text-[12.5px]'，active 'text-primary-700'（随主题）else 'text-stone-500 hover:text-stone-800'。signature: 弹性回弹滑块 thumb（duration-300 ease cubic-bezier(.34,1.4,.5,1)）。",
+   "descriptions": [
+    "二选一/多选一分段控件，pill thumb 在选项间用弹性 cubic-bezier 平滑滑动（ResizeObserver 实测 thumb 位置）。选中态 themeable primary-700 文字。waveflow 无 segmented 条目，新建。signature 是带回弹的滑块 thumb。"
+   ],
+   "refs_uses": [
+    "tokens/palettes/chameleon/themeable-primary-warm-paper"
+   ],
+   "tags_aesthetic": [
+    "minimal"
+   ],
+   "tags_mood": [
+    "confident"
+   ]
+  },
+  {
+   "id": "components/toggles/chameleon/themeable-switch",
+   "layer": "component",
+   "dedup": "variant",
+   "ref_target": "components/toggles/waveflow/emerald-switch",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/switch.tsx:6-23"
+   ],
+   "visual_spec": "[components/toggles/chameleon/themeable-switch] Root: 'peer inline-flex h-5(20px) w-9(36px) shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors' + 'data-[state=checked]:bg-primary-600 data-[state=unchecked]:bg-stone-300(#d6d3d1)' + 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 disabled:opacity-50'. Thumb: 'pointer-events-none block h-4(16px) w-4 rounded-full bg-white shadow-soft transition-transform data-[state=checked]:translate-x-4(16px) data-[state=unchecked]:translate-x-0'. 区分 waveflow: checked 色随 data-primary 切换（默认 #2563eb 而非 emerald #10b981），ring 用 primary-400 而非 blue-200，thumb shadow-soft（0 1px 2px rgb(0 0 0/4%),0 4px 12px rgb(0 0 0/3%)）非 shadow-sm。@radix-ui/react-switch。",
+   "descriptions": [
+    "Radix Switch，与 waveflow emerald-switch 同尺寸结构（h-5 w-9 + thumb h-4 w-4），但 checked 走 themeable primary-600（非固定 emerald-500）、focus ring primary-400（非 blue-200）、thumb 用 shadow-soft（非 shadow-sm）。"
+   ],
+   "refs_uses": [
+    "tokens/shadow/waveflow/soft-card-pop-trio"
+   ],
+   "tags_aesthetic": [
+    "minimal"
+   ],
+   "tags_mood": [
+    "calm"
+   ]
+  },
+  {
+   "id": "pages/chat/chameleon/embed-fullscreen-chat",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/embed/src/styles.ts",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/conversations/pages/conversation-detail-page.tsx:57-452",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/embed_iframe/pages/embed-iframe-page.tsx"
+   ],
+   "visual_spec": "[pages/chat/chameleon/embed-fullscreen-chat] 壳 div h-screen w-screen bg-white，widget 自挂 document.body 占满。缺 key 时 flex h-screen w-screen items-center justify-center bg-stone-50 text-[12.5px] stone-500「缺少 embed_key」。视觉 = embed-widget-bubble-shell 的 .panel.fullscreen(inset 0 100% 无圆角无阴影无 transform)。\n\n[pages/chat/chameleon/conversation-detail-bubbles] 身份头 SectionCard !py-3: 返回 Link inline-flex gap-1 text-[12.5px] text-stone-500 hover:bg-stone-100 (ArrowLeft h-3.5 w-3.5); session 标签 rounded bg-violet-50 px-1.5 py-0.5 font-mono text-[11px] text-violet-600; 标题 text-[15px] font-semibold text-stone-900。元信息行 text-[11.5px] gap-x-4 gap-y-1; 会话号复制按钮 font-mono text-stone-600 hover:text-blue-600 (Copy/Check h-3 w-3, copied→Check text-emerald-500)。气泡 SectionCard !p-0 滚动区 max-h-[calc(100vh-260px)] px-5 py-5 space-y-5。加载更早按钮: rounded-full border border-stone-200 bg-white px-3 py-1 text-[12px] text-stone-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700。气泡: max-w-[78%] rounded-2xl px-3.5 py-2.5 text-[13px]; user→rounded-tr-sm bg-blue-600 text-white whitespace-pre-wrap; assistant→rounded-tl-sm border border-stone-200 bg-white text-stone-800(Markdown)。元信息行 text-[10.5px] text-stone-400: 角色 font-medium text-stone-500 + #seq font-mono + 时间 font-mono + 👍ThumbsUp text-emerald-500/👎ThumbsDown text-rose-500。trace 按钮 rounded-md border bg-white px-1.5 py-0.5 text-[10.5px] hover:border-blue-300 hover:bg-blue-50 (ListTree h-3.5 w-3.5)。复用 StatBar/StatItem(可 mono)。",
+   "descriptions": [
+    "/embed/:embedKey 公开对话页：壳页动态加载 /widget.js 以 fullscreen 模式 init，占满 viewport，渲染同一套 widget shell(无浮动气泡、永远 open)。供业务方 iframe 嵌入或新标签直访。?euid=/?jwt= 透传身份。",
+    "可观测域会话详情：三段式——身份头(返回/session 标签/标题 + 会话号复制 + 时间) → 聚合 StatBar(应用/终端用户/轮次/Token/成本/模型) → 真实对话气泡(反向分页：默认最新页，上滚加载更早并保持视口位置)。气泡 hover 露 trace + copy/编辑/重新生成(复用 MessageActions)。与 playground 气泡同源但用 5(=20) 间距、78% 宽、滚动锚定逻辑。"
+   ],
+   "refs_uses": [
+    "blocks/chat/chameleon/embed-widget-bubble-shell",
+    "blocks/chat/chameleon/markdown-message-lite",
+    "blocks/chat/chameleon/message-actions-bar",
+    "blocks/display/waveflow/metric-card-quartet",
+    "tokens/palettes/waveflow/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "fullscreen-chat",
+    "iframe-embed",
+    "三段式详情",
+    "暖白",
+    "气泡",
+    "聚合 stat bar"
+   ],
+   "tags_mood": [
+    "embeddable",
+    "public-facing",
+    "可观测",
+    "工程克制",
+    "溯源"
+   ]
+  },
+  {
+   "id": "pages/dashboard/chameleon/observability-overview-tabs",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/dashboard/pages/dashboard-page.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/dashboard/pages/tabs/cost-tab.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/dashboard/pages/tabs/overview-tab.tsx"
+   ],
+   "visual_spec": "[pages/dashboard/chameleon/observability-overview-tabs] space-y-4。KPI grid-cols-2 lg:4 gap-4 → StatTile(见组件，icon Activity/Sparkles/Bot/Users，tone primary/success 按成功率>.95/.8 分档)。趋势 Card>CardContent pt-5：h3 text-sm font-medium stone-900「调用趋势」+ 粒度 text-[11px] stone-400 + TimeSeriesChart height 240 双 series(total var(--color-primary-600)/errors var(--color-red-500))。分布 grid lg:2 gap-4 → DistributionCard(渠道/错误)。Top grid lg:2 → Card 内 DataTable(RankBadge + 名称 truncate stone-700 + 占比条 h-1.5 w-16 gradient from-primary-300 to-primary-500 + count tnum)。",
+   "descriptions": [
+    "单页多 tab 可观测总览(概览/成本，路由 /dashboard + /dashboard/cost 切 tab 保 nav 高亮)：4 个 StatTile KPI(调用量/成功率/Token/活跃终端用户带环比) + 调用趋势双轴折线 + 渠道/错误分布卡 + Top 应用/智能体 DataTable(rank + 占比条)。"
+   ],
+   "refs_uses": [
+    "components/display/chameleon/distribution-top-bars-card",
+    "components/display/chameleon/stat-tile-delta"
+   ],
+   "tags_aesthetic": [
+    "charts",
+    "dashboard",
+    "kpi-tabs"
+   ],
+   "tags_mood": [
+    "analytical",
+    "executive"
+   ]
+  },
+  {
+   "id": "pages/detail/chameleon/eval-dataset-detail-spreadsheet",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/components/dataset-spreadsheet.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/pages/dataset-detail-page.tsx"
+   ],
+   "visual_spec": "[pages/detail/chameleon/eval-dataset-detail-spreadsheet] tab(?tab=) 切样本/运行/配置。样本视图含 DatasetSpreadsheet(Airtable 块) + 多选(checkbox accent-stone-700) + TableToolbar 工具条(手工导入/批量导入/AI 扩样)。AI 扩样走 ai-generate-studio(候选卡 + NeonLoader)。整体走暖白 SectionCard + 主题色板。",
+   "descriptions": [
+    "评测数据集详情整页：tab 切「样本(Airtable 电子表格 + 表格视图 + 批量导入/AI 扩样/全字段抽屉) / 运行(列表→运行详情) / 配置」，多选批量操作。评测域核心页。"
+   ],
+   "refs_uses": [
+    "blocks/display/chameleon/eval-spreadsheet-airtable",
+    "components/feedback/chameleon/neon-loader"
+   ],
+   "tags_aesthetic": [
+    "dataset-detail",
+    "spreadsheet",
+    "tabs"
+   ],
+   "tags_mood": [
+    "data-curation",
+    "productive"
+   ]
+  }
+ ]
+}

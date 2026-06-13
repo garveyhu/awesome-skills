@@ -1,0 +1,216 @@
+{
+ "group": 4,
+ "entries": [
+  {
+   "id": "blocks/layout/chameleon/run-master-detail-rail-overlay",
+   "layer": "block",
+   "dedup": "variant",
+   "ref_target": "blocks/layout/waveflow/master-detail-list-aside",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/components/run-list-rail.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/pages/run-detail-page.tsx"
+   ],
+   "visual_spec": "[blocks/layout/chameleon/run-master-detail-rail-overlay] 外层 flex h-[calc(100vh-130px)] flex-col gap-3。header 面包屑 ArrowLeft + 数据集名 + 「运行详情」text-[13px] font-medium。主体 flex flex-1 overflow-hidden rounded-xl(12) border border-stone-200 bg-white。RunListRail aside w-[244px] shrink-0 border-r bg-white：头 border-b px-3 py-2.5 text-[12px] font-medium「运行（N）」；run 按钮 flex-col gap-1 border-l-2 px-3 py-2，选中 border-stone-800 bg-stone-50 / 默认 border-transparent hover:bg-stone-50/60；状态点 h-1.5 w-1.5 rounded-full(success emerald-400/failed rose-400/其它 stone-300) + 名称 text-[12.5px](选中 font-medium stone-900) + Sparkles h-3 violet-400(已优化) + 优化产物 Badge bg-violet-50 text-[9px] + 分数 tnum text-[11px] scoreColor + 状态 text-[10px] stone-400 + 时间 text-[9.5px] stone-400。中主区 main bg-[var(--color-paper)]。右覆盖物 RunSampleDetailPanel / RunOptimizePanel。",
+   "descriptions": [
+    "评测运行详情整页：左窄栏 run 列表(状态点 + 名称 + 优化产物徽标 + 分数 + 时间，选中左 2px 竖条 bg-stone-800) / 中主区 run 详情 / 右侧同屏最多一层覆盖物(样本详情 or 优化侧栏)，URL ?item=/?optimize= 驱动(replace)。近似 waveflow master-detail-list-aside 但带 URL 驱动右覆盖物 + 评测语义，分叉。"
+   ],
+   "refs_uses": [
+    "components/tags-badges/chameleon/score-heat-cell",
+    "tokens/palettes/chameleon/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "master-detail",
+    "overlay-panel",
+    "url-driven"
+   ],
+   "tags_mood": [
+    "focused",
+    "investigative"
+   ]
+  },
+  {
+   "id": "blocks/nav/chameleon/borderless-bookmark-rail",
+   "layer": "block",
+   "dedup": "variant",
+   "ref_target": "blocks/nav/waveflow/tree-line-sidebar",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/layout/secondary-nav.tsx:13-74"
+   ],
+   "visual_spec": "[blocks/nav/chameleon/borderless-bookmark-rail] aside: flex w-56(224px) flex-shrink-0 flex-col overflow-y-auto bg=var(--color-warm)(#fafaf7) px-3(12px) py-4(16px)，无 border、无独立底色(同内容区 warm)。分组头 div: px-3 pb-1.5(6px) text-[10.5px] font-bold tracking-[0.06em] text-stone-400(#a8a29e) uppercase；首组 pt-0、其余 pt-5(20px)。叶子 Link (LeafItem): relative flex items-center gap-3(12px) rounded-[10px](10px) px-3(12px) py-2(8px) text-[13px] font-medium transition；active=bg-blue-50(#eff6ff) font-semibold text-blue-700(#1d4ed8)；default=text-stone-600(#57534e) hover:bg-stone-200/40 hover:text-stone-900。【signature 书签竖条】active 时绝对定位 span: absolute top-2 bottom-2 left-0 w-[3px] rounded-r-[3px] bg-blue-600(#2563eb) shadow-[0_0_8px_rgba(59,130,246,0.45)]（霓虹蓝微光）。叶子 icon h-4 w-4(16px) flex-shrink-0，active=text-blue-600(#2563eb) / default=text-stone-400(#a8a29e)；标签 span flex-1 truncate。allVisible<=1 时整个 aside return null。与 waveflow/tree-line-sidebar 区分：waveflow 240px 有 border-r、bg warm-2、tree-line L 钩子项、count chip、底部 user dropdown、active 用 paper bg+soft shadow 悬浮语；本条 224px 无边、active 用蓝药丸 + 左侧发光书签竖条、扁平无 tree-line、无底部 user(账户迁到顶栏)。",
+   "descriptions": [
+    "224px 无边二级左导航（与内容同 warm 表面、无边框无独立底色）：UPPERCASE 分组头 + 圆角药丸叶子，选中态=浅蓝药丸 + 左侧蓝色书签竖条(带霓虹微光)。单项域(如知识库)直接返回 null 不渲染。与 waveflow tree-line-sidebar 同源但去掉了边框/tree-line L 钩/底部 user/count chip"
+   ],
+   "refs_uses": [
+    "components/typography-atoms/waveflow/meta-caps-mono-pair",
+    "tokens/palettes/waveflow/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "industrial",
+    "minimal"
+   ],
+   "tags_mood": [
+    "calm",
+    "serious"
+   ]
+  },
+  {
+   "id": "blocks/nav/chameleon/cmdk-grouped-palette",
+   "layer": "block",
+   "dedup": "variant",
+   "ref_target": "blocks/nav/waveflow/cmdk-search-modal",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/index.css:161-189",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/command/command-palette.tsx:152-331"
+   ],
+   "visual_spec": "[blocks/nav/chameleon/cmdk-grouped-palette] 遮罩 div: fixed inset-0 z-[100] flex items-start justify-center bg-stone-950/40 backdrop-blur-sm。Command 容器: relative mt-[10vh] w-[600px] max-w-[90vw] overflow-hidden rounded-xl(12px) border border-stone-200 bg-paper(#fffefb) shadow-pop，flex flex-col max-h-[70vh]。输入行: flex items-center gap-2 border-b border-stone-100 px-4(16px)；Search icon h-4 w-4 strokeWidth 1.75 text-stone-400；Command.Input h-12(48px) text-[13.5px] text-stone-800 placeholder:text-stone-400 outline-none；Esc kbd: rounded border border-stone-200 px-1.5 py-0.5 text-[10px] font-mono text-stone-400。List: flex-1 overflow-y-auto px-2 py-2。.cmdk-group: padding 4px 0；group-heading: padding 6px 10px 4px, font-size 10.5px, font-weight 600, uppercase, letter-spacing 0.04em, color rgb(120 113 108)。.cmdk-item: flex items-center gap-10px padding 7px 10px border-radius 6px font-size 12.5px transition background .12s；[data-selected=true]=background rgb(239 246 255)(blue-50) color rgb(29 78 216)(blue-700)；:hover=background rgb(245 244 238)(warm-2)。四组：搜索结果(图标 ICON_MAP bot/cpu/cloud/library/key/users/puzzle + title font-medium + snippet font-mono text-[10.5px] + 右侧类型 chip bg-stone-100 px-1.5 py-0.5 text-[10px])、跳转(NAV_ITEMS + 右侧 path font-mono text-[10.5px])、动作(ACTIONS Plus/Download/KeyRound/LogOut)、最近访问(History icon)。footer: flex gap-3 border-t border-stone-100 bg-warm-2/30 px-3 py-2 text-[10.5px] text-stone-400；含 ↑↓ 导航 / ⏎ 选择 / ⌘K kbd(rounded border border-stone-200 bg-paper px-1 py-0.5 font-mono) + Code2 icon h-3 w-3。lucide: Search/Bot/Cloud/Code2/Cpu/Download/History/Key/KeyRound/LayoutDashboard/Library/LogOut/Plus/Puzzle/Settings/Shield/Users。与 waveflow/cmdk-search-modal 区分：waveflow 720×560 + 左 136px 类型 sidebar + amber-100 高亮 + stone-900 黑底 active 键盘风；本条 600px 纯 cmdk 库、无类型 sidebar、4 个语义分组、blue-50/blue-700 蓝选中、防抖 200ms 调 searchApi + localStorage 最近访问(chameleon.recent_pages, max 8)。",
+   "descriptions": [
+    "基于 cmdk 库的 600px 命令面板：顶部 12vh 落下、搜索输入(Search+Esc Kbd) + 四分组列表(搜索结果/跳转/动作/最近访问) + footer 快捷键提示。选中态蓝色(blue-50/blue-700)、非 waveflow 的 stone-900+amber 高亮键盘风"
+   ],
+   "refs_uses": [
+    "components/typography-atoms/waveflow/kbd-key-cap",
+    "tokens/palettes/waveflow/warm-paper-ink-blue",
+    "tokens/shadow/waveflow/soft-card-pop-trio"
+   ],
+   "tags_aesthetic": [
+    "editorial",
+    "minimal"
+   ],
+   "tags_mood": [
+    "calm",
+    "confident"
+   ]
+  },
+  {
+   "id": "blocks/nav/chameleon/detail-left-tab-rail",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/app-shell/graph-app-rail.tsx:73-461",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/pages/kb-detail-page.tsx:110-156"
+   ],
+   "visual_spec": "[blocks/nav/chameleon/detail-left-tab-rail] nav w-44(176) shrink-0 space-y-0.5。身份块 mb-3 flex gap-2 px-1：返回 ArrowLeft h-4 w-4 rounded-md hover:bg-stone-100 + 名称 text-[14px] font-semibold stone-900 + key font-mono text-[10.5px] stone-400。navBtn: flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-[13px] font-medium transition，选中 bg-blue-50 text-blue-700 / 默认 stone-600 hover:bg-stone-100 hover:text-stone-900，icon h-4 w-4。分隔 my-2 border-t border-stone-200/60。「进阶」小标 px-3 text-[10.5px] uppercase tracking-wider stone-400。主内容并排 SectionCard min-w-0 flex-1 或 rounded-xl border bg-[var(--color-paper)]。\n\n[blocks/nav/chameleon/graph-app-rail] aside w-64 border-r border-slate-200/80 bg-white（收起 w-12）。应用头 border-b p-3.5：返回按钮 text-[11.5px] + ChevronLeft；图标块 h-9 w-9 rounded-xl shadow-sm ring-1（chat violet-50/violet-600，workflow sky-50/sky-600）；名 text-[13px] font-semibold + key font-mono text-[10.5px] text-stone-400。KindSelect h-6 w-[88px] text-[11.5px]。发布徽标 emerald-50/emerald-700 ring-1 + Rocket 或 amber 草稿。保存态点 saving 蓝 pulse / dirty amber / saved stone。导航按钮 rounded-lg py-1.5 pl-3 text-[12.5px] font-medium，active bg-blue-50 text-blue-700 + 左条 w-[3px] bg-blue-500，icon h-4。卡片 rounded-xl border border-slate-200/80 bg-white p-3 shadow-sm hover:shadow-md：标题图标块 h-5 w-5 rounded-md bg-stone-100，状态胶囊 on bg-emerald-50/emerald-600 + 点 / off bg-stone-100。RailAction rounded-lg border border-slate-200/70 bg-slate-50 px-2 py-1.5 text-[11px] hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700。卡片区底 bg-slate-50/40。",
+   "descriptions": [
+    "KB 详情等用的左窄栏竖向 tab：顶部「← 返回 + 名称/key」身份块 + 主分组按钮 + 分隔线 + 「进阶」小标 + 进阶分组按钮，选中态 blue-50/blue-700。URL ?tab= 驱动。waveflow 详情走 master-detail 列表，这是竖向 tab 形态，全新。",
+    "Dify 套路的编辑器左侧应用栏：应用头（返回/图标/名称/类型切换下拉/key/发布状态/保存态点）+ 二级导航（编排/监测，选中态浅蓝底 + 左侧主题色条）+ 应用卡片（Web App / 后端服务 API，含可用/未启用状态点）。可收起成 48px 图标栏。waveflow tree-line-sidebar / icon-collapsed-sidebar 是全局后台树形侧栏，这是编辑器内应用级 rail（含应用头 + 状态 + 卡片），结构不同，故 new。"
+   ],
+   "refs_uses": [
+    "tokens/palettes/chameleon/node-type-hue-system",
+    "tokens/palettes/chameleon/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "left-rail",
+    "vertical-tabs",
+    "二级导航左条",
+    "卡片入口",
+    "应用级rail",
+    "状态点"
+   ],
+   "tags_mood": [
+    "navigable",
+    "organized",
+    "克制",
+    "工程师",
+    "精密"
+   ]
+  },
+  {
+   "id": "blocks/nav/chameleon/domain-tab-topbar-account",
+   "layer": "block",
+   "dedup": "variant",
+   "ref_target": "blocks/nav/waveflow/topbar-search-ping",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/layout/top-bar.tsx:24-150"
+   ],
+   "visual_spec": "[blocks/nav/chameleon/domain-tab-topbar-account] header: flex h-14(56px) flex-shrink-0 items-center gap-4(16px) border-b border-stone-200/70 bg=var(--color-paper)(#fffefb) px-4(16px)。品牌 Link: flex items-center gap-2.5(10px)，img /logo-sm.png h-7 w-7(28px) object-contain，span text-[15px] font-semibold tracking-tight text-stone-800(#292524)。分隔 span h-5(20px) w-px bg-stone-200。域 nav: flex items-center gap-1(4px)；每个域 Link: flex items-center gap-2(8px) rounded-[10px] px-3.5(14px) py-2(8px) text-[13.5px] font-semibold；active=bg-blue-50(#eff6ff) text-blue-700(#1d4ed8) + icon text-blue-600(#2563eb)；default=text-stone-600(#57534e) hover:bg-stone-100/70 hover:text-stone-900 + icon text-stone-400(#a8a29e)；域 icon h-[17px] w-[17px](17px, lucide Boxes/Database/Telescope/Settings)。右侧 ml-auto：AccountMenu 头像按钮 rounded-full + focus-visible:ring-2 ring-blue-500/40，img /default-avatar.jpg h-8 w-8(32px) rounded-full object-cover。Dropdown content: w-64(256px) rounded-xl(12px) border-stone-200/80 p-1.5(6px) shadow=var(--shadow-pop)；用户头部 flex gap-3 px-2.5 py-2.5 含 h-9 w-9(36px) 头像 + 用户名 text-[13.5px] font-semibold + email text-[11.5px] text-stone-400；item gap-2.5 rounded-lg px-2.5 py-2 text-[13px]，含 API 文档(BookOpen)/系统配置(Settings)/退出(LogOut, text-red-600 hover:bg-red-50)。lucide: BookOpen/LogOut/Settings。与 waveflow/topbar-search-ping 区分：那个 h-12 暖底 + 260px 搜索按钮 + emerald ping 在线 dot、无头像；本条 h-14 paper 底 + 左对齐域 tab 药丸 + 右上头像账户菜单、搜索移到 ⌘K。",
+   "descriptions": [
+    "h-14 浅 paper 通栏顶栏：品牌(logo+Chameleon) | 竖分隔 | 域 tabs(工作台/知识库/观测/设置, 左对齐药丸) ……右上角头像账户 dropdown。无搜索按钮、无在线 ping——与 waveflow topbar-search-ping 结构相反"
+   ],
+   "refs_uses": [
+    "tokens/border/waveflow/translucent-stone-system",
+    "tokens/palettes/waveflow/warm-paper-ink-blue",
+    "tokens/shadow/waveflow/soft-card-pop-trio"
+   ],
+   "tags_aesthetic": [
+    "industrial",
+    "minimal"
+   ],
+   "tags_mood": [
+    "calm",
+    "confident",
+    "serious"
+   ]
+  },
+  {
+   "id": "components/avatars-icons/chameleon/provider-bot-avatar",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/provider-avatar.tsx:14-57",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/message-thread.tsx:188-191",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/pages/playground-page.tsx:631"
+   ],
+   "visual_spec": "[components/avatars-icons/chameleon/provider-brand-avatar] 外层: flex shrink-0 items-center justify-center rounded-lg(=8) font-semibold ring-1 ring-inset; sm=h-8 w-8(=32) text-[11px], md=h-10 w-10(=40) text-[13px]。品牌色对(bg/text/ring): deepseek 'DS' blue-50/blue-600/blue-100; qwen '通' violet-50/violet-600/violet-100; openai 'AI' emerald-50/emerald-600/emerald-100; new-api&oneapi '⇄' primary-50/primary-600/primary-100; dify 'Di' indigo; fastgpt 'FG' cyan; coze 'Cz' amber。fallback stone-100/stone-500/stone-200 首两字母大写。\n\n[components/avatars-icons/chameleon/gradient-bot-avatar] h-6 w-6(24) shrink-0 rounded-full bg-gradient-to-br from-violet-500(#8b5cf6) to-blue-500(#3b82f6) text-white flex items-center justify-center，内含 Bot lucide h-3.5 w-3.5(14)。对比列头变体：h-4 w-4(16) rounded(4) 同渐变作色块。",
+   "descriptions": [
+    "按 provider code 给品牌色 + 短标(DS/通/AI/⇄/Di/FG/Cz)的单字方头像，替代千篇一律灰云图标提升可扫性。未知 code 回退首两字母 + 中性色；孤儿(__deleted_*)剥除后缀。2 档尺寸。",
+    "AI assistant 消息头像 / 对比列头：violet→blue 圆形渐变 + 白色 Bot 图标。playground 消息气泡、对比列标识、widget bot 头像共用的小签名。waveflow 无 AI bot 身份，全新。"
+   ],
+   "refs_uses": [
+    "tokens/palettes/waveflow/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "ai-identity",
+    "gradient",
+    "可扫性",
+    "品牌单字头像",
+    "彩色 ring"
+   ],
+   "tags_mood": [
+    "ai",
+    "friendly",
+    "可扫读",
+    "品牌化",
+    "工程克制"
+   ]
+  },
+  {
+   "id": "components/buttons/chameleon/themeable-cva-button",
+   "layer": "component",
+   "dedup": "variant",
+   "ref_target": "components/buttons/waveflow/cva-engineer-button",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/button.tsx:16-87"
+   ],
+   "visual_spec": "[components/buttons/chameleon/themeable-cva-button] base: inline-flex shrink-0 items-center justify-center gap-1.5(6px) whitespace-nowrap rounded-md(6px) font-medium transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-200. 9 variant: primary/default 'bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800'(primary-600 默认=#2563eb 但随 data-primary 切换 purple#9333ea/green#059669/orange#ea580c/rose#e11d48/cyan#0891b2...); outline 'border border-stone-300 bg-white text-stone-700 hover:bg-stone-50 active:bg-stone-100'; secondary 'bg-stone-100 text-stone-900 hover:bg-stone-200'(waveflow 无此 variant); ghost 'text-stone-700 hover:bg-stone-100 active:bg-stone-200'; link 'text-primary-600 hover:underline underline-offset-2'; danger 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800'(#dc2626); danger-outline 'border border-red-300 text-red-600 hover:bg-red-50 active:bg-red-100'; dark 'bg-stone-900 text-white hover:bg-stone-800 active:bg-stone-700'. 6 size: sm 'h-7(28px) px-2.5(10px) text-[11.5px]'; md/default 'h-8(32px) px-3(12px) text-[12.5px]'; lg 'h-9(36px) px-4(16px) text-[14px]'; icon 'h-8 w-8 p-0'; icon-sm 'h-7 w-7 p-0'. defaultVariants={variant:'primary', size:'md'}. loading 时前置 <Loader2 className='h-3.5 w-3.5(14px) animate-spin'/> 并 disabled。lucide: Loader2。",
+   "descriptions": [
+    "CVA 9 variant × 6 size 按钮，与 waveflow 同源但主色走可切换的 --color-primary-* 而非硬编码 blue；新增 secondary variant + md/default size 别名 + primary 为默认 variant；loading 自动 Loader2，asChild 走 Radix Slot 多态。"
+   ],
+   "refs_uses": [
+    "tokens/palettes/chameleon/themeable-primary-warm-paper"
+   ],
+   "tags_aesthetic": [
+    "industrial",
+    "minimal"
+   ],
+   "tags_mood": [
+    "confident",
+    "serious"
+   ]
+  }
+ ]
+}

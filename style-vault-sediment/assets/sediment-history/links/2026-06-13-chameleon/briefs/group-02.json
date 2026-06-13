@@ -1,0 +1,211 @@
+{
+ "group": 2,
+ "entries": [
+  {
+   "id": "blocks/display/chameleon/eval-spreadsheet-airtable",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/components/dataset-spreadsheet.tsx"
+   ],
+   "visual_spec": "[blocks/display/chameleon/eval-spreadsheet-airtable] 外层 overflow-x-auto rounded-lg(8) border border-stone-200/60。table table-fixed minWidth 动态(系统列窄/文本宽)。thead border-b border-stone-200/70 bg-[var(--color-warm-2)]/40，th sticky top-0 px-3 py-2.5 text-left text-[11px] font-medium stone-500，列名走中文映射 getColumnLabel。tbody divide-y divide-stone-100 text-[12.5px]，行 group hover:bg-stone-50，td px-3 py-2 align-top。EditableText 非编辑 truncate text-stone-700，编辑态 textarea rounded border border-blue-300 ring-2 ring-blue-100 text-[12.5px]，Enter 提交/Shift+Enter 换行/Esc 还原。JsonCellPopover 触发 truncate font-mono text-[11.5px] stone-500，PopoverContent w-[28rem] 查看/编辑切换 + JsonViewer 高亮。redacted: Lock h-3 + stone-400 + Tooltip。NoteCell textarea border-transparent hover:border-stone-200 focus:border-blue-300。删除 Trash2 h-3.5 opacity-0 group-hover hover:bg-rose-50 hover:text-rose-600。ColumnMenu DropdownMenu Columns3 + 隐藏数 chip。新增行 Button secondary + Plus。",
+   "descriptions": [
+    "动态 {{var}} 输入列 + 固定「理想回答/元数据/备注/操作」列的行内可编辑表格：单格失焦保存、长值省略 hover Tooltip、复杂值 JSON Popover 双视图、系统列默认隐藏可勾回(localStorage)、脱敏行 Lock 只读、底部「+新增行」。Airtable 化。waveflow 无电子表格，全新。"
+   ],
+   "refs_uses": [
+    "components/inputs/waveflow/blue-focus-input",
+    "tokens/palettes/chameleon/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "airtable",
+    "inline-edit",
+    "spreadsheet"
+   ],
+   "tags_mood": [
+    "data-dense",
+    "productive"
+   ]
+  },
+  {
+   "id": "blocks/display/chameleon/kb-chunk-card-wall",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/components/chunk-card.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/pages/kb-document-detail-page.tsx:113-119"
+   ],
+   "visual_spec": "[blocks/display/chameleon/kb-chunk-card-wall] 网格 grid-cols-1 md:2 xl:3 gap-3。卡: rounded border bg-white，seq 头 + 正文 whitespace-pre-wrap，>480 字截断「…」+ 展开。编辑态换 Textarea，保存「已保存并重嵌」toast。动作 Check/Copy/Eye/EyeOff/Pencil/Trash2 lucide。停用态弱化。文档详情头：信息卡(标签 tag-editor + 元数据字段填值 doc-meta-fields) + 「N chunks · M tokens」text-[11.5px] stone-500 + 搜索框 max-w-[280px] + TablePagination。",
+   "descriptions": [
+    "文档详情的 chunk 段落管理墙：responsive 卡片网格，每卡 seq + 正文(超 480 字截断展开) + 查看/编辑(重嵌)/启停/删除/复制行内动作。Dify 段落管理范式，waveflow 无 KB，全新。"
+   ],
+   "refs_uses": [
+    "tokens/palettes/chameleon/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "card-wall",
+    "paragraph-mgmt"
+   ],
+   "tags_mood": [
+    "editorial",
+    "manageable"
+   ]
+  },
+  {
+   "id": "blocks/display/chameleon/kb-chunking-3pane-preview",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/pages/kb-chunking-preview-page.tsx"
+   ],
+   "visual_spec": "[blocks/display/chameleon/kb-chunking-3pane-preview] SectionCard !p-0。header border-b border-stone-200/70 px-3 py-2，标题 text-[14px] font-medium + 副标 text-[11px] stone-500 + chunks 计数 + 重跑 RotateCw(pending animate-spin)。grid h-[calc(100vh-180px)] grid-cols-[1fr_1.2fr_320px]。栏头 bg-warm-2/40 border-b px-3 py-1.5 text-[10.5px] uppercase tracking-wider stone-500。左 Textarea border-0 rounded-none font-mono text-[12px]。中 ChunkCard: rounded-md border bg-white px-3 py-2，选中 border-amber-400 ring-2 ring-amber-100 / hover border-stone-300 bg-stone-50，头 text-[10px] uppercase「#seq」+ 「N 字·~M tok」font-mono tnum，正文 text-[12px] whitespace-pre-wrap stone-800。右 mode 按钮 grid-cols-2 gap-1.5 rounded-md border px-2 py-1.5 text-[11.5px]，选中 border-amber-400 bg-amber-50/60 text-amber-800；range input accent-amber-600；CleanRow label + Switch；底部 Sparkles h-3 text-amber-500 + 防抖提示。",
+   "descriptions": [
+    "左原文 textarea / 中 chunks 卡片列表(seq + 字数·token + 选中高亮) / 右 strategy 表单(mode 七按钮网格 + amber range 滑块 + 清洗开关)。改动 300ms 防抖即时预览不写库。amber 强调的调试面。waveflow 无 chunking，全新。"
+   ],
+   "refs_uses": [
+    "components/toggles/waveflow/emerald-switch",
+    "tokens/palettes/chameleon/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "amber-accent",
+    "live-preview",
+    "three-pane"
+   ],
+   "tags_mood": [
+    "exploratory",
+    "tuning"
+   ]
+  },
+  {
+   "id": "blocks/display/chameleon/kb-hit-test-3pane",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/components/hit-test-panel.tsx"
+   ],
+   "visual_spec": "[blocks/display/chameleon/kb-hit-test-3pane] grid lg:grid-cols-[260px_minmax(0,1fr)_minmax(0,1.05fr)] gap-3。① 参数: Field label text-[12px] stone-600 + Textarea/range(accent-amber-600)/Select h-8 text-[12.5px]/Switch；搜索 Button w-full + Search h-3.5。② HitCard: block w-full rounded-lg border bg-white p-2.5，active border-amber-300 ring-1 ring-amber-200 / hover border-amber-200，头 text-[11px] stone-500「#rank 文档 seq」font-mono + ScoreBreakdown compact + 正文 line-clamp-2 text-[12px] stone-700。③ SourceView: rounded-lg border border-stone-200/70 bg-white，头 Link 文档名 + seq font-mono text-[10.5px] + ScoreBreakdown 全 + 原文 whitespace-pre-wrap text-[12.5px] + 关键词高亮(dangerouslySetInnerHTML)。空态 SearchX h-8 strokeWidth 1.4 stone-400。",
+   "descriptions": [
+    "左参数(query textarea + topK range + 召回模式 select + 多查询 switch + 标签/元数据过滤) / 中命中 chunk 卡(rank + 文档 + 分项得分条 + 摘要) / 右选中原文(关键词高亮) + 分项得分。RAG 召回调试，amber 强调。waveflow 无，全新。"
+   ],
+   "refs_uses": [
+    "components/indicators/chameleon/channel-score-bars",
+    "tokens/palettes/chameleon/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "amber-accent",
+    "retrieval-debug",
+    "three-pane"
+   ],
+   "tags_mood": [
+    "exploratory",
+    "transparent"
+   ]
+  },
+  {
+   "id": "blocks/display/chameleon/responsive-overlay-data-table",
+   "layer": "block",
+   "dedup": "variant",
+   "ref_target": "blocks/display/waveflow/data-table-leftbar-shimmer",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/table/column-header.tsx:13-25",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/table/data-table.tsx:146-291"
+   ],
+   "visual_spec": "[blocks/display/chameleon/responsive-overlay-data-table] wrapper: relative rounded-lg(8) border border-stone-200/60；overflowX 时 overflow-x-auto 否则 overflow-hidden。table: table-fixed；scrollX&&!minWidth → min-w-max，否则 w-full；minWidth 设 style.minWidth。colgroup: hasLeftBar 首列 col width=4。thead: border-b border-stone-200/70；tr text-[11px](11) font-medium text-stone-400（注意与 waveflow 的 bg-warm-2/40+text-[10.5px] uppercase tracking-wider text-stone-500 不同——本表头无暖底无大写无字距）；th px-3(12) py-2.5(10) font-medium，sortable header <button inline-flex items-center gap-1(4) hover:text-stone-900> + SortIndicator(ArrowUpDown/ArrowUp/ArrowDown h-3 w-3=12，未排序 text-stone-300)。tbody: divide-y divide-stone-100 text-[12.5px](12.5) transition-opacity duration-200；showOverlay 时 pointer-events-none opacity-50。refreshing overlay: 绝对定位 inset-x-0 top-0 z-10 h-[2px](2) overflow-hidden bg-stone-200/30，内层 h-full background:linear-gradient(90deg,transparent 0%,#3b82f6 40%,#2563eb 60%,transparent 100%) + animation:global-progress 1.1s ease-in-out infinite。skeleton 行：Array(8)，每 cell px-3 py-3(12)，内 div.skeleton h-2(8) rounded-full style.width=`${40+((i*7+c.key.length)%50)}%`，showSkeleton 时 opacity-100 否则 opacity-0(透明占位防闪)，transition-opacity duration-150。leftBar 列: td relative p-0，内 span absolute inset-y-0 left-0 w-1(4) bg-emerald/red/stone-* 或 bg-transparent。数据行: group transition-colors hover:bg-stone-50；onRowClick 时 cursor-pointer。数据 cell: px-3 py-3。empty: colSpan 全列 py-8 text-center text-stone-400，flex-col items-center gap-2(8) emptyText+emptyExtra。延迟双阈值: useDelayedFlag(isPlaceholder,200,400) 骨架；useDelayedFlag(busy&&!isPlaceholder&&rows>0,250,400) overlay。lucide: ArrowDown/ArrowUp/ArrowUpDown。\n\n[components/typography-atoms/chameleon/hint-column-header] span inline-flex items-center gap-1(4)，title + hint 时 Tooltip 包 HelpCircle h-3 w-3(12) cursor-help text-stone-300 hover:text-stone-500 strokeWidth=1.75。lucide: HelpCircle。",
+   "descriptions": [
+    "DataTable 泛型表格主体：4px 左状态条 + 8 行双阈值延迟 shimmer 骨架 + 顶部蓝渐变 refreshing overlay（已有数据时翻页/改筛选静默换页，不替换为骨架）+ scrollX/minWidth 大小屏自适应横滚 + ArrowUpDown 可点排序。与 waveflow/data-table-leftbar-shimmer 同源但表头与刷新机制明显分叉。",
+    "ColumnHeader 表头 + hover ? 提示：标题后跟可选 HelpCircle 图标，hover 出 Tooltip 解释列含义。waveflow 表头无内置 hint tooltip 原子 → new。"
+   ],
+   "refs_uses": [
+    "tokens/border/waveflow/translucent-stone-system",
+    "tokens/iconography/waveflow/engineer-detail-classes",
+    "tokens/motion/waveflow/keyframes-suite",
+    "tokens/palettes/waveflow/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "industrial",
+    "minimal"
+   ],
+   "tags_mood": [
+    "calm",
+    "serious"
+   ]
+  },
+  {
+   "id": "blocks/display/chameleon/run-compare-heatmap-matrix",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/components/run-compare-matrix.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/components/run-compare-stats.tsx"
+   ],
+   "visual_spec": "[blocks/display/chameleon/run-compare-heatmap-matrix] 矩阵 table border-collapse text-[11.5px] rounded-lg border border-stone-200。thead bg-stone-50，首列 th min-w-[220px] sticky left-0 z-10 border-r，运行列 th min-w-[116px] + 名称 truncate + 均值 text-[10px] stone-400。行 cursor-pointer hover:bg-stone-50/60，首格 sticky left-0 max-w-[260px] 样本预览 truncate stone-700 + 预期 truncate text-[10px] stone-400。score 格 px-1.5 py-1.5，内块 tnum rounded px-2 py-1 + scoreBg 色阶。对比统计折叠：ChevronDown/Right h-3.5 + 「对比统计」text-[12.5px] font-medium + 副标 stone-400「能力雷达·分数分布·逐题得分·AI 分析」，展开 rounded-lg border bg-white p-3 内含 recharts(雷达/柱/折线，色板 #3b82f6/#10b981/#f59e0b/#8b5cf6/#f43f5e/#06b6d4) + Markdown AI 分析。弹窗 Modal size xl: 问题 + 预期块 rounded-md border-emerald-200/70 bg-emerald-50/40 + OutputBlock(pre max-h-72 bg-stone-50 font-mono text-[11.5px]) + 运行列 grid 每列 rounded-md border bg-white p-2.5 + 得分 chip scoreBg。导出报告头 exporting 态 + pixelRatio 1.5。",
+   "descriptions": [
+    "样本行 × 运行列的 score 色块热力图（sticky 首列样本·预期），点行开居中弹窗并排各运行的预期/实际输出。带可折叠对比统计区(雷达/分布/折线/胜负 + AI 分析) + 导出 PNG/Excel。借鉴 Langfuse，waveflow 无，全新。"
+   ],
+   "refs_uses": [
+    "components/feedback/chameleon/neon-loader",
+    "components/tags-badges/chameleon/score-heat-cell"
+   ],
+   "tags_aesthetic": [
+    "charts",
+    "comparison",
+    "heatmap-matrix"
+   ],
+   "tags_mood": [
+    "analytical",
+    "benchmarking"
+   ]
+  },
+  {
+   "id": "blocks/display/chameleon/trace-observation-tree-gantt",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/call_logs/components/observation-tree.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/traces/components/cost-label.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/traces/components/gantt-bar.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/traces/components/trace-gantt.tsx"
+   ],
+   "visual_spec": "[blocks/display/chameleon/trace-observation-tree] 容器 space-y-0.5 font-mono text-[11.5px]。TreeRow: flex items-center gap-2(8) rounded px-1 py-1，paddingLeft=depth*14+4，hover bg-stone-100/70，选中 bg-blue-50 + absolute left-0 w-[3px] rounded-r bg-blue-500 竖条；depth guide: absolute border-l border-stone-200/80 left=(depth-1)*14+10。折叠箭头 Chevron h-3 w-3 stone-400。type icon h-3.5 + 色：trace stone-700/span stone-500/generation violet-600/agent blue-600/tool orange-600/retriever emerald-600/evaluator amber-600/embedding cyan-600/guardrail rose-600。type label w-16 font-medium。失败 AlertCircle h-3 + rose-500 + error 截 40 字。scores chip 按 source: feedback emerald/annotation amber/eval violet/api blue border+50bg+700text；👍👎 ThumbsUp/Down。token Badge outline font-mono text-[10px]。duration: w-32 区，条 h-1 flex-1 rounded-full bg-stone-100 内填(成功 bg-blue-400/失败 bg-rose-400) width=duration/total%，数字 tnum w-12 text-right text-[10.5px] stone-500「Nms」。ObservationIconRail 收起态：纵向 icon 轨 gap-0.5，选中 bg-blue-100。\n\n[blocks/display/chameleon/trace-gantt-timeline] LABEL_W 210 / ROW_H 30 / RULER_H 24。缩放条右上：Minus/Plus h-3.5 rounded p-0.5 hover bg-stone-100 + 百分比 w-10 text-center font-mono text-[10.5px] tabular-nums，步进 *1.5。ruler: label 占位 text-[10.5px] stone-400「时间轴」+ 刻度区 border-b border-stone-200/70，tick font-mono text-[9.5px] stone-400 translateX 同步 scrollLeft。行: border-b border-stone-100，选中 bg-amber-50/60 / hover bg-stone-50。label 列 sticky left-0 z-10 paddingLeft 6+depth*12，type slice(0,4) rounded px-1 font-mono text-[9px] uppercase(成功 bg-stone-100 stone-500/失败 bg-rose-50 rose-600) + agent_key truncate text-[11px] stone-700。GanttBar: h-[14px] rounded-[3px] -translate-y-1/2，OBS_COLOR trace stone-400/span sky-400/generation violet-400/agent indigo-400/tool amber-400/retriever teal-400/evaluator fuchsia-400/embedding cyan-400/guardrail rose-300，失败统一 bg-rose-500；选中 ring-2 ring-stone-800 ring-offset-1，hover brightness-110 ring-1 ring-stone-500；width>12% 内显时长 font-mono text-[9.5px] text-white/90。CostLabel: 有成本 emerald-700 / 仅 token stone-400 font-mono text-[10px] tabular-nums。body 高 min(520,max(180,rows*30+8))。",
+   "descriptions": [
+    "trace 的嵌套观测树：每行 [type icon] type   名称/模型code   scores 徽章   token   duration 条+ms。9 类 observation 各自 icon+色，子节点 14px 缩进 + 竖向 guide 线，可折叠，选中态左侧蓝竖条。LangFuse/LangSmith 范式，waveflow 无 trace，全新。",
+    "trace 的甘特视图：竖向虚拟滚动撑 1000+ spans，label 列 sticky-left，时间区横向缩放(50%–N) + ruler 同步，bar 按 observation_type 着色叠 cost/token 标签。与树视图切换。waveflow 无，全新。"
+   ],
+   "refs_uses": [
+    "tokens/palettes/chameleon/warm-paper-ink-blue",
+    "tokens/typography/pairs/chameleon/inter-jetbrains-instrument-trio"
+   ],
+   "tags_aesthetic": [
+    "gantt",
+    "monospace",
+    "nested-tree",
+    "observability",
+    "virtualized"
+   ],
+   "tags_mood": [
+    "debuggable",
+    "performance-aware",
+    "technical"
+   ]
+  }
+ ]
+}

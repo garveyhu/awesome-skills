@@ -1,0 +1,206 @@
+{
+ "group": 5,
+ "entries": [
+  {
+   "id": "components/display/chameleon/distribution-score-bars",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/lib/score.ts",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/dashboard/components/distribution-card.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/dashboard/pages/tabs/overview-tab.tsx:27-59",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/components/score-breakdown.tsx"
+   ],
+   "visual_spec": "[components/display/chameleon/distribution-top-bars-card] Card>CardContent pt-5(20)。h3 mb-3 text-sm font-medium stone-900。ul space-y-2.5(10)。行：label truncate text-[12px] stone-700 + count tnum stone-500 + 百分比 stone-400 toFixed(0)%；条 h-1.5 w-full rounded bg-stone-100，内填 bg-primary-400 width=count/total%。Top 表变体：进度条 h-1.5 w-16 + bg-gradient-to-r from-primary-300 to-primary-500，配 RankBadge。\n\n[components/indicators/chameleon/channel-score-bars] full 模式 ChannelRow: label w-16 text-right text-[10.5px] stone-500 + 进度条 h-1.5 flex-1 rounded-full bg-stone-100 内填(向量 bg-sky-500/关键词 bg-amber-500/精排 bg-violet-500) width=clampPct(v*100)% + 值 w-9 text-right font-mono text-[10.5px] tabular-nums stone-600。compact: flex-wrap gap-x-2.5，每通道「向量 88%」short text-[10.5px] stone-500 + font-mono stone-700。\n\n[components/tags-badges/chameleon/score-heat-cell] scoreBg: ≥0.8 bg-emerald-50 text-emerald-700 / 0.5–0.8 bg-amber-50 text-amber-700 / <0.5 bg-red-50 text-red-700 / 空 bg-stone-100 text-stone-400。scoreColor: emerald-600/amber-600/red-600/stone-400。值 toFixed(2)，tnum font-mono。矩阵单元格用法：rounded px-2 py-1 tnum w-full text-left。",
+   "descriptions": [
+    "单维 top-N 横向占比条：每行 label + count + 百分比 + 细进度条。dashboard 渠道/错误类型分布、Top 应用/智能体共用。近似 waveflow 列表条但成卡片形态 + 占比百分比，轻度分叉。",
+    "RAG 命中的多通道相似度可视化：向量(sky)/关键词(amber)/精排(violet)各一行细进度条 + 百分比；compact 模式压成一行文字。KB 检索测试专用，waveflow 无 RAG，全新。",
+    "0–1 分数的统一色编码：≥0.8 绿 / 0.5–0.8 黄 / <0.5 红 / 空灰。作 chip 底色（scoreBg）或纯文字色（scoreColor），贯穿 datasets/eval-jobs 列表·详情·对比矩阵。waveflow 无评测分数语义，全新。"
+   ],
+   "refs_uses": [
+    "tokens/palettes/chameleon/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "color-coded",
+    "distribution-bars",
+    "heatmap",
+    "mini-bars",
+    "multi-channel",
+    "ranked"
+   ],
+   "tags_mood": [
+    "analytical",
+    "transparent"
+   ]
+  },
+  {
+   "id": "components/display/chameleon/dynamic-virtual-list",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/virtual-list.tsx:27-75"
+   ],
+   "visual_spec": "[components/display/chameleon/dynamic-virtual-list] 滚动容器: div ref + overflow-y-auto + className(须含高度 h-full/max-h-[...])。内层: relative w-full style.height=virtualizer.getTotalSize()。每虚拟项: div data-index ref=measureElement absolute left-0 top-0 w-full + itemClassName，style.transform=translateY(vi.start px)。estimateSize 默认60，overscan 默认8。stickToBottom 时 items 变化 scrollToIndex(last,{align:'end'})。无固定视觉色——纯结构组件，色彩由 renderItem 自管。",
+   "descriptions": [
+    "VirtualList 通用虚拟列表(@tanstack/react-virtual)：动态行高 measureElement + 可选 stickToBottom(聊天流/流式逐 chunk 追加时贴底) + overscan，调用方给固定高度容器。waveflow 无虚拟化列表 → new。"
+   ],
+   "refs_uses": [],
+   "tags_aesthetic": [
+    "minimal"
+   ],
+   "tags_mood": [
+    "calm"
+   ]
+  },
+  {
+   "id": "components/display/chameleon/json-viewer-cell",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/json-viewer.tsx:48-277",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/json-cell.tsx:12-61"
+   ],
+   "visual_spec": "[components/display/chameleon/json-cell-collapsible] null 显 <span className='text-stone-400'>—</span>。短 string(<=80) 'text-stone-700'。折叠按钮: 'block max-w-full truncate text-left font-mono text-[11px] text-stone-600 hover:text-stone-900'，open 时显 '▾ 收起' else summary（preview 或 oneLine 截 80+…）。展开 pre: 'mt-1 max-h-64(256px) overflow-auto rounded-md(6px) bg-stone-50 p-2(8px) font-mono text-[11px] leading-relaxed text-stone-700'。pickPreview 取对象 .preview 字段（截 100 字）。\n\n[components/feedback/chameleon/zero-dep-json-viewer] 外框: flex flex-col overflow-hidden rounded-md(6) border border-stone-200 bg-white。搜索条(searchable): flex items-center gap-2 border-b border-stone-200 bg-stone-50/60 px-2 py-1.5，Search h-3.5 w-3.5(14) text-stone-400 + input flex-1 bg-transparent text-[12.5px](12.5) outline-none placeholder:text-stone-400 + 复制按钮 inline-flex items-center gap-1 rounded px-1.5 py-1 text-[11.5px](11.5) text-stone-600 hover:bg-stone-200(复制成功 Check h-3 w-3 text-emerald-600'已复制' 否则 Copy h-3 w-3'复制')。内容区: overflow-auto p-2 font-mono text-[12px](12) leading-snug style.maxHeight 默认'70vh'。节点缩进 paddingLeft=depth*12。值着色: string text-emerald-700(JSON.stringify) / number text-sky-700 / boolean text-purple-700 / null|undefined text-stone-400；key text-stone-700；括号 text-stone-500；折叠摘要 text-stone-400(N items/N keys)。展开按钮 ChevronDown/ChevronRight h-3 w-3(12) text-stone-400 hover:text-stone-600。逐节点复制 CopyButton: ml-2 hidden group-hover:inline-flex rounded p-0.5 text-stone-400 hover:bg-stone-100，Check/Copy h-3 w-3。高亮: mark rounded bg-amber-100 px-0.5 text-stone-900。默认 depth<3 展开。lucide: Check/ChevronDown/ChevronRight/Copy/Search。",
+   "descriptions": [
+    "表格只读 JSON/文本单元格：短文本直显，长文本/对象折叠为单行摘要（80 字），点击展开 mono pre 完整缩进；脱敏字段（{hash,length,preview}）优先 preview。waveflow log-pre-viewer 是整块日志 pre，此为表格 cell 级折叠，新建。",
+    "JsonViewer 自实现零依赖 JSON 树：缩进折叠、类型着色(string emerald / number sky / boolean purple / null 灰)、搜索过滤(命中 amber-100 高亮 + 隐藏不匹配子树 + 命中自动展开)、整体复制 + 逐节点 hover 复制、maxHeight 滚动。waveflow 无对应。"
+   ],
+   "refs_uses": [
+    "tokens/iconography/waveflow/engineer-detail-classes",
+    "tokens/palettes/waveflow/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "industrial",
+    "minimal"
+   ],
+   "tags_mood": [
+    "serious"
+   ]
+  },
+  {
+   "id": "components/display/chameleon/paper-card-shell",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/card.tsx:5-60"
+   ],
+   "visual_spec": "[components/display/chameleon/paper-card-shell] Card: 'rounded-lg(8px) border border-stone-200 bg-[var(--color-paper)](#ffffff) text-stone-900 shadow-card'（shadow-card=0 1px 3px rgb(0 0 0/5%),0 2px 8px rgb(0 0 0/3%)）。Header 'flex flex-col space-y-1.5(6px) p-5(20px)'。Title 'text-base(16px) font-semibold leading-none tracking-tight'。Description 'text-xs(12px) text-stone-500'。Content 'p-5 pt-0'。Footer 'flex items-center p-5 pt-0'。全 forwardRef。",
+   "descriptions": [
+    "基础卡片：rounded-lg + stone-200 边 + paper 底 + shadow-card + Header/Title/Description/Content/Footer 组件群（p-5 / space-y-1.5）。waveflow 卡片散在 blocks（metric-card/set-card），无原语级 Card 条目，新建。"
+   ],
+   "refs_uses": [
+    "tokens/shadow/waveflow/soft-card-pop-trio"
+   ],
+   "tags_aesthetic": [
+    "minimal"
+   ],
+   "tags_mood": [
+    "calm"
+   ]
+  },
+  {
+   "id": "components/display/chameleon/recharts-time-series",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/time-series-chart.tsx:44-123"
+   ],
+   "visual_spec": "[components/display/chameleon/recharts-time-series] 空态 'flex items-center justify-center text-sm(14px) text-stone-400'（默认 '暂无数据'）。CartesianGrid strokeDasharray='3 3' stroke='rgb(0 0 0/6%)'。XAxis/YAxis stroke='#999' fontSize=11。双轴时 left/right YAxis（right orientation='right'）。Tooltip contentStyle{background:'var(--color-paper)'(#ffffff), border:'1px solid rgb(0 0 0/10%)', borderRadius:8, fontSize:12}。Line type='monotone' strokeWidth={2} dot={false}，颜色由 series.color 传入（建议 'var(--color-primary-600)' 随主题）。height 默认 256。recharts: CartesianGrid/Line/LineChart/ResponsiveContainer/Tooltip/XAxis/YAxis。signature: 半透明黑网格(rgb 0 0 0/6%) + paper 底 tooltip + themeable primary 线色 + 双轴。",
+   "descriptions": [
+    "recharts 折线时序图统一封装：主题化网格/坐标轴/tooltip + 多 series + 单/双 Y 轴（axis='right' 叠加量纲差异指标如成本+token）+ 空态兜底。waveflow article-gauge-monitor 是仪表盘，无 recharts 折线封装条目，新建。"
+   ],
+   "refs_uses": [
+    "tokens/border/waveflow/translucent-stone-system"
+   ],
+   "tags_aesthetic": [
+    "industrial",
+    "minimal"
+   ],
+   "tags_mood": [
+    "serious"
+   ]
+  },
+  {
+   "id": "components/display/chameleon/stat-tile-delta",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/mini-stat.tsx:36-48",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/stat-bar.tsx:11-44",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/stat-tile.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/stat-tile.tsx:37-98"
+   ],
+   "visual_spec": "[components/display/chameleon/stat-tile] 容器: 'flex items-start justify-between rounded-xl(12px) border border-stone-200 bg-[var(--color-paper)](#ffffff) p-5(20px)'。左: label 'text-xs(12px) text-stone-500' + value 'mt-2 truncate font-mono text-2xl(24px) tracking-tight text-stone-900'（loading 显 —）+ 'mt-1 flex items-center gap-2(8px) text-[11px]' 含 hint 'truncate text-stone-400' 与 delta 'inline-flex shrink-0 items-center gap-0.5 font-medium' + 颜色（up&!inverse→emerald-600 #059669 / 坏→red-600 #dc2626 / 0→stone-400）+ <TrendingUp|TrendingDown className='h-3 w-3'/> + '+N.N%'。右图标 chip（5 tone TONE_CHIP）: 'flex h-10(40px) w-10 shrink-0 items-center justify-center rounded-lg(8px)' + primary 'bg-primary-50 text-primary-600'(随主题) / success 'bg-emerald-50 text-emerald-600' / warning 'bg-amber-50 text-amber-600' / danger 'bg-red-50 text-red-600' / neutral 'bg-stone-100 text-stone-500'，内 <Icon className='h-5 w-5'/>。lucide: TrendingDown, TrendingUp。signature: mono text-2xl 大数字 + 右侧 themeable primary-50 图标 chip。\n\n[components/display/chameleon/stat-tile-delta] 外层 flex items-start justify-between rounded-xl(12) border border-stone-200 bg-[var(--color-paper)] p-5(20)。label text-xs stone-500；value mt-2 font-mono text-2xl(24) tracking-tight stone-900；hint text-[11px] stone-400；delta inline-flex gap-0.5 font-medium + TrendingUp/Down h-3 w-3，good=emerald-600/bad=red-600/零=stone-400，((delta*100).toFixed(1))%。icon 块 h-10 w-10(40) rounded-lg，tone chip: primary bg-primary-50 text-primary-600 / success emerald / warning amber / danger red / neutral stone。\n\n[components/display/chameleon/icon-mono-mini-stat] 卡: flex items-center gap-3(12) rounded-xl(12) border border-stone-200 bg-[var(--color-paper)] px-4(16) py-3(12)。图标块: flex h-9 w-9(36) shrink-0 items-center justify-center rounded-lg(8) + tone 类，内 Icon h-[18px] w-[18px](18)。右: min-w-0，数字 div tnum font-mono text-[19px](19) leading-none font-semibold text-stone-900，标签 div mt-1 truncate text-[11px](11) text-stone-500。tone 配色: primary bg-primary-50 text-primary-600 / success bg-emerald-50 text-emerald-600 / warning bg-amber-50 text-amber-600 / danger bg-red-50 text-red-600 / violet bg-violet-50 text-violet-600 / sky bg-sky-50 text-sky-600 / neutral bg-stone-100 text-stone-500。\n\n[components/display/chameleon/hairline-stat-bar] StatBar 容器: flex flex-wrap gap-y-3(12) py-1。StatItem: div mr-4(16) border-r border-stone-100 pr-4(16) last:mr-0 last:border-r-0 last:pr-0（右侧竖发丝分隔，最后一项去掉）。label: div text-[10.5px](10.5) tracking-wide text-stone-400。value 行: mt-1 flex items-baseline gap-1.5(6)，span tnum text-[15px](15) font-semibold，tone=ok text-emerald-600 / err text-rose-600 / 默认 text-stone-800，mono 时 font-mono text-[13px](13)。sub: span tnum text-[11px](11) font-normal text-stone-400。",
+   "descriptions": [
+    "KPI 大数字卡：label + mono 大数字 value + hint + 环比 delta（TrendingUp/Down 箭头）+ 右侧色彩图标 chip（5 tone）。deltaInverse 用于越低越好的指标（成本）。waveflow metric-card-quartet 是 block，此为单 tile 原语含 delta 逻辑，新建。",
+    "label / 大号 mono 数字 / hint / 环比 delta(↑绿↓红，deltaInverse 反转用于成本) / 右上 tone 色 icon 块。dashboard/cost/eval 共用。近似 waveflow metric-card-quartet 但带 delta 趋势 + tone + deltaInverse 语义，结构有分叉。",
+    "MiniStat 紧凑指标卡：左圆角着色图标块 + 右 mono 大数字 + 小灰标签，7 色调(primary/success/warning/danger/violet/sky/neutral 浅底深字)，列表页顶部成排展示概览的「仪表盘感」轻量卡。waveflow metric-card-quartet 是四宫格大卡，本件是单行紧凑横排卡，结构不同 → new。",
+    "StatBar/StatItem 无填充无卡格的指标平铺横条（trace 详情/会话详情共用）：指标间极淡竖发丝线分隔，label 小灰 + value 放大加粗出层次，支持 mono/ok-err 语义着色 + sub 副值。纯排版指标条，与 waveflow metric-card-quartet 卡片式不同 → new。"
+   ],
+   "refs_uses": [
+    "tokens/iconography/waveflow/engineer-detail-classes",
+    "tokens/palettes/chameleon/themeable-primary-warm-paper",
+    "tokens/palettes/chameleon/warm-paper-ink-blue",
+    "tokens/palettes/waveflow/warm-paper-ink-blue",
+    "tokens/typography/pairs/chameleon/inter-jetbrains-instrument-trio"
+   ],
+   "tags_aesthetic": [
+    "delta-trend",
+    "industrial",
+    "kpi-card",
+    "minimal"
+   ],
+   "tags_mood": [
+    "analytical",
+    "calm",
+    "confident",
+    "executive",
+    "serious"
+   ]
+  },
+  {
+   "id": "components/feedback/chameleon/amber-nav-progress",
+   "layer": "component",
+   "dedup": "variant",
+   "ref_target": "blocks/feedback/waveflow/top-progress-bar",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/nav-progress-bar.tsx:11-54",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/nav-progress-bar.tsx:38-54"
+   ],
+   "visual_spec": "[components/feedback/chameleon/amber-climb-nav-progress] 外层(visible 时): pointer-events-none fixed left-0 right-0 top-0 z-[1000] h-[2px](2) bg-transparent。内层: h-full bg-amber-500 shadow-[0_0_8px_rgba(217,119,6,0.6)] transition-[width,opacity]，style.width=`${width}%`，opacity= width===100&&!pending?0:1，transitionDuration= pending?'600ms':'200ms'，transitionTimingFunction= pending?'cubic-bezier(0.16,1,0.3,1)':'ease-out'。爬升逻辑: pending 时 setWidth(0) → requestAnimationFrame setWidth(85)；pending 清零 setWidth(100) → 250ms 后 setVisible(false)。\n\n[blocks/feedback/chameleon/amber-creep-progress-bar] 外层 div: pointer-events-none fixed left-0 right-0 top-0 z-[1000] h-[2px] bg-transparent。内层条: h-full bg-amber-500(#f59e0b) shadow-[0_0_8px_rgba(217,119,6,0.6)](琥珀微光)；style width=`${width}%`(0→85→100)、opacity=(width===100 && !pending ? 0 : 1)、transitionDuration=pending?600ms:200ms、transitionTimingFunction=pending?cubic-bezier(0.16,1,0.3,1):ease-out。行为：pending 时 setVisible(true)+width 0，下一帧 requestAnimationFrame 升到 85；pending 清零先 width=100 再 250ms 后 setVisible(false)+width 0 淡出。与 waveflow/top-progress-bar 区分：waveflow 蓝色 4-stop linear-gradient(transparent→#3b82f6→#2563eb→transparent) indeterminate translateX(-100%→100%) 1.1s 循环、z-[300]、500ms 防闪；本条单色 amber-500 实心 determinate 爬升语义、z-[1000]、cubic-bezier 创意爬升曲线、琥珀发光阴影。",
+   "descriptions": [
+    "NavProgressBar 顶部细横条，与 waveflow/top-progress-bar 区分：用琥珀色 amber-500 + 发光 box-shadow（非蓝色 indeterminate gradient），机制为 width 0%→85%(cubic-bezier 慢升永远到不了 100%)→pending 清零瞬冲 100% + 淡出；订阅 nav-pending store（非 axios pending）。用于智能导航预取反馈。",
+    "导航预取时顶部 2px 琥珀色进度条：pending 期间 cubic-bezier 从 0% 慢升到 85%(永不到顶)，pending 清零瞬间冲 100% + 淡出。单色实心+琥珀微光，区别于 waveflow 的蓝色 indeterminate 滑动渐变条"
+   ],
+   "refs_uses": [
+    "tokens/palettes/waveflow/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "minimal"
+   ],
+   "tags_mood": [
+    "calm"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,260 @@
+{
+ "group": 0,
+ "entries": [
+  {
+   "id": "blocks/canvas/chameleon/ai-copilot-panel",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/ai-copilot-panel.tsx:213-339"
+   ],
+   "visual_spec": "[blocks/canvas/chameleon/ai-copilot-panel] aside w-96 bg-white + animate-in fade-in slide-in-from-right-2 duration-200。头部 border-b px-4 py-3：图标块 h-7 w-7 rounded-lg bg-blue-50 text-blue-600 Sparkles h-3.5 + 标题 text-[13px] font-semibold + 副 text-[10.5px] text-stone-400 + 清空/关闭按钮 p-1.5 rounded-lg。气泡 max-w-[85%] rounded-xl px-3 py-2 text-[12px] leading-relaxed：user bg-blue-600 text-white / assistant bg-slate-100 text-stone-700 / error bg-rose-50 text-rose-700 ring-1 ring-rose-200。trace 链接 text-[10.5px] text-blue-500 + ExternalLink h-3。进度气泡 min-w-[200px] bg-slate-100 + 蓝点 pulse + 重试 amber-50 小字。输入区 border-t p-3：Textarea min-h-[3rem] max-h-32 text-[12px] + 发送钮 h-9 w-9 rounded-xl bg-blue-600 text-white hover:bg-blue-700 Send h-4。空态 Sparkles h-6 text-blue-300 + 引导文案。",
+   "descriptions": [
+    "Gamma 式右侧 AI 助手：对话气泡流（用户蓝 600 / 助手 slate-100 / 错误 rose）+ 进行中阶段进度气泡（调用/生成 N 字/校验/重试）+ 每轮 trace 链接 + 底部多行输入 + 蓝色发送圆钮。waveflow 无 chat 类 block，全 new。"
+   ],
+   "refs_uses": [
+    "tokens/motion/chameleon/canvas-edge-dash-flow",
+    "tokens/palettes/chameleon/node-type-hue-system"
+   ],
+   "tags_aesthetic": [
+    "trace链接",
+    "右侧滑入",
+    "对话气泡流",
+    "阶段进度气泡"
+   ],
+   "tags_mood": [
+    "AI辅助",
+    "对话式",
+    "流畅"
+   ]
+  },
+  {
+   "id": "blocks/canvas/chameleon/bezier-edge-add",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/edge-insert-menu.tsx:49-235",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/graph-edge.tsx:33-218"
+   ],
+   "visual_spec": "[blocks/canvas/chameleon/bezier-edge-add] EDGE_COLOR normal #d6d3d1(stone-300) / active var(--color-primary-500) / fail #fb7185(rose-400) / failActive #f43f5e(rose-500)。CURVATURE 0.2。strokeWidth active 2.25 / 默认 1.5；高亮 dashArray '6 4'、fail '5 3'；dimmed opacity 0.35。透明交互路径 strokeWidth 20 扩 hover 区。fail 标签 rounded-full border border-rose-200 bg-rose-50 px-1.5 py-px font-mono text-[9px] text-rose-500 '失败'。markerEnd ArrowClosed 14x14 #d6d3d1。连接线 GraphConnectionLine stroke active strokeWidth 2 dash '5 3' + circle r3 fff/active。「+」按钮 h-5 w-5 rounded-full border shadow-sm，闭 border-stone-300 bg-white text-stone-500 hover:border-blue-300 hover:text-blue-600，开 border-blue-300 bg-blue-50 text-blue-600，Plus h-3。插入菜单 portal 到 body，fixed w-60 rounded-xl border border-stone-200/80 bg-white shadow-xl ring-1 ring-stone-900/5，搜索框 h-7 + 分组 + 节点行（图标 h-6 w-6 rounded-md + bg + 名 text-[11.5px]）。",
+   "descriptions": [
+    "对齐 Dify/FastGPT 的曲线连线：替换 RF 内置 smoothstep 直角折线为平滑贝塞尔（curvature 0.2），默认 stone 灰细线、选中/相邻高亮主题 primary 加粗 + 流动虚线、焦点链路外淡化、fail 分支 rose 红虚线 + 「失败」标签。hover 边中点出现「+」按钮点开节点选择菜单就地 split 插入。拖拽连接线主题色贝塞尔 + 竖向锚点圆。waveflow 无画布连线，全 new。"
+   ],
+   "refs_uses": [
+    "blocks/canvas/chameleon/node-palette",
+    "tokens/motion/chameleon/canvas-edge-dash-flow",
+    "tokens/palettes/chameleon/node-type-hue-system"
+   ],
+   "tags_aesthetic": [
+    "fail红虚线",
+    "平滑贝塞尔",
+    "流动高亮",
+    "边中点加节点"
+   ],
+   "tags_mood": [
+    "流畅",
+    "精密"
+   ]
+  },
+  {
+   "id": "blocks/canvas/chameleon/canvas-controls-menus",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/checklist-badge.tsx:21-139",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/helper-lines.tsx:46-104",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/subgraph-canvas.tsx:487-719",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/zoom-control.tsx:15-62",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/pages/graph-editor-page.tsx:1292-1494",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/pages/graph-editor-page.tsx:1651-1901"
+   ],
+   "visual_spec": "[blocks/canvas/chameleon/canvas-floating-controls] 缩放/撤销栏白卡 flex gap-0.5 rounded-lg border border-stone-200/80 bg-white/95 px-1 py-1 shadow-md backdrop-blur，按钮 h-6 w-6 rounded text-stone-500 hover:bg-stone-100 hover:text-stone-800 disabled:opacity-35，图标 Maximize2/LayoutGrid/Minus/Plus/Undo2/Redo2 h-3.5；百分比 min-w-[40px] font-mono text-[11px] tabular-nums text-stone-600；分隔 mx-0.5 h-3.5 w-px bg-stone-200/80。运行状态徽标 rounded-lg border border-stone-200/70 bg-white/90 px-2.5 py-1 text-[11.5px] shadow-md backdrop-blur：running 蓝点 animate-pulse + text-blue-600 '运行中…' / success text-emerald-600 '✓' / failed text-rose-600 / paused text-amber-600 '⏸'。节点幽灵 border-2 border-dashed bg-white/95 px-2.5 py-1.5 text-[11.5px] + 类型 color + '点击画布放置·Esc 取消'。右上工具栏 rounded-xl border border-stone-200/70 bg-white/85 px-2 py-1.5 shadow-md backdrop-blur。checklist 徽标 h-7 w-7：error rose-500 数字胶囊 / warning amber-400 / ready CheckCircle2 emerald-500 / checking 蓝点 pulse。发布 split button 主按钮 rounded-r-none + ChevronDown 下拉。HelperLines canvas 主题 primary 线 + 端点叉。\n\n[blocks/canvas/chameleon/canvas-context-menus] 菜单 shadow-pop fixed z-50 min-w-[176px] rounded-lg border border-stone-200 bg-white py-1。MENU_BTN flex gap-2 px-3 py-1.5 text-[12.5px] text-stone-700 hover:bg-stone-100 disabled:text-stone-300，图标 h-3.5 w-3.5 text-stone-400，快捷键 ml-auto text-[10px] text-stone-300。删除项 text-rose-600 hover:bg-rose-50。MENU_SEP my-1 h-px bg-stone-100。MENU_LABEL px-3 text-[10px] font-medium tracking-wide text-stone-400（'已选 N 个节点'/'对齐'/'分布'）。对齐 6 行 AlignStart/Center/End Vertical/Horizontal 图标。",
+   "descriptions": [
+    "画布角落的白卡浮层控件：左下撤销/重做、右下缩放栏（全屏自适应/自动整理/−NN%+）+ MiniMap、左上运行状态徽标、左上节点幽灵跟随、右上工具栏（checklist 徽标 + AI/日志/更多 + 测试/保存/发布 split button）。统一 rounded-lg border bg-white/95 shadow-md backdrop-blur 白卡语言。waveJlow top-progress-bar 等 feedback 件不含画布浮层，全 new。",
+    "画布右键菜单：节点态（复制/粘贴/创建副本/测试/删除 + ⌘C ⌘V ⌘D ⌫ 快捷键标注）/ 多选态（对齐 6 向 + 水平垂直均分 + 批量删）/ 空白态（粘贴/添加节点/自动整理）。waveflow action-dropdown-more 是单一更多下拉，这是画布场景的三态语境菜单，全 new。"
+   ],
+   "refs_uses": [
+    "tokens/palettes/chameleon/node-type-hue-system",
+    "tokens/shadow/waveflow/soft-card-pop-trio"
+   ],
+   "tags_aesthetic": [
+    "三态语境菜单",
+    "对齐分布",
+    "快捷键标注",
+    "状态徽标",
+    "画布角落控件",
+    "白卡浮层",
+    "辅助对齐线"
+   ],
+   "tags_mood": [
+    "克制",
+    "工程师",
+    "有反馈",
+    "精密"
+   ]
+  },
+  {
+   "id": "blocks/canvas/chameleon/config-panel-inspector",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/if-else-condition.tsx:266-615",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/node-inspector.tsx:137-314",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/node-panel/panel-kit.tsx:20-140",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/node-panel/panel-tabs.tsx:20-45",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/node-toolbar.tsx:28-91",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/pages/graph-editor-page.tsx:1527-1550"
+   ],
+   "visual_spec": "[blocks/canvas/chameleon/config-panel-inspector] 外层悬浮 bg-warm-2/95 absolute top-16 right-3 bottom-3 rounded-xl border border-stone-200/70 shadow-xl backdrop-blur。aside bg-white overflow-y-auto，宽 320~640px 可拖（usePanelResize，把手左缘 w-2 cursor-col-resize，竖条 h-10 w-px bg-slate-200 group-hover:bg-blue-400）。header sticky bg-white/90 backdrop-blur border-b border-slate-200/80：图标块 h-9 w-9 rounded-xl shadow-sm ring-1 + meta.bg/color/ring，图标 18px；名字 Input border-none bg-transparent text-[15px] font-semibold tracking-tight hover:bg-slate-50 focus:shadow-[inset_0_0_0_1px_rgb(59_130_246/0.35)]；操作 Play/MoreHorizontal/X p-1.5 rounded-lg。PanelTabs 下划线 text-[12.5px] font-semibold，active text-blue-600 + 底部 h-[2px] bg-blue-500。Section 标题 text-[10.5px] font-semibold tracking-[0.06em] uppercase text-stone-500 + ChevronDown 折叠（grid-rows-[1fr]→[0fr] 200ms）。OutputVars 行 rounded-lg border border-slate-100 bg-slate-50/70 px-2.5 py-1.5，'{x}' font-mono text-violet-400 + 字段名 font-mono text-[11.5px] + VarTypeChip。CheckboxRow rounded-lg border border-slate-200 px-2.5 py-2 + Switch。\n\n[blocks/canvas/chameleon/if-else-condition-builder] ModeTab rounded px-1.5 py-0.5 text-[10.5px]，active bg-blue-100 text-blue-700 / 非 text-stone-400 hover:bg-stone-100。IF/CASE 卡 rounded-xl border border-slate-200 bg-slate-50 p-2.5。CaseBadge rounded-md bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-amber-700。条件行 rounded-lg border border-slate-200 bg-white p-2：字段 Input h-8 font-mono text-[12px] flex-1 + EnumSelect w-24 + 比较值 Input h-8 font-mono。AND/OR 胶囊 rounded-full border border-blue-200 bg-blue-50 px-2 py-px font-mono text-[9.5px] font-bold text-blue-600 hover:bg-blue-100 '且 AND'/'或 OR'。ELIF 添加 border-dashed border-slate-300 bg-white py-1.5 text-[11px] hover:border-blue-300 + Plus。ELSE 卡 border-dashed border-slate-200 bg-slate-50/60 + bg-slate-200 ELSE badge。key error border-rose-300 + text-rose-500。\n\n[components/feedback/chameleon/node-hover-toolbar] 容器 nodrag nopan absolute -top-9 right-0 z-10 flex h-7 gap-0.5 rounded-lg border border-stone-200/80 bg-white/95 px-1 py-0.5 shadow-card backdrop-blur，invisible scale-95 opacity-0 group-hover:visible group-hover:scale-100 group-hover:opacity-100。按钮 BTN_BASE h-6 w-6 rounded-md text-stone-500 hover:scale-110 hover:bg-stone-100 hover:text-stone-800 active:scale-95，图标 Play/Pencil/Copy/Trash2 h-3.5 w-3.5。分隔 mx-0.5 h-3.5 w-px bg-stone-200，删除按钮 hover:bg-rose-50 hover:text-rose-600。",
+   "descriptions": [
+    "选中节点时悬浮画布右侧的配置面板：单行头部（类型配色图标块 + 纯文本观感名字输入 + 测试/更多/关闭）+「设置/上次运行」下划线 Tab + 按节点类型渲染表单（折叠 Section + 字段 + 输出变量只读区 + 异常处理区）。左缘可拖宽。waveflow dialog-vertical-form 是弹窗竖表单，这是画布右侧悬浮 inspector，结构布局完全不同，故 new。",
+    "if_else / list_op filter 的三态条件编辑：简单（IF/ELSE 卡片 + 多行 AND/OR）/ 多分支 CASE（IF/ELIF 卡片 + key + ELSE 兜底）/ 高级 JSON。算子全集中文标签下拉，AND/OR 切换胶囊。waveflow cron-builder-modal 是 cron 专用，这是表达式条件 builder，全 new。",
+    "节点右上方 group-hover 浮现的快捷条：测试▶ / 重命名✎ / 复制 / 删除（细分隔线 + 删除 hover 转红）。invisible→visible scale 过渡。画布节点专属。"
+   ],
+   "refs_uses": [
+    "components/inputs/chameleon/code-mirror-field",
+    "components/inputs/chameleon/const-var-switch-field",
+    "components/inputs/chameleon/prompt-var-editor",
+    "components/inputs/chameleon/slider-number-field",
+    "components/inputs/chameleon/table-editor",
+    "tokens/palettes/chameleon/node-type-hue-system",
+    "tokens/shadow/waveflow/soft-card-pop-trio"
+   ],
+   "tags_aesthetic": [
+    "AND/OR胶囊",
+    "IF/ELIF卡片",
+    "hover浮现",
+    "三态切换",
+    "下划线Tab",
+    "中文算子",
+    "危险红删除",
+    "可拖宽",
+    "右侧悬浮面板",
+    "快捷条",
+    "折叠分区",
+    "纯文本名字输入"
+   ],
+   "tags_mood": [
+    "信息密集",
+    "克制",
+    "有反馈",
+    "精密",
+    "结构化"
+   ]
+  },
+  {
+   "id": "blocks/canvas/chameleon/graph-node-card",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/graph-node.tsx:297-331",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/graph-node.tsx:33-39",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/graph-node.tsx:70-355"
+   ],
+   "visual_spec": "[blocks/canvas/chameleon/graph-node-card] 卡片 group relative min-w-[180px] rounded-[14px] border px-2.5 pb-2 pt-2 text-[11.5px] + meta.cardTint(bg-{hue}-50/40) + shadow-soft hover:-translate-y-px hover:shadow-card transition-all 150ms。默认边 border-stone-200/70；selected -translate-y-px shadow-card ring-2 ring-offset-2 ring-offset-warm + meta.ring。运行态边框 STATUS_COLOR：pending border-stone-300 / running border-primary-400 animate-pulse / success border-emerald-400 / failed border-rose-500 / skipped border-stone-200 / errorHandled border-amber-400。图标块 h-[26px] w-[26px] rounded-[9px] ring-1 ring-inset ring-stone-900/5 + meta.bg，图标 h-3.5 w-3.5 meta.color strokeWidth 2。标题 text-[12.5px] font-semibold tracking-tight text-stone-800 truncate；类型副标题 text-[9.5px] font-medium uppercase tracking-wide meta.color；摘要行 text-[10px] text-stone-400 truncate。if_else 经典：true handle top 35% border-emerald-400 / false top 70% border-rose-400 + 右侧 '真→'(emerald-600)/'假→'(rose-500) text-[9px]。subflow ref 行 font-mono text-[10px] text-indigo-600 '↳ name·v0'。\n\n[components/indicators/chameleon/node-handle-dot] HANDLE_BASE: !h-2.5 !w-2.5(10px) !rounded-full !border-[1.5px] !bg-white !shadow-sm transition-all duration-150 hover:!h-3.5 hover:!w-3.5(14px)。target: !border-stone-300 hover:!border-primary-400；source: !border-primary-300 hover:!border-primary-500。行内出口 handle 用 style top:50% right:-15。tone 边色：branch !border-lime-500 / case !border-amber-400 / else !border-stone-400 / fail !border-rose-400 / dangling !border-amber-400，对应文字 text-{tone}-500~700 font-mono text-[9px]。`!` 前缀覆盖 RF 内联样式。",
+   "descriptions": [
+    "画布的 signature 视觉单元。圆角 14px 卡片用类型 cardTint 整卡均匀微染（无边界色块、消除拼接缝），头部彩色图标块 + 标题 + 类型副标题色 + 配置摘要灰字。多种出口模式：经典单出口 / if_else 真假双 handle / classifier 多分类带标签出口 / human_input 选项分支 / fail 红色失败出边 / 悬挂出口容错。运行态边框语义染色（pending/running pulse/success/failed/errorHandled 橙）。selected ring 高亮。waveflow 完全无画布节点，全 new。",
+    "React Flow Handle 的精致小圆点：默认白底细灰边、hover 放大高亮主题色，入口(target)灰边/出口(source)主题浅蓝边视觉区分；多出口行内 handle 按 tone（branch lime / case amber / else stone / fail rose / dangling amber）变色。画布专属、waveflow 无对应。"
+   ],
+   "refs_uses": [
+    "components/feedback/chameleon/node-hover-toolbar",
+    "components/indicators/chameleon/node-handle-dot",
+    "tokens/motion/chameleon/canvas-edge-dash-flow",
+    "tokens/palettes/chameleon/node-type-hue-system",
+    "tokens/shadow/waveflow/soft-card-pop-trio"
+   ],
+   "tags_aesthetic": [
+    "hover放大",
+    "多出口分支",
+    "彩色图标块",
+    "整卡微染色温",
+    "无拼接缝",
+    "精致连接点",
+    "语义出口色"
+   ],
+   "tags_mood": [
+    "克制",
+    "工程师",
+    "精密",
+    "色彩锚点"
+   ]
+  },
+  {
+   "id": "blocks/canvas/chameleon/node-palette",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/node-palette.tsx:81-251"
+   ],
+   "visual_spec": "[blocks/canvas/chameleon/node-palette] 面板 absolute top-3 left-3 z-20 w-[21rem](336px) max-h-[calc(100%-1.5rem)] rounded-2xl border border-stone-200/80 bg-white shadow-xl ring-1 ring-stone-900/5 + animate-in fade-in slide-in-from-left-2 duration-200。Tab 按钮 rounded-lg px-2 py-1.5 text-[11.5px] font-medium，active bg-blue-50 text-blue-600 / 非 active text-stone-500 hover:bg-stone-100，icon h-3.5 w-3.5（LayoutGrid/Sparkles/GitBranch/Boxes）。收起按钮 ChevronsLeft h-3.5。搜索 h-8 rounded-lg border border-stone-200 bg-stone-50 pl-8 text-[12px] focus:border-blue-300 focus:bg-white focus:ring-1 focus:ring-blue-200 + Search h-3.5 text-stone-400。分组标题 text-[10px] font-semibold tracking-wide text-stone-400。双列 grid grid-cols-2 gap-1，节点卡 rounded-xl px-2 py-2 hover:border-stone-200 hover:bg-stone-50 hover:shadow-sm active:bg-stone-100，图标块 h-7 w-7 rounded-lg ring-1 ring-stone-900/5 group-hover:scale-105 + it.bg，名 text-[12px] font-medium text-stone-700。收起态「+」按钮 h-8 w-8 rounded-lg border bg-white/95 shadow-md backdrop-blur hover:bg-blue-50 hover:text-blue-600。分组顺序：生成/检索&工具/逻辑/编排/变量&输出。",
+   "descriptions": [
+    "对齐 Dify block-selector / FastGPT NodeTemplates 的左侧常驻节点面板：顶部 4 大类 Tab（全部/生成/逻辑/数据）+ 搜索 + 最近使用置顶 + 双列网格节点卡（图标块 group-hover 放大）。展开常驻 / 收起只留「+」小按钮（带滑入动画），状态落 localStorage。拖拽 + 点击放置双保留。waveflow 无，全 new。"
+   ],
+   "refs_uses": [
+    "tokens/motion/chameleon/canvas-edge-dash-flow",
+    "tokens/palettes/chameleon/node-type-hue-system"
+   ],
+   "tags_aesthetic": [
+    "双列网格",
+    "常驻可收起",
+    "最近使用",
+    "顶部Tab分类"
+   ],
+   "tags_mood": [
+    "可扫读",
+    "工程师",
+    "精密"
+   ]
+  },
+  {
+   "id": "blocks/canvas/chameleon/subflow-group-editor",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/subgraph-canvas.tsx:93-571",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/subgraph-editor-modal.tsx:24-63",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/subgraph-fields.tsx:39-196"
+   ],
+   "visual_spec": "[blocks/canvas/chameleon/subflow-group-editor] SubgraphField 摘要按钮 rounded-md border border-slate-200 bg-white px-2 py-2 text-[11.5px] hover:border-blue-200 hover:bg-blue-50：Network h-3.5 text-sky-600 + '子图' + 摘要 font-mono text-[10.5px] text-stone-400 + Pencil h-3。parallel 分支行 rounded-md border border-slate-200 bg-white px-1.5 py-1.5：key Input h-8 w-24 font-mono + 摘要 + Pencil/Trash2 h-3.5。添加分支 outline Button + Plus。Modal ModalContent h-[88vh] w-[min(1180px,94vw)] bg-slate-50 closeOnBackdrop false；内含 SubgraphCanvas（NodePalette + 冷白 slate-50 点阵画布 + Controls/MiniMap !bg-slate-100 + 自动整理 Panel + NodeInspector），底部应用/取消 footer。",
+   "descriptions": [
+    "iteration.body / parallel.branches 的子图编辑入口：摘要按钮（N 节点·N 边 + Network 图标 + 编辑笔）打开全屏子图 modal（独立 SubgraphCanvas，与主画布视觉一致但本地选中 + 私有剪贴板隔离）；parallel 分支列表增删改 key。waveflow 无嵌套子图，全 new。"
+   ],
+   "refs_uses": [
+    "blocks/canvas/chameleon/bezier-edge-add",
+    "blocks/canvas/chameleon/config-panel-inspector",
+    "blocks/canvas/chameleon/graph-node-card",
+    "blocks/canvas/chameleon/node-palette"
+   ],
+   "tags_aesthetic": [
+    "全屏modal画布",
+    "嵌套子图",
+    "摘要入口"
+   ],
+   "tags_mood": [
+    "工程师",
+    "精密"
+   ]
+  }
+ ]
+}

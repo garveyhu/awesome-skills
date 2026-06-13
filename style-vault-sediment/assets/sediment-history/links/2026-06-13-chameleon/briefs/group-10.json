@@ -1,0 +1,130 @@
+{
+ "group": 10,
+ "entries": [
+  {
+   "id": "tokens/motion/chameleon/keyframes-anim-modes",
+   "layer": "token",
+   "dedup": "variant",
+   "ref_target": "tokens/motion/waveflow/keyframes-suite",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/index.css#L157-L301",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/index.css#L57-L70",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/theme.css#L133-L153"
+   ],
+   "visual_spec": "[tokens/motion/chameleon/keyframes-suite] @theme --animate-accordion-down: accordion-down 0.2s ease-out / --animate-accordion-up: accordion-up 0.2s ease-out（from height:0 ↔ to height:var(--radix-accordion-content-height)）。\n\nmodal-overlay-in/out: opacity 0↔1，.modal-overlay[data-state=open] 150ms ease-out / [closed] 120ms ease-in；modal-content-in/out: 只动 opacity（不带 translate），.modal-content[data-state=open] 150ms cubic-bezier(.16,1,.3,1) / [closed] 120ms ease-in。\n\nping-soft: 0/100% opacity:1 → 50% opacity:.6，.pulse-soft 2s ease-in-out infinite。\nshimmer: 0% background-position:-200px 0 → 100% 200px 0，.skeleton 用 linear-gradient(90deg, #ebe9e3 0%, #f5f4ee 50%, #ebe9e3 100%) background-size 400px 100% animation 1.6s ease-in-out infinite。\nfloat-soft: 0/100% translateY(0) → 50% translateY(-7px)，.anim-float 3.4s ease-in-out infinite。\nhalo-pulse: 0/100% scale(1) opacity:.6 → 50% scale(1.12) opacity:1，.anim-halo 3s ease-in-out infinite。\nglobal-progress: 0% translateX(-100%) → 100% translateX(100%)。\ndecor-drift-1: 0/100% translate:0 0 → 50% translate:0 -12px；decor-drift-2: + rotate 0→8deg，translate -8px；decor-drift-3: rotate 45→50deg，translate -14px。\n\ncmdk 面板：[cmdk-group-heading] padding 6px 10px 4px / font-size 10.5px / weight 600 / uppercase / letter-spacing .04em / color rgb(120 113 108)；.cmdk-item padding 7px 10px / radius 6px / font-size 12.5px / gap 10px，[data-selected=true] bg rgb(239 246 255) color rgb(29 78 216)，:hover bg rgb(245 244 238)。\n\n[tokens/motion/chameleon/theme-anim-modes] :root[data-anim=\"disabled\"] * / *::before / *::after { transition-duration: 0ms !important; animation-duration: 0ms !important; animation-iteration-count: 1 !important }。:root[data-anim=\"agile\"] * { transition-duration: 80ms !important }，:root[data-anim=\"agile\"] *:hover / *:focus { transition-duration: 100ms !important }。smooth 为默认态不写覆盖。",
+   "descriptions": [
+    "与 waveflow keyframes-suite 同源的全局 CSS 动画集，但 Chameleon 分叉：保留 accordion-down/up（@theme --animate-*）、decor-drift-1/2/3（登录浮件，CSS L4 translate/rotate）、ping-soft（.pulse-soft 状态点呼吸）、shimmer（.skeleton 暖灰渐变）、global-progress（顶部 2px 进度带）；新增 modal-overlay/content-in/out（Radix Dialog fade，刻意去掉 translate 避免与 Tailwind transform 冲突的浮动感）、float-soft（.anim-float 空态图标漂浮 ±7px）、halo-pulse（.anim-halo 辉光呼吸 scale 1→1.12）。无 waveflow 的 boot-dot；新增 cmdk 命令面板专属样式。",
+    ":root[data-anim] 三档全局过渡时长切换：disabled 关闭所有 transition/animation（调试/性能/无障碍）、agile 缩到约 ½（80ms，hover/focus 100ms）、smooth 默认不覆盖。与 8×4 主题切换同源，构成用户偏好可切换体系。waveflow 无此层。"
+   ],
+   "refs_uses": [],
+   "tags_aesthetic": [
+    "industrial",
+    "minimal"
+   ],
+   "tags_mood": [
+    "calm"
+   ]
+  },
+  {
+   "id": "tokens/motion/chameleon/neon-ai-suite",
+   "layer": "token",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/theme.css#L155-L225",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/theme.css:155-225"
+   ],
+   "visual_spec": "[tokens/motion/chameleon/neon-ai-loader] .neon-loader__ring：width/height var(--neon-d,16px)，border-radius 9999px，background conic-gradient(from 90deg, transparent 0%, #8b5cf6 35%, #d946ef 55%, #22d3ee 75%, transparent 100%)，-webkit-mask/mask radial-gradient(farthest-side, transparent calc(100% - var(--neon-t,2.5px)), #000 0) 中空成环，filter drop-shadow(0 0 3px rgba(139,92,246,.85)) drop-shadow(0 0 7px rgba(34,211,238,.5))，animation neon-spin .85s linear infinite（@keyframes neon-spin { to { transform: rotate(360deg) } }）。\n\n.neon-loader__text：background linear-gradient(90deg, #7c3aed, #d946ef, #22d3ee, #7c3aed)，background-size 200% auto，background-clip text，color transparent，animation neon-shimmer 2.6s linear infinite（to { background-position: 200% center }）。\n\n.neon-loader--glow：background rgba(139,92,246,.05)，box-shadow 0 0 0 1px rgba(139,92,246,.22), 0 0 16px rgba(139,92,246,.14)，animation neon-breathe 2.4s ease-in-out infinite（0/100%: 0 0 0 1px rgba(139,92,246,.22), 0 0 12px rgba(139,92,246,.12)；50%: 0 0 0 1px rgba(217,70,239,.3), 0 0 20px rgba(34,211,238,.2)）。\n\n霓虹三色锚点：violet #8b5cf6/#7c3aed、fuchsia #d946ef、cyan #22d3ee。\n\n[tokens/motion/chameleon/neon-ai-gradient-suite] .neon-loader__ring: conic-gradient(from 90deg, transparent 0%, #8b5cf6 35%, #d946ef 55%, #22d3ee 75%, transparent 100%) + radial mask 中空成环(厚 --neon-t 2.5px) + drop-shadow(0 0 3px rgba(139,92,246,.85)) drop-shadow(0 0 7px rgba(34,211,238,.5)) + neon-spin .85s linear infinite。.neon-loader__text: linear-gradient(90deg,#7c3aed,#d946ef,#22d3ee,#7c3aed) bg-size 200% bg-clip:text + neon-shimmer 2.6s。.neon-loader--glow: bg rgba(139,92,246,.05) + ring rgba(139,92,246,.22) + neon-breathe 2.4s ease-in-out。尺寸 xs d12/t2 · sm d14/t2.25 · md d16/t2.5 · lg d24/t3.25。",
+   "descriptions": [
+    "AI 长耗时任务（评测/分析/扩样/优化/生图）专用 signature 动效三件套：锥形渐变霓虹旋转环 + 流光渐变文字 + 容器呼吸辉光。紫→品红→青锥形 conic-gradient 配 radial mask 中空成环 + 双层 drop-shadow 霓虹辉光。waveflow 全无此冷亮霓虹语言（其 keyframes-suite 是暖工业风）。",
+    "长耗时 AI 任务（评测/分析/扩样/优化/生图）专属霓虹 loading 动效：conic-gradient 旋转环 + linear-gradient 流光文字 + 呼吸辉光底。violet→fuchsia→cyan 是 Chameleon 的 AI 强调色签名，waveflow 的 keyframes-suite 里没有这组霓虹 AI 渐变 —— 全新。"
+   ],
+   "refs_uses": [],
+   "tags_aesthetic": [
+    "ai-gradient",
+    "glow",
+    "industrial",
+    "neon",
+    "retro-future"
+   ],
+   "tags_mood": [
+    "alive",
+    "confident",
+    "energetic",
+    "futuristic"
+   ]
+  },
+  {
+   "id": "tokens/palettes/chameleon/node-type-hue-system",
+   "layer": "token",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/controls/var-type-chip.tsx:8-15",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/lib/node-catalog.ts:48-251",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/lib/node-meta.ts:64-295"
+   ],
+   "visual_spec": "[tokens/palettes/chameleon/node-type-hue-system] 每节点 5 槽：color(text-{hue}-700) / ring(ring-{hue}-200) / bg(bg-{hue}-50) / cardTint(bg-{hue}-50/40, slate/stone/green 用 50/50) / edgeColor(#{hue}-500 hex)。hue 分配：start emerald(#10b981) · end stone(#78716c) · llm violet(#8b5cf6) · image_gen purple(#a855f7) · kb emerald(#10b981) · tool orange(#f97316) · if_else amber(#f59e0b) · agent_debate fuchsia(#d946ef) · iteration sky(#0ea5e9) · parallel indigo(#6366f1) · human_input pink(#ec4899) · http cyan(#06b6d4) · aggregator amber-800/amber-500 · assign rose(#f43f5e) · classifier lime(#84cc16) · param_extract blue(#3b82f6) · subflow indigo(#6366f1) · list_op cyan-800 · doc_extract orange-700 · code slate(#64748b) · template teal(#14b8a6) · answer green(#22c55e) · noop stone(#78716c). 变量类型 chip 6 色：string sky-50/sky-600 · number amber-50/amber-600 · boolean rose-50/rose-600 · object violet-50/violet-600 · array emerald-50/emerald-600 · any stone-100/stone-400。主色 blue-600 复用 waveflow warm-paper-ink-blue。",
+   "descriptions": [
+    "工作流画布每种节点类型一套互相咬合的 4 阶配色（图标前景 700 / ring 200 / 图标块底 50 / 整卡极淡色温 50/40）+ 连线高亮 500 阶 hex。19 种节点类型各占一个 hue，是画布「色彩锚点」signature 的数据底座。waveflow 的暖白色板只有 5 个语义中性强调色，没有这套按节点语义铺开的全 hue 矩阵，故为 Chameleon 独有。"
+   ],
+   "refs_uses": [
+    "tokens/palettes/waveflow/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "多 hue 语义编码",
+    "工程师暖白",
+    "色彩锚点",
+    "霓虹AI强调色"
+   ],
+   "tags_mood": [
+    "克制",
+    "可扫读",
+    "精密"
+   ]
+  },
+  {
+   "id": "tokens/palettes/chameleon/themeable-8x4-system",
+   "layer": "token",
+   "dedup": "variant",
+   "ref_target": "tokens/palettes/waveflow/warm-paper-ink-blue",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/index.css#L20-L60",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/index.css:20-50",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/theme.css#L13-L131",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/theme.css:1-128"
+   ],
+   "visual_spec": "[tokens/palettes/chameleon/themeable-8x4-system] 默认 @theme（index.css）：--color-primary-600 #2563eb（blue 主色，CTA/链接/active），primary-50 #eff6ff / 100 #dbeafe（focus ring / 选中底）/ 500 #3b82f6（focus border）/ 700 #1d4ed8（hover）。暖白三档基底 --color-warm #fafaf7（页面底）/ --color-warm-2 #f4f3ee（侧栏+表头）/ --color-paper #fffefb（卡片/dialog）/ --color-ink #1c1917（body 文字）。语义色 --color-success #10b981 / --color-warning #f59e0b / --color-danger #ef4444 / --color-info #06b6d4。\n\n切换层（theme.css）—— primary 调色板各 50..900 共 10 阶：purple(500 #a855f7 / 600 #9333ea)、green(500 #10b981 / 600 #059669)、orange(500 #f97316 / 600 #ea580c)、rose(500 #f43f5e / 600 #e11d48)、cyan(500 #06b6d4 / 600 #0891b2)、amber(500 #f59e0b / 600 #d97706)、teal(500 #14b8a6 / 600 #0d9488)；blue 默认不覆盖。\n\nneutral 基底覆盖 warm/warm-2/paper/ink 四值：slate(#f8fafc / #f1f5f9 / #ffffff / #0f172a)、zinc(#fafafa / #f4f4f5 / #ffffff / #18181b)、gray(#f9fafb / #f3f4f6 / #ffffff / #111827)；stone 默认不覆盖。\n\nbody 基础：background var(--color-warm)，color var(--color-ink)，font-family var(--font-sans)，font-size 14px，line-height 1.5，-webkit-font-smoothing antialiased。调色板锚点 = Tailwind v4 默认 500/600/700 阶。\n\n[tokens/palettes/chameleon/themeable-neutral-accent-switch] :root[data-neutral=slate]{--color-warm#f8fafc;--color-warm-2#f1f5f9;--color-paper#ffffff;--color-ink#0f172a} / [data-neutral=zinc]{warm#fafafa warm-2#f4f4f5 paper#ffffff ink#18181b} / [data-neutral=gray]{warm#f9fafb warm-2#f3f4f6 paper#ffffff ink#111827}。reduced-motion: transition-duration 100ms !important。区分点：waveflow 是单套硬冻结板，本变体把基底变量做成 data-attr 可切换的多中性 + accent 主题工厂。\n\n[tokens/palettes/chameleon/warm-paper-ink-blue] @theme: --color-primary-50..900 (50#eff6ff/100#dbeafe/200#bfdbfe/300#93c5fd/400#60a5fa/500#3b82f6/600#2563eb/700#1d4ed8/800#1e40af/900#1e3a8a); --color-warm#fafaf7 --color-warm-2#f4f3ee --color-paper#fffefb --color-ink#1c1917; --color-success#10b981 --color-warning#f59e0b --color-danger#ef4444 --color-info#06b6d4; body bg=warm color=ink font-size 14px antialiased。score 色阶：≥0.8 emerald-600/emerald-50 / 0.5–0.8 amber-600/amber-50 / <0.5 red-600/red-50 / 空 stone-400/stone-100。",
+   "descriptions": [
+    "运行时 data-attribute 切换的多主题调色系统：8 个 primary 调色板（blue 默认 + purple/green/orange/rose/cyan/amber/teal）× 4 个 neutral 基底（stone 默认 + slate/zinc/gray）。默认值 = waveflow 暖纸墨蓝，但叠加了 :root[data-primary] / :root[data-neutral] 属性切换，整套 --color-primary-50..900 与 --color-warm/warm-2/paper/ink 在运行时重写，无需重新加载。waveflow 只有单一 blue+stone，无此切换层。",
+    "Chameleon 在固定暖白板之上额外支持运行时切换 neutral 基调（data-neutral=slate/zinc/gray…）覆盖 --color-warm / warm-2 / paper / ink，外加 accent 切换。waveflow 是单一冻结暖纸板，没有这套多主题切换机制 —— 明显分叉，需新建变体。",
+    "Chameleon 全站基底色板：暖白 paper#fffefb / warm#fafaf7 / warm-2#f4f3ee / ink#1c1917 + blue primary(600=#2563eb,500=#3b82f6)，辅以 success#10b981 / warning#f59e0b / danger#ef4444 / info#06b6d4。与 waveflow 的暖纸墨蓝板几乎一致，直接复用。"
+   ],
+   "refs_uses": [],
+   "tags_aesthetic": [
+    "blue-primary",
+    "engineer-saas",
+    "industrial",
+    "minimal",
+    "neutral-switch",
+    "themeable",
+    "warm-paper"
+   ],
+   "tags_mood": [
+    "calm",
+    "confident",
+    "flexible",
+    "precise",
+    "serious"
+   ]
+  }
+ ]
+}

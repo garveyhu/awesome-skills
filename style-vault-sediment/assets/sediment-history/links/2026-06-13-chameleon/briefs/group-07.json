@@ -1,0 +1,232 @@
+{
+ "group": 7,
+ "entries": [
+  {
+   "id": "components/inputs/chameleon/graph-config-field-kit",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": true,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/controls/code-editor-field.tsx:19-124",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/controls/const-var-switch.tsx:24-183",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/controls/prompt-editor.tsx:46-159",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/controls/slider-field.tsx:31-95",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/controls/table-editor.tsx:75-260",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/controls/var-tree-picker.tsx:57-205",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/node-panel/panel-kit.tsx:92-118"
+   ],
+   "visual_spec": "[components/inputs/chameleon/prompt-var-editor] 外壳 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_1px_2px_rgb(0_0_0/0.03)] focus-within:border-blue-300 focus-within:shadow-[0_0_0_3px_rgb(59_130_246/0.10)]。头行 bg-slate-50/80 px-3 py-1.5，角色标签 text-[10px] font-semibold tracking-[0.07em] uppercase text-stone-500，字数 text-[10px] text-stone-300 tabular-nums。编辑区字号 12.5px(正文)/12px(mono)，行高 1.7，padding 9px 12px。变量 chip：bg-blue-50 font-mono 11px，定界符 text-blue-300，变量名 text-blue-600 font-500，圆角 5px(首尾)。PromptField rows*21+20px 最小高度。\n\n[components/inputs/chameleon/var-tree-picker] 触发：inline-flex gap-1 rounded-md border border-slate-200 bg-white text-stone-500 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600；sm=px-1.5 py-0.5 text-[10.5px]，md=px-2 py-1 text-[11.5px]；Braces h-3 w-3 + ChevronDown opacity-50。Popover w-64 p-0。搜索行 border-b border-stone-100 px-2.5 py-1.5 Search h-3 text-stone-300。列表 max-h-72。GroupBlock 标题 text-[9.5px] font-medium tracking-wide text-stone-400 uppercase。Row hover:bg-blue-50，字段名 font-mono text-[11px] text-stone-700，VarTypeChip ml-auto。系统变量：sys.query/history/attachments/conversation_id 带 desc text-[9.5px]。\n\n[components/inputs/chameleon/const-var-switch-field] 段控 inline-flex gap-px rounded-lg bg-slate-100 p-0.5；按钮 rounded-md px-1.5 py-1，active bg-white text-stone-700 shadow-sm / 非 active text-stone-400 hover:text-stone-600；图标 Pencil/Braces h-3 w-3。变量 chip：inline-flex gap-1 rounded-md border border-violet-200 bg-violet-50 px-2 py-1 text-[11px] text-violet-700，Braces text-violet-400，名 font-mono truncate。未选态 border-dashed border-slate-300 bg-slate-50/60 px-2 py-1.5 '未选择变量'。\n\n[components/inputs/chameleon/table-editor] 行卡 space-y-1 rounded-lg border border-slate-200 bg-white p-2 shadow-[0_1px_0_rgba(0,0,0,0.02)] hover:border-slate-300。序号 h-4 w-4 rounded bg-stone-100 font-mono text-[10px] text-stone-500。Cell Input h-6 text-[11px]，fullRow 列单独占行 pl-5。排序按钮 ArrowUp/ArrowDown/X h-3 w-3 text-stone-400，X hover:bg-rose-50 hover:text-rose-600。添加行按钮 border-dashed border-slate-300 bg-slate-50/60 py-1.5 text-[11px] text-stone-500 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 + Plus h-3.5。空态 border-dashed text-[10.5px] text-stone-400。\n\n[components/inputs/chameleon/code-mirror-field] 外壳 overflow-hidden rounded-lg border bg-white focus-within:ring-2 focus-within:ring-blue-100；正常 border-slate-200 focus-within:border-blue-300，error border-rose-300 focus-within:border-rose-400。langBadge 行 border-b border-slate-100 bg-slate-50 px-2 py-1，badge rounded bg-slate-100 px-1.5 py-px font-mono text-[9.5px] uppercase text-stone-400。编辑器字号 11.5px，等宽 ui-monospace，gutters 透明 text-stone-300，padding 6px 0。basicSetup lineNumbers+highlightActiveLine+bracketMatching。\n\n[components/inputs/chameleon/slider-number-field] 数字框 Input type=number h-6 w-20 text-right font-mono text-[11.5px] tabular-nums（放 ControlField right 槽）。range input mt-0.5 w-full accent-blue-600，undefined 态 opacity-60。刻度 mt-0.5 flex justify-between text-[9.5px] tabular-nums text-stone-400 显示 min/max。",
+   "descriptions": [
+    "Dify 式提示词消息块：角色头行（大写小字标签 + 实时字数 + 变量按钮）+ CodeMirror 文本区融成一张圆角卡，{{#node.field#}} 引用经 MatchDecorator 渲染成蓝底圆角 chip（可逐字编辑），focus 整卡蓝环。画布 LLM/模板/Answer 节点核心输入控件，waveflow 无。",
+    "对标 Dify var-reference-picker：一个 popover 给系统变量 + 按上游节点名分组的输出字段，每项带 string/number/array 类型 chip，顶部搜索实时过滤，选中即插入 {{#node.field#}}。触发按钮 Braces 图标。所有变量引用入口统一走它。waveflow multi-select-popover 是通用多选，无变量 token/类型 chip/分组语义，故 new。",
+    "Dify 招牌交互：字段标签右侧一个段控（✎ Pencil=填常量 / {x} Braces=引用变量），点击切换该字段输入模式。变量态显示为紫色变量 chip + 替换/清除。waveflow 无对应。",
+    "对标 Dify/FastGPT DynamicInputs：列声明 ColumnSpec[] 驱动的多列结构化列表，每列可文本/下拉/勾选/带变量插入，行增删 + 上下移排序，序号徽标。画布 code/human_input 等节点用，waveflow 无。",
+    "CodeMirror 6 代码编辑器（行号 + 语法高亮 python/js/json + 等宽），可选右上角语言徽标，focus 蓝环，error 红边。画布 code 节点 / JSON schema / early_stop 等场景复用。waveflow json-format-ace-dual 是页级 ACE 双栏，这是单字段轻量 CodeMirror，结构数值都不同，故 new。",
+    "对标 Dify input-number-with-slider：range 滑块 + 右上角数字框联动，轨道两端标 min/max 刻度，可选「未设置」态（写回 undefined，滑块降透明）。画布 temperature/top_k/min_score 等区间参数用。waveflow 无。"
+   ],
+   "refs_uses": [
+    "components/inputs/chameleon/var-tree-picker",
+    "tokens/palettes/chameleon/node-type-hue-system"
+   ],
+   "tags_aesthetic": [
+    "focus蓝环",
+    "二态段控",
+    "列声明驱动",
+    "刻度标尺",
+    "变量chip",
+    "变量chip高亮",
+    "可选未设置态",
+    "图标切换",
+    "搜索过滤",
+    "树形分组",
+    "消息块",
+    "滑块数字联动",
+    "类型chip",
+    "虚线添加",
+    "行卡排序",
+    "行号",
+    "语法高亮",
+    "语言徽标"
+   ],
+   "tags_mood": [
+    "克制",
+    "可扫读",
+    "工程师",
+    "等宽",
+    "精密",
+    "精致",
+    "结构化"
+   ]
+  },
+  {
+   "id": "components/inputs/chameleon/inline-edit-cell",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/table/inline-edit-cell.tsx:73-142"
+   ],
+   "visual_spec": "[components/inputs/chameleon/inline-edit-cell] 编辑态: span inline-flex items-center gap-1(4)，input h-6(24) w-full max-w-[140px] rounded border border-blue-300 bg-white px-1.5(6) text-[12px](12) outline-none ring-2 ring-blue-100，saving 时 Loader2 h-3 w-3(12) animate-spin text-stone-400 否则 确认 button rounded p-0.5 text-emerald-600 hover:bg-emerald-50 内 Check h-3 w-3 + 取消 button rounded p-0.5 text-stone-400 hover:bg-stone-100 内 X h-3 w-3。显示态: span group/inline inline-flex items-center gap-1 cursor-pointer，双击编辑，空值 placeholder span text-stone-400('—')，铅笔 button rounded p-0.5 opacity-0 group-hover/inline:opacity-100 hover:bg-stone-100 内 Pencil h-3 w-3 text-stone-400。lucide: Check/Loader2/Pencil/X。",
+   "descriptions": [
+    "InlineEditCell 表格内 hover 露铅笔 / 双击进入编辑：text|number 类型，编辑态蓝边输入 + 勾(emerald)/叉确认取消 + saving spinner，Enter 提交 Escape 取消，onSave 返 promise，throw 时 toast 回滚；readonly 与未变更短路。waveflow 表格无内联编辑能力。"
+   ],
+   "refs_uses": [
+    "components/inputs/waveflow/blue-focus-input",
+    "tokens/palettes/waveflow/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "industrial",
+    "minimal"
+   ],
+   "tags_mood": [
+    "serious"
+   ]
+  },
+  {
+   "id": "components/inputs/chameleon/param-slider",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/param-slider.tsx:21-57"
+   ],
+   "visual_spec": "[components/inputs/chameleon/param-slider] 容器 'space-y-1.5(6px)'。头行 'flex items-center justify-between': label 'text-[12px] font-medium text-stone-700' + 值徽章 'rounded bg-stone-100 px-1.5(6px) py-0.5(2px) font-mono text-[11.5px] tabular-nums text-stone-700'（infinityAtZero && value===0 显 ∞）。range input 'w-full cursor-pointer accent-amber-600(#d97706)'。刻度行 'flex justify-between text-[10px] tabular-nums text-stone-400' 显 min/max（∞ 模式 max 显 ∞）。hint 'text-[10.5px] leading-snug text-stone-500'。signature: accent-amber-600 暖色滑块手柄（区别于全站 primary 蓝）。",
+   "descriptions": [
+    "LLM 运行参数（temperature/top_p/max_tokens）统一滑块：标签 + 当前值 mono 徽章 + min/max 刻度 + 可选 ∞@0 + hint。原生 range + accent-amber-600。waveflow 无滑块条目，新建。"
+   ],
+   "refs_uses": [],
+   "tags_aesthetic": [
+    "industrial",
+    "minimal"
+   ],
+   "tags_mood": [
+    "serious"
+   ]
+  },
+  {
+   "id": "components/inputs/chameleon/themeable-text-fields",
+   "layer": "component",
+   "dedup": "variant",
+   "ref_target": "components/inputs/waveflow/blue-focus-input",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/input.tsx:17-34",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/label.tsx:6-19",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/textarea.tsx:7-22"
+   ],
+   "visual_spec": "[components/inputs/chameleon/compact-textarea] textarea: 'w-full min-h-[72px] rounded-md(6px) border border-stone-300 bg-white px-3(12px) py-1.5(6px) text-[13px] outline-none transition placeholder:text-stone-400' + 'focus:border-blue-500(#3b82f6) focus:ring-2 focus:ring-blue-100(#dbeafe)' + 'disabled:cursor-not-allowed disabled:bg-stone-100 disabled:text-stone-500'. forwardRef。与 input 配色完全对齐（字面 blue 非 themeable）。\n\n[components/inputs/chameleon/themeable-label] LabelPrimitive.Root: 'text-[12px] font-medium leading-none text-stone-600 peer-disabled:cursor-not-allowed peer-disabled:opacity-70'。@radix-ui/react-label。\n\n[components/inputs/waveflow/blue-focus-input] input: 'h-8(32px) w-full rounded-md(6px) border border-stone-300 bg-white px-3(12px) text-[13px] outline-none transition placeholder:text-stone-400' + focus 'focus:border-blue-500(#3b82f6) focus:ring-2 focus:ring-blue-100(#dbeafe)' + disabled 'disabled:cursor-not-allowed disabled:bg-stone-100 disabled:text-stone-500' + error prop 'border-red-500 focus:border-red-500 focus:ring-red-100' + mono prop 'font-mono tnum'. 注意：input 用的是字面 blue-500/blue-100（非 themeable primary），与 waveflow 完全一致。",
+   "descriptions": [
+    "Input 的多行兄弟件：min-h-72px + 13px + 同款蓝聚焦 ring。waveflow 无对应 textarea 条目，新建。",
+    "Radix Label 封装，12px + medium + stone-600 + peer-disabled 态。waveflow 无独立 label 条目，新建（极薄，可与 input 组合）。",
+    "Chameleon 的 input.tsx 与 waveflow blue-focus-input 逐字一致：h-8 + 13px + focus:border-blue-500 + ring-2 ring-blue-100 + error 红边 + mono 模式。直接 cross-namespace 复用，不新建。"
+   ],
+   "refs_uses": [
+    "components/inputs/waveflow/blue-focus-input"
+   ],
+   "tags_aesthetic": [
+    "minimal"
+   ],
+   "tags_mood": [
+    "calm"
+   ]
+  },
+  {
+   "id": "components/selects/chameleon/agent-picker-popover",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/agent-picker.tsx:38-211",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/agent-picker.tsx:95-211"
+   ],
+   "visual_spec": "[components/selects/chameleon/paginated-category-agent-picker] 触发器: button flex h-7(28) items-center justify-between gap-1 rounded-md(6) border border-stone-200 bg-white px-2(8) text-[12px](12) text-stone-700 hover:border-stone-300 style.width=168，span.truncate 标签 + ChevronDown h-3.5 w-3.5(14) shrink-0 text-stone-400。PopoverContent !w-[420px] !p-0，内 flex h-[340px](340)。左类别栏: w-24(96) shrink-0 space-y-0.5 overflow-y-auto border-r border-stone-100 p-1.5，每项 button w-full rounded px-2 py-1.5(6) text-left text-[12px]，选中 bg-blue-50 font-medium text-blue-700 否则 text-stone-600 hover:bg-stone-100。右区: flex min-w-0 flex-1 flex-col，搜索 relative p-1.5，Search 绝对 left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-stone-400 + Input !h-7 pl-7(28) text-[12px]。列表: overflow-y-auto p-1.5 pt-0 onScroll 触底-48 加载。Row: button flex w-full items-center gap-2(8) rounded px-2 py-1.5 text-left hover:bg-stone-100，active bg-blue-50；图标 span shrink-0(img h-4 w-4 rounded object-cover 或 Bot h-3.5 w-3.5 text-stone-400)；标题 span block truncate text-[12px] text-stone-800，副 key span block truncate font-mono text-[10px](10) text-stone-400；active Check h-3.5 w-3.5 text-blue-600。加载态 flex items-center justify-center gap-1.5 py-2 text-[11px] text-stone-400 + Loader2 h-3 w-3 animate-spin；空 py-6 text-center text-[12px] text-stone-400；到底 py-2 text-center text-[10.5px](10.5) text-stone-300。lucide: Bot/Check/ChevronDown/Loader2/Search。\n\n[components/selects/chameleon/agent-picker-category-popover] 触发: h-7(=28) rounded-md border border-stone-200 bg-white px-2 text-[12px] text-stone-700 hover:border-stone-300 + ChevronDown h-3.5 w-3.5 text-stone-400; width 默认 168。PopoverContent !w-[420px] !p-0; 内 flex h-[340px]。左类别栏 w-24(=96) space-y-0.5 border-r border-stone-100 p-1.5; 类别按钮 rounded px-2 py-1.5 text-[12px], active→bg-blue-50 font-medium text-blue-700 idle→text-stone-600 hover:bg-stone-100。右搜索: Search h-3.5 w-3.5 absolute left-3.5 text-stone-400 + Input !h-7 pl-7 text-[12px]。Row: flex items-center gap-2 rounded px-2 py-1.5 hover:bg-stone-100 active→bg-blue-50; icon h-4 w-4 rounded(图)/Bot h-3.5 w-3.5 text-stone-400; 名 text-[12px] text-stone-800 truncate; key 副行 font-mono text-[10px] text-stone-400; 选中 Check h-3.5 w-3.5 text-blue-600。加载 Loader2 animate-spin text-[11px] text-stone-400; 到底 text-[10.5px] text-stone-300「没有更多了」。",
+   "descriptions": [
+    "AgentPicker 智能体筛选下拉：左侧应用类别竖栏(全部/代码/对话编排/流程编排/外部) + 右侧搜索框 + 无限滚动分页列表（向下触底加载），每行图标(自定义 img 或 Bot 兜底)+名称+mono key 副行 + 选中 Check，触发器显示选中名/全部应用。waveflow multi-select-popover 是多选，本件是带类别栏+分页+搜索的单选应用选择器 → new。",
+    "Popover 双栏选择器：左侧应用类别栏(全部/代码/对话编排/流程编排/外部)缩列表，右侧搜索 + 无限滚动分页列表(向下滚到底加载下一页)。行带 icon(应用图标或 Bot 回退)+名称+agent_key 灰 mono 副行+选中 Check。空值选项「全部应用/不关联」可配。"
+   ],
+   "refs_uses": [
+    "components/inputs/waveflow/blue-focus-input",
+    "tokens/palettes/waveflow/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "industrial",
+    "minimal",
+    "双栏 popover",
+    "暖白",
+    "类别栏"
+   ],
+   "tags_mood": [
+    "calm",
+    "serious",
+    "分页",
+    "可扫读",
+    "工程克制"
+   ]
+  },
+  {
+   "id": "components/selects/chameleon/model-picker-popover",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/image-model-select.tsx:27-67",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/model-picker.tsx:33-213"
+   ],
+   "visual_spec": "[components/selects/chameleon/model-picker-provider-popover] 结构与 agent-picker 一致(触发 h-7 rounded-md border px-2 text-[12px] + ChevronDown; PopoverContent !w-[420px] h-[340px]; 左 w-24 provider 栏 active→bg-blue-50 text-blue-700; 右 Search+Input !h-7 pl-7)。Row 图标改 Cpu h-3.5 w-3.5 text-stone-400; 标题 text-[12px] text-stone-800; provider 副行 font-mono text-[10px] text-stone-400; active→bg-blue-50 + Check text-blue-600。值为 model_code(非 id)。空态「无匹配模型」py-6 text-center text-[12px] text-stone-400。\n\n[components/selects/chameleon/image-model-inline-select] SelectTrigger h-7(=28) text-[12px]; placeholder 加载中→「加载中…」否则「选择生图模型」。SelectItem text-[12px]: code font-mono + provider_code ml-1.5 text-[10px] text-stone-400。空态 px-2 py-1.5 text-[11px] text-stone-400「暂无生图模型，请先在「模型」页添加 image 模型」。",
+   "descriptions": [
+    "照抄 agent-picker 交互的 chat 模型选择器：左侧 provider 类别栏(从数据派生去重) + 右侧搜索 + 列表。行带 Cpu 图标 + model code + provider 灰 mono 副行 + 选中 Check。一次性返列表前端过滤(非无限滚动)。",
+    "选一个 image 模型的紧凑内联 Select(值=model.id 字符串避雪花丢精度)：选项显示 mono code + 灰 provider 副标，空态引导去模型页加 image 模型。工作流 image_gen 节点与生图应用创建共用。"
+   ],
+   "refs_uses": [
+    "components/inputs/waveflow/blue-focus-input",
+    "tokens/palettes/waveflow/warm-paper-ink-blue"
+   ],
+   "tags_aesthetic": [
+    "mono code",
+    "provider 栏",
+    "双栏 popover",
+    "暖白",
+    "紧凑下拉"
+   ],
+   "tags_mood": [
+    "可扫读",
+    "工程克制"
+   ]
+  },
+  {
+   "id": "components/selects/chameleon/radix-single-select",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "signature": false,
+   "name": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/select.tsx:11-73"
+   ],
+   "visual_spec": "[components/selects/chameleon/radix-single-select] SelectTrigger: 'flex h-8(32px) w-full items-center justify-between rounded-md(6px) border border-stone-300 bg-white px-3(12px) text-[13px] outline-none transition placeholder:text-stone-400 focus:border-blue-500(#3b82f6) focus:ring-2 focus:ring-blue-100(#dbeafe) disabled:cursor-not-allowed disabled:bg-stone-100 disabled:text-stone-500' + 末尾 <ChevronDown className='h-4 w-4 opacity-50'/>. SelectContent: 'relative z-50 max-h-96 min-w-[8rem](128px) overflow-hidden rounded-md border border-stone-200 bg-[var(--color-paper)](#ffffff) text-stone-900 shadow-pop' + popper translate-y-1，Viewport p-1。SelectItem: 'relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5(6px) pl-8(32px) pr-2(8px) text-[13px] outline-none hover:bg-stone-100 focus:bg-stone-100 data-[disabled]:opacity-50' + 左侧 absolute left-2 ItemIndicator <Check className='h-4 w-4'/>. lucide: Check, ChevronDown。@radix-ui/react-select。",
+   "descriptions": [
+    "Radix Select 单选原语封装（Trigger/Content/Item + Check 指示器）。waveflow 只有 multi-select-popover，无单选 Select 原语，故新建。Trigger 复用 blue-focus 输入态，Item 走 pl-8 左对勾 + ChevronDown 触发图标。"
+   ],
+   "refs_uses": [
+    "tokens/shadow/waveflow/soft-card-pop-trio"
+   ],
+   "tags_aesthetic": [
+    "minimal"
+   ],
+   "tags_mood": [
+    "calm"
+   ]
+  }
+ ]
+}
