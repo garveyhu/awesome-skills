@@ -29,7 +29,7 @@ preview: /preview/pages/dashboard/chameleon/observability-overview-tabs
 
 - **整页**：`space-y-4(16px)`（无大标题；顶栏 `mb-4 flex items-center justify-between gap-3`：左 SegmentedControl，右 DateRangePicker）
 - **KPI grid**：`grid grid-cols-2 gap-4 lg:grid-cols-4`，每格 StatTile：
-  - 卡：`flex items-start justify-between rounded-xl(12px) border border-stone-200(#e7e5e0) bg-paper p-5(20px)`
+  - 卡：`flex items-start justify-between rounded-xl(16px) border border-stone-200(#e7e5e0) bg-paper p-5(20px)`
   - 左侧：label `text-xs(12px) text-stone-500` → value `mt-2 truncate font-mono text-2xl(24px) tracking-tight text-stone-900`（loading 显 `—`）→ hint 行 `mt-1 text-[11px]`：hint `text-stone-400` + delta `inline-flex gap-0.5 font-medium`（`TrendingUp/Down h-3 w-3`，good→`text-emerald-600` / bad→`text-red-600` / 0→`text-stone-400`，`(delta*100).toFixed(1)%`）
   - 右侧 icon chip：`h-10 w-10 rounded-lg(8px)` + tone 色（primary `bg-primary-50 text-primary-600` / success `bg-emerald-50 text-emerald-600` / warning `bg-amber-50 text-amber-600` / danger `bg-red-50 text-red-600`），内 `Icon h-5 w-5`（Activity / Sparkles / Bot / Users）
   - 成功率 tone 分档：`>0.95 success` / `>0.8 warning` / else `danger`

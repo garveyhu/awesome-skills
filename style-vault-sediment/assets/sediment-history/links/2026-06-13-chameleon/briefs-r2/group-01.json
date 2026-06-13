@@ -1,0 +1,108 @@
+{
+ "group": 1,
+ "entries": [
+  {
+   "id": "blocks/chat/chameleon/embed-widget-bubble-shell",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/embed/src/styles.ts",
+    "/Users/links/Coding/Archer/Chameleon/frontend/embed/src/widget.ts"
+   ],
+   "visual_spec": "[blocks/chat/chameleon/embed-widget-bubble-shell] shadow DOM :host all:initial。气泡 bubble: width/height bubble_size(56,clamp40-96) border-radius 50% bg bubbleColor(#6366F1) color #fff box-shadow lg(0 12px 40px rgba(0,0,0,.18)) hover:scale-1.06，icon size ≈47%；transparent 模式 bg/shadow 去除 + drop-shadow 描黑。tooltip line: bg paneBg border radius-14 padding 7px 12px max-w-220 shadow + bubble-tip-in .35s。panel: width panel_width(400,clamp280-520) height panel_height(600,clamp360-800) radius border_radius(12,clamp0-32) shadow lg，开态 opacity 1 translateY 0 scale 1 transition .18s；4 角位 bottom/top 96px。fullscreen: inset 0 100% 无圆角无阴影无 transform。header: padding 14px 16px bg headerBg(白自适应深色文字/深底白字 YIQ>175) + emoji 22px + title 14px/600 + sub 12px opacity .85。messages: padding 16 gap 12，msg max-w-88% gap-6。bubble-text: padding 9px 12px radius bubbleRadius=18 font panel(md 13.5px) line-height 1.6；user bg userBubble(themeColor) 白字 border-top-right-radius 4(tail)；bot bg botBubble border botBubbleBorder border-top-left-radius 4；error bg errorBg/text errorText。打字 typing 三点 6px 圆 typing 1.2s 上跳。citation-chip rounded-10 + citationBg/border。suggested-questions rounded-999 border themeColor hover 反色。composer: textarea radius-12 min-h-38 + focus border themeColor + soft shadow；send-btn 38x38 radius-12 bg themeColor + box-shadow rgba(99,102,241,.30) hover:scale-1.05；upload-btn 38x38 radius-10。sidebar overlay: inset 0 z-5 + sidebar-title::before 3px×14 竖条 themeColor + new-session-btn rounded-999 border themeColor55 + sidebar-item rounded-8 active bg themeColor14。brand 水印 11px center。dark 模式 paneBg #0F172A/paneText #F1F5F9/border #1E293B。@media≤480: panel calc(100vw-24)。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/chat/chameleon/embed-widget-bubble-shell.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/chat/chameleon/embed-widget-bubble-shell.tsx"
+  },
+  {
+   "id": "blocks/chat/chameleon/hitl-human-input-prompt",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/message-thread.tsx:242-248,383-419"
+   ],
+   "visual_spec": "[blocks/chat/chameleon/hitl-human-input-prompt] 卡: mt-1.5 w-full max-w-[420px] rounded-xl(=12) border border-amber-200 bg-amber-50/60 p-3(=12)。标题行: mb-2 flex items-center gap-1.5 text-[12px] font-medium text-amber-700「⏸ 等待人工输入」。prompt: mb-2 whitespace-pre-wrap break-words text-[13px] text-stone-700。Textarea: rows=2 mb-2 text-[13px] placeholder「填写答案后提交，续跑该智能体…」。底部 flex justify-end Button size=sm disabled=!val.trim()「提交并续跑」。气泡内 paused 占位: text-amber-600「⏸ 等待人工输入…」。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/chat/chameleon/hitl-human-input-prompt.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/chat/chameleon/hitl-human-input-prompt.tsx"
+  },
+  {
+   "id": "blocks/chat/chameleon/markdown-message-citation",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/chat/markdown.tsx:19-100",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/message-thread.tsx:250-269"
+   ],
+   "visual_spec": "[blocks/chat/chameleon/markdown-message-lite] 根 div text-[13.5px] leading-relaxed break-words。p: mb-2(=8) last:mb-0。ul: list-disc space-y-0.5(=2) pl-5(=20); ol: list-decimal。a: text-sky-600(#0284c7) underline underline-offset-2 target=_blank。video(由 a/img href 匹配 /\\.(mp4|webm|mov)/ 触发): my-1 max-h-[420px] max-w-full rounded-lg border border-stone-200。img: my-1 max-h-[420px] rounded-lg border border-stone-200 object-contain loading=lazy。h1 text-[15px]/h2 text-[14px]/h3 text-[13px] font-semibold mt-1。blockquote: border-l-2 border-stone-300 pl-2 text-stone-500。code(inline): rounded bg-stone-100 px-1 py-0.5 font-mono text-[0.85em] text-stone-800。pre: overflow-x-auto rounded-md bg-stone-100 p-2.5(=10) font-mono text-[12px] [&>code]:bg-transparent。table: w-full border-collapse text-[12px]; th/td border border-stone-200 px-2 py-1。hr my-2 border-stone-200。\n\n[blocks/chat/chameleon/citation-collapse-row] 容器: max-w-full space-y-1 px-1。每条 details: rounded-md border border-stone-200 bg-stone-50/80 px-2 py-1 text-[11px] text-stone-600。summary: cursor-pointer select-none truncate text-stone-500「📄 标题」。片段: mt-1 line-clamp-3 whitespace-pre-wrap text-stone-500。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/chat/chameleon/markdown-message-citation.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/chat/chameleon/markdown-message-citation.tsx"
+  },
+  {
+   "id": "blocks/chat/chameleon/message-actions-bar",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/chat/message-actions.tsx:99-359",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/chat/resolve-actions.ts:1-110"
+   ],
+   "visual_spec": "[blocks/chat/chameleon/message-actions-bar] 工具条: pointer-events-auto flex items-center gap-0.5(=2) rounded-md border border-stone-200/70 bg-white/90 p-0.5 shadow-sm backdrop-blur; opacity-0 group-hover:opacity-100 focus-within:opacity-100。ActionBtn: rounded px-1 py-1 text-stone-500; hover→bg-stone-100 hover:text-stone-800; danger hover→bg-rose-50 hover:text-rose-600; active→bg-amber-100 text-amber-800(普通)/bg-rose-100 text-rose-700(danger); disabled→opacity-40。icon 统一 h-3 w-3(=12)。copied→Check h-3 w-3 text-emerald-600。⋯ 触发 MoreHorizontal h-3 w-3; DropdownMenuContent align=end min-w-[9rem]。MenuRow: flex items-center gap-2 icon(text-stone-500) + label text-[12.5px]。delete 菜单项前置 Separator, text-rose-600 hover:bg-rose-50。active 菜单项 text-amber-700。lucide: Copy/Pencil/RefreshCw/Trash2/ThumbsUp/ThumbsDown/Split/Languages/ArrowDownFromLine/Volume2/VolumeX/Download/Share2/Pin/PinOff/Check/MoreHorizontal。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/chat/chameleon/message-actions-bar.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/chat/chameleon/message-actions-bar.tsx"
+  },
+  {
+   "id": "blocks/chat/chameleon/message-list-bubble-thread",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/message-thread.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/message-thread.tsx:37-349"
+   ],
+   "visual_spec": "[blocks/chat/chameleon/message-list-bubble-thread] 外层 group flex gap-2(=8) isUser?flex-row-reverse:flex-row, stale→opacity-50。Bot 头像: mt-0.5 h-6 w-6(=24) shrink-0 rounded-full bg-gradient-to-br from-violet-500(#8b5cf6) to-blue-500(#3b82f6) text-white, 内 Bot icon h-3.5 w-3.5(=14)。气泡容器: flex min-w-0 max-w-[88%] flex-col gap-1(=4) isUser?items-end:items-start。气泡本体: min-w-0 rounded-2xl(=16) px-3(=12) py-2(=8) text-[13px] leading-relaxed; user→rounded-tr-sm(=2) bg-blue-600(#2563eb) text-white; bot→rounded-tl-sm border border-stone-200 bg-white text-stone-800 shadow-[0_1px_2px_rgba(0,0,0,0.04)]; failed→!border-rose-200 !bg-rose-50 !text-rose-700; pinned→ring-1 ring-amber-300。错误副行 mt-1 text-[12px] text-rose-600。footer: flex items-center gap-2(=8) px-1 text-[10px] text-stone-400; streaming标签 text-blue-600「生成中…」; usage tnum font-mono「↑{in} ↓{out}」; pinned📌 text-amber-600。hover 动作组 opacity-0 transition group-hover:opacity-100。trace 按钮 hover:bg-violet-50 hover:text-violet-600 (ListTree h-3 w-3); 存样本 hover:bg-emerald-50 hover:text-emerald-600 (BookmarkPlus); 改写提示词 hover:bg-violet-50 hover:text-violet-600 (Wand2)。空态: flex flex-1 items-center justify-center text-[12px] text-stone-400「输入消息开始对话」。VirtualList estimateSize=72 itemClassName=pb-4 px-4 pt-4。AttachmentPreview: 图 rounded-lg border border-stone-200/70 h-28 w-28(=112) object-cover hover:border-blue-300; 音频 audio controls h-8 max-w-[280px]; 文件 rounded-full border bg-stone-50/60 px-2.5 py-1 text-[11px] 📎前缀。\n\n[blocks/chat/chameleon/playground-message-bubbles] VirtualList estimateSize 72 stickToBottom px-4 pt-4 itemClassName pb-4。MessageBubble: group flex gap-2(8)，user flex-row-reverse。bot 头像见 gradient-bot-avatar。气泡 rounded-2xl(16) px-3 py-2 text-[13px] leading-relaxed max-w-[88%]，user rounded-tr-sm(2) bg-blue-600 text-white / bot rounded-tl-sm border border-stone-200 bg-white text-stone-800 shadow-[0_1px_2px_rgba(0,0,0,0.04)]，失败 !border-rose-200 !bg-rose-50 !text-rose-700，pinned ring-1 ring-amber-300。流式: mediaKind→ImageGenLoading / 否则 NeonLoader size sm「思考中…」。paused「⏸ 等待人工输入…」amber-600。citation details rounded-md border bg-stone-50/80 text-[11px] stone-600「📄 标题」。footer text-[10px] stone-400，用量 tnum font-mono「↑in ↓out」，动作 opacity-0 group-hover:opacity-100：trace ListTree hover:bg-violet-50/text-violet-600、存样本 BookmarkPlus hover:emerald、改写 Wand2 hover:violet。编辑态整条换 Textarea rounded-xl border。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/chat/chameleon/message-list-bubble-thread.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/chat/chameleon/message-list-bubble-thread.tsx"
+  },
+  {
+   "id": "blocks/display/chameleon/app-card-gallery-grid",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/agents/components/app-card.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/agents/pages/agents-page.tsx:259-290",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/pages/kbs-page.tsx:83-130"
+   ],
+   "visual_spec": "[blocks/display/chameleon/app-card-gallery-grid] 网格 grid-cols-1 sm:2 lg:3 xl:4 gap-3。卡片 group relative flex h-[148px](kb 132px) flex-col rounded-xl(12) border border-stone-200/80 bg-white p-4(16) shadow-sm transition hover:border-primary-200 hover:shadow-md。hover 高光线: absolute inset-x-4 top-0 h-0.5 rounded-full bg-gradient-to-r from-transparent via-primary-500 to-transparent opacity-0 group-hover:opacity-100 duration-300。图标块 h-9 w-9(36) rounded-lg group-hover:-rotate-6 group-hover:scale-105 duration-300，按 kind 着色(code indigo-50/600·chatflow sky·workflow violet·external amber)。名称 text-[13.5px] font-medium stone-900 + key font-mono text-[10.5px] stone-400。描述 line-clamp-2 text-[11.5px] leading-relaxed stone-500。底部徽标 rounded px-1.5 py-0.5 text-[10px] font-medium(类型 kind 色 / 已发布 emerald-50-700 / 草稿 stone-100-500 / 已嵌入 blue-50-700) + 更新时间 stone-400。三点 MoreVertical h-7 w-7 opacity-0 group-hover。新建卡 h-[148px] rounded-xl border-dashed border-stone-300 bg-white/60 hover:border-blue-400 hover:bg-blue-50/40 hover:text-blue-600。骨架 .skeleton h-[148px] rounded-xl opacity-60。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/display/chameleon/app-card-gallery-grid.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/display/chameleon/app-card-gallery-grid.tsx"
+  },
+  {
+   "id": "blocks/display/chameleon/eval-spreadsheet-airtable",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/components/dataset-spreadsheet.tsx"
+   ],
+   "visual_spec": "[blocks/display/chameleon/eval-spreadsheet-airtable] 外层 overflow-x-auto rounded-lg(8) border border-stone-200/60。table table-fixed minWidth 动态(系统列窄/文本宽)。thead border-b border-stone-200/70 bg-[var(--color-warm-2)]/40，th sticky top-0 px-3 py-2.5 text-left text-[11px] font-medium stone-500，列名走中文映射 getColumnLabel。tbody divide-y divide-stone-100 text-[12.5px]，行 group hover:bg-stone-50，td px-3 py-2 align-top。EditableText 非编辑 truncate text-stone-700，编辑态 textarea rounded border border-blue-300 ring-2 ring-blue-100 text-[12.5px]，Enter 提交/Shift+Enter 换行/Esc 还原。JsonCellPopover 触发 truncate font-mono text-[11.5px] stone-500，PopoverContent w-[28rem] 查看/编辑切换 + JsonViewer 高亮。redacted: Lock h-3 + stone-400 + Tooltip。NoteCell textarea border-transparent hover:border-stone-200 focus:border-blue-300。删除 Trash2 h-3.5 opacity-0 group-hover hover:bg-rose-50 hover:text-rose-600。ColumnMenu DropdownMenu Columns3 + 隐藏数 chip。新增行 Button secondary + Plus。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/display/chameleon/eval-spreadsheet-airtable.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/display/chameleon/eval-spreadsheet-airtable.tsx"
+  },
+  {
+   "id": "blocks/display/chameleon/kb-chunk-card-wall",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/components/chunk-card.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/pages/kb-document-detail-page.tsx:113-119"
+   ],
+   "visual_spec": "[blocks/display/chameleon/kb-chunk-card-wall] 网格 grid-cols-1 md:2 xl:3 gap-3。卡: rounded border bg-white，seq 头 + 正文 whitespace-pre-wrap，>480 字截断「…」+ 展开。编辑态换 Textarea，保存「已保存并重嵌」toast。动作 Check/Copy/Eye/EyeOff/Pencil/Trash2 lucide。停用态弱化。文档详情头：信息卡(标签 tag-editor + 元数据字段填值 doc-meta-fields) + 「N chunks · M tokens」text-[11.5px] stone-500 + 搜索框 max-w-[280px] + TablePagination。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/display/chameleon/kb-chunk-card-wall.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/display/chameleon/kb-chunk-card-wall.tsx"
+  }
+ ]
+}

@@ -1,0 +1,34 @@
+{
+ "group": 9,
+ "entries": [
+  {
+   "id": "tokens/palettes/chameleon/node-type-hue-system",
+   "layer": "token",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/controls/var-type-chip.tsx:8-15",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/lib/node-catalog.ts:48-251",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/lib/node-meta.ts:64-295"
+   ],
+   "visual_spec": "[tokens/palettes/chameleon/node-type-hue-system] 每节点 5 槽：color(text-{hue}-700) / ring(ring-{hue}-200) / bg(bg-{hue}-50) / cardTint(bg-{hue}-50/40, slate/stone/green 用 50/50) / edgeColor(#{hue}-500 hex)。hue 分配：start emerald(#10b981) · end stone(#78716c) · llm violet(#8b5cf6) · image_gen purple(#a855f7) · kb emerald(#10b981) · tool orange(#f97316) · if_else amber(#f59e0b) · agent_debate fuchsia(#d946ef) · iteration sky(#0ea5e9) · parallel indigo(#6366f1) · human_input pink(#ec4899) · http cyan(#06b6d4) · aggregator amber-800/amber-500 · assign rose(#f43f5e) · classifier lime(#84cc16) · param_extract blue(#3b82f6) · subflow indigo(#6366f1) · list_op cyan-800 · doc_extract orange-700 · code slate(#64748b) · template teal(#14b8a6) · answer green(#22c55e) · noop stone(#78716c). 变量类型 chip 6 色：string sky-50/sky-600 · number amber-50/amber-600 · boolean rose-50/rose-600 · object violet-50/violet-600 · array emerald-50/emerald-600 · any stone-100/stone-400。主色 blue-600 复用 waveflow warm-paper-ink-blue。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/tokens/palettes/chameleon/node-type-hue-system.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/tokens/palettes/chameleon/node-type-hue-system.tsx"
+  },
+  {
+   "id": "tokens/palettes/chameleon/themeable-8x4-system",
+   "layer": "token",
+   "dedup": "variant",
+   "ref_target": "tokens/palettes/waveflow/warm-paper-ink-blue",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/index.css#L20-L60",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/index.css:20-50",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/theme.css#L13-L131",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/theme.css:1-128"
+   ],
+   "visual_spec": "[tokens/palettes/chameleon/themeable-8x4-system] 默认 @theme（index.css）：--color-primary-600 #2563eb（blue 主色，CTA/链接/active），primary-50 #eff6ff / 100 #dbeafe（focus ring / 选中底）/ 500 #3b82f6（focus border）/ 700 #1d4ed8（hover）。暖白三档基底 --color-warm #fafaf7（页面底）/ --color-warm-2 #f4f3ee（侧栏+表头）/ --color-paper #fffefb（卡片/dialog）/ --color-ink #1c1917（body 文字）。语义色 --color-success #10b981 / --color-warning #f59e0b / --color-danger #ef4444 / --color-info #06b6d4。\n\n切换层（theme.css）—— primary 调色板各 50..900 共 10 阶：purple(500 #a855f7 / 600 #9333ea)、green(500 #10b981 / 600 #059669)、orange(500 #f97316 / 600 #ea580c)、rose(500 #f43f5e / 600 #e11d48)、cyan(500 #06b6d4 / 600 #0891b2)、amber(500 #f59e0b / 600 #d97706)、teal(500 #14b8a6 / 600 #0d9488)；blue 默认不覆盖。\n\nneutral 基底覆盖 warm/warm-2/paper/ink 四值：slate(#f8fafc / #f1f5f9 / #ffffff / #0f172a)、zinc(#fafafa / #f4f4f5 / #ffffff / #18181b)、gray(#f9fafb / #f3f4f6 / #ffffff / #111827)；stone 默认不覆盖。\n\nbody 基础：background var(--color-warm)，color var(--color-ink)，font-family var(--font-sans)，font-size 14px，line-height 1.5，-webkit-font-smoothing antialiased。调色板锚点 = Tailwind v4 默认 500/600/700 阶。\n\n[tokens/palettes/chameleon/themeable-neutral-accent-switch] :root[data-neutral=slate]{--color-warm#f8fafc;--color-warm-2#f1f5f9;--color-paper#ffffff;--color-ink#0f172a} / [data-neutral=zinc]{warm#fafafa warm-2#f4f4f5 paper#ffffff ink#18181b} / [data-neutral=gray]{warm#f9fafb warm-2#f3f4f6 paper#ffffff ink#111827}。reduced-motion: transition-duration 100ms !important。区分点：waveflow 是单套硬冻结板，本变体把基底变量做成 data-attr 可切换的多中性 + accent 主题工厂。\n\n[tokens/palettes/chameleon/warm-paper-ink-blue] @theme: --color-primary-50..900 (50#eff6ff/100#dbeafe/200#bfdbfe/300#93c5fd/400#60a5fa/500#3b82f6/600#2563eb/700#1d4ed8/800#1e40af/900#1e3a8a); --color-warm#fafaf7 --color-warm-2#f4f3ee --color-paper#fffefb --color-ink#1c1917; --color-success#10b981 --color-warning#f59e0b --color-danger#ef4444 --color-info#06b6d4; body bg=warm color=ink font-size 14px antialiased。score 色阶：≥0.8 emerald-600/emerald-50 / 0.5–0.8 amber-600/amber-50 / <0.5 red-600/red-50 / 空 stone-400/stone-100。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/tokens/palettes/chameleon/themeable-8x4-system.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/tokens/palettes/chameleon/themeable-8x4-system.tsx"
+  }
+ ]
+}

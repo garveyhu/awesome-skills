@@ -42,8 +42,8 @@ preview: /preview/blocks/form/chameleon/generation-panel
 - **text 字段**：`Textarea rows={2} text-[12px]`
 - **seed 字段**：`flex gap-1.5` → `Input type="number" placeholder="随机" h-8 text-[12px]` + 骰子按钮 `flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-stone-200 text-stone-500 hover:border-stone-300` 内 `Dices h-3.5 w-3.5`
 - **int / float 字段**：`Input type="number" h-8 text-[12px]`，step 整数 1 / 浮点 0.1
-- **高级折叠**：`border-t border-stone-100 pt-2`，触发按钮 `text-[11.5px] text-stone-500 hover:text-stone-700`，文案展开「收起高级参数」/ 收起「高级参数」（源码用 ▾ / ▸ 装饰符，preview 用 lucide ChevronDown / ChevronRight），展开区 `mt-2 space-y-3`
-- **lucide**：`Dices` / `ImagePlus` / `Loader2` / `X`（折叠用 `ChevronDown` / `ChevronRight`）
+- **高级折叠**：`border-t border-stone-100 pt-2`，触发按钮 `text-[11.5px] text-stone-500 hover:text-stone-700`，文案 `showAdvanced ? '▾ 收起高级参数' : '▸ 高级参数'`（纯文本三角字形前缀，**无 lucide icon**），展开区 `mt-2 space-y-3`
+- **lucide**：`Dices` / `ImagePlus` / `Loader2` / `X`（折叠器不用 icon，纯文本 ▾ / ▸）
 
 ## 核心代码
 

@@ -33,7 +33,7 @@ preview: /preview/components/display/chameleon/distribution-score-bars
 - 行内 label/count 行：`mb-1 flex items-center justify-between text-[12px]`
   - label：`truncate text-stone-700`
   - count：`tnum shrink-0 pl-2 text-stone-500`，内嵌百分比 `ml-1 text-stone-400`，`((count/total)*100).toFixed(0)%`（**整数**百分比）
-- 进度条轨：`relative h-1.5 w-full overflow-hidden rounded bg-stone-100`（1.5=6px 高，radius md=6px）
+- 进度条轨：`relative h-1.5 w-full overflow-hidden rounded bg-stone-100`（1.5=6px 高，`rounded`=Tailwind 默认 4px）
 - 填充：`bg-primary-400 absolute inset-y-0 left-0 rounded`，`style.width = (count/total)*100%`（**主题 primary-400，随主题色**）
 
 ### Top 表内嵌变体（overview-tab）
@@ -41,6 +41,16 @@ preview: /preview/components/display/chameleon/distribution-score-bars
 - 进度条轨：`h-1.5 w-16 overflow-hidden rounded-full bg-stone-100`（**w-16=64px 固定宽 + 全圆角**）
 - 填充：`from-primary-300 to-primary-500 h-full rounded-full bg-gradient-to-r`（**左→右 primary 渐变**，非纯色）
 - 右侧值：`tnum w-10 text-right text-stone-600`，搭配 `RankBadge` 排名徽标
+
+### RankBadge 排名徽标（rank-badge.tsx）
+
+- 外形：`inline-flex h-5 w-5(20px) shrink-0 items-center justify-center rounded-full text-[10px] font-semibold tabular-nums ring-1 ring-inset`（**圆形 20px + 1px inset ring**）
+- 金/银/铜/其余 4 档（每档 bg/text/ring 三色）：
+  - rank1 金：`bg-amber-100(#fef3c7) text-amber-700(#b45309) ring-amber-200(#fde68a)`
+  - rank2 银：`bg-slate-200(#e2e8f0) text-slate-600(#475569) ring-slate-300(#cbd5e1)`
+  - rank3 铜：`bg-orange-100(#ffedd5) text-orange-700(#c2410c) ring-orange-200(#fed7aa)`
+  - 其余：`bg-stone-100(#f5f5f4) text-stone-400(#a8a29e) ring-stone-200(#e7e5e4)`
+- 内容：`{index + 1}`（1-based 名次）
 
 ### 多通道相似度条（ScoreBreakdown · full 模式）
 
@@ -83,7 +93,8 @@ preview: /preview/components/display/chameleon/distribution-score-bars
   "bar": {
     "height": "6px",
     "track": "#f5f5f4",
-    "radius": "6px",
+    "radiusDistribution": "4px",
+    "radiusTopAndChannel": "9999px",
     "fillThemed": "var(--color-primary-400)"
   }
 }

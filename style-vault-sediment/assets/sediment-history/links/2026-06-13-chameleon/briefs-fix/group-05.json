@@ -1,0 +1,247 @@
+{
+ "group": 5,
+ "entries": [
+  {
+   "id": "components/selects/chameleon/radix-single-select",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/select.tsx:11-73"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/selects/chameleon/radix-single-select.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/selects/chameleon/radix-single-select.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "content 浮层 border 用 #e7e5e0；源码 SelectContent border-stone-200 实际 hex = #e7e5e4。应改 #e7e5e4。浮层背景源码 bg-[var(--color-paper)] = #fffefb（运行时 @theme），preview 用 #fff——应为 #fffefb。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "SelectItem 源码 hover:bg-stone-100(#f5f5f4) focus:bg-stone-100 + data-[disabled]:opacity-50。preview 用 hovered prop 给第二项画 #f5f5f4 背景 ✓，但缺 disabled item(opacity-50) 变体。trigger 源码 disabled:bg-stone-100 disabled:text-stone-500(#78716c)，preview disabled 态 bg #f5f5f4 color #78716c ✓。"
+    },
+    {
+     "kind": "图标错/数值漂移",
+     "detail": "trigger ChevronDown 源码 h-4 w-4(16) opacity-50，颜色随文字(currentColor)——SelectTrigger 文字 text-[13px] 无显式色（继承），preview ChevronDown color 给了 #1c1917/#a8a29e 显式值。SelectItem 左勾 Check 源码 h-4 w-4(16)，容器 span absolute left-2(8) flex h-3.5 w-3.5(14)。preview Check size 16 ✓ 容器 left 8 h/w 14 ✓ pl-8=32 ✓。基本对。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "trigger 源码 h-8(32) rounded-md(6) px-3(12) text-[13px] border-stone-300(#d6d3d1) focus:border-blue-500(#3b82f6) focus:ring-2 ring-blue-100(#dbeafe)。preview height 32 borderRadius 6 padding '0 12px' fontSize 13 border #d6d3d1 focus border #3b82f6 boxShadow '0 0 0 2px #dbeafe' ✓。SelectItem rounded-sm(=2) py-1.5(6) pl-8(32) pr-2(8) text-[13px]：preview borderRadius 2 padding '6px 8px 6px 32px' fontSize 13 ✓。content max-h-96(384) min-w-[8rem](128) rounded-md(6)：preview maxHeight 384 minWidth 128 borderRadius 6 ✓。content 阴影 shadow-pop preview '0 8px 24px rgb(0 0 0/0.08), 0 2px 8px rgb(0 0 0/0.04)' ✓。仅 border hex 与 paper 背景需改。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "pages/chat/chameleon/embed-fullscreen-chat",
+   "layer": "page",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/embed/src/styles.ts",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/conversations/pages/conversation-detail-page.tsx:57-452",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/embed_iframe/pages/embed-iframe-page.tsx"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/chat/chameleon/embed-fullscreen-chat.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/chat/chameleon/embed-fullscreen-chat.tsx",
+   "deviations": [
+    {
+     "kind": "数值漂移",
+     "detail": "两张卡的圆角：源码 SectionCard = rounded-xl = 16px，preview CARD.borderRadius 写成 12。身份头卡和气泡卡都要改成 16px。SectionCard 完整样式 = rounded-xl border border-stone-200/40(rgba(231,229,224,0.4)) bg-paper(#fffefb) shadow-soft(0 1px 2px rgb(0 0 0/4%),0 4px 12px rgb(0 0 0/3%))。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "StatItem 非 mono 值的文字色：源码 text-stone-800 = #292524，preview 写成 #44403c(stone-700)。轮次/Token/成本 这几个非 mono 值应为 #292524。mono 值(应用/终端用户/模型)text-[13px] font-mono、非 mono text-[15px]，label text-[10.5px] tracking-wide text-stone-400(#a8a29e)，sub text-[11px] text-stone-400 均正确；StatItem 右分隔线 border-stone-100 = #f5f5f4（preview 用 #f5f4ee，微漂）。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "源码气泡 assistant 用 <Markdown> 渲染（可含列表/代码块等），preview 用纯文本；气泡元信息行支持 feedback=1 ThumbsUp(text-emerald-500 #10b981) / feedback=-1 ThumbsDown(text-rose-500 #f43f5e) 两态，preview 只画了 ThumbsUp。气泡本体 max-w-[78%] rounded-2xl(16) px-3.5 py-2.5 text-[13px] leading-relaxed(1.625)、user rounded-tr-sm(2) bg-blue-600(#2563eb) text-white、assistant rounded-tl-sm(2) border-stone-200(#e7e5e0) bg-white text-stone-800(#292524) 正确。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "pages/dashboard/chameleon/observability-overview-tabs",
+   "layer": "page",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/dashboard/pages/dashboard-page.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/dashboard/pages/tabs/cost-tab.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/dashboard/pages/tabs/overview-tab.tsx"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/dashboard/chameleon/observability-overview-tabs.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/dashboard/chameleon/observability-overview-tabs.tsx",
+   "deviations": [
+    {
+     "kind": "编造",
+     "detail": "趋势图：源码 TimeSeriesChart 是 recharts 纯 LineChart——只有 <Line strokeWidth=2 dot=false>，无任何面积填充。preview 在「总调用」线下加了 fill #2563eb opacity 0.08 的面积，属编造，应删除。"
+    },
+    {
+     "kind": "编造",
+     "detail": "趋势图：源码没有 <Legend>（只有 hover Tooltip），preview 在图下方编造了「总调用/错误数」彩色短线图例行，应删除。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "趋势图缺坐标轴：源码有 <XAxis stroke=#999 fontSize=11>（按天/小时 tick）+ <YAxis stroke=#999 fontSize=11>，preview 完全没画 x/y 轴刻度。需补上轴线与刻度。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "趋势图网格：源码 CartesianGrid strokeDasharray='3 3' stroke='rgb(0 0 0/6%)'（虚线、横竖都有），preview 画成实线水平线 stroke=#f5f4ee。应为虚线 3 3、rgb(0 0 0/6%)。图高度：源码 height=240，preview SVG height 200。线色 total var(--color-primary-600)=#2563eb✓、errors var(--color-red-500)=#ef4444✓。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "KPI StatTile 圆角：源码 rounded-xl = 16px，preview 写 borderRadius 12。需改 16。其余 border-stone-200(#e7e5e0)/p-5(20)/icon 框 h-10 w-10(40) rounded-lg(8)/icon h-5 w-5(20)/value font-mono text-2xl(24) tracking-tight(-0.025em) text-stone-900(#1c1917)/label text-xs(12) text-stone-500(#78716c)/hint text-[11px] text-stone-400(#a8a29e)；TONE primary bg-primary-50(#eff6ff) text-primary-600(#2563eb)、success bg-emerald-50(#ecfdf5) text-emerald-600(#059669) 正确。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "Top 应用/智能体：源码用 DataTable，含 thead 表头行（列「名称」「调用」，th px-3 py-2.5 text-[11px] font-medium text-stone-400 #a8a29e，thead border-b border-stone-200/70），preview 完全没画表头行。需补「名称/调用」表头。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "Top 表缺表格容器壳：源码 DataTable 外层 rounded-lg border border-stone-200/60 overflow-hidden，preview 把行裸排在卡内无内层边框框。需补 rounded-lg + border-stone-200/60 的表格壳。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "Top 表行内距：源码 DataTable 单元格 px-3 py-3(12/12)，preview 写 padding '8px 0'（无横向内距、纵向 8）。应为 px-3 py-3。行分隔 divide-stone-100 = #f5f5f4（preview #f5f4ee 微漂）。RankBadge h-5 w-5(20) text-[10px] ring-1 ring-inset、占比条 from-primary-300(#93c5fd) to-primary-500(#3b82f6) h-1.5 w-16(6×64)、count w-10 text-stone-600(#57534e) 正确。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "DistributionCard 进度条轨道色：源码 bg-stone-100 = #f5f5f4，preview 用 #f5f4ee；填充 bg-primary-400 = #60a5fa✓、条 h-1.5(6) rounded(4)✓、list space-y-2.5(10)✓、label text-stone-700(#44403c)✓、count text-stone-500(#78716c)✓、pct text-stone-400(#a8a29e)✓。Card 圆角 rounded-lg(8)✓ shadow-card✓。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "pages/detail/chameleon/eval-dataset-detail-spreadsheet",
+   "layer": "page",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/components/dataset-spreadsheet.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/pages/dataset-detail-page.tsx"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/detail/chameleon/eval-dataset-detail-spreadsheet.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/detail/chameleon/eval-dataset-detail-spreadsheet.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "工具栏 secondary 按钮（手工导入/AI 扩样/AI 归类/从日志采样/新增行）：源码 Button variant=secondary = bg-stone-100(#f5f5f4) text-stone-900(#1c1917) 且无边框。preview 用 bg #f4f3ee(warm-2) + text #44403c(stone-700) + 编造了 border 1px #e7e5e0。应改成底 #f5f5f4、字 #1c1917、删除边框。"
+    },
+    {
+     "kind": "编造",
+     "detail": "所有非 ghost 按钮都被加了 border 1px #e7e5e0，源码 secondary/primary 变体都无 border，仅 outline 变体才有边框。这些按钮应无边框。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "ghost 按钮（导出）：源码 ghost = text-stone-700(#44403c) 无边框✓（preview transparent border 可接受）。按钮尺寸 size=sm = h-7(28px) px-2.5(10) text-[11.5px] rounded-md(6)、图标 mr-1 h-3.5 w-3.5(14) 均正确。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "电子表格行分隔色：源码 tbody divide-y divide-stone-100 = #f5f5f4，preview borderTop #f5f4ee（微漂）。其余 thead bg var(--color-warm-2)/40 = rgba(244,243,238,0.4)✓ border-b border-stone-200/70 rgba(231,229,224,0.7)✓、th text-[11px] font-medium text-stone-500(#78716c) px-3 py-2.5(12/10)✓、td px-3 py-2(12/8) align-top✓、checkbox accent-stone-700(#44403c)✓、JSON meta 格 font-mono text-[11.5px] text-stone-500(#78716c)✓、note text-[12px] text-stone-600(#57534e)✓、空值「—」text-stone-300(#d6d3d1)✓、删除图标 Trash2 h-3.5 w-3.5 text-stone-300(#d6d3d1)✓、表壳 rounded-lg border-stone-200/60✓、「列」菜单 ghost+「隐 N」bg-stone-200/70 text-[10px] text-stone-500✓。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "pages/detail/chameleon/eval-run-detail-master-detail",
+   "layer": "page",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/pages/run-compare-page.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/pages/run-detail-page.tsx"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/detail/chameleon/eval-run-detail-master-detail.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/detail/chameleon/eval-run-detail-master-detail.tsx",
+   "deviations": [
+    {
+     "kind": "编造",
+     "detail": "样本表 verdict 徽标：源码 verdictOf 输出中文标签 好/平/差（G→好 success / S→平 warning / B→差 danger），preview 编造了英文 'Good'。应改成中文「好」。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "verdict 徽标样式：源码用 Badge variant=success（=cva badge success：实底 bg-emerald-100 #d1fae5 + text-emerald-800 #065f46 + border-transparent，rounded-md 6，px-1 py-0 text-[10px]）。preview 画成无底色、border 1px #d1fae5、text #047857、radius 3 的描边 chip。应改成实底 emerald-100/emerald-800、无边框、rounded-md。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "中详情 header 状态徽标：源码 Badge variant=outline + className bg-emerald-50 text-emerald-700，outline 的边框是 border-stone-300 = #d6d3d1（bg/text 被覆盖但 border 仍是 stone-300）。preview 用 border 1px #d1fae5(emerald-100)，边框色错，应为 #d6d3d1。底 #ecfdf5/字 #047857✓。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "分数分布柱：源码 RunScoreDistribution 容器 flex h-16(64px) items-end gap-0.5(2px)，柱 w-full flex-1 rounded-t（仅顶部圆角）。preview 用 height 96、gap 10、柱 maxWidth 38 + borderRadius 3（四角全圆）+ opacity 0.85。应改 h 64、gap 2、柱 flex-1 占满宽、只圆顶角。柱色 red-300 #fca5a5 / amber-300 #fcd34d / emerald-300 #6ee7b7 正确。选中态柱 ring-2 ring-stone-700 ring-offset-1、未选 dimmed opacity-40 缺失。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "分数分布缺每 metric 头与端点轴：源码每个 metric 上方有一行 flex justify-between text-[11px]：左 metric_name(text-stone-600 #57534e) 右「均值 X.XX」(text-stone-400)，柱下只有两端 0/1 标签(text-[9px] text-stone-400)。preview 改成每根柱下标 0.0/0.2/.../1.0 且无 metric 名+均值头行。需补 metric 头行、端点 0/1。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "样本明细表：源码 DataTable thead th px-3 py-2.5(12/10) text-[11px] font-medium text-stone-400(#a8a29e)，td px-3 py-3(12/12)。preview th padding 6/6 text 10.5px、td padding 8/6。需还原 px-3 py-2.5 表头(11px)、px-3 py-3 单元格。score 列 chip rounded px-1.5 py-0.5 text-[10.5px] scoreBg(>=0.8 emerald-50/700、>=0.5 amber-50/700、<0.5 red-50/700)✓、耗时 tnum text-[11px] text-stone-400✓、错误点 text-rose-500(#f43f5e)✓。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "样本明细表缺表格容器壳 + leftBar 实现错：源码 DataTable 外层 rounded-lg border border-stone-200/60 overflow-hidden，preview 裸表无边框壳。源码选中行用独立 4px leftBar 列(span w-1 bg-stone-700 #44403c)，preview 改成在首格 borderLeft 3px #44403c。应补表壳并用 4px 独立左条。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "右侧样本详情侧栏漏 FieldScores 区块：源码 RunSampleDetailPanel 在「模型回答」与「评分理由」之间固定渲染 <FieldScores fieldScores score>（逐项分数），preview 未画。另源码三段输入/理想/模型回答均为 JsonEditor（代码编辑器样式带 label/换行/mono），preview 简化成普通 bg-#fafaf9 描边框（可接受简化）。侧栏 w-[420px] border-l border-stone-200(#e7e5e0) bg-paper(#fffefb)、header px-4 py-3、trace 链 bg-sky-50(#f0f9ff) text-sky-700(#0369a1)、标签 输入 text-stone-500(#78716c)/理想 text-emerald-600(#059669)/模型 text-sky-600(#0284c7)、理由框 border-stone-200 bg-white px-2 py-1.5 text-[11.5px] text-stone-700(#44403c) 均正确。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "左 rail 优化产物徽标圆角：源码 Badge rounded-md(6) px-1 py-0 text-[9px] bg-violet-50(#f5f3ff) text-violet-700(#6d28d9)，preview borderRadius 3。微差。rail w-[244px]、header px-3 py-2.5 text-[12px] text-stone-700(#44403c)、run 按钮 border-l-2 px-3 py-2、选中 border-stone-800(#292524)+bg-stone-50(#fafaf9)、状态点 h-1.5 w-1.5(6) emerald-400 #34d399/rose-400 #fb7185、Sparkles text-violet-400(#a78bfa)、分数 tnum text-[11px] scoreColor、时间 text-[9.5px] text-stone-400 均正确。主体卡 rounded-xl(12) border-stone-200 bg-white✓，中详情 main bg-paper #fffefb✓。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "pages/detail/chameleon/kb-detail-tabbed-workbench",
+   "layer": "page",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/pages/kb-detail-page.tsx"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/detail/chameleon/kb-detail-tabbed-workbench.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/detail/chameleon/kb-detail-tabbed-workbench.tsx",
+   "deviations": [
+    {
+     "kind": "编造",
+     "detail": "命中列表 HitCard 在源码里用 <ScoreBreakdown hit compact/>，渲染为一行内联通道百分比文字『向量88% 关键词61% 精排95%』（各 channel: text-[10.5px] text-stone-500，数字 font-mono tabular-nums text-stone-700），无任何 score 数值徽标、无进度条。preview 改成了 amber score chip『0.92』(bg #fffbeb / text #b45309) + 一根进度条(轨 #f4f3ee / 填充 #fbbf24)，整段是编造。应改为内联三通道百分比文字。"
+    },
+    {
+     "kind": "编造",
+     "detail": "右侧 SourceView 顶部的分项得分，源码用非 compact 的 <ScoreBreakdown/>，每通道一行『标签(w-16 right text-[10.5px] stone-500) + 横向进度条(h-1.5 rounded-full bg-stone-100，填充：向量=bg-sky-500 #0ea5e9、关键词=bg-amber-500 #f59e0b、精排=bg-violet-500 #8b5cf6) + 右侧百分比(w-9 right font-mono text-[10.5px] stone-600)』，标签文案『向量相似度/关键词匹配/精排得分』。preview 改成三个色 pill『vec 0.88 / bm25 0.61 / rerank 0.95』(ecfdf5/047857, eff6ff/1d4ed8, f5f3ff/6d28d9)——格式错(应横条非 pill)、标签错(应中文相似度标签)、用原始小数非百分比。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "原文高亮 <mark> 在 highlight.ts 固定 class『bg-amber-100 rounded px-0.5 text-stone-900』，amber-100=#fef3c7。preview 用了 #fef08a(yellow-200)。应改 #fef3c7。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "HitTestPanel 三栏 grid 源码 lg:grid-cols-[260px_minmax(0,1fr)_minmax(0,1.05fr)]，第一列 260px。preview 用 210px。应 210→260。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "源码命中列表有 isPending『正在检索…』、空态 Centered(含 SearchX h-8 w-8 strokeWidth 1.4)、未命中态；SourceView 未选时 Centered『选中左侧 chunk 查看原文与分项得分』。SourceView 头部 doc 名是 <Link hover:underline> 而 preview 是纯 span。preview 只画了有结果态。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "pages/detail/chameleon/trace-detail-tree-gantt",
+   "layer": "page",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/traces/pages/trace-detail-page.tsx"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/detail/chameleon/trace-detail-tree-gantt.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/detail/chameleon/trace-detail-tree-gantt.tsx",
+   "deviations": [
+    {
+     "kind": "编造",
+     "detail": "右侧 NodeDetail 卡片源码没有标题行——SectionCard 内直接是 type 徽标行+metrics+DetailSection。preview 在右卡顶部加了『节点详情』标题(text-[11.5px] font-medium #44403c)，源码不存在，应删除。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "观测树每行 duration 块：源码 ObservationTree『flex w-32(128px) 进度条 h-1(4px) flex-1 + 数字 w-12(48px) text-right text-[10.5px] stone-500』。preview 块宽 78、数字宽 40。应块 78→128、数字 40→48。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "树行折叠占位：源码 hasChildren 才有 ChevronDown/Right(h-3 w-3=12px，在 -mr-1 p-0.5 按钮里)，叶子节点用 -mr-1 w-4(16px) 占位。preview 用 width 12 占位、且只给 collapse 行画箭头，叶子占位偏窄(应 16px)。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "源码 TreeRow 有 scores 徽章区(node.scores 时 ScoreBadge，来源 feedback/annotation/eval/api 各配色) 与 token Badge(variant=outline font-mono text-[10px]『N tok』)。preview token 徽章自绘 border #e7e5e0 而非 Badge outline 组件样式(rounded-md border-stone-200)，scores 徽章缺失。"
+    }
+   ],
+   "needs_rewrite": true
+  }
+ ]
+}

@@ -20,14 +20,14 @@ preview: /preview/components/display/chameleon/paper-card-shell
 
 # Paper 基础卡片原语
 
-> Chameleon 全站卡片的最底层原语（`card.tsx`）。shadcn 风格的 `Card` + 子组件群（`CardHeader` / `CardTitle` / `CardDescription` / `CardContent` / `CardFooter`），全 `forwardRef`。视觉基因：`rounded-lg`（8px 圆角）+ `border-stone-200`（暖灰发丝边）+ `bg-[var(--color-paper)]`（纯白纸底，主题变量）+ `shadow-card`（极淡双层投影）。所有更复杂的卡（metric / set / 配置面板）都基于它叠加。
+> Chameleon 全站卡片的最底层原语（`card.tsx`）。shadcn 风格的 `Card` + 子组件群（`CardHeader` / `CardTitle` / `CardDescription` / `CardContent` / `CardFooter`），全 `forwardRef`。视觉基因：`rounded-lg`（8px 圆角）+ `border-stone-200`（暖灰发丝边）+ `bg-[var(--color-paper)]`（暖白纸底 `#fffefb`，主题变量；仅 cool/zinc/gray 主题下才是纯白）+ `shadow-card`（极淡双层投影）。所有更复杂的卡（metric / set / 配置面板）都基于它叠加。
 
 ## 视觉特征
 
 - **Card**：`rounded-lg border border-stone-200 bg-[var(--color-paper)] text-stone-900 shadow-card`
   - radius lg = 8px
   - border = 1px `#e7e5e0`（stone-200）
-  - bg = `var(--color-paper)`（默认 `#ffffff`）
+  - bg = `var(--color-paper)`（默认暖白 `#fffefb`；cool/zinc/gray 主题下为 `#ffffff`）
   - `shadow-card` = `0 1px 3px rgb(0 0 0 / 5%), 0 2px 8px rgb(0 0 0 / 3%)`（双层极淡，几乎贴地）
 - **CardHeader**：`flex flex-col space-y-1.5 p-5`（竖排，子间距 6px，内边距 20px）
 - **CardTitle**：`text-base font-semibold leading-none tracking-tight`（16px / 600 / 行高贴紧 / 字距收紧）
@@ -45,12 +45,12 @@ preview: /preview/components/display/chameleon/paper-card-shell
     "radius": "8px",
     "border": "1px solid #e7e5e0",
     "bg": "var(--color-paper)",
-    "bgDefault": "#ffffff",
+    "bgDefault": "#fffefb",
     "text": "#1c1917",
     "shadow": "0 1px 3px rgb(0 0 0 / 5%), 0 2px 8px rgb(0 0 0 / 3%)",
     "padding": "20px",
     "headerGap": "6px",
-    "title": { "size": "16px", "weight": 600, "tracking": "-0.02em" },
+    "title": { "size": "16px", "weight": 600, "tracking": "-0.025em" },
     "description": { "size": "12px", "color": "#78716c" }
   }
 }

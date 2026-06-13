@@ -1,0 +1,113 @@
+{
+ "group": 3,
+ "entries": [
+  {
+   "id": "blocks/form/chameleon/graph-run-dialog",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/node-run-result.tsx:24-127",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/run-dialog.tsx:59-436",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/version-history-panel.tsx:41-292"
+   ],
+   "visual_spec": "[blocks/form/chameleon/graph-run-dialog] ModalContent size lg max-h-[88vh]。表单字段 label text-[11.5px] text-stone-600 + required rose-400 + 'start.field' font-mono text-[9.5px] text-stone-300；Input/Textarea/select h-8 text-[12.5px]，JSON Textarea font-mono text-[12px]。dirty 提示 text-[10.5px] text-amber-600。Test Run Button + Play h-3，Run outline + Zap h-3。节点进度行 rounded-md border border-stone-200 bg-white：名 text-stone-800 + type font-mono text-[10px] + 子图蓝/重试 amber/错误已兜底 amber 胶囊 + NodeRunStatusBadge。展开 NodeRunResult：error rounded-md border-rose-200 bg-rose-50，reasoning details violet-500 折叠，output JsonViewer maxHeight 240px。\n\n[blocks/layout/chameleon/version-history-drawer] Sheet w-[420px]。SheetHeader p-4 标题 text-[14px] + History h-4 text-stone-400。版本卡 rounded-lg border bg-white，选中 border-stone-400 shadow-sm / 否 border-stone-200：v号 font-mono text-[12px] font-semibold + 线上徽标 bg-emerald-50 text-[9.5px] text-emerald-700 + 时间 text-[10.5px] text-stone-400 ml-auto；note text-[11px] text-stone-500。展开区 border-t border-stone-100 px-3 py-2.5。DiffBadge rounded px-1.5 py-0.5 text-[9.5px] font-medium：emerald-50/700 · rose-50/700 · amber-50/700。diff 条目 rounded bg-stone-50 px-1.5 py-1 text-[10.5px] font-mono。恢复按钮 outline Button + RotateCcw h-3 w-full。空态 border-dashed border-stone-200 text-[11.5px] text-stone-400。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/form/chameleon/graph-run-dialog.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/form/chameleon/graph-run-dialog.tsx"
+  },
+  {
+   "id": "blocks/form/chameleon/json-schema-dynamic-form",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/form/json-schema-form.tsx:32-76",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/form/schema-field.tsx:21-86",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/form/widgets/array-widget.tsx:9-72",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/form/widgets/boolean-widget.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/form/widgets/enum-widget.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/form/widgets/number-widget.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/form/widgets/object-widget.tsx:6-58",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/form/widgets/string-widget.tsx"
+   ],
+   "visual_spec": "[blocks/form/chameleon/json-schema-dynamic-form] 顶层: 空 schema 时 div rounded-md border border-stone-200/70 bg-stone-50/30 px-3 py-2 text-[12px](12) text-stone-500 提示；否则顶层 object 直接 ObjectWidget 展开 properties，外层 className 默认 space-y-3(12)。SchemaField: boolean 类 label 与 widget 同行(flex items-center justify-between gap-3 py-1)，其他在 widget 之上(space-y-1)。Label text-[12.5px](12.5) text-stone-700，required 时 span ml-0.5 text-rose-500 星号；description 同行 span text-[11px] text-stone-400 前缀'· '或 boolean 下方 div text-[11px] text-stone-400；error div text-[11px] text-rose-500。不支持类型 fallback: div rounded border border-amber-200 bg-amber-50/40 px-2 py-1 text-[11px] text-amber-700。ObjectWidget: depth0 space-y-3，depth≥1 space-y-3 rounded-md border border-stone-200/70 bg-stone-50/40 p-3(12) 浅卡片；空字段 div text-[11px] italic text-stone-400。ArrayWidget: space-y-2，每项 flex items-start gap-2 rounded-md border border-stone-200/70 bg-paper p-2，删除 button mt-0.5 rounded p-1 text-stone-400 hover:bg-stone-100 hover:text-rose-600 内 Trash2 h-3.5 w-3.5(14)，底部 Button variant=outline size=sm + Plus h-3.5 w-3.5 '添加一项'。string textarea rows=3；number type=number step=integer?1:'any'；boolean Switch；enum Select placeholder='选择…'。lucide: Plus/Trash2。复用 ui: Input/Textarea/Select/Switch/Label/Button。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/form/chameleon/json-schema-dynamic-form.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/form/chameleon/json-schema-dynamic-form.tsx"
+  },
+  {
+   "id": "blocks/form/chameleon/select-summary-cron-builder",
+   "layer": "block",
+   "dedup": "variant",
+   "ref_target": "blocks/form/waveflow/cron-builder-modal",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/cron-builder.tsx:123-256"
+   ],
+   "visual_spec": "[blocks/form/chameleon/select-summary-cron-builder] 外层 space-y-2(8)。频率行: flex flex-wrap items-center gap-2(8)。频率 Select SelectTrigger w-[120px]；周天 Select w-[92px]（周日~周六）；月日 Select w-[92px]（1~31 号）；时 Select w-[78px]（00 时~23 时 padStart）后跟 span.text-stone-400 冒号；分 Select w-[78px]（0/5/10/15/20/30/45 分 padStart）。custom 模式: Input value=customText placeholder='* * * * *（分 时 日 月 周）' className=font-mono。摘要行: flex items-center gap-2 text-[11px](11)，custom&&无文本 text-stone-400 否则 text-stone-500，含 span 摘要 + span.font-mono.text-stone-400 显示当前 cron 表达式。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/form/chameleon/select-summary-cron-builder.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/form/chameleon/select-summary-cron-builder.tsx"
+  },
+  {
+   "id": "blocks/layout/chameleon/domain-tab-app-shell",
+   "layer": "block",
+   "dedup": "variant",
+   "ref_target": "tokens/layout/waveflow/data-console-shell",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/layout/main-layout.tsx:42-65"
+   ],
+   "visual_spec": "[blocks/layout/chameleon/domain-tab-app-shell] 外层 div.flex.h-screen.flex-col bg=var(--color-warm)(#fafaf7)；顶部 TopBar(h-14=56px) flex-shrink-0；下方 div.flex.min-h-0.flex-1 横排：左 SecondaryNav(w-56=224px) + 右 main.flex-1.overflow-auto px-6(24px) py-4(16px) 包 <Outlet/>。CommandPalette + NavProgressBar 挂在 RequireAuth 内、shell 外。区别于 waveflow/data-console-shell：waveflow 是 sidebar(左,240px) + topbar(上) 两段嵌套；Chameleon 把导航主轴搬到顶栏域 tab，二级导航降级为细 rail，内容 full-bleed 占满。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/layout/chameleon/domain-tab-app-shell.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/layout/chameleon/domain-tab-app-shell.tsx"
+  },
+  {
+   "id": "blocks/layout/chameleon/run-master-detail-rail-overlay",
+   "layer": "block",
+   "dedup": "variant",
+   "ref_target": "blocks/layout/waveflow/master-detail-list-aside",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/components/run-list-rail.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/pages/run-detail-page.tsx"
+   ],
+   "visual_spec": "[blocks/layout/chameleon/run-master-detail-rail-overlay] 外层 flex h-[calc(100vh-130px)] flex-col gap-3。header 面包屑 ArrowLeft + 数据集名 + 「运行详情」text-[13px] font-medium。主体 flex flex-1 overflow-hidden rounded-xl(12) border border-stone-200 bg-white。RunListRail aside w-[244px] shrink-0 border-r bg-white：头 border-b px-3 py-2.5 text-[12px] font-medium「运行（N）」；run 按钮 flex-col gap-1 border-l-2 px-3 py-2，选中 border-stone-800 bg-stone-50 / 默认 border-transparent hover:bg-stone-50/60；状态点 h-1.5 w-1.5 rounded-full(success emerald-400/failed rose-400/其它 stone-300) + 名称 text-[12.5px](选中 font-medium stone-900) + Sparkles h-3 violet-400(已优化) + 优化产物 Badge bg-violet-50 text-[9px] + 分数 tnum text-[11px] scoreColor + 状态 text-[10px] stone-400 + 时间 text-[9.5px] stone-400。中主区 main bg-[var(--color-paper)]。右覆盖物 RunSampleDetailPanel / RunOptimizePanel。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/layout/chameleon/run-master-detail-rail-overlay.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/layout/chameleon/run-master-detail-rail-overlay.tsx"
+  },
+  {
+   "id": "blocks/nav/chameleon/borderless-bookmark-rail",
+   "layer": "block",
+   "dedup": "variant",
+   "ref_target": "blocks/nav/waveflow/tree-line-sidebar",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/layout/secondary-nav.tsx:13-74"
+   ],
+   "visual_spec": "[blocks/nav/chameleon/borderless-bookmark-rail] aside: flex w-56(224px) flex-shrink-0 flex-col overflow-y-auto bg=var(--color-warm)(#fafaf7) px-3(12px) py-4(16px)，无 border、无独立底色(同内容区 warm)。分组头 div: px-3 pb-1.5(6px) text-[10.5px] font-bold tracking-[0.06em] text-stone-400(#a8a29e) uppercase；首组 pt-0、其余 pt-5(20px)。叶子 Link (LeafItem): relative flex items-center gap-3(12px) rounded-[10px](10px) px-3(12px) py-2(8px) text-[13px] font-medium transition；active=bg-blue-50(#eff6ff) font-semibold text-blue-700(#1d4ed8)；default=text-stone-600(#57534e) hover:bg-stone-200/40 hover:text-stone-900。【signature 书签竖条】active 时绝对定位 span: absolute top-2 bottom-2 left-0 w-[3px] rounded-r-[3px] bg-blue-600(#2563eb) shadow-[0_0_8px_rgba(59,130,246,0.45)]（霓虹蓝微光）。叶子 icon h-4 w-4(16px) flex-shrink-0，active=text-blue-600(#2563eb) / default=text-stone-400(#a8a29e)；标签 span flex-1 truncate。allVisible<=1 时整个 aside return null。与 waveflow/tree-line-sidebar 区分：waveflow 240px 有 border-r、bg warm-2、tree-line L 钩子项、count chip、底部 user dropdown、active 用 paper bg+soft shadow 悬浮语；本条 224px 无边、active 用蓝药丸 + 左侧发光书签竖条、扁平无 tree-line、无底部 user(账户迁到顶栏)。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/nav/chameleon/borderless-bookmark-rail.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/nav/chameleon/borderless-bookmark-rail.tsx"
+  },
+  {
+   "id": "blocks/nav/chameleon/cmdk-grouped-palette",
+   "layer": "block",
+   "dedup": "variant",
+   "ref_target": "blocks/nav/waveflow/cmdk-search-modal",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/index.css:161-189",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/command/command-palette.tsx:152-331"
+   ],
+   "visual_spec": "[blocks/nav/chameleon/cmdk-grouped-palette] 遮罩 div: fixed inset-0 z-[100] flex items-start justify-center bg-stone-950/40 backdrop-blur-sm。Command 容器: relative mt-[10vh] w-[600px] max-w-[90vw] overflow-hidden rounded-xl(12px) border border-stone-200 bg-paper(#fffefb) shadow-pop，flex flex-col max-h-[70vh]。输入行: flex items-center gap-2 border-b border-stone-100 px-4(16px)；Search icon h-4 w-4 strokeWidth 1.75 text-stone-400；Command.Input h-12(48px) text-[13.5px] text-stone-800 placeholder:text-stone-400 outline-none；Esc kbd: rounded border border-stone-200 px-1.5 py-0.5 text-[10px] font-mono text-stone-400。List: flex-1 overflow-y-auto px-2 py-2。.cmdk-group: padding 4px 0；group-heading: padding 6px 10px 4px, font-size 10.5px, font-weight 600, uppercase, letter-spacing 0.04em, color rgb(120 113 108)。.cmdk-item: flex items-center gap-10px padding 7px 10px border-radius 6px font-size 12.5px transition background .12s；[data-selected=true]=background rgb(239 246 255)(blue-50) color rgb(29 78 216)(blue-700)；:hover=background rgb(245 244 238)(warm-2)。四组：搜索结果(图标 ICON_MAP bot/cpu/cloud/library/key/users/puzzle + title font-medium + snippet font-mono text-[10.5px] + 右侧类型 chip bg-stone-100 px-1.5 py-0.5 text-[10px])、跳转(NAV_ITEMS + 右侧 path font-mono text-[10.5px])、动作(ACTIONS Plus/Download/KeyRound/LogOut)、最近访问(History icon)。footer: flex gap-3 border-t border-stone-100 bg-warm-2/30 px-3 py-2 text-[10.5px] text-stone-400；含 ↑↓ 导航 / ⏎ 选择 / ⌘K kbd(rounded border border-stone-200 bg-paper px-1 py-0.5 font-mono) + Code2 icon h-3 w-3。lucide: Search/Bot/Cloud/Code2/Cpu/Download/History/Key/KeyRound/LayoutDashboard/Library/LogOut/Plus/Puzzle/Settings/Shield/Users。与 waveflow/cmdk-search-modal 区分：waveflow 720×560 + 左 136px 类型 sidebar + amber-100 高亮 + stone-900 黑底 active 键盘风；本条 600px 纯 cmdk 库、无类型 sidebar、4 个语义分组、blue-50/blue-700 蓝选中、防抖 200ms 调 searchApi + localStorage 最近访问(chameleon.recent_pages, max 8)。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/nav/chameleon/cmdk-grouped-palette.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/nav/chameleon/cmdk-grouped-palette.tsx"
+  },
+  {
+   "id": "blocks/nav/chameleon/detail-left-tab-rail",
+   "layer": "block",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/app-shell/graph-app-rail.tsx:73-461",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/pages/kb-detail-page.tsx:110-156"
+   ],
+   "visual_spec": "[blocks/nav/chameleon/detail-left-tab-rail] nav w-44(176) shrink-0 space-y-0.5。身份块 mb-3 flex gap-2 px-1：返回 ArrowLeft h-4 w-4 rounded-md hover:bg-stone-100 + 名称 text-[14px] font-semibold stone-900 + key font-mono text-[10.5px] stone-400。navBtn: flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-[13px] font-medium transition，选中 bg-blue-50 text-blue-700 / 默认 stone-600 hover:bg-stone-100 hover:text-stone-900，icon h-4 w-4。分隔 my-2 border-t border-stone-200/60。「进阶」小标 px-3 text-[10.5px] uppercase tracking-wider stone-400。主内容并排 SectionCard min-w-0 flex-1 或 rounded-xl border bg-[var(--color-paper)]。\n\n[blocks/nav/chameleon/graph-app-rail] aside w-64 border-r border-slate-200/80 bg-white（收起 w-12）。应用头 border-b p-3.5：返回按钮 text-[11.5px] + ChevronLeft；图标块 h-9 w-9 rounded-xl shadow-sm ring-1（chat violet-50/violet-600，workflow sky-50/sky-600）；名 text-[13px] font-semibold + key font-mono text-[10.5px] text-stone-400。KindSelect h-6 w-[88px] text-[11.5px]。发布徽标 emerald-50/emerald-700 ring-1 + Rocket 或 amber 草稿。保存态点 saving 蓝 pulse / dirty amber / saved stone。导航按钮 rounded-lg py-1.5 pl-3 text-[12.5px] font-medium，active bg-blue-50 text-blue-700 + 左条 w-[3px] bg-blue-500，icon h-4。卡片 rounded-xl border border-slate-200/80 bg-white p-3 shadow-sm hover:shadow-md：标题图标块 h-5 w-5 rounded-md bg-stone-100，状态胶囊 on bg-emerald-50/emerald-600 + 点 / off bg-stone-100。RailAction rounded-lg border border-slate-200/70 bg-slate-50 px-2 py-1.5 text-[11px] hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700。卡片区底 bg-slate-50/40。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/nav/chameleon/detail-left-tab-rail.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/nav/chameleon/detail-left-tab-rail.tsx"
+  }
+ ]
+}

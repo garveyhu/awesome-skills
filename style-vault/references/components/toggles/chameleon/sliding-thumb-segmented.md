@@ -24,7 +24,7 @@ preview: /preview/components/toggles/chameleon/sliding-thumb-segmented
 
 ## 视觉特征
 
-- **tablist 容器**：`relative flex w-fit items-center gap-0.5(2px) rounded-lg(8px) border border-stone-200(#e7e5e0) bg-stone-100/70(70% #f5f4ee) p-0.5(2px)`
+- **tablist 容器**：`relative flex w-fit items-center gap-0.5(2px) rounded-lg(8px) border border-stone-200(#e7e5e4) bg-stone-100/70(70% #f5f5f4) p-0.5(2px)`
   - `relative` 承载滑块 · `w-fit` 块级独占行但宽度收紧到内容
 - **滑块 thumb**（`absolute`，ResizeObserver 测量定位）：`pointer-events-none absolute left-0 top-0 z-0 rounded-md(6px) bg-paper(#fffefb) shadow-sm transition-[transform,width,height] duration-300 ease-[cubic-bezier(.34,1.4,.5,1)]`
   - inline style：`transform: translate(${x}px, ${y}px)` + `width` + `height`（全来自实测）

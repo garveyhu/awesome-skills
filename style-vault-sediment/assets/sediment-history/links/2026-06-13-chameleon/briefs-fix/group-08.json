@@ -1,0 +1,146 @@
+{
+ "group": 8,
+ "entries": [
+  {
+   "id": "blocks/layout/chameleon/run-master-detail-rail-overlay",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/components/run-list-rail.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/pages/run-detail-page.tsx"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/layout/chameleon/run-master-detail-rail-overlay.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/layout/chameleon/run-master-detail-rail-overlay.tsx",
+   "deviations": [
+    {
+     "kind": "数值漂移",
+     "detail": "RunListRail「优化产物」Badge 边框色微差。源码 Badge variant=outline = `border-stone-300`(#d6d3d1) 叠加 `bg-violet-50 px-1 py-0 text-[9px] text-violet-700`。preview 用 border #ddd6fe(violet-200) 而非 stone-300。bg/text 色正确(violet-50 #f5f3ff / violet-700 #6d28d9)。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "中主区(RunDetailPanel)与右覆盖物(RunSampleDetailPanel)源码未在 source_files 内、preview 为合理重构。brief visual_spec 对这两块仅笼统描述，故重构可接受。RunListRail(master)本体与源码高度一致：w-[244px] border-r、头 px-3 py-2.5 text-[12px] font-medium「运行（N）」、run 按钮 flex-col gap-1 border-l-2 px-3 py-2、选中 border-stone-800 bg-stone-50、状态点 h-1.5(emerald-400 #34d399/rose-400 #fb7185/stone-300 #d6d3d1)、名 text-[12.5px]、Sparkles h-3 violet-400 #a78bfa、分数 tnum text-[11px] scoreColor(emerald-600 #059669/amber-600 #d97706/red-600 #dc2626)、状态 text-[10px]、时间 text-[9.5px] 均对。"
+    }
+   ],
+   "needs_rewrite": false
+  },
+  {
+   "id": "blocks/nav/chameleon/borderless-bookmark-rail",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/layout/secondary-nav.tsx:13-74"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/nav/chameleon/borderless-bookmark-rail.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/nav/chameleon/borderless-bookmark-rail.tsx",
+   "deviations": [
+    {
+     "kind": "数值漂移",
+     "detail": "完全保真。逐项核对一致：aside w-56(224) px-3(12) py-4(16) bg warm #fafaf7 无边；分组头 px-3 pb-1.5(6) text-[10.5px] font-bold tracking-[0.06em] text-stone-400(#a8a29e) uppercase，首组 pt-0 其余 pt-5(20)；叶子 rounded-[10px] px-3 py-2 gap-3(12) text-[13px]，active bg-blue-50(#eff6ff) text-blue-700(#1d4ed8) font-semibold(600)、default text-stone-600(#57534e)；书签竖条 absolute top-2 bottom-2(8) left-0 w-[3px] rounded-r-[3px] bg-blue-600(#2563eb) shadow 0 0 8px rgba(59,130,246,0.45)；icon h-4 w-4(16) active #2563eb / default #a8a29e。无偏差。"
+    }
+   ],
+   "needs_rewrite": false
+  },
+  {
+   "id": "components/buttons/chameleon/themeable-cva-button",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/button.tsx:16-87"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/buttons/chameleon/themeable-cva-button.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/buttons/chameleon/themeable-cva-button.tsx",
+   "deviations": [
+    {
+     "kind": "缺状态",
+     "detail": "源码每 variant 都有 hover/active 态(primary hover:bg-primary-700 #1d4ed8 active:bg-primary-800 #1e40af；outline hover:bg-stone-50 active:bg-stone-100；ghost hover:bg-stone-100 active:bg-stone-200；secondary hover:bg-stone-200；danger hover:bg-red-700 active:bg-red-800 等) + base 有 focus-visible:ring-2 ring-primary-200(#bfdbfe)。preview 全静态未体现任何 hover/active/focus。属可接受的画廊式静态展示，但严格而言缺态——如要补可加一行 hover 态示意。base/9 variant/6 size 数值与配色均正确。"
+    }
+   ],
+   "needs_rewrite": false
+  },
+  {
+   "id": "components/display/chameleon/dynamic-virtual-list",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/virtual-list.tsx:27-75"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/display/chameleon/dynamic-virtual-list.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/display/chameleon/dynamic-virtual-list.tsx",
+   "deviations": [
+    {
+     "kind": "结构简化",
+     "detail": "纯结构组件(brief 明示「无固定视觉色，色彩由 renderItem 自管」)。preview 用一段聊天流 renderItem 做示意：动态行高/translateY/estimateSize=60/overscan=8/stickToBottom 文字说明均与源码一致。示意气泡样式属 preview 自造内容(源码 virtual-list.tsx 不含任何颜色)，故不算偏差。无需重写。"
+    }
+   ],
+   "needs_rewrite": false
+  },
+  {
+   "id": "components/display/chameleon/json-viewer-cell",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/json-viewer.tsx:48-277",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/json-cell.tsx:12-61"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/display/chameleon/json-viewer-cell.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/display/chameleon/json-viewer-cell.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "JsonCell 展开 pre 底色漂移。源码 'bg-stone-50'(=#fafaf9)，preview 用 #fafaf7(暖白)。改 #fafaf9。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "JsonViewer 搜索条底色漂移。源码 'bg-stone-50/60'(=#fafaf9 @60%)，preview 用 rgba(245,245,244,0.6)(=stone-100 @60%)。改成 stone-50(#fafaf9)@60%。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "JsonViewer 内容区行高。源码 'leading-snug'(=1.375)，preview lineHeight:1.4。微差，改 1.375。值/key/括号/null 类型着色(emerald-700 #047857 / sky-700 #0369a1 / purple-700 #7e22ce / stone-400 #a8a29e / key stone-700 #44403c / 括号 stone-500 #78716c)与高亮 mark(bg-amber-100 #fef3c7 + text-stone-900 #1c1917)均正确。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "源码 JsonViewer 每节点有 group-hover 才显的逐节点 CopyButton(ml-2 hidden group-hover:inline-flex rounded p-0.5 text-stone-400 hover:bg-stone-100，Check/Copy h-3 w-3)，preview 树节点未画该 hover 复制按钮。属 hover-only，整体一眼像，可不重写。"
+    }
+   ],
+   "needs_rewrite": false
+  },
+  {
+   "id": "components/feedback/chameleon/amber-nav-progress",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/nav-progress-bar.tsx:11-54",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/nav-progress-bar.tsx:38-54"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/feedback/chameleon/amber-nav-progress.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/feedback/chameleon/amber-nav-progress.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "对照用的 waveflow 蓝条 preview 用 3-stop 渐变 (transparent 0%, #3b82f6 40%, #2563eb 60%, transparent 100%)，spec 描述 waveflow 为 4-stop (transparent→#3b82f6→#2563eb→transparent)。仅为对照参考块、非主组件，影响极小。主组件 amber-500 #f59e0b + shadow 0 0 8px rgba(217,119,6,0.6) + 2px + 透明轨 + z 语义均正确。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "假页面窗口用 bg #ffffff，真实 --color-paper=#fffefb；为演示容器非组件本体，影响微小。"
+    }
+   ],
+   "needs_rewrite": false
+  },
+  {
+   "id": "components/feedback/chameleon/loading-skeleton-kit",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/image-gen-loading.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/image-gen-loading.tsx:19-57",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/skeleton.tsx:21-95"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/feedback/chameleon/loading-skeleton-kit.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/feedback/chameleon/loading-skeleton-kit.tsx",
+   "deviations": [
+    {
+     "kind": "数值漂移",
+     "detail": "ImageGenLoading 角标 badge 用 shadow-sm，preview 写 '0 1px 2px rgb(0 0 0 / 8%)'，Tailwind shadow-sm 实为 '0 1px 2px 0 rgb(0 0 0 / 0.05)'（5% 非 8%）。极小。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "SkeletonCard border-stone-200/60 preview 用 rgba(231,229,224,0.6)=#e7e5e0@60%，stone-200 实为 #e7e5e4，应为 rgba(231,229,228,0.6)。极小。ImageGenLoading 外框 border-stone-200 同理 #e7e5e0 应为 #e7e5e4。"
+    }
+   ],
+   "needs_rewrite": false
+  }
+ ]
+}

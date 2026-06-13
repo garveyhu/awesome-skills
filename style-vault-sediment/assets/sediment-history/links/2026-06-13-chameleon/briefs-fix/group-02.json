@@ -1,0 +1,275 @@
+{
+ "group": 2,
+ "entries": [
+  {
+   "id": "blocks/display/chameleon/trace-observation-tree-gantt",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/call_logs/components/observation-tree.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/traces/components/cost-label.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/traces/components/gantt-bar.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/traces/components/trace-gantt.tsx"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/display/chameleon/trace-observation-tree-gantt.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/display/chameleon/trace-observation-tree-gantt.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "甘特选中行底色错。源码行选中 bg-amber-50/60 = rgba(255,251,235,0.6)，label 列选中 bg-amber-50/95 = rgba(255,251,235,0.95)。preview 用 rgba(254,243,199,0.6) 和 rgba(254,243,199,0.95)（这是 amber-100，明度阶偏深）。应改 rgba(255,251,235,…)。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "甘特 label 列 type chip 失败底色错。源码失败 bg-rose-50 text-rose-600 = #fff1f2/#e11d48；成功 bg-stone-100 text-stone-500 = #f5f5f4/#78716c。preview 失败用 #fef2f2（red-50 而非 rose-50 #fff1f2），成功用 #f4f3ee（应 #f5f5f4）。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "树 duration 条轨道 + 甘特相关轨道色：源码 bg-stone-100=#f5f5f4。preview 树 duration track 用 #f4f3ee。应 #f5f5f4。（树 type 9 色/icon、bar OBS 9 色、score chip emerald/violet、选中蓝竖条 #3b82f6、depth guide 等均正确。）"
+    },
+    {
+     "kind": "编造",
+     "detail": "preview 在两个视图上方加了源码不存在的 section 标题「观测树视图」「甘特时间轴视图」（uppercase text-[11px] stone-400）。源码 ObservationTree/TraceGantt 本体无此标题。如要复刻单组件应去掉，或明确标注为 preview 框架。（次要）"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "ruler 左侧「时间轴」占位：源码仅 <div class='shrink-0 text-[10.5px] text-stone-400' style=width:210> 无 flex 居中、无 paddingLeft；preview 加了 display:flex alignItems:center paddingLeft:6，垂直位置/缩进略偏。（次要）"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/form/chameleon/generation-panel",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/generation-panel.tsx:48-419"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/form/chameleon/generation-panel.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/form/chameleon/generation-panel.tsx",
+   "deviations": [
+    {
+     "kind": "图标错",
+     "detail": "高级参数折叠触发器用了 lucide ChevronDown/ChevronRight 图标，但源码用的是纯文本三角字形：showAdvanced ? '▾ 收起高级参数' : '▸ 高级参数'（text-[11.5px] text-stone-500 #78716c，无任何 lucide icon）。应去掉 ChevronDown/Right 组件，改回 ▾/▸ 文本前缀。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "所有 number/text 输入框边框+圆角错。源码 Input/Textarea 默认 border border-stone-300=#d6d3d1 rounded-md=6px。preview NumInput 与提示词 textarea 用 border #e7e5e0（偏浅、近 stone-200）+ borderRadius 8（rounded-lg）。应改边框 #d6d3d1、圆角 6。提示词 textarea 源码 text-[12.5px] rows-3 px-3 py-1.5。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "chip 未选(idle)边框色偏浅。源码 idle border-stone-200=#e7e5e4 text-stone-600=#57534e hover:border-stone-300。preview 用 border #e7e5e0。应 #e7e5e4。（active 态 border-violet-500 #8b5cf6 / bg-violet-50 #f5f3ff / text-violet-700 #6d28d9 正确；px-2.5 py-1=10/4、text-[11.5px] 正确。）"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "seed 骰子按钮边框：源码 border-stone-200=#e7e5e4 rounded-md(6) text-stone-500(#78716c) h-8 w-8(32) hover:border-stone-300，Dices h-3.5(14)。preview border 用 #e7e5e0。应 #e7e5e4。（尺寸 32×32、圆角 6、色 #78716c、Dices 14 正确。）"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "已上传首帧缩略图：源码 img h-24 w-auto rounded-md border border-stone-200(#e7e5e4) object-cover（宽度按图自适应）。preview 用固定 128 宽渐变占位 + border #e7e5e0。可接受为占位，但边框应 #e7e5e4、宽度语义为 w-auto。X 删除按钮 -top-2 -right-2 h-5 w-5(20) rounded-full bg-stone-700(#44403c) text-white、X h-3(12) 正确。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/form/chameleon/graph-run-dialog",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/node-run-result.tsx:24-127",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/run-dialog.tsx:59-436",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/version-history-panel.tsx:41-292"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/form/chameleon/graph-run-dialog.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/form/chameleon/graph-run-dialog.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "StatusBadge 的 running 态用错色系。源码 status-badge.tsx running tone = `bg-sky-50 text-sky-700` + dot `bg-sky-500`（sky 青蓝：bg #f0f9ff / text #0369a1 / dot #0ea5e9）。preview 用了 blue/primary（bg #eff6ff / text #1d4ed8 / dot #3b82f6）。改成 sky 色系。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "StatusBadge 形状错。源码是 `rounded-md`（6px 圆角矩形）+ `text-[11px]` + `gap-1.5`(6px)。preview 用 borderRadius:9999（全圆药丸）+ fontSize:10.5 + gap:4。应为 rounded-md=6 / 字号 11 / gap 6。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "StatusBadge pulse 动画实现不同。源码 running 时是一圈独立的 `animate-ping` 绝对定位扩散环（在 h-1.5 dot 外层套 relative flex，pulse 时叠一层 absolute animate-ping rounded-full opacity-75）。preview 只对 dot 本体做 opacity 0.3↔1 闪烁，没有 ping 扩散环。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "FormField 文本/数字 Input 用错 token。run-dialog 里裸 text/number 字段用基础 Input 组件 = `rounded-md`(6px) + `border-stone-300`(#d6d3d1) + `px-3`(12px) + h-8(32) + text-[12.5px]。preview 用 rounded:8(应 6) + border #e7e5e0(stone-200，应 #d6d3d1 stone-300) + padding '0 10px'(应 12px)。高度 32 与字号 12.5 正确。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "源码 RunDialog 还有「输入 = 裸 JSON 兜底」分支（无 start 字段时渲染 font-mono text-[12px] Textarea + placeholder '{ \"query\": \"你好\" }' + JSON 解析错误 text-[10.5px] text-rose-600）。preview 只画了 hasForm=true 表单分支，缺 JSON 兜底变体。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "源码 select 类型字段是独立样式：`h-8 w-full rounded-lg border border-stone-200 bg-white px-2 text-[12.5px]`（注意这里是 rounded-lg + border-stone-200，与 text Input 的 rounded-md/stone-300 不同）；checkbox 类型用 Switch；paragraph/json 用 Textarea（json 时 font-mono text-[12px] rows=4）。preview 只画了 text 与 number 两种字段类型，缺 select/checkbox/paragraph/json 字段变体。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "节点进度行缺 failed 态与 pending 态展示。源码每行 NodeRunStatusBadge 支持 running/success/failed/skipped/pending 五态（pending=neutral 灰 stone）。preview 节点行只示范了 success/running，未含 failed（应 error 红）与 pending（neutral 灰：bg-stone-100 text-stone-600 dot bg-stone-400）。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "展开的 NodeRunResult 源码内容远比 preview 丰富：error 块(rounded-md border-rose-200 bg-rose-50 px-2 py-1.5，内含 font-mono text-[10px] uppercase text-rose-400 的 error.type + break-words message)、流式输出块(mono text-[11px] max-h-40)、推理过程 details(violet-500 折叠 summary + max-h-48 violet-50/40 斜体)、output JsonViewer(maxHeight 240px defaultExpanded)、input details(折叠 JsonViewer maxHeight 200px)。preview 展开区只塞了一个简单 JsonBox 占位，缺 error/流式/推理/input 折叠四块结构。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "RunDialog 运行摘要行缺 paused（暂停）态。源码 runner.phase==='paused' 时显示胶囊 `bg-amber-50 px-2 py-0.5 text-[11px] text-amber-700` 文案「⏸ 已暂停（human_input 断点…）」。preview 摘要行只画了 success 态。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "VersionDrawer 线上徽标圆角偏差。源码 `rounded`（4px，rounded 默认 0.25rem）px-1.5 py-0.5 text-[9.5px] bg-emerald-50 text-emerald-700。preview borderRadius:4 ✓ 但其余正确——此条仅复核确认。注意 DiffBadge 同样 `rounded`(4px) 正确。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "VersionDrawer 缺 detailQ.isLoading 占位（源码展开后未加载 spec 时显示 `py-2 text-center text-[11px] text-stone-400`「加载版本 spec…」）与 diff clean 态（节点全一致时 text-[11px] text-stone-500「节点与连线均与该版本一致。」）。preview 直接给了 diff 结果，缺这两个中间态。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/form/chameleon/json-schema-dynamic-form",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/form/json-schema-form.tsx:32-76",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/form/schema-field.tsx:21-86",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/form/widgets/array-widget.tsx:9-72",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/form/widgets/boolean-widget.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/form/widgets/enum-widget.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/form/widgets/number-widget.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/form/widgets/object-widget.tsx:6-58",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/form/widgets/string-widget.tsx"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/form/chameleon/json-schema-dynamic-form.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/form/chameleon/json-schema-dynamic-form.tsx",
+   "deviations": [
+    {
+     "kind": "数值漂移",
+     "detail": "所有 Input 高度/圆角/边框色错。源码复用基础 Input/Textarea/SelectTrigger 组件 = `h-8`(32px) + `rounded-md`(6px) + `border-stone-300`(#d6d3d1) + `px-3`(12px) + `text-[13px]`。preview 的 Input 写死 height:36(应 32) + borderRadius:8(应 6) + border #e7e5e0(stone-200，应 #d6d3d1) + padding '0 10px'(应 12) + fontSize 13(✓)。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "required 星号色错。源码 SchemaField required = `text-rose-500`(#f43f5e)。preview 用 #ef4444(red-500)。改成 rose-500 #f43f5e。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "EnumField 的 Select 触发器尺寸错。源码 SelectTrigger = h-8(32) rounded-md(6) border-stone-300(#d6d3d1) text-[13px] px-3，右侧 ChevronDown h-4 w-4 opacity-50。preview 用 height:36(应 32) + borderRadius:8(应 6) + border #e7e5e0(应 #d6d3d1) + ChevronDown size 14(应 16/h-4) color #a8a29e(源码是 opacity-50 的当前文字色，非固定灰)。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "BooleanField 的 Switch 选中色错。源码 Switch checked = `bg-primary-600`(#2563eb 蓝)。preview 用 #10b981(emerald 绿)。源码 Switch 尺寸 h-5 w-9(20×36) thumb h-4 w-4(16) translate-x-4(16)——尺寸 preview 正确，仅选中底色要从绿改成蓝 #2563eb；未选 bg-stone-300 #d6d3d1 ✓。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "ObjectField 浅卡片圆角偏差。源码 depth≥1 ObjectWidget = `rounded-md`(6px) border-stone-200/70 bg-stone-50/40 p-3。preview borderRadius:6 ✓ border rgba(231,229,224,0.7)≈stone-200/70 但 stone-200/70 实际是 #e7e5e0@70%（preview 用值 OK），bg rgba(250,250,249,0.4)=stone-50/40 ✓ padding 12 ✓——此卡片基本正确，仅确认。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "缺 SchemaField error 态（源码 props.error 时在 widget 下方渲染 `div text-[11px] text-rose-500`）。preview 没有任何字段示范 error 态。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "缺 ArrayWidget 空列表态与 ObjectWidget 空字段态。源码 ObjectWidget entries 为空时显示 `text-[11px] italic text-stone-400`「（此对象无字段定义）」；JSONSchemaForm 顶层空 schema 时显示 `rounded-md border border-stone-200/70 bg-stone-50/30 px-3 py-2 text-[12px] text-stone-500`「Schema 内没有字段定义。」。preview 都没体现。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "ArrayWidget 每项卡背景应为 bg-paper(#fffefb)，preview 用 #fffefb ✓；删除按钮 `mt-0.5 rounded p-1 text-stone-400 hover:bg-stone-100 hover:text-rose-600` 内 Trash2 h-3.5 w-3.5(14)——preview rounded:4 padding:4 size 14 ✓ 基本对。底部「添加一项」源码是 Button variant=outline size=sm + Plus h-3.5(14)，size=sm Button 高度/圆角应跟 Button 组件（需核 Button，preview 用 height:28 rounded:6 border #d6d3d1 是估值）。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "boolean 字段同行布局源码是 `flex items-center justify-between gap-3 py-1`，label 在左用 space-y-0.5（标题 + 下方 description div text-[11px] text-stone-400）。preview 结构对，但确认 description 在 boolean 下是 div 块级（非「· 」前缀），preview 已正确用块级。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/form/chameleon/select-summary-cron-builder",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/cron-builder.tsx:123-256"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/form/chameleon/select-summary-cron-builder.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/form/chameleon/select-summary-cron-builder.tsx",
+   "deviations": [
+    {
+     "kind": "数值漂移",
+     "detail": "SelectBox(SelectTrigger) 高度/圆角/边框全错。源码 SelectTrigger = `h-8`(32px) + `rounded-md`(6px) + `border-stone-300`(#d6d3d1) + `px-3`(12px) + text-[13px]。preview 注释误写「h-9 默认 shadcn 高度 36」并用 height:36(应 32) + borderRadius:8(应 6) + border #e7e5e0(应 #d6d3d1) + padding '0 10px'(应 12)。ChevronDown 源码 h-4 w-4(16)，preview size 14。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "custom 模式裸 Input 同样尺寸错。源码 Input(font-mono) = h-8(32) rounded-md(6) border-stone-300(#d6d3d1) px-3(12) text-[13px]。preview height:36 + borderRadius:8 + border #e7e5e0 + padding '0 10px'。应改 32/6/#d6d3d1/12。"
+    },
+    {
+     "kind": "编造",
+     "detail": "preview 外层加了源码不存在的「触发周期」标题(fontSize 12.5 weight 500 marginBottom 12)和底部说明文字「点击「频率」下拉可循环切换 5 种模式…」(marginTop 12 fontSize 10.5 #a8a29e)。源码 CronBuilder 根节点就是 `div.space-y-2`，无标题无说明脚注。应去掉这两段编造 chrome（或至少明确它们非组件本体）。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "preview 只静态展示 weekly 一种频率组合，无法体现 hourly(只有分 Select)、daily(时:分)、monthly(月日 Select + 时:分)、custom(裸 mono Input) 的字段差异。虽有循环切换交互，但首屏代表态应覆盖说明；至少补 monthly(w-[92px] '1~31 号') 与 hourly 的字段集，源码月日 Select 文案是「{d} 号」、时 Select「{HH} 时」、分 Select「{MM} 分」(padStart 2)。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/nav/chameleon/cmdk-grouped-palette",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/index.css:161-189",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/command/command-palette.tsx:152-331"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/nav/chameleon/cmdk-grouped-palette.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/nav/chameleon/cmdk-grouped-palette.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "搜索结果选中项标题被染蓝，源码不会。源码 .cmdk-item[data-selected=true] 整体 color=rgb(29 78 216)，但标题 span 有显式 `text-stone-800`(#292524)、snippet 有显式 `text-stone-400`、type chip 有显式 `text-stone-500`，这些显式色覆盖了选中色——即选中态标题仍是 stone-800，不变蓝。preview 在 i===0 选中行把标题色改成 #1d4ed8(蓝)，与源码不符；标题应恒为 #292524。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "搜索结果行图标尺寸：源码 Icon `h-3.5 w-3.5`(14px) text-stone-400 ✓ preview size 14 ✓。type chip 源码 `rounded`(4px) bg-stone-100(#f5f5f4) px-1.5 py-0.5 text-[10px] font-medium text-stone-500(#78716c) ✓。此条为确认无偏差，但顺带核对：cmdk-item 选中底色 rgb(239 246 255)=blue-50 ✓、hover rgb(245 244 238)=warm-2 ✓、padding 7px 10px ✓、gap 10px ✓、radius 6px ✓、font 12.5px ✓，均与 index.css 一致。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "缺 Command.Empty 空态（源码无匹配项时 `py-8 text-center text-[12.5px] text-stone-400`「没有匹配项。试试搜索 agent 名 / model 名 / app_key。」）。preview 未示范空态。属次要——四组结构、遮罩 bg-stone-950/40(rgba(12,10,9,0.4))、backdrop-blur-sm、容器 w-[600px] rounded-xl border-stone-200 bg-paper #fffefb shadow-pop、输入 h-12(48) text-[13.5px]、footer bg-warm-2/30 kbd 等均高度还原。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/nav/chameleon/detail-left-tab-rail",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/app-shell/graph-app-rail.tsx:73-461",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/pages/kb-detail-page.tsx:110-156"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/nav/chameleon/detail-left-tab-rail.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/nav/chameleon/detail-left-tab-rail.tsx",
+   "deviations": [
+    {
+     "kind": "图标错",
+     "detail": "graph-app-rail 的 Web App 卡片内 RailAction 图标错。源码「对话页打开」用 `ExternalLink`、「嵌入式应用」用 `Code2`。preview 两个都用了 `Code2`（对话页打开应改回 ExternalLink，size h-3 w-3=12）。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "graph-app-rail 应用图标块 ring 色偏深一阶。源码 chat 态 = `bg-violet-50 text-violet-600 ring-violet-200/60`，ring 应为 violet-200(#ddd6fe)@60%。preview 用 border rgba(196,181,253,0.6)=violet-300(#c4b5fd)@60%，深了一阶。violet-50(#f5f3ff)、violet-600(#7c3aed) 正确。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "graph-app-rail KindSelect 触发器缺右侧 ChevronDown。源码 KindSelect 用 SelectTrigger（自带 ChevronDown h-4 w-4 opacity-50）。preview 把它画成纯文本胶囊「对话流」，没有下拉箭头。源码尺寸 h-6 w-[88px] px-2 text-[11.5px] rounded-md border-stone-300——preview height 24 width 88 rounded 6 border #d6d3d1 fontSize 11.5 对，仅缺 chevron。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "graph-app-rail 在源码里是编辑器整屏左栏：`h-screen w-64 border-r border-slate-200/80 bg-white`，无圆角、无四边 border（只右边框）。preview 把它包成 rounded-12 + 四边 border + overflow-hidden 的卡片。作为并排预览框可理解，但改变了「贴边整栏」观感；若要 1:1 应去掉圆角与左/上/下边框，仅留 border-r。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "KB rail(A) 基本保真：nav w-44(176) space-y-0.5(2)，navBtn rounded-lg(8) px-3 py-2 gap-2.5(10) text-[13px] font-medium、active bg-blue-50(#eff6ff) text-blue-700(#1d4ed8)、icon 继承文字色(active #1d4ed8 / default #57534e)；身份块 ArrowLeft h-6 w-6 rounded-md text-stone-400(#a8a29e) + 名 text-[14px] font-semibold #1c1917 + key font-mono text-[10.5px] #a8a29e；分隔 my-2 border-t border-stone-200/60；「进阶」px-3 pb-1 text-[10.5px] tracking-wider uppercase text-stone-400。tab 标签/图标(文档 FileText/召回测试 Search/概览 BarChart3/元数据 Tag/评测 FlaskConical/一致性 ShieldCheck/服务 API KeyRound/设置 Settings)与源码一致。此段无需改。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "graph-app-rail 缺保存态三态完整体现：源码 saving=text-blue-500 + dot bg-blue-400 animate-pulse / dirty=text-amber-600(#d97706) + dot bg-amber-400(#fbbf24) / saved=text-stone-400 + dot bg-stone-300。preview 只画了 dirty「未保存」一态。另：发布徽标 preview 只画 published(v3 Rocket emerald)，未含 draft 草稿态(bg-amber-50 text-amber-700 ring-amber-200/60「草稿」)。"
+    }
+   ],
+   "needs_rewrite": true
+  }
+ ]
+}

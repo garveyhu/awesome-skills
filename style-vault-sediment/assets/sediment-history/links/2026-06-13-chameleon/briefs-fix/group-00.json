@@ -1,0 +1,294 @@
+{
+ "group": 0,
+ "entries": [
+  {
+   "id": "blocks/canvas/chameleon/canvas-controls-menus",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/checklist-badge.tsx:21-139",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/helper-lines.tsx:46-104",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/subgraph-canvas.tsx:487-719",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/zoom-control.tsx:15-62",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/pages/graph-editor-page.tsx:1292-1494",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/pages/graph-editor-page.tsx:1651-1901"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/canvas/chameleon/canvas-controls-menus.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/canvas/chameleon/canvas-controls-menus.tsx",
+   "deviations": [
+    {
+     "kind": "缺状态",
+     "detail": "运行状态徽标源码有 4 态：running(蓝点 animate-pulse + text-blue-600 '运行中…') / success(text-emerald-600 '✓ 运行成功 · {N}ms') / failed(text-rose-600 '✗ 运行失败') / paused(text-amber-600 '⏸ 已暂停（回填见运行日志）')。preview 只画 running 一态。需补齐 4 态（哪怕并排示意）。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "checklist 徽标源码 5 态（BadgeDot）：checking(`h-2 w-2 animate-pulse rounded-full bg-blue-400`) / unavailable|idle(`Minus h-3 w-3 text-stone-300`) / error(`h-4 min-w-4 rounded-full bg-rose-500 px-1 font-mono text-[9.5px] font-semibold text-white` 数字) / warning(同上但 bg-amber-400) / ready(`CheckCircle2 h-3.5 w-3.5 text-emerald-500`)。preview 只画 error 数字胶囊（且用了 #f43f5e=rose-500 正确）。需补 warning/ready/checking 至少。"
+    },
+    {
+     "kind": "图标错",
+     "detail": "节点幽灵用了 Sparkles 图标代表「大模型」；源码 ghost 用 TYPE_META[pendingType].icon，llm=Bot（不是 Sparkles）。颜色 #6d28d9(violet-700) 正确，但图标必须换成 lucide Bot。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "节点态右键菜单「删除节点」用 #dc2626(red-600)；源码是 `text-rose-600`=#e11d48。多选菜单同理（批量删除）也应 rose-600。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "多选右键菜单源码对齐区是 6 行（ALIGN_ROW：左对齐 AlignStartVertical / 水平居中 AlignCenterVertical / 右对齐 AlignEndVertical / 顶对齐 AlignStartHorizontal / 垂直居中 AlignCenterHorizontal / 底对齐 AlignEndHorizontal）；preview 只画 3 行（左对齐/水平居中/右对齐），缺 3 个 Horizontal 图标行。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "多选右键菜单源码还有 MENU_SEP + MENU_LABEL '分布' + 水平均分(AlignHorizontalDistributeCenter)/垂直均分(AlignVerticalDistributeCenter) 两行 + MENU_SEP + 批量删除(Trash2, text-rose-600, 快捷键 ⌫)；preview 全缺这一整段。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "MENU_LABEL 源码 `px-3 pt-1 pb-0.5 text-[10px] font-medium tracking-wide text-stone-400`；preview padding '4px 12px 2px' 近似但 letterSpacing 0.02em（tracking-wide=0.025em）。MENU_BTN 源码 `px-3 py-1.5 text-[12.5px] text-stone-700`(#44403c) preview 正确。右上工具栏 source `gap-1.5 rounded-xl px-2 py-1.5`，按钮是 Button variant=ghost/outline size=sm，非裸 iconBtn——preview 把 AI/日志/更多做成 28px 方块按钮、运行/保存做成 outline，发布 split 做成 28px 高，与 size=sm Button(h-8=32) 高度有 4px 差。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "右上工具栏源码对话型显示『对话调试』(MessageSquare)、流程型显示『运行』(Play)；preview 只画『运行』。另发布 split 主按钮 source `rounded-r-none`+下拉 `rounded-l-none border-l border-white/25 px-1.5`，preview 用 borderRadius '6px 0 0 6px' / '0 6px 6px 0' 正确，但缺 size=sm 默认 Button 的 h-8 与字号对齐。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/canvas/chameleon/config-panel-inspector",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/if-else-condition.tsx:266-615",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/node-inspector.tsx:137-314",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/node-panel/panel-kit.tsx:20-140",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/node-panel/panel-tabs.tsx:20-45",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/node-toolbar.tsx:28-91",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/pages/graph-editor-page.tsx:1527-1550"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/canvas/chameleon/config-panel-inspector.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/canvas/chameleon/config-panel-inspector.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "OutputVars 行的类型徽标 VarTypeChip 源码是按类型上色的：string=`bg-sky-50 text-sky-600`(#f0f9ff/#0284c7)、any=`bg-stone-100 text-stone-400`(#f5f5f4/#a8a29e)、number=bg-amber-50/text-amber-600、boolean=bg-rose-50/text-rose-600、object=bg-violet-50/text-violet-600、array=bg-emerald-50/text-emerald-600；preview 把 'string' 和 'any' 都画成统一 `bg-slate-100(#f1f5f9) text-slate-600(#64748b)`，颜色全错。branch(string) 应 sky 系，value(any) 应 stone 系。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "OutputVars 行的 '{x}' 前缀源码 `font-mono text-[10px] text-violet-400`=#a78bfa；preview 用 #c4b5fd（violet-300），偏浅一阶。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "右侧 inspector 外壳 source `bg-warm-2/95`，--color-warm-2 默认=#f4f3ee → rgba(244,243,238,0.95)；preview 用 rgba(250,250,247,0.95)（那是 --color-warm=#fafaf7，错用了 warm 而非 warm-2）。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "Section 标题折叠 ChevronDown 源码 `h-3 w-3 text-stone-300`=#d6d3d1；preview 用 #a8a29e(stone-400)，深了一阶。VarTypeChip 徽标 padding 源码 `px-1 py-px`(=4px/1px)，preview '1px 6px'（px 偏宽）。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "if_else 简单模式 GroupEditor 底部源码有两个按钮：『添加条件（AND）』(text-stone-400) + 『子分组』(text-blue-400, hover text-blue-600)；preview 只画『添加条件（AND）』，缺『子分组』按钮。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "条件行比较值/字段 Input 源码 `h-8 font-mono text-[12px]`+EnumSelect `w-24`(=96)；preview 32/12/96 正确。CaseBadge 源码 `rounded-md bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-amber-700`=#fef3c7/#b45309，preview 正确。header 图标块 source `h-9 w-9 rounded-xl shadow-sm ring-1`+meta(bg #fffbeb/color #b45309/ring-amber-200 #fde68a)，preview 36/12 + boxShadow '0 1px 2px... inset 0 0 0 1px #fde68a' 正确。名字 Input source `text-[15px] font-semibold tracking-tight text-stone-900`(#1c1917) preview 正确。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "源码 inspector 还含 CheckboxRow（`rounded-lg border border-slate-200 bg-white px-2.5 py-2` + Switch 在右）与 PanelTabs lastRun 态；preview 只画 settings + if_else builder + 输出变量，未体现 CheckboxRow/Switch（属代表性）。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/canvas/chameleon/node-palette",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/node-palette.tsx:81-251"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/canvas/chameleon/node-palette.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/canvas/chameleon/node-palette.tsx",
+   "deviations": [
+    {
+     "kind": "结构简化",
+     "detail": "源码 GROUP_ORDER 是 5 组全量渲染（生成/检索&工具/逻辑/编排/变量&输出，NODE_CATALOG 共 22 项含 end）；preview 只画 4 组且每组砍半：生成画了 5/5✓，检索&工具只画 3（缺『工具』Wrench text-orange-600 bg-orange-50），逻辑只画 2（缺『并行』Split text-indigo-600 + 『人工输入』UserCheck text-pink-600），『编排』整组缺失（『子工作流』Workflow text-indigo-600 bg-indigo-50），变量&输出只画 1（缺『变量聚合』Combine text-amber-700/『变量赋值』Variable text-rose-600/『列表操作』ListFilter text-cyan-700/『文档提取』FileText text-orange-700/『回答』CornerDownLeft text-green-600/『空操作』CircleDashed text-stone-500/『结束』Flag text-stone-700）。这是用户点名的『palette 漏分组』，需补齐全 5 组全 22 项。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "搜索框源码在有 query 时右侧出现清除 X 按钮（`h-5 w-5 rounded ... hover:bg-stone-100`）；preview 无。另收起态源码是左上角 `h-8 w-8 rounded-lg border bg-white/95 shadow-md backdrop-blur` 的 + 按钮（点击展开），preview 未体现收起态（属可选）。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "面板 source `rounded-2xl`(=16) preview 16✓；`shadow-xl ring-1 ring-stone-900/5` preview boxShadow '0 12px 32px rgb(0 0 0/10%),0 0 0 1px rgb(28 25 23/5%)' 近似。搜索框 source `h-8 pl-8`(=32/32) preview 32/32✓。分组标题 `text-[10px] font-semibold tracking-wide text-stone-400` preview 10/600/#a8a29e✓。节点卡图标块 `h-7 w-7 rounded-lg`(=28/8) + 图标 `h-4 w-4`(=16) preview 28/8/16✓。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/chat/chameleon/embed-widget-bubble-shell",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/embed/src/styles.ts",
+    "/Users/links/Coding/Archer/Chameleon/frontend/embed/src/widget.ts"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/chat/chameleon/embed-widget-bubble-shell.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/chat/chameleon/embed-widget-bubble-shell.tsx",
+   "deviations": [
+    {
+     "kind": "图标错",
+     "detail": "消息区 bot 头像源码用的是 ui.icon_emoji 表情符（默认 '🤖'，font-size 18px，见 styles.ts .msg.bot .avatar 与 widget.ts:1072-1083），preview 却用了 lucide <Bot size={18}> 图标。应改成 emoji 文本 🤖（18px）而非 lucide 图标。"
+    },
+    {
+     "kind": "图标错",
+     "detail": "气泡内默认 bubble_icon='chat'，对应 icons.ts chatIcon = lucide MessageSquare 同款路径，但 stroke-width=2、viewBox 0 0 24 24、icon 尺寸应为 round(56*0.47)=26px（preview 用 MessageSquare size=26 形状对，但应确认是 chatIcon 的 message-square 而非通用），可接受；真正问题在 header。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "Header 默认 header_bg='#FFFFFF'（widget.ts DEFAULT_UI:72），headerText 按 YIQ>175 自适应为深色（dark? #F1F5F9 : #111827）。即真实默认 header 是白底+深色文字，preview 却画成 themeColor(#6366F1) 紫底+白字。若要演示彩色 header 也应说明，但默认态应是白底深字。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "源码 header 左侧默认含 emoji（icon_emoji 🤖，22px，.header-emoji）+ 标题(14px/600)+副标题(12px/opacity.85)；preview 用了 lucide Bot 替代 emoji。应为 22px emoji 文本。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "挂件核心结构『历史会话 sidebar overlay』完全没画：源码 .sidebar absolute inset-0 z-5、.sidebar-head padding 12/14 + border-bottom、.sidebar-title::before 3px×14 竖条 themeColor、.new-session-btn rounded-999 border themeColor55 hover bg themeColor0d、.sidebar-item rounded-8 + 24px 圆 avatar(themeColor1a)+active bg themeColor14 文字 themeColor、.sidebar-item-time 11px、三点菜单 rounded-8 阴影。preview 只在角落放了一行文字说明『含历史会话 overlay』，未真正渲染该 overlay。visual_spec 明确要求 sidebar 视觉。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "附件 chips 区（.attachment-chips border-top + .att-chip rounded-999 边框 220 max-w + 图标/spinner/⚠ 状态 + ×移除按钮）+ upload-btn(38×38 radius-10) 完全未渲染。source composer 在 allow_file_upload 时左侧有 paperclip 38×38 radius-10 上传按钮；preview 画了 paperclip 但未画附件 chips 行与其 busy/failed 态。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "transparent 气泡模式未体现：源码 .bubble.transparent 去背景+去阴影、svg 加 drop-shadow(0 1px 2px rgba(0,0,0,.25)) 描黑；以及 fullscreen 模式 inset:0/无圆角无阴影/默认 open。preview 仅画了实色气泡一种。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "tooltip line 文字默认色：bubble_tooltip_color 默认 '#1f2937'、font-size 13、transparent 模式默认 true（去白底只留文字）。preview tooltip 用了白底+border+阴影(非 transparent 模式) 且文字 #111827，与默认 transparent=true 不符；且气泡-tooltip 默认位置 bubble_tooltip_position='top'（在气泡上方），preview 放在气泡左侧。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "suggested-questions 在 source 是 .suggested-questions（gap 6、按钮 rounded-999 border themeColor、hover 反色 bg themeColor 白字、font meta=12px、padding 5/12），preview 画了但 hover 反色态未体现（静态可接受），位置 source 紧跟 greeting 后整块（无 paddingLeft:28 缩进），preview 加了 marginTop:-4/paddingLeft:28 是编造的缩进。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "citation-chip：source padding 2px 8px、radius 10、font meta=12px、gap 4、citationBg #F8FAFC/border #E2E8F0/text #475569，前缀是『📎』(widget.ts:1146 chip.textContent=`📎 …`)；preview citation 用了文本『物流单 SF1234567』无 📎 前缀。应加 📎 前缀。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/chat/chameleon/hitl-human-input-prompt",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/message-thread.tsx:242-248,383-419"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/chat/chameleon/hitl-human-input-prompt.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/chat/chameleon/hitl-human-input-prompt.tsx",
+   "deviations": [
+    {
+     "kind": "图标错",
+     "detail": "源码标题行与气泡占位用的是 emoji『⏸』字符（message-thread.tsx:399 '⏸ 等待人工输入'、:235 '⏸ 等待人工输入…'），preview 两处都换成了 lucide <Pause> 图标。应改回 ⏸ emoji 文本，不要 lucide Pause。"
+    },
+    {
+     "kind": "图标错",
+     "detail": "气泡 paused 占位行 source 是纯 <span className=\"text-amber-600\">⏸ 等待人工输入…</span>（无头像图标语境内只一行 emoji+文字），preview 用 Pause size=13 lucide。应为 emoji。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "回填卡边框 source 是 border-amber-200 = #fde68a；preview 写 #fde68a 正确，但背景 bg-amber-50/60 = amber-50(#fffbeb) at 60% → 约 rgba(255,251,235,0.6)，preview 用 rgba(255,251,235,0.6) 正确。标题 text-amber-700=#b45309 ✓。无颜色问题，仅图标问题。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "提交按钮源码是 <Button size=\"sm\">（button.tsx：h-7=28px、px-2.5=10px、text-[11.5px]、rounded-md=6px、bg-primary-600=#2563eb），preview 用 height:32、padding:0 12px、fontSize:12。应改成 高 28px / 左右 padding 10px / 字号 11.5px。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "Textarea source 是项目 Textarea 组件 className 'mb-2 text-[13px]'，rows=2，placeholder『填写答案后提交，续跑该智能体…』；preview textarea border #d6d3d1 + radius 6 自定义，lineHeight 1.5——可接受近似，但字号 13 ✓。卡片 p-3=12 ✓、max-w-[420px] ✓、rounded-xl=12 ✓、mt-1.5=6 ✓。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/chat/chameleon/markdown-message-citation",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/chat/markdown.tsx:19-100",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/message-thread.tsx:250-269"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/chat/chameleon/markdown-message-citation.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/chat/chameleon/markdown-message-citation.tsx",
+   "deviations": [
+    {
+     "kind": "数值漂移",
+     "detail": "citation details 容器源码 className 'max-w-full space-y-1 px-1'（space-y-1=4 垂直间距、px-1=4 水平），preview 用 padding:'8px 4px 0' + gap 4——多了 paddingTop 8 和 paddingBottom，源码无；应为 px-1（左右 4），条目间 space-y-1=4。"
+    },
+    {
+     "kind": "图标错",
+     "detail": "citation summary 源码是 emoji『📄』前缀（message-thread.tsx:259 '📄 {title}'），preview 用了 lucide <FileText size=11> + <ChevronRight size=11> 两个图标。源码 summary 无 chevron 图标、无 FileText 图标，只有 📄 emoji + 标题文字（truncate text-stone-500）。应改回 📄 emoji，删除 FileText 和 ChevronRight。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "citation details 源码 bg-stone-50/80 = stone-50(#fafaf9) at 80% ≈ rgba(250,250,249,0.8)；preview 用 rgba(250,250,247,0.8)（warm #fafaf7 而非 stone-50 #fafaf9）。border-stone-200=#e7e5e4（preview #e7e5e0 近似偏差）。text-[11px] text-stone-600=#57534e ✓，snippet text-stone-500=#78716c ✓。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "markdown 根 div 源码 text-[13.5px] leading-relaxed(1.625)；h2 源码 'mt-1 mb-1.5 text-[14px] font-semibold(600)'，preview h2 marginTop:4 marginBottom:6 ✓。p mb-2=8 ✓。ul space-y-0.5=2 pl-5=20 ✓。inline code 源码 bg-stone-100(#f5f5f4) rounded(4) px-1 py-0.5 text-[0.85em] text-stone-800，preview code bg #f5f4ee(warm-2 非 stone-100) 偏暖；pre 同样 bg-stone-100=#f5f5f4，preview #f5f4ee 偏暖。应统一 #f5f5f4。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "a 链接源码 text-sky-600=#0284c7 ✓ underline underline-offset-2 ✓。blockquote border-l-2 border-stone-300=#d6d3d1 ✓ pl-2 text-stone-500=#78716c（preview #78716c ✓，但源码 blockquote 还有 mb-2=8 下边距，preview margin:0 漏了 mb-2）。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "video 渲染源码是真 <video> max-h-[420px] max-w-full rounded-lg border border-stone-200；preview 用了一个渐变占位块(height 120 固定+三角播放符) 来示意——可接受为静态占位，但圆角 8 与 border #e7e5e0(应 stone-200 #e7e5e4) 一致，max-h 应 420 而非固定 120。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/chat/chameleon/message-list-bubble-thread",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/message-thread.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/message-thread.tsx:37-349"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/chat/chameleon/message-list-bubble-thread.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/chat/chameleon/message-list-bubble-thread.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "流式『思考中…』NeonLoader 的渐变环色错：源码 theme.css .neon-loader__ring 是 conic-gradient(from 90deg, transparent 0%, #8b5cf6 35%, #d946ef 55%, #22d3ee 75%, transparent 100%)（紫→品红 #d946ef→青 #22d3ee，且首尾 transparent 留缺口）。preview 用 conic-gradient(from 0deg, #8b5cf6, #22d3ee, #3b82f6, #8b5cf6)——颜色错（多了 #3b82f6 蓝、缺 #d946ef 品红、无 transparent 缺口）、起始角错(0deg 应 90deg)。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "NeonLoader 文字『思考中…』源码是流光渐变文字 .neon-loader__text linear-gradient(90deg,#7c3aed,#d946ef,#22d3ee,#7c3aed) 背景裁切+shimmer 动画（多彩渐变流动），preview 用了纯色 #7c3aed 平涂。应为多色渐变文字。size sm 文字字号 text-[11.5px] ✓ font-medium ✓ tracking-wide ✓。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "NeonLoader size='sm' 环直径 d=14px、厚 t=2.25px；preview 环 14×14 ✓但 mask 用 'circle 4.75px' 近似、动画 0.9s（源码 neon-spin 0.85s）。另外环应带 drop-shadow 辉光(drop-shadow 0 0 3px rgba(139,92,246,.85) + 0 0 7px rgba(34,211,238,.5))，preview 无辉光滤镜。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "bot failed 气泡源码 '!border-rose-200 !bg-rose-50 !text-rose-700'：rose-200=#fecdd3、rose-50=#fff1f2、rose-700=#be123c。preview 用 border #fecaca(red-200 非 rose-200)、bg #fef2f2(red-50 非 rose-50)、text #be123c(rose-700 ✓)。应改 border #fecdd3、bg #fff1f2。错误副行 mt-1 text-[12px] text-rose-600=#dc2626 ✓。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "bot 气泡 border 源码 border-stone-200=#e7e5e4，preview #e7e5e0 近似；user 气泡 bg-blue-600=#2563eb ✓ 右上 tail rounded-tr-sm=2 ✓；bot rounded-tl-sm=2 ✓ shadow-[0_1px_2px_rgba(0,0,0,0.04)] ✓；气泡 rounded-2xl=16 ✓ px-3=12 py-2=8 ✓ text-[13px] leading-relaxed(1.625) ✓。pinned ring-1 ring-amber-300=#fcd34d，preview 用 outline:'1px solid #fcd34d' 近似 ✓。"
+    },
+    {
+     "kind": "图标错",
+     "detail": "footer pinned 标记源码是 emoji『📌』(text-amber-600=#d97706)，preview 自己画了一个 lucide pin 的 inline svg + '已置顶' 文字。源码 footer 只有 📌 emoji（message-thread.tsx:278），不是 '已置顶' 文字也不是 svg pin。应改回 📌 emoji。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "ImageGenLoading 媒体生成态：源码 className 'w-60'(240) aspect-[4/3] gap-2.5=10 rounded-xl=12 border-stone-200，含 hint 行（mediaKind=video 时 '正在生成视频，可能需要一会儿…' / 否则 '正在生成图片…'）。preview 画了骨架但漏了 hint 文案行（text-[11px] text-stone-400 leading-snug max-w-[80%] center），且 Loader2 角标 h-5 w-5 圆 bg-white shadow-sm ✓、text-violet-500=#8b5cf6 ✓、ImageIcon h-9 w-9 text-stone-300=#d6d3d1 ✓、'正在生成图片' text-[13px] text-stone-600=#57534e ✓、计时 mono text-[12px] text-stone-400=#a8a29e ✓。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "footer 调试动作 hover 色：trace/改写 hover:bg-violet-50(#f5f3ff) hover:text-violet-600(#7c3aed)，存样本 hover:bg-emerald-50(#ecfdf5) hover:text-emerald-600(#059669)——preview 这些 hover 色对（violet-50 #f5f3ff、emerald-50 #ecfdf5、文字 #7c3aed/#059669 ✓），但 footer 文字基色 text-[10px] text-stone-400=#a8a29e ✓，streaming '生成中…' text-blue-600=#2563eb ✓，usage tnum font-mono ✓。注意源码动作按钮默认是 text-stone-400 透明底 opacity-0 group-hover 浮现，preview 直接上了 hover 色块当『浮现态』可接受。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "AttachmentPreview 图片源码 h-28 w-28=112×112 object-cover rounded-lg border border-stone-200/70 hover:border-blue-300；preview 渐变占位 112×112 ✓ rounded 8 ✓。文件 chip 源码 rounded-full border-stone-200/70 bg-stone-50/60 px-2.5=10 py-1=4 text-[11px] text-stone-700=#44403c + 📎 emoji 前缀；preview 用 lucide <Paperclip size=11> 替代 📎 emoji——应为 📎 emoji 文本。"
+    }
+   ],
+   "needs_rewrite": true
+  }
+ ]
+}

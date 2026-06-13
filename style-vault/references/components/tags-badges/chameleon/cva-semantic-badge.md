@@ -26,7 +26,7 @@ preview: /preview/components/tags-badges/chameleon/cva-semantic-badge
 
 - **基础类**：`inline-flex items-center rounded-md(6px) border px-2(8px) py-0.5(2px) text-xs(12px) font-medium transition-colors`
 - **6 variant**（border / bg / text）：
-  - `default`（**默认**）：`border-transparent bg-stone-100(#f5f4ee) text-stone-700(#44403c)`
+  - `default`（**默认**）：`border-transparent bg-stone-100(#f5f5f4) text-stone-700(#44403c)`
   - `primary`：`border-transparent bg-primary-100 text-primary-800`（随 `data-primary` 主题切换，默认蓝 `#dbeafe` / `#1e40af`）
   - `success`：`border-transparent bg-emerald-100(#d1fae5) text-emerald-800(#065f46)`
   - `warning`：`border-transparent bg-amber-100(#fef3c7) text-amber-800(#92400e)`

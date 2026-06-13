@@ -38,7 +38,7 @@ preview: /preview/pages/chat/chameleon/embed-fullscreen-chat
 - 缺 key：`flex h-screen w-screen items-center justify-center bg-stone-50(#fafaf7) text-[12.5px] text-stone-500「缺少 embed_key」`
 
 ### 会话详情（三段式，`space-y-3` 纵向堆叠）
-- **三段都是 SectionCard**：`rounded-xl(12px) border border-stone-200/40 bg-paper p-5(20px) shadow-soft`
+- **三段都是 SectionCard**：`rounded-xl(16px) border border-stone-200/40 bg-paper p-5(20px) shadow-soft`
 - **段 1 身份头**（`SectionCard !py-3`，覆盖竖向 padding 为 12px）：
   - 面包屑行：返回 Link `inline-flex gap-1 rounded-md px-1.5 py-1 text-[12.5px] text-stone-500 hover:bg-stone-100 hover:text-stone-800`（`ArrowLeft h-3.5 w-3.5` + 「会话」）→ `/` 灰分隔 → session 标签 `rounded bg-violet-50 px-1.5 py-0.5 font-mono text-[11px] text-violet-600` → 标题 `truncate text-[15px] font-semibold text-stone-900`
   - 元信息行（`mt-2 flex flex-wrap gap-x-4 gap-y-1 text-[11.5px]`）：会话号复制 button `inline-flex gap-1 font-mono text-stone-600 hover:text-blue-600`（`Copy h-3 w-3 opacity-50`，copied→`Check h-3 w-3 text-emerald-500`）+ 创建/最后活跃时间（label `text-stone-400` + 值 `font-mono text-stone-600`）

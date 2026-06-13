@@ -39,7 +39,7 @@ preview: /preview/blocks/chat/chameleon/markdown-message-citation
 - **strong** `font-semibold`；**em** `italic`
 - **h1** `mt-1 mb-1.5 text-[15px] font-semibold`；**h2** `text-[14px]`；**h3** `mt-1 mb-1 text-[13px]`
 - **blockquote** `mb-2 border-l-2 border-stone-300(#d6d3d1) pl-2 text-stone-500`
-- **code (inline)** `rounded bg-stone-100(#f5f4ee) px-1 py-0.5 font-mono text-[0.85em] text-stone-800`
+- **code (inline)** `rounded bg-stone-100(#f5f5f4) px-1 py-0.5 font-mono text-[0.85em] text-stone-800`
 - **pre** `mb-2 overflow-x-auto rounded-md(6) bg-stone-100 p-2.5(10) font-mono text-[12px]`，`[&>code]:bg-transparent [&>code]:p-0`
 - **table** 外包 `mb-2 overflow-x-auto`，table `w-full border-collapse text-[12px]`；th/td `border border-stone-200 px-2 py-1`，th `text-left font-medium`
 - **hr** `my-2 border-stone-200`
@@ -48,7 +48,7 @@ preview: /preview/blocks/chat/chameleon/markdown-message-citation
 
 - **容器** `max-w-full space-y-1 px-1`
 - **每条 details** `rounded-md border border-stone-200 bg-stone-50/80 px-2 py-1 text-[11px] text-stone-600`
-- **summary** `cursor-pointer select-none truncate text-stone-500`「📄 标题 / 来源 / 引用 N」（preview 用 `FileText` lucide 替 📄 emoji）
+- **summary** `cursor-pointer select-none truncate text-stone-500`「📄 标题 / 来源 / 引用 N」（纯 📄 emoji + 标题，无 chevron / 无 FileText）
 - **片段** `mt-1 line-clamp-3 whitespace-pre-wrap text-stone-500`
 
 ## 核心代码

@@ -1,0 +1,248 @@
+{
+ "group": 4,
+ "entries": [
+  {
+   "id": "components/feedback/chameleon/radix-overlay-primitives",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/dialog.tsx:12-88",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/dropdown-menu.tsx:12-107",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/popover.tsx:11-28",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/tooltip.tsx:13-60"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/feedback/chameleon/radix-overlay-primitives.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/feedback/chameleon/radix-overlay-primitives.tsx",
+   "deviations": [
+    {
+     "kind": "数值漂移",
+     "detail": "DropdownMenu Content 源 min-w-[8rem]=128px，preview 用 minWidth:160。应改为 128。"
+    },
+    {
+     "kind": "编造",
+     "detail": "DropdownMenuItem 源组件本体只有 'flex items-center px-2 py-1.5 text-sm text-stone-900 hover:bg-stone-100 rounded-sm'，无 icon 槽、无 danger 变体。preview 给 item 加了 lucide 图标(Pencil/Copy/Trash2/ChevronRight)且把删除项画成 danger 红字 #dc2626——这些不是组件内置样式（图标是调用方 children，danger 红字组件未提供）。作为 demo 内容可保留图标，但 danger 红字属于编造的变体，真实 item 删除项仍是 text-stone-900。建议删除 #dc2626 红字或标注为调用方自定义。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "Dialog Title tracking-tight=-0.025em，preview 用 -0.01em。Dialog max-w-lg=512px（preview maxWidth 360 为 preview 缩放，可接受但注明真实上限 512）。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "各浮层 border 用 #e7e5e0，stone-200 实为 #e7e5e4；Separator/Tooltip 等均同理。Popover/Dialog/Dropdown 的 bg-[var(--color-paper)] preview 用 #fffefb 正确。Tooltip text-stone-50=#fafaf9 ✓，bg-stone-900=#1c1917 ✓。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "components/inputs/chameleon/dayjs-range-picker",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/date-range-picker.tsx:116-168",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/datetime-range-picker.tsx:43-180",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/month-calendar.tsx:17-82"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/inputs/chameleon/dayjs-range-picker.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/inputs/chameleon/dayjs-range-picker.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "侧栏版 trigger 与两个 popover 外壳的 border 用了 #e7e5e0；源码 border-stone-200 实际 hex = #e7e5e4。窄版 trigger border-stone-300=#d6d3d1 是对的，但 stone-200 处全部应改成 #e7e5e4。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "窄版 trigger 源码有 hover:border-stone-400(#a8a29e) + focus:border-blue-500(#3b82f6) + focus:ring-2 focus:ring-blue-100(#dbeafe) 三态，preview 只画了静态。X 清空按钮源码有 hover:bg-stone-100 hover:text-stone-700，preview 的 X span 无 hover 样式。预设小按钮源码 hover:border-stone-400 hover:text-stone-900 也未体现。侧栏预设项 hover:bg-stone-100 hover:text-stone-900 未体现。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "MonthCalendar 源码每个日期格非选非区间时有 hover:bg-stone-100；左右翻月按钮 ChevronLeft/Right 源码 hover:bg-stone-100 hover:text-stone-700。preview navBtn 与日格都无 hover 态。今天(TODAY=13)落在区间内(9~16)，源码逻辑 today && !sel 才加 font-semibold text-blue-600，但区间内 today 的 inRange 也会命中 → 实际渲染会是 bg-blue-50 text-blue-700 且再叠 today 的 font-semibold+text-blue-600（class 顺序：today 在最后覆盖 color）。preview 里 today=13 落在 inRange，需确认 today 样式叠加顺序与源码一致。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "ChevronLeft/Right 与窄版 X / ChevronDown 的 strokeWidth：源码 lucide 默认 strokeWidth=2（未指定），但侧栏 trigger 的 CalendarIcon 源码显式 strokeWidth={1.75}。preview 窄版 Calendar 用 strokeWidth={2}（源码 datetime-range-picker 的 CalIcon 未指定 strokeWidth=默认2 ✓），侧栏 Calendar 用 1.75 ✓。navBtn 的 Chevron 源码 h-3.5 w-3.5=14 ✓。基本对，仅确认无误。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "popover 阴影 preview 用 SHADOW_POP='0 8px 24px rgb(0 0 0 / 8%), 0 2px 8px rgb(0 0 0 / 4%)' = 源码 --shadow-pop 完全一致 ✓；PAPER preview 用 #fffefb = --color-paper(@theme) 一致 ✓。无需改。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "窄版 popover 源码底部回显逻辑：start 存在显 'MM-DD ~ MM-DD'(font-mono text-[11px] text-stone-500=#78716c)，否则显 '点选起止日期'(text-[11px] text-stone-400=#a8a29e，非 mono)。preview 只画了已选态 '06-09 ~ 06-16'，缺占位态变体。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "components/inputs/chameleon/graph-config-field-kit",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/controls/code-editor-field.tsx:19-124",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/controls/const-var-switch.tsx:24-183",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/controls/prompt-editor.tsx:46-159",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/controls/slider-field.tsx:31-95",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/controls/table-editor.tsx:75-260",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/controls/var-tree-picker.tsx:57-205",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/node-panel/panel-kit.tsx:92-118"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/inputs/chameleon/graph-config-field-kit.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/inputs/chameleon/graph-config-field-kit.tsx",
+   "deviations": [
+    {
+     "kind": "数值漂移",
+     "detail": "E·CodeMirror 编辑器行高：源码 code-editor-field 的 editorTheme 未设 lineHeight（CodeMirror 默认约 1.4），preview 用 lineHeight:1.6。源码字号 fontSize 11.5px ✓、.cm-content padding '6px 0' ✓、gutter color var(--color-stone-300,#d6d3d1) ✓。lineHeight 1.6 是编造值，源码无此设定。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "B·VarPopover 外壳 border 用 #e7e5e0；源码 VarTreePicker 的 PopoverContent 走通用 PopoverContent → border-stone-200=#e7e5e4。应改 #e7e5e4。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "B·VarRow 源码 hover:bg-blue-50(#eff6ff)；preview Row 无 hover。VarTrigger 源码 hover:border-blue-200(#bfdbfe) hover:bg-blue-50 hover:text-blue-600(#2563eb)；preview 静态无 hover。C·SegBtn 非 active 源码 hover:text-stone-600(#57534e)；C·替换/选择变量 tinyBtn 与 X 清除按钮源码 hover:bg-stone-100 hover:text-stone-600 等都未体现。D·TableRow 卡片源码 hover:border-slate-300(#cbd5e1)；删除按钮 X hover:bg-rose-50(#fff1f2) hover:text-rose-600(#e11d48)；添加行按钮 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-600 全未体现。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "B·VarTrigger preview 取 md 尺寸(px-2 py-1 text-[11.5px] = padding '4px 8px' fontSize 11.5)，但 A·提示词头行里的 VarTrigger 在源码中是 PromptEditor 头部那颗默认 size='sm' 的 VarTreePicker（px-1.5 py-0.5 text-[10.5px] = padding '2px 6px' fontSize 10.5），两处尺寸不同。preview 在 A 和 B 复用同一个 md 尺寸 VarTrigger，A 处应是 sm 尺寸(10.5px)。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "B·VarTypeChip preview 自定义了一套 hex（string #f0f9ff/#0284c7, number #fffbeb/#d97706, boolean #fff1f2/#e11d48, object #f5f3ff/#7c3aed, array #ecfdf5/#059669）。源码 var-type-chip.tsx 用 Tailwind 类：string=bg-sky-50(#f0f9ff)/text-sky-600(#0284c7) ✓, number=bg-amber-50(#fffbeb)/text-amber-600(#d97706) ✓, boolean=bg-rose-50(#fff1f2)/text-rose-600(#e11d48) ✓, object=bg-violet-50(#f5f3ff)/text-violet-600(#7c3aed) ✓, array=bg-emerald-50(#ecfdf5)/text-emerald-600(#059669) ✓, any=bg-stone-100(#f5f5f4)/text-stone-400(#a8a29e)。这组 hex 实际全对，无偏差。chip 本体 rounded px-1 py-px text-[9px] leading-none tracking-wide：preview borderRadius 4(rounded=4) padding '1px 4px' fontSize 9 lineHeight 1 letterSpacing 0.025em ✓。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "F·SliderField range input 的 accentColor：preview 用 #2563eb(accent-blue-600) = 源码 slider-field.tsx 的 accent-blue-600 ✓（注意此控件用蓝，与 param-slider 的 amber 不同，preview 正确区分）。但源码 SliderField 有 value===undefined 时 opacity-60 的「未设置」态变体，preview 未画。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "A·PromptEditor 头行字数：源码显示 '{value.length} 字'，文本 12.5px lineHeight 1.7 padding '9px 12px' ✓。但源码变量 chip 经 CodeMirror MatchDecorator 内联渲染，定界符 .cm-pvar-brace color var(--color-blue-300,#93c5fd) ✓，名 .cm-pvar-name #2563eb font-500 ✓，bg var(--color-blue-50,#eff6ff) ✓，fontSize 11px paddingTop/Bottom 1.5px ✓，open/close 圆角 5px paddingLeft/Right 4px ✓。preview VarChip 这些值对得上。整卡 focus-within border-blue-300(#93c5fd) + shadow '0_0_0_3px_rgb(59_130_246/0.10)'，preview 用 borderColor #93c5fd + boxShadow 含 '0 0 0 3px rgb(59 130 246/0.10)' ✓，头行 bg slate-50/80=rgba(248,250,252,0.8) ✓。A 基本忠实。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "C·常量态 input 与 D·cellInput / F·数字框 border 用 #d6d3d1(stone-300)：C 常量态源码 renderConst 用通用 Input → border-stone-300=#d6d3d1 ✓；D/F 的 Input 也 stone-300 ✓。但 D·TableRow 卡片 border-slate-200=#e2e8f0 preview 用 #e2e8f0 ✓，添加行 border-dashed border-slate-300=#cbd5e1 ✓。这些 slate 值对。仅 stone-200 处(VarPopover 外壳)需改。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "components/inputs/chameleon/inline-edit-cell",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/table/inline-edit-cell.tsx:73-142"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/inputs/chameleon/inline-edit-cell.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/inputs/chameleon/inline-edit-cell.tsx",
+   "deviations": [
+    {
+     "kind": "缺状态",
+     "detail": "源码确认按钮 text-emerald-600 hover:bg-emerald-50(#ecfdf5)，取消按钮 text-stone-400 hover:bg-stone-100，铅笔按钮 hover:bg-stone-100。preview 三个按钮都无 hover 背景态。emerald-600 preview 用 #059669 ✓，stone-400 图标 #a8a29e ✓。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "编辑态 input 源码 'rounded'（=4px ✓ preview borderRadius 4）border-blue-300(#93c5fd ✓) ring-2 ring-blue-100(#dbeafe)：preview 用 boxShadow '0 0 0 2px #dbeafe' 模拟 ring-2 ✓。h-6=24 ✓ max-w-[140px]=140 ✓ px-1.5=6 ✓ text-[12px]=12 ✓。基本忠实，仅缺 hover。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "显示态空值 placeholder：源码空值时渲染 <span className='text-stone-400'>—</span>（stone-400=#a8a29e）。preview DisplayCell value===null 时 color #a8a29e ✓。显示态铅笔默认 opacity-0，hover 才 opacity-100（group-hover）——preview 用 hovered prop 模拟两态，已分别画了 hovered 与非 hovered，✓ 覆盖。整体 inline-edit-cell 偏差最小，主要是 hover 背景未画。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "components/inputs/chameleon/themeable-text-fields",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/input.tsx:17-34",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/label.tsx:6-19",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/textarea.tsx:7-22"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/inputs/chameleon/themeable-text-fields.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/inputs/chameleon/themeable-text-fields.tsx",
+   "deviations": [
+    {
+     "kind": "数值漂移",
+     "detail": "textarea 行高：源码 textarea.tsx 无 line-height 设定（继承默认，约 1.5 但非显式），preview textareaStyle 显式 lineHeight 1.5——可接受。但 disabled 态文字色：源码 disabled:text-stone-500=#78716c，preview disabled color #78716c ✓；disabled bg-stone-100=#f5f5f4，preview #f5f5f4 ✓。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "label 文字色不一致。源码 label.tsx LabelPrimitive text-stone-600=#57534e。但 themeable-text-fields 的 visual_spec 里 textarea 配 Label 用 text-stone-600。preview Field 的 label color 用 #57534e ✓（stone-600）。此处对。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "input/textarea 源码有 disabled:cursor-not-allowed disabled:bg-stone-100 disabled:text-stone-500 三件套 + focus:border-blue-500 focus:ring-2 focus:ring-blue-100。preview 画了普通/聚焦/disabled 三态 ✓，但 visual_spec 还要求体现 input(h-8) 变体与 error 态(border-red-500 focus:ring-red-100)。preview 只画了 textarea，完全没画 input 本体（h-8 32px text-[13px]）与 error 红边态，而 entry 同时覆盖 compact-textarea + themeable-label + blue-focus-input(input)。缺 input 与 error 变体。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "聚焦态 ring：源码 focus:ring-2 ring-blue-100=#dbeafe（ring-2=2px）。preview boxShadow '0 0 0 2px #dbeafe' ✓。focus border #3b82f6(blue-500) ✓。textarea min-h-[72px]=72 ✓ rounded-md=6 ✓ px-3=12 py-1.5=6 ✓ text-[13px]=13 ✓ placeholder text-stone-400=#a8a29e（preview 未单独验证 placeholder 色但 defaultValue 已填）。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "components/selects/chameleon/agent-picker-popover",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/agent-picker.tsx:38-211",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/agent-picker.tsx:95-211"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/selects/chameleon/agent-picker-popover.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/selects/chameleon/agent-picker-popover.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "trigger 与 popover 外壳 border 用 #e7e5e0；源码 trigger border-stone-200、PopoverContent border-stone-200 实际 hex = #e7e5e4。应改 #e7e5e4。左类别栏与列表分隔 border-r/border-b border-stone-100=#f5f5f4 preview #f5f5f4 ✓。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "trigger 源码 hover:border-stone-300(#d6d3d1)；类别按钮非选 hover:bg-stone-100；Row hover:bg-stone-100。preview 全静态无 hover。Row active=bg-blue-50(#eff6ff) preview #eff6ff ✓，类别 active bg-blue-50 text-blue-700(#1d4ed8) font-medium preview ✓。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "搜索框 Search 图标定位：源码 absolute left-3.5(=14px) top-1/2 -translate-y-1/2 h-3.5 w-3.5(14) text-stone-400。preview left 14 ✓ size 14 ✓ color #a8a29e ✓。Input !h-7(28) pl-7(28) text-[12px] border-stone-300(#d6d3d1)：preview height 28 paddingLeft 28 fontSize 12 border #d6d3d1 ✓。基本对。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "列表底部状态：源码三选一——加载中(Loader2 + '加载中…' text-[11px] text-stone-400) / 空(py-6 text-center text-[12px] text-stone-400 '无匹配应用') / 到底(py-2 text-center text-[10.5px] text-stone-300 '没有更多了')。preview 只画了「加载中…」一态，缺空态与「没有更多了」(text-stone-300=#d6d3d1 text-[10.5px]) 两个变体。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "Row 副 key 行 font-mono text-[10px] text-stone-400(#a8a29e)：preview fontSize 10 color #a8a29e ✓。Row 标题 text-[12px] text-stone-800(#292524) preview color #292524 ✓。Bot 图标 h-3.5 w-3.5(14) text-stone-400 preview 14/#a8a29e ✓。Check h-3.5 w-3.5 text-blue-600(#2563eb) preview 14/#2563eb ✓。Row 圆角 rounded(=4) px-2(8) py-1.5(6) gap-2(8) preview borderRadius 4 padding '6px 8px' gap 8 ✓。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "components/selects/chameleon/model-picker-popover",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/image-model-select.tsx:27-67",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/model-picker.tsx:33-213"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/selects/chameleon/model-picker-popover.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/selects/chameleon/model-picker-popover.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "A·双栏 popover 外壳与 B·ImageModelSelect dropdown 外壳 border 用 #e7e5e0；源码 ModelPicker 走通用 PopoverContent(border-stone-200=#e7e5e4)，ImageModelSelect 走 SelectContent(border-stone-200=#e7e5e4)。应改 #e7e5e4。B·trigger border 用 #d6d3d1（SelectTrigger border-stone-300=#d6d3d1）✓。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "A·trigger 源码 hover:border-stone-300 + value==='' 时 text-stone-400；provider 类别按钮 hover:bg-stone-100；Row hover:bg-stone-100。preview 全静态无 hover。B·SelectItem 源码 hover:bg-stone-100 focus:bg-stone-100，preview 用 background #f5f5f4 模拟选中行(i===0)——但源码选中态靠 ItemIndicator 打勾，背景是 hover/focus 才变；preview 把第一项画成常驻灰底+勾，混淆了 hover 态与选中态。"
+    },
+    {
+     "kind": "缺状态/结构简化",
+     "detail": "A·列表底部源码两态：加载中(Loader2 '加载中…') / 空(py-6 text-[12px] text-stone-400 '无匹配模型')。preview A 完全没画底部任何状态（连加载中都没有），缺这两个变体。"
+    },
+    {
+     "kind": "图标错",
+     "detail": "B·ImageModelSelect dropdown 的勾选与 chevron：源码 SelectItem 勾用 Check h-4 w-4(16)，pl-8(32)，左 absolute left-2(8)。preview Check size 16 ✓ paddingLeft 32 ✓ left 8 ✓。trigger ChevronDown h-4 w-4(16) opacity-50 preview size 16 opacity 0.5 ✓。但 B·SelectItem 文字结构源码：<span className='font-mono'>{code}</span> + provider <span className='ml-1.5 text-[10px] text-stone-400'>。preview code font-mono + provider marginLeft 6(ml-1.5=6) fontSize 10 color #a8a29e ✓。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "B·ImageModelSelect 空态源码 px-2 py-1.5 text-[11px] text-stone-400 '暂无生图模型，请先在「模型」页添加 image 模型'，preview 未画此空态变体。trigger placeholder 加载中→'加载中…' 否则 '选择生图模型' 两态也未画(preview trigger 直接填了 qwen-image 选中值)。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "A·Row code 标题 text-[12px] text-stone-800(#292524) preview #292524 ✓；provider 副行 font-mono text-[10px] text-stone-400(#a8a29e) ✓；Cpu h-3.5 w-3.5(14) text-stone-400 ✓；active bg-blue-50(#eff6ff)+Check text-blue-600(#2563eb) ✓；类别 active bg-blue-50 text-blue-700(#1d4ed8) ✓。这些对。"
+    }
+   ],
+   "needs_rewrite": true
+  }
+ ]
+}

@@ -1,0 +1,93 @@
+{
+ "group": 9,
+ "entries": [
+  {
+   "id": "components/inputs/chameleon/codemirror-json-editor",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/json-editor.tsx:24-109"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/inputs/chameleon/codemirror-json-editor.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/inputs/chameleon/codemirror-json-editor.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "外框 border-stone-200 preview 用 #e7e5e0，stone-200 实为 #e7e5e4。顶栏 border-b border-stone-100=#f5f5f4 ✓、bg-stone-50/80=rgba(250,250,249,0.8) ✓、错误条 rose-100 #ffe4e6/rose-50 #fff1f2/rose-600 #e11d48 全部正确。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "CodeMirror 语法高亮配色为 preview 自定义近似值（已注明仅演示用）。源 editorTheme 未自定义 token 色，真实走 @codemirror/lang-json + CodeMirror 默认 light 高亮（与 preview 的 key=#2563eb/string=#047857/number=#b45309/bool=#7c3aed 不一定一致）。属固有近似、不强求 1:1，但若要更准应以 CodeMirror 默认主题 token 色为准。"
+    }
+   ],
+   "needs_rewrite": false
+  },
+  {
+   "id": "components/inputs/chameleon/param-slider",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/param-slider.tsx:21-57"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/inputs/chameleon/param-slider.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/inputs/chameleon/param-slider.tsx",
+   "deviations": [
+    {
+     "kind": "数值漂移",
+     "detail": "hint 段落源码 text-[10.5px] leading-snug(line-height 1.375) text-stone-500(#78716c)；preview p 用 fontSize 10.5 lineHeight 1.4 color #78716c。leading-snug=1.375 而 preview 用 1.4，极微差。其余：容器 space-y-1.5=gap6 ✓、label text-[12px] font-medium(500) text-stone-700(#44403c) ✓、值徽章 rounded(4) bg-stone-100(#f5f5f4) px-1.5(6) py-0.5(2) font-mono text-[11.5px] text-stone-700(#44403c) ✓、range accent-amber-600=#d97706 ✓、刻度 text-[10px] text-stone-400(#a8a29e) ✓。Max Tokens ∞ 模式 min 显 0、max 显 ∞ 与源码 infinityAtZero 逻辑一致 ✓。整体高度还原，无影响一眼像不像的偏差。"
+    }
+   ],
+   "needs_rewrite": false
+  },
+  {
+   "id": "components/tags-badges/chameleon/cva-semantic-badge",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/badge.tsx:6-29"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/tags-badges/chameleon/cva-semantic-badge.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/tags-badges/chameleon/cva-semantic-badge.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "default variant 底色：源码 bg-stone-100 = #f5f5f4，preview 用了 #f5f4ee（warm-2 色）。应改为 #f5f5f4。其余 5 个语义色 emerald-100 #d1fae5/emerald-800 #065f46、amber-100 #fef3c7/amber-800 #92400e、red-100 #fee2e2/red-800 #991b1b、primary-100 #dbeafe/primary-800 #1e40af、outline border-stone-300 #d6d3d1+text-stone-700 #44403c 均正确。"
+    }
+   ],
+   "needs_rewrite": false
+  },
+  {
+   "id": "components/toggles/chameleon/sliding-thumb-segmented",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/segmented-control.tsx:25-100"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/toggles/chameleon/sliding-thumb-segmented.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/toggles/chameleon/sliding-thumb-segmented.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "tablist 容器底色：源码 bg-stone-100/70 = stone-100 #f5f5f4 @70%，preview 用 rgba(245,244,238,0.7)（warm-2 #f5f4ee @70%）。应为 rgba(245,245,244,0.7)。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "thumb 阴影：源码 shadow-sm = 0 1px 2px 0 rgb(0 0 0/5%)，preview 写成 0 1px 2px rgb(0 0 0/6%)。微差。其余 rounded-lg(8)/border-stone-200(#e7e5e0)/gap-0.5(2)/p-0.5(2)/thumb rounded-md(6)/bg-paper(#fffefb)/cubic-bezier(.34,1.4,.5,1)/active text-primary-700(#1d4ed8)/inactive text-stone-500(#78716c)/sm px-3 py-1 text-[12px]/md px-3.5 py-1.5 text-[12.5px] 均正确。"
+    }
+   ],
+   "needs_rewrite": false
+  },
+  {
+   "id": "components/toggles/chameleon/themeable-switch",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/switch.tsx:6-23"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/toggles/chameleon/themeable-switch.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/toggles/chameleon/themeable-switch.tsx",
+   "deviations": [
+    {
+     "kind": "缺状态",
+     "detail": "源码有 focus-visible:ring-2 ring-primary-400(#60a5fa) 聚焦态，preview 未体现（静态预览可接受）。Root h-5 w-9(20×36)/border-2 transparent/checked bg-primary-600(#2563eb)/unchecked bg-stone-300(#d6d3d1)/thumb h-4 w-4(16)/shadow-soft(0 1px 2px rgb(0 0 0/4%),0 4px 12px rgb(0 0 0/3%))/translate-x-4(16px) 全部正确，ON/OFF/disabled 三态齐全。"
+    }
+   ],
+   "needs_rewrite": false
+  }
+ ]
+}

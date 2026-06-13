@@ -29,7 +29,7 @@ preview: /preview/blocks/chat/chameleon/hitl-human-input-prompt
 ## 视觉特征
 
 - **卡片** `mt-1.5(6) w-full max-w-[420px] rounded-xl(12) border border-amber-200(#fde68a) bg-amber-50/60 p-3(12)`——挂在气泡下方，琥珀边 + 半透明琥珀底
-- **标题行** `mb-2(8) flex items-center gap-1.5(6) text-[12px] font-medium text-amber-700(#b45309)`「⏸ 等待人工输入」（preview 用 `Pause` lucide icon 替 ⏸ emoji）
+- **标题行** `mb-2(8) flex items-center gap-1.5(6) text-[12px] font-medium text-amber-700(#b45309)`「⏸ 等待人工输入」（纯 ⏸ emoji + 文字，非 lucide 图标）
 - **prompt** `mb-2 whitespace-pre-wrap break-words text-[13px] text-stone-700(#44403c)`——展示 `ctx.ask_human` 问句
 - **Textarea** `rows={2} mb-2 text-[13px]`，placeholder「填写答案后提交，续跑该智能体…」
 - **底部** `flex justify-end`，`Button size=sm disabled={!val.trim()}`「提交并续跑」（蓝主色）

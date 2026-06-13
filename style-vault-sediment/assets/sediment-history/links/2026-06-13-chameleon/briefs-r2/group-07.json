@@ -1,0 +1,107 @@
+{
+ "group": 7,
+ "entries": [
+  {
+   "id": "components/tags-badges/chameleon/cva-semantic-badge",
+   "layer": "component",
+   "dedup": "variant",
+   "ref_target": "components/tags-badges/waveflow/code-status-badge",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/badge.tsx:6-29"
+   ],
+   "visual_spec": "[components/tags-badges/chameleon/cva-semantic-badge] base: 'inline-flex items-center rounded-md(6px) border px-2(8px) py-0.5(2px) text-xs(12px) font-medium transition-colors'. 6 variant: default 'border-transparent bg-stone-100 text-stone-700'; primary 'border-transparent bg-primary-100 text-primary-800'(随主题切换); success 'border-transparent bg-emerald-100(#d1fae5) text-emerald-800(#065f46)'; warning 'border-transparent bg-amber-100(#fef3c7) text-amber-800(#92400e)'; danger 'border-transparent bg-red-100(#fee2e2) text-red-800(#991b1b)'; outline 'border-stone-300 text-stone-700'. defaultVariant=default. 区分 waveflow code-status-badge: 圆角 rounded-md 非 rounded、px-2 非 px-1.5、text-xs(12px) 非 text-[11px]、是泛化 variant 而非 code 映射。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/tags-badges/chameleon/cva-semantic-badge.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/tags-badges/chameleon/cva-semantic-badge.tsx"
+  },
+  {
+   "id": "components/tags-badges/chameleon/orchestration-kind-badge",
+   "layer": "component",
+   "dedup": "variant",
+   "ref_target": "components/tags-badges/waveflow/glue-type-badge-duo",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/orchestration-badge.tsx:9-35"
+   ],
+   "visual_spec": "[components/tags-badges/chameleon/orchestration-kind-badge] chip: span inline-flex shrink-0 rounded(4) px-1.5(6) py-0.5(2) text-[10px](10) font-medium + 色类。配色映射: code 'bg-indigo-50 text-indigo-700'(代码) / chatflow 'bg-sky-50 text-sky-700'(对话编排) / workflow 'bg-violet-50 text-violet-700'(流程编排) / external 'bg-amber-50 text-amber-700'(外部)。无 kind 时 span text-[10.5px](10.5) text-stone-300 显示破折号。\n\n[components/tags-badges/chameleon/orchestration-kind-badge] 徽标: inline-flex shrink-0 rounded(=4) px-1.5 py-0.5 text-[10px] font-medium。色阶(bg/text): 代码 indigo-50/indigo-700; 对话编排 sky-50/sky-700; 流程编排 violet-50/violet-700; 外部 amber-50/amber-700。无值: text-[10.5px] text-stone-300「—」。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/tags-badges/chameleon/orchestration-kind-badge.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/tags-badges/chameleon/orchestration-kind-badge.tsx"
+  },
+  {
+   "id": "components/toggles/chameleon/sliding-thumb-segmented",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/segmented-control.tsx:25-100"
+   ],
+   "visual_spec": "[components/toggles/chameleon/sliding-thumb-segmented] tablist 容器: 'relative flex w-fit items-center gap-0.5(2px) rounded-lg(8px) border border-stone-200 bg-stone-100/70 p-0.5(2px)'。滑块 thumb（absolute, ResizeObserver 测量定位）: 'pointer-events-none absolute left-0 top-0 z-0 rounded-md(6px) bg-paper(#ffffff) shadow-sm transition-[transform,width,height] duration-300 ease-[cubic-bezier(.34,1.4,.5,1)]'（cubic-bezier 含 >1 的 1.4 故有回弹），transform translate(x,y)+width/height 来自实测。选项 button: 'relative z-10 rounded-md font-medium transition-colors disabled:opacity-40' + size sm 'px-3(12px) py-1(4px) text-[12px]' / md 'px-3.5(14px) py-1.5(6px) text-[12.5px]'，active 'text-primary-700'（随主题）else 'text-stone-500 hover:text-stone-800'。signature: 弹性回弹滑块 thumb（duration-300 ease cubic-bezier(.34,1.4,.5,1)）。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/toggles/chameleon/sliding-thumb-segmented.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/toggles/chameleon/sliding-thumb-segmented.tsx"
+  },
+  {
+   "id": "components/toggles/chameleon/themeable-switch",
+   "layer": "component",
+   "dedup": "variant",
+   "ref_target": "components/toggles/waveflow/emerald-switch",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/switch.tsx:6-23"
+   ],
+   "visual_spec": "[components/toggles/chameleon/themeable-switch] Root: 'peer inline-flex h-5(20px) w-9(36px) shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors' + 'data-[state=checked]:bg-primary-600 data-[state=unchecked]:bg-stone-300(#d6d3d1)' + 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 disabled:opacity-50'. Thumb: 'pointer-events-none block h-4(16px) w-4 rounded-full bg-white shadow-soft transition-transform data-[state=checked]:translate-x-4(16px) data-[state=unchecked]:translate-x-0'. 区分 waveflow: checked 色随 data-primary 切换（默认 #2563eb 而非 emerald #10b981），ring 用 primary-400 而非 blue-200，thumb shadow-soft（0 1px 2px rgb(0 0 0/4%),0 4px 12px rgb(0 0 0/3%)）非 shadow-sm。@radix-ui/react-switch。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/toggles/chameleon/themeable-switch.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/toggles/chameleon/themeable-switch.tsx"
+  },
+  {
+   "id": "pages/chat/chameleon/embed-fullscreen-chat",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/embed/src/styles.ts",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/conversations/pages/conversation-detail-page.tsx:57-452",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/embed_iframe/pages/embed-iframe-page.tsx"
+   ],
+   "visual_spec": "[pages/chat/chameleon/embed-fullscreen-chat] 壳 div h-screen w-screen bg-white，widget 自挂 document.body 占满。缺 key 时 flex h-screen w-screen items-center justify-center bg-stone-50 text-[12.5px] stone-500「缺少 embed_key」。视觉 = embed-widget-bubble-shell 的 .panel.fullscreen(inset 0 100% 无圆角无阴影无 transform)。\n\n[pages/chat/chameleon/conversation-detail-bubbles] 身份头 SectionCard !py-3: 返回 Link inline-flex gap-1 text-[12.5px] text-stone-500 hover:bg-stone-100 (ArrowLeft h-3.5 w-3.5); session 标签 rounded bg-violet-50 px-1.5 py-0.5 font-mono text-[11px] text-violet-600; 标题 text-[15px] font-semibold text-stone-900。元信息行 text-[11.5px] gap-x-4 gap-y-1; 会话号复制按钮 font-mono text-stone-600 hover:text-blue-600 (Copy/Check h-3 w-3, copied→Check text-emerald-500)。气泡 SectionCard !p-0 滚动区 max-h-[calc(100vh-260px)] px-5 py-5 space-y-5。加载更早按钮: rounded-full border border-stone-200 bg-white px-3 py-1 text-[12px] text-stone-600 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700。气泡: max-w-[78%] rounded-2xl px-3.5 py-2.5 text-[13px]; user→rounded-tr-sm bg-blue-600 text-white whitespace-pre-wrap; assistant→rounded-tl-sm border border-stone-200 bg-white text-stone-800(Markdown)。元信息行 text-[10.5px] text-stone-400: 角色 font-medium text-stone-500 + #seq font-mono + 时间 font-mono + 👍ThumbsUp text-emerald-500/👎ThumbsDown text-rose-500。trace 按钮 rounded-md border bg-white px-1.5 py-0.5 text-[10.5px] hover:border-blue-300 hover:bg-blue-50 (ListTree h-3.5 w-3.5)。复用 StatBar/StatItem(可 mono)。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/chat/chameleon/embed-fullscreen-chat.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/chat/chameleon/embed-fullscreen-chat.tsx"
+  },
+  {
+   "id": "pages/dashboard/chameleon/observability-overview-tabs",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/dashboard/pages/dashboard-page.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/dashboard/pages/tabs/cost-tab.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/dashboard/pages/tabs/overview-tab.tsx"
+   ],
+   "visual_spec": "[pages/dashboard/chameleon/observability-overview-tabs] space-y-4。KPI grid-cols-2 lg:4 gap-4 → StatTile(见组件，icon Activity/Sparkles/Bot/Users，tone primary/success 按成功率>.95/.8 分档)。趋势 Card>CardContent pt-5：h3 text-sm font-medium stone-900「调用趋势」+ 粒度 text-[11px] stone-400 + TimeSeriesChart height 240 双 series(total var(--color-primary-600)/errors var(--color-red-500))。分布 grid lg:2 gap-4 → DistributionCard(渠道/错误)。Top grid lg:2 → Card 内 DataTable(RankBadge + 名称 truncate stone-700 + 占比条 h-1.5 w-16 gradient from-primary-300 to-primary-500 + count tnum)。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/dashboard/chameleon/observability-overview-tabs.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/dashboard/chameleon/observability-overview-tabs.tsx"
+  },
+  {
+   "id": "pages/detail/chameleon/eval-dataset-detail-spreadsheet",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/components/dataset-spreadsheet.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/pages/dataset-detail-page.tsx"
+   ],
+   "visual_spec": "[pages/detail/chameleon/eval-dataset-detail-spreadsheet] tab(?tab=) 切样本/运行/配置。样本视图含 DatasetSpreadsheet(Airtable 块) + 多选(checkbox accent-stone-700) + TableToolbar 工具条(手工导入/批量导入/AI 扩样)。AI 扩样走 ai-generate-studio(候选卡 + NeonLoader)。整体走暖白 SectionCard + 主题色板。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/detail/chameleon/eval-dataset-detail-spreadsheet.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/detail/chameleon/eval-dataset-detail-spreadsheet.tsx"
+  },
+  {
+   "id": "pages/detail/chameleon/eval-run-detail-master-detail",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/pages/run-compare-page.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/pages/run-detail-page.tsx"
+   ],
+   "visual_spec": "[pages/detail/chameleon/eval-run-detail-master-detail] 见 blocks/layout/chameleon/run-master-detail-rail-overlay。对比页 /datasets/:id/runs/compare?ids= 渲染 RunCompareMatrix。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/detail/chameleon/eval-run-detail-master-detail.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/detail/chameleon/eval-run-detail-master-detail.tsx"
+  }
+ ]
+}

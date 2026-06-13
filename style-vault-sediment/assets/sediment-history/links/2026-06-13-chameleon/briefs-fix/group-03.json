@@ -1,0 +1,203 @@
+{
+ "group": 3,
+ "entries": [
+  {
+   "id": "blocks/nav/chameleon/domain-tab-topbar-account",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/layout/top-bar.tsx:24-150"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/nav/chameleon/domain-tab-topbar-account.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/nav/chameleon/domain-tab-topbar-account.tsx",
+   "deviations": [
+    {
+     "kind": "编造",
+     "detail": "品牌 logo 错。源码是 <img src=\"/logo-sm.png\" className=\"h-7 w-7 flex-shrink-0 object-contain\" />（28px 图片 logo），preview 编造成一个 28px 带 border(#e7e5e0) rounded-7 的白底方框里放大写字母「C」。应改回纯 logo 图位（无边框方框，用 28×28 占位图/灰块表示 image，不要画字母 C 和边框）。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "源码品牌 span 是 tracking-tight（-0.025em），preview 用了 letterSpacing -0.01em。改成 -0.025em。其余 fontSize 15 / fontWeight 600 / color #292524(stone-800) 正确。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "dropdown 分隔线偏差。源码 DropdownMenuSeparator = '-mx-1 my-1 h-px bg-stone-200/60'：my-1=4px 上下外边距 + -mx-1=-4px 负横向外边距(在 p-1.5=6px 容器里做轻微 full-bleed)。preview 用 margin:'2px 0'(应为 4px) 且无负横向外边距。改 margin 上下=4px 并加 marginLeft/Right=-4px。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "源码域 tab default 态有 hover:bg-stone-100/70 hover:text-stone-900，account 头像按钮有 hover:brightness-105 + focus-visible:ring-2 ring-blue-500/40，dropdown item 有 hover/focus:bg（logout 为 hover:bg-red-50）。preview 全为静态、无任一 hover/focus 态体现。至少把退出项画出 hover 红底(bg #fef2f2 red-50)态、域 tab 画出一个 hover 灰底态。"
+    },
+    {
+     "kind": "图标错",
+     "detail": "账户头像应是图片 <img src=\"/default-avatar.jpg\"> (顶栏 h-8 w-8=32px 圆形 / dropdown 头部 h-9 w-9=36px 圆形)，preview 用纯灰圆盘 #d6d3d1 占位。可保留灰圆作占位但建议表达为头像图位（或留作 placeholder 但需说明），尺寸 32/36 正确。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "components/avatars-icons/chameleon/provider-bot-avatar",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/provider-avatar.tsx:14-57",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/message-thread.tsx:188-191",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/pages/playground-page.tsx:631"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/avatars-icons/chameleon/provider-bot-avatar.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/avatars-icons/chameleon/provider-bot-avatar.tsx",
+   "deviations": [
+    {
+     "kind": "结构简化",
+     "detail": "源码 BRAND map 有 8 个品牌 key：deepseek/qwen/openai/new-api/oneapi/dify/fastgpt/coze，其中 new-api 与 oneapi 是两个独立 key（同样 ⇄ + primary 配色）。preview 的 BRANDS 数组缺了 oneapi 项（只有 new-api）。补一个 code='oneapi' label='⇄' 与 new-api 同配色的项。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "new-api/oneapi 配色应取自 --color-primary-*（默认 blue：primary-50 #eff6ff / primary-600 #2563eb / primary-100 #dbeafe），即随 data-primary 主题切换；preview 把它写死成 deepseek 同款 blue 硬值(#eff6ff/#2563eb/#dbeafe)。默认态视觉一致(blue 默认下二者同 hex)，但语义上 new-api 应标注为 primary-* 主题色而非 blue-*；可保留 hex 但建议注明随主题。其余 7 个品牌 hex 与 Tailwind 阶完全正确。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "components/display/chameleon/distribution-score-bars",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/lib/score.ts",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/dashboard/components/distribution-card.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/dashboard/pages/tabs/overview-tab.tsx:27-59",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/components/score-breakdown.tsx"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/display/chameleon/distribution-score-bars.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/display/chameleon/distribution-score-bars.tsx",
+   "deviations": [
+    {
+     "kind": "结构简化",
+     "detail": "RankBadge 形状错。源码 rank-badge.tsx = inline-flex h-5 w-5(20px) rounded-full(圆形) text-[10px] font-semibold tabular-nums ring-1 ring-inset。preview 画成 width:18 height:18(应 20) borderRadius:4(应为圆形 rounded-full) fontSize:10.5(应 10)。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "RankBadge 金/银/铜三档丢失。源码 TONE=[rank1 'bg-amber-100 #fef3c7 / text-amber-700 #b45309 / ring-amber-200 #fde68a', rank2 'bg-slate-200 #e2e8f0 / text-slate-600 #475569 / ring-slate-300 #cbd5e1', rank3 'bg-orange-100 #ffedd5 / text-orange-700 #c2410c / ring-orange-200 #fed7aa', 其余 'bg-stone-100 #f5f5f4 / text-stone-400 #a8a29e / ring-stone-200 #e7e5e0']，每档都带 1px inset ring。preview 只给 rank1 amber(且漏 amber-200 ring)，rank2/rank3 全用 stone(#f5f5f4/#78716c)——银(slate)/铜(orange)配色完全缺失，且所有徽章都漏了 ring。Top 表只 3 行 i==0 才高亮也只画了金色一档。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "score-heat-cell 变体的 scoreColor(纯文字色：≥0.8 text-emerald-600 #059669 / 0.5-0.8 text-amber-600 #d97706 / <0.5 text-red-600 #dc2626 / 空 text-stone-400 #a8a29e) 与矩阵单元格用法(rounded px-2 py-1 tnum w-full text-left) 整段缺失，preview 仅展示了 scoreBg 底色 chip 一种。brief 明列两种着色函数，应补 scoreColor 文字态 + 矩阵 text-left 单元格示意。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "渠道分布(DistributionCard)的进度条圆角错。源码条与内填都是 rounded(Tailwind 默认=4px)，preview 用 borderRadius:6。改 4px。（Top 表条与通道条用 rounded-full=9999 正确）"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "components/display/chameleon/paper-card-shell",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/card.tsx:5-60"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/display/chameleon/paper-card-shell.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/display/chameleon/paper-card-shell.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "卡片底色错。源码 Card='bg-[var(--color-paper)]'，默认(warm neutral)下 --color-paper=#fffefb(暖白/奶油)，仅在 cool/zinc/gray neutral 主题下才是 #ffffff。preview 两张卡都用纯白 #ffffff。改成 #fffefb 以匹配默认主题(brief 备注的 #ffffff 有误，应以 index.css 默认值 #fffefb 为准；底图 #fafaf7 是 --color-warm)。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "CardTitle 应为 text-base(16px) font-semibold(600) leading-none(=1) tracking-tight(-0.025em)，preview 完整卡标题 fontWeight 600/fontSize 16/lineHeight 1/letterSpacing -0.02em(应 -0.025em)正确度尚可但 tracking 略偏；'Content only' 卡的标题用了 14px/500——源码无该样式，是 preview 自造的小标题(可保留为示意，但若想 1:1 表达 CardTitle 应统一 16px/600)。其余 Header space-y-1.5(6)/p-5(20)、Content p-5 pt-0、Footer flex items-center p-5 pt-0、rounded-lg(8)、border stone-200(#e7e5e0)、shadow-card 双层均正确。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "components/display/chameleon/recharts-time-series",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/time-series-chart.tsx:44-123"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/display/chameleon/recharts-time-series.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/display/chameleon/recharts-time-series.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "卡片底色 + tooltip 底色错。源码 Tooltip contentStyle.background='var(--color-paper)'，默认=#fffefb；preview 卡容器与 tooltip 示意都用 #ffffff。改 #fffefb。"
+    },
+    {
+     "kind": "编造",
+     "detail": "右轴第二条线颜色无源码依据。源码 Line 颜色完全由调用方 series.color 传入(brief 建议 'var(--color-primary-600)' 随主题)，组件本身不规定第二条线为 violet。preview 把右轴成本线写死为 violet #8b5cf6 属自造约定；左轴用 primary-600 #2563eb 合理。可保留双轴示意但应注明颜色来自 series.color、非组件内置。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "其余结构正确：网格 stroke='rgb(0 0 0 / 6%)' strokeDasharray='3 3'、轴 stroke='#999' fontSize=11、tooltip border '1px solid rgb(0 0 0 / 10%)' borderRadius=8 fontSize=12、Line type=monotone strokeWidth=2 dot=false、height=256、空态 'flex items-center justify-center text-sm(14px) text-stone-400(#a8a29e) 暂无数据' 均与源码一致。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "components/display/chameleon/stat-tile-delta",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/mini-stat.tsx:36-48",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/stat-bar.tsx:11-44",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/stat-tile.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/stat-tile.tsx:37-98"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/display/chameleon/stat-tile-delta.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/display/chameleon/stat-tile-delta.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "StatTile/MiniStat 容器 bg-[var(--color-paper)] 默认主题值是 #fffefb（暖白纸，见 index.css @theme），preview 用了纯白 #ffffff。应改为 #fffefb 以与真实站点一致。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "border border-stone-200 的 stone-200 在 Tailwind 实为 #e7e5e4，preview 用 #e7e5e0。所有 StatTile/MiniStat/StatItem 边框与 StatBar 发丝(border-stone-100=#f5f5f4)请核对：StatItem 发丝用的是 border-stone-100=#f5f5f4，preview 的 #f5f5f4 正确，但 StatTile/MiniStat 边框 #e7e5e0 应为 #e7e5e4。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "value 数字 font-mono text-2xl tracking-tight，tracking-tight=-0.025em，preview 用 letterSpacing -0.02em（接近但非精确，源 tracking-tight 为 -0.025em）。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "源 StatTile 有 loading 态（value 显示 '—'）与 delta=0 态（text-stone-400 灰、无箭头）。preview 仅展示了有正负 delta 的卡，未给出 loading='—' 与 delta 为 0 的快照。建议补一张 loading 卡和一张 delta=0 卡体现完整态。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "components/feedback/chameleon/modal-sheet-confirm",
+   "layer": "component",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/modal.tsx:14-132",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/sheet.tsx:14-94",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/lib/confirm.tsx:25-53"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/feedback/chameleon/modal-sheet-confirm.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/feedback/chameleon/modal-sheet-confirm.tsx",
+   "deviations": [
+    {
+     "kind": "编造",
+     "detail": "ConfirmShell 凭空加了一个 AlertTriangle 图标 chip（h-9 w-9 rounded-full bg #fef2f2 内含 AlertTriangle #dc2626）。真实 confirm() 渲染的是 ConfirmDialog（core/components/common/confirm-dialog.tsx），它基于 Dialog，结构为 DialogHeader(Title+Description) + DialogFooter(ghost取消 + danger确认)，完全没有任何图标。删除该图标 chip。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "ConfirmShell 用错了壳：套用了 Modal 的样式（rounded-2xl=16、暖底 footer bg-warm-2/30、border-t rgba(231,229,224,0.7)、标题 14px font-semibold）。真实 ConfirmDialog 走 DialogContent：rounded-lg(8px) 非 16、max-w-md(448px)、grid gap-4(16) p-6(24)、border-stone-200、shadow-pop；标题 DialogTitle text-lg(18px) font-semibold leading-none tracking-tight；描述 text-sm(14px) text-stone-500 whitespace-pre-line；footer 是 'flex justify-end gap-2 mt-4'（无 border-t、无暖底背景）。请按 Dialog 形态重画。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "ConfirmShell 取消/确认按钮：真实用 Button 组件 variant=ghost(取消: text-stone-700 hover:bg-stone-100 无边框) + variant=danger(确认: bg-red-600 #dc2626 text-white)，size=md=h-8 px-3 text-[12.5px] rounded-md gap-1.5。preview 的取消按钮画成了 outline（白底+#d6d3d1 边框），应为 ghost 无边框透明底。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "Sheet 真实宽度 w-[480px]，preview 画成 width:300。Sheet Title 18px ✓ 但 Description 真实 text-xs(12px) ✓。Sheet 的 Close 真实是 'right-4 top-4 rounded-sm(2px) opacity-70 hover:opacity-100'（无 padding、无 text-stone-400 颜色、无 hover:bg），preview 复用了 Modal 风格的 CloseBtn（rounded-md=6/p-1=4/text-stone-400/opacity-80），Sheet 的关闭按钮应改为 rounded-sm、纯 opacity、X h-4 w-4 默认色。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "Modal Title tracking-tight=-0.025em，preview 用 -0.01em。Modal Body 源 className 为 'flex-1 overflow-y-auto px-5 py-4' 无 gap，preview 给 body 加了 gap:10（源无此 gap）。Modal Close right-3.5 top-3.5=14px ✓。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "各壳 border 用 #e7e5e0，stone-200 实为 #e7e5e4。"
+    }
+   ],
+   "needs_rewrite": true
+  }
+ ]
+}

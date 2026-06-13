@@ -74,7 +74,7 @@ const navBtn = (t: TabDef) => (
 </nav>
 ```
 
-lucide：A → ArrowLeft / FileText / Search / BarChart3 / Tag / FlaskConical / ShieldCheck / KeyRound / Settings。B → ChevronLeft / ChevronsLeft / ChevronsRight / MessageSquare / Workflow / Layers / Activity / Globe / Server / Code2 / Copy / KeyRound / Rocket / Sliders。
+lucide：A → ArrowLeft / FileText / Search / BarChart3 / Tag / FlaskConical / ShieldCheck / KeyRound / Settings。B → ChevronLeft / ChevronsLeft / ChevronsRight / ChevronDown(KindSelect) / MessageSquare / Workflow / Layers / Activity / Globe / Server / Code2(嵌入式应用/API 文档) / ExternalLink(对话页打开) / Copy / KeyRound / Rocket / Sliders。
 
 ## 适配指南
 

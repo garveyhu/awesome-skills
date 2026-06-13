@@ -1,0 +1,110 @@
+{
+ "group": 8,
+ "entries": [
+  {
+   "id": "pages/detail/chameleon/kb-detail-tabbed-workbench",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/pages/kb-detail-page.tsx"
+   ],
+   "visual_spec": "[pages/detail/chameleon/kb-detail-tabbed-workbench] flex gap-4。左 detail-left-tab-rail(见 block)。右主区 SectionCard min-w-0 flex-1 或 service-api 时 flex h-[calc(100vh-5.5rem)] + rounded-xl border bg-[var(--color-paper)]。tab 内容嵌 DocumentTable / HitTestPanel / EvaluationListTab / CollectionsTab / MetadataFieldsTab / ConsistencyTab。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/detail/chameleon/kb-detail-tabbed-workbench.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/detail/chameleon/kb-detail-tabbed-workbench.tsx"
+  },
+  {
+   "id": "pages/detail/chameleon/trace-detail-tree-gantt",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/traces/pages/trace-detail-page.tsx"
+   ],
+   "visual_spec": "[pages/detail/chameleon/trace-detail-tree-gantt] 外层 space-y-3。header flex items-center gap-3：返回按钮 rounded-md px-2 py-1 text-[12.5px] stone-500 + ArrowLeft h-3.5；分隔 / stone-300；GitBranch h-3.5 stone-500 + 「Trace 详情」text-[15px] font-medium stone-900 + request_id font-mono text-[11px] stone-500；ViewToggle inline-flex rounded-md border border-stone-200/70 text-[11.5px]，选中 bg-stone-800 text-white / 未选 bg-white stone-600。TreeStats text-[10.5px] stone-500「N 节点 · ok(emerald-600) · err(rose-600)」tnum。树视图 grid-cols-[minmax(0,2fr)_3fr] gap-3，两块 SectionCard !p-3，标题 text-[11.5px] font-medium stone-700。甘特视图上下两 SectionCard。NodeDetail: type 徽标 rounded px-1.5 py-0.5 font-mono text-[10.5px] uppercase(成功 emerald-50/700 失败 rose-50/700) + model_code violet-50/700 + agent_key font-mono + 时间 ml-auto；duration/tokens/ttfb tnum；error 条 rounded border-rose-200 bg-rose-50 text-[11px] rose-700；DetailSection 标题 text-[10.5px] uppercase tracking-wider stone-500 + JsonViewer；spans li rounded border font-mono text-[11px] + 状态 chip(failed rose/否则 emerald)。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/detail/chameleon/trace-detail-tree-gantt.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/detail/chameleon/trace-detail-tree-gantt.tsx"
+  },
+  {
+   "id": "pages/editor/chameleon/workflow-graph-editor",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/pages/graph-editor-page.tsx:156-1902"
+   ],
+   "visual_spec": "[pages/editor/chameleon/workflow-graph-editor] 根 flex h-screen bg-[var(--color-warm)]。画布容器 absolute inset-0 bg-slate-50（冷白替暖白外壳），Background Dots gap 16 size 1 color var(--color-slate-200)。ReactFlow: selectionOnDrag / panOnDrag [1](中键) / panOnScroll / SelectionMode.Partial / selectNodesOnDrag false；defaultEdgeOptions type graphEdge + ArrowClosed 14x14 #d6d3d1；connectionLineComponent GraphConnectionLine。MiniMap !bg-warm-2 bottom-right（inspector 开时 right 340 否则 12，bottom 50）。fitView padding 0.12 minZoom 0.5 maxZoom 1 瞬时（opacity 0→1 防闪）。右悬浮面板 top-16 right-3 bottom-3 rounded-xl border border-stone-200/70 shadow-xl，inspector bg-warm-2/95 backdrop-blur / copilot bg-white；z 竞争 topPanel 决定 z-20/z-10，失焦面板 translate-x-[-14px] translate-y-[10px] 露角。点击放置 cursor-copy + 幽灵跟随。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/editor/chameleon/workflow-graph-editor.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/editor/chameleon/workflow-graph-editor.tsx"
+  },
+  {
+   "id": "pages/list-table/chameleon/app-card-library",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/agents/pages/agents-page.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/pages/kbs-page.tsx"
+   ],
+   "visual_spec": "[pages/list-table/chameleon/app-card-library] 顶部 kind 过滤 tab(KIND_FILTERS icon + label) + 搜索 Input + 新建。网格见 app-card-gallery-grid。新建应用 Modal: 编排方式 grid sm:2 选择器(chatflow/workflow/comfyui/code)。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/list-table/chameleon/app-card-library.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/list-table/chameleon/app-card-library.tsx"
+  },
+  {
+   "id": "pages/playground/chameleon/model-compare-chat-lab",
+   "layer": "page",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/message-thread.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/pages/playground-page.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/pages/playground-page.tsx:163-747"
+   ],
+   "visual_spec": "[pages/playground/chameleon/model-compare-chat-lab] 单聊 flex：左 aside w-[…] 历史会话(新对话按钮 + 会话项 rounded-md，active bg-white shadow-sm ring-1 ring-stone-200，hover 浮现加入对比 Columns2/删除 Trash2) + 中 main flex-col(顶 bar border-b px-3 py-1.5：预设 Popover Sparkles + 清空 Trash2 hover:rose / MessageThread / Composer border-t p-3) + 右 aside w-72 border-l p-4「运行设置」text-[10.5px] tracking-wide stone-400 + ParamPanel。对比模式 flex h-[calc(100vh-150px)]：左 aside w-56 bg-warm-2/30「对比历史」History h-3 + 列 grid 各 CompareColumn(头 bg-warm-2/30 + 渐变色块 h-4 w-4 rounded gradient violet→blue + 模型名 + 在单聊打开 MessageSquare + 参数 Settings2 + 清空/移除) + 底共享 Composer 广播。KeyPicker SelectTrigger h-7 w-[200px] + KeyRound h-3.5 stone-400 + 名称 truncate + key_prefix font-mono text-[10px] stone-400。\n\n[pages/playground/chameleon/playground-chat-single-compare] 外层 SectionCard !p-0。顶栏: flex items-center gap-3 border-b border-stone-200/70 px-4 py-2.5; h2 text-[14px] font-medium text-stone-900「Playground」; segmented 切换 rounded-lg border border-stone-200 text-[12px], active→bg-blue-50 font-medium text-blue-700 idle→text-stone-500 px-3 py-1。整体高 h-[calc(100vh-150px)]。历史侧栏 aside: w-56(=224) shrink-0 border-r border-stone-200/70 bg-[var(--color-warm-2)]/30。新对话按钮: rounded-md border border-stone-200 bg-white py-1.5 text-[12px] font-medium text-stone-700 + Plus h-3.5 w-3.5。会话项: rounded-md, active→bg-white shadow-sm ring-1 ring-stone-200 idle→hover:bg-white/70; 标题 text-[12px] text-stone-700 truncate; 副 text-[10px] text-stone-400「时间·N 轮」; hover 动作 加入对比(Columns2 hover:bg-violet-50 hover:text-violet-600)/删除(Trash2 hover:bg-rose-50 hover:text-rose-600)。预设 Popover 触发 Sparkles h-3.5 w-3.5「预设」, PopoverContent !w-56 !p-1, 项 hover:bg-stone-100。右栏 aside w-72(=288) border-l p-4, 标题 text-[10.5px] tracking-wide text-stone-400「运行设置」。对比列头 header: bg-[var(--color-warm-2)]/30 px-3 py-2; 列标 h-4 w-4 rounded bg-gradient-to-br from-violet-500 to-blue-500; 模型名 text-[12px] font-medium text-stone-800 + 列号 text-[10.5px] text-stone-400。KeyPicker: SelectTrigger !h-7 !w-[200px] text-[12px] + KeyRound h-3.5 w-3.5 text-stone-400; SelectItem 右侧 key_prefix font-mono text-[10px] text-stone-400。lucide: Columns2/History/KeyRound/MessageSquare/Plus/Settings2/Sparkles/Trash2/X。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/playground/chameleon/model-compare-chat-lab.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/playground/chameleon/model-compare-chat-lab.tsx"
+  },
+  {
+   "id": "tokens/motion/chameleon/canvas-edge-dash-flow",
+   "layer": "token",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/ai-copilot-panel.tsx:214",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/node-palette.tsx:146",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/graph-edge.tsx:103-130",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/graph-node.tsx:123-129"
+   ],
+   "visual_spec": "[tokens/motion/chameleon/canvas-edge-dash-flow] 边过渡 transition:'stroke 150ms ease, stroke-width 150ms ease, opacity 150ms ease'；高亮边 strokeDasharray='6 4'、active strokeWidth 2.25 / 默认 1.5；fail strokeDasharray='5 3' color #fb7185(默认)/#f43f5e(active)；dimmed opacity 0.35。曲率 getBezierPath curvature=0.2。palette 'animate-in fade-in slide-in-from-left-2 duration-200'；copilot 'animate-in fade-in slide-in-from-right-2 duration-200'。node hover 'hover:-translate-y-px hover:shadow-card transition-all duration-150'；running 边框 animate-pulse；handle hover 从 h-2.5 w-2.5 放大到 h-3.5 w-3.5（transition-all 150ms）。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/tokens/motion/chameleon/canvas-edge-dash-flow.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/tokens/motion/chameleon/canvas-edge-dash-flow.tsx"
+  },
+  {
+   "id": "tokens/motion/chameleon/keyframes-anim-modes",
+   "layer": "token",
+   "dedup": "variant",
+   "ref_target": "tokens/motion/waveflow/keyframes-suite",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/index.css#L157-L301",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/index.css#L57-L70",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/theme.css#L133-L153"
+   ],
+   "visual_spec": "[tokens/motion/chameleon/keyframes-suite] @theme --animate-accordion-down: accordion-down 0.2s ease-out / --animate-accordion-up: accordion-up 0.2s ease-out（from height:0 ↔ to height:var(--radix-accordion-content-height)）。\n\nmodal-overlay-in/out: opacity 0↔1，.modal-overlay[data-state=open] 150ms ease-out / [closed] 120ms ease-in；modal-content-in/out: 只动 opacity（不带 translate），.modal-content[data-state=open] 150ms cubic-bezier(.16,1,.3,1) / [closed] 120ms ease-in。\n\nping-soft: 0/100% opacity:1 → 50% opacity:.6，.pulse-soft 2s ease-in-out infinite。\nshimmer: 0% background-position:-200px 0 → 100% 200px 0，.skeleton 用 linear-gradient(90deg, #ebe9e3 0%, #f5f4ee 50%, #ebe9e3 100%) background-size 400px 100% animation 1.6s ease-in-out infinite。\nfloat-soft: 0/100% translateY(0) → 50% translateY(-7px)，.anim-float 3.4s ease-in-out infinite。\nhalo-pulse: 0/100% scale(1) opacity:.6 → 50% scale(1.12) opacity:1，.anim-halo 3s ease-in-out infinite。\nglobal-progress: 0% translateX(-100%) → 100% translateX(100%)。\ndecor-drift-1: 0/100% translate:0 0 → 50% translate:0 -12px；decor-drift-2: + rotate 0→8deg，translate -8px；decor-drift-3: rotate 45→50deg，translate -14px。\n\ncmdk 面板：[cmdk-group-heading] padding 6px 10px 4px / font-size 10.5px / weight 600 / uppercase / letter-spacing .04em / color rgb(120 113 108)；.cmdk-item padding 7px 10px / radius 6px / font-size 12.5px / gap 10px，[data-selected=true] bg rgb(239 246 255) color rgb(29 78 216)，:hover bg rgb(245 244 238)。\n\n[tokens/motion/chameleon/theme-anim-modes] :root[data-anim=\"disabled\"] * / *::before / *::after { transition-duration: 0ms !important; animation-duration: 0ms !important; animation-iteration-count: 1 !important }。:root[data-anim=\"agile\"] * { transition-duration: 80ms !important }，:root[data-anim=\"agile\"] *:hover / *:focus { transition-duration: 100ms !important }。smooth 为默认态不写覆盖。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/tokens/motion/chameleon/keyframes-anim-modes.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/tokens/motion/chameleon/keyframes-anim-modes.tsx"
+  },
+  {
+   "id": "tokens/motion/chameleon/neon-ai-suite",
+   "layer": "token",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/theme.css#L155-L225",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/theme.css:155-225"
+   ],
+   "visual_spec": "[tokens/motion/chameleon/neon-ai-loader] .neon-loader__ring：width/height var(--neon-d,16px)，border-radius 9999px，background conic-gradient(from 90deg, transparent 0%, #8b5cf6 35%, #d946ef 55%, #22d3ee 75%, transparent 100%)，-webkit-mask/mask radial-gradient(farthest-side, transparent calc(100% - var(--neon-t,2.5px)), #000 0) 中空成环，filter drop-shadow(0 0 3px rgba(139,92,246,.85)) drop-shadow(0 0 7px rgba(34,211,238,.5))，animation neon-spin .85s linear infinite（@keyframes neon-spin { to { transform: rotate(360deg) } }）。\n\n.neon-loader__text：background linear-gradient(90deg, #7c3aed, #d946ef, #22d3ee, #7c3aed)，background-size 200% auto，background-clip text，color transparent，animation neon-shimmer 2.6s linear infinite（to { background-position: 200% center }）。\n\n.neon-loader--glow：background rgba(139,92,246,.05)，box-shadow 0 0 0 1px rgba(139,92,246,.22), 0 0 16px rgba(139,92,246,.14)，animation neon-breathe 2.4s ease-in-out infinite（0/100%: 0 0 0 1px rgba(139,92,246,.22), 0 0 12px rgba(139,92,246,.12)；50%: 0 0 0 1px rgba(217,70,239,.3), 0 0 20px rgba(34,211,238,.2)）。\n\n霓虹三色锚点：violet #8b5cf6/#7c3aed、fuchsia #d946ef、cyan #22d3ee。\n\n[tokens/motion/chameleon/neon-ai-gradient-suite] .neon-loader__ring: conic-gradient(from 90deg, transparent 0%, #8b5cf6 35%, #d946ef 55%, #22d3ee 75%, transparent 100%) + radial mask 中空成环(厚 --neon-t 2.5px) + drop-shadow(0 0 3px rgba(139,92,246,.85)) drop-shadow(0 0 7px rgba(34,211,238,.5)) + neon-spin .85s linear infinite。.neon-loader__text: linear-gradient(90deg,#7c3aed,#d946ef,#22d3ee,#7c3aed) bg-size 200% bg-clip:text + neon-shimmer 2.6s。.neon-loader--glow: bg rgba(139,92,246,.05) + ring rgba(139,92,246,.22) + neon-breathe 2.4s ease-in-out。尺寸 xs d12/t2 · sm d14/t2.25 · md d16/t2.5 · lg d24/t3.25。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/tokens/motion/chameleon/neon-ai-suite.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/tokens/motion/chameleon/neon-ai-suite.tsx"
+  }
+ ]
+}

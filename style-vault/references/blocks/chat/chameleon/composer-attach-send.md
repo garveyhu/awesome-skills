@@ -31,7 +31,7 @@ preview: /preview/blocks/chat/chameleon/composer-attach-send
 
 ### 输入框卡（composer）
 
-- **外卡** `rounded-xl(12) border border-stone-200(#e7e5e0) bg-white p-2.5(10) shadow-[0_1px_2px_rgba(0,0,0,.03)]`——比卡片默认 shadow 更轻
+- **外卡** `rounded-xl(12) border border-stone-200(#e7e5e4) bg-white p-2.5(10) shadow-[0_1px_2px_rgba(0,0,0,.03)]`——比卡片默认 shadow 更轻
 - **Textarea 完全消形**：`!border-0 !p-0 text-[12.5px] !shadow-none focus-visible:!ring-0`，`rows={2}`——视觉上「文字直接漂在卡里」，无第二层框
 - **底栏** `mt-1.5(6) flex items-center gap-2(8)`，发送/停止用 `ml-auto` 推到最右
 - **发送按钮** `Button size=sm`（蓝主色），内 `Send` icon `mr-1 h-3 w-3(12)` + 文字「发送」，`disabled={!input.trim() && attachments.length===0}`

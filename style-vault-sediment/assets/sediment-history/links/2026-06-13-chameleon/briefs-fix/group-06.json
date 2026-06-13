@@ -1,0 +1,252 @@
+{
+ "group": 6,
+ "entries": [
+  {
+   "id": "pages/editor/chameleon/workflow-graph-editor",
+   "layer": "page",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/pages/graph-editor-page.tsx:156-1902"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/editor/chameleon/workflow-graph-editor.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/editor/chameleon/workflow-graph-editor.tsx",
+   "deviations": [
+    {
+     "kind": "数值漂移",
+     "detail": "节点卡 minWidth：源码 graph-node 为 min-w-[180px]，preview 用 110，节点明显偏窄。应 110→180。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "节点选中态：源码 ring-2 ring-offset-2 ring-offset-warm + meta.ring(类型 200 阶浅色，如 llm=ring-violet-200 #ddd6fe) + -translate-y-px + shadow-card。preview 错用 outline:2px solid node.color(700 阶深色 #6d28d9) + outlineOffset 2。应改浅色 ring 描边(ring-violet-200 #ddd6fe)，非深色 outline。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "每个节点卡标题下源码都有配置摘要行(nodeSummary，mt-1 truncate text-[10px] leading-tight text-stone-400)，如 LLM『qwen-max』、KB『未选知识库』、if_else『未设条件』。preview 全部节点省略了该行。应补 summary 行。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "if_else 节点(『条件分支』)源码右侧有两带标签出口：『真 →』(text-emerald-600 #059669，handle border-emerald-400)top 35%、『假 →』(text-rose-500 #f43f5e，handle border-rose-400)top 70%，下方 mt-1.5 flex justify-end 两行 text-[9px]。preview 的条件分支节点是普通卡，缺真/假双出口标签+handle。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "节点 cardTint alpha 错：源码 llm=violet-50/40=rgba(245,243,255,0.4)、start/kb=emerald-50/40=rgba(236,253,245,0.4)、if_else=amber-50/40=rgba(255,251,235,0.4)、end=stone-50/50=rgba(250,250,249,0.5)。preview 用 0.55/0.55/0.6/0.6，alpha 偏高。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "右上浮层工具栏(top-3 right-3 rounded-xl border bg-white/85 px-2 py-1.5)源码只含纯图标按钮 ChecklistBadge+Sparkles+History+MoreHorizontal(均 h-3 w-3 ghost)。『对话调试/保存/发布』带文字按钮实际在左侧 GraphAppRail，不在浮层。preview 把 MessageSquare『对话调试』+Save『保存』+Rocket『发布』塞进右上工具栏——位置错+内容编造，应删除，只留 4 图标。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "左应用栏 GraphAppRail 宽度源码 aside w-64(256px)，preview 用 216。应 216→256。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "应用栏卡片：源码两卡均有图标块(Card 头 h-5 w-5 rounded-md bg-stone-100 内放 Globe/Server h-3 w-3+标题)。Web App 卡操作『对话页打开』『嵌入式应用』；后端服务 API 卡有一行 API 端点 copy 按钮(font-mono text-[10px] 显 origin/v1)+『API 文档』『API 密钥』。preview 两卡去掉图标、操作简化成通用『打开/密钥』、缺 API 端点 copy 行。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "inspector 浮层(selectedSpec)：源码外层 div bg-warm-2/95 rounded-xl border-stone-200/70 shadow-xl backdrop-blur，内部 NodeInspector 是独立白卡 aside(bg-white，宽 defaultWidth/minWidth=320，可拖拽把手)。preview 宽 248(应≥320)、整体 warm-2 底(应内层白卡)、阴影自绘 0 8px 24px(应 shadow-xl)。"
+    },
+    {
+     "kind": "编造",
+     "detail": "inspector 内容：源码头部 h-9 w-9 rounded-xl shadow-sm ring-1(meta.bg/color/ring) 图标块 + 标题为可编辑 Input(text-[15px] font-semibold text-stone-900) + 右侧 Play(h-[15px]) 测试按钮 + MoreHorizontal 下拉。preview 用 26px rounded-9 图标 + text-[12.5px] 标题 + 类型副标题，并编造了 4 行『模型/系统提示词/温度/知识库引用』Inspect 字段。需照源码重画头部与字段。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "节点 source(出口)handle 边框：源码 HANDLE_SOURCE 用 !border-primary-300=#93c5fd(hover primary-500 #3b82f6)。preview 用 #a8c0ee(非主题色)。应 #93c5fd。target handle border-stone-300 #d6d3d1 正确。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "pages/list-table/chameleon/app-card-library",
+   "layer": "page",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/agents/pages/agents-page.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/pages/kbs-page.tsx"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/list-table/chameleon/app-card-library.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/list-table/chameleon/app-card-library.tsx",
+   "deviations": [
+    {
+     "kind": "数值漂移",
+     "detail": "卡片网格源码 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4(宽屏 4 列)。preview 硬编码 repeat(3,1fr) 固定 3 列。应支持到 4 列。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "AppCard 有 hover 顶部高光线：absolute inset-x-4 top-0 h-0.5 rounded-full bg-gradient-to-r from-transparent via-primary-500 to-transparent opacity-0 group-hover:opacity-100。preview 完全没有这条线。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "AppCard 三点菜单源码默认隐藏(opacity-0 group-hover:opacity-100)hover 才出现，按钮 h-7 w-7 rounded-md text-stone-400 hover:bg-stone-100，图标 MoreVertical h-4 w-4。preview 三点常显，属交互态简化。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "新建应用卡圆形图标底：源码 bg-stone-100(#f5f5f4) hover:bg-blue-100。preview 用 #f5f4ee(warm-2)。应 #f5f5f4。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "AppCard 描述行 leading 源码 leading-relaxed(1.625) text-[11.5px] text-stone-500(#78716c)。preview lineHeight 1.55。卡片图标块 h-9 w-9 rounded-lg(36/8)、Icon h-5 w-5(20) 与各 kind 配色(badge/tile)均正确。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "visual_spec 列出『新建应用 Modal: 编排方式 grid sm:2 选择器(chatflow/workflow/comfyui/code)』——源码 METHOD_META 四项中文 label+desc，选中态 border-stone-900 bg-stone-50 ring-1 ring-stone-900。preview 整个 Modal 未呈现(仅静态列表页)；要覆盖该 spec 项需补 Modal 态。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "pages/playground/chameleon/model-compare-chat-lab",
+   "layer": "page",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/message-thread.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/pages/playground-page.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/pages/playground-page.tsx:163-747"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/pages/playground/chameleon/model-compare-chat-lab.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/pages/playground/chameleon/model-compare-chat-lab.tsx",
+   "deviations": [
+    {
+     "kind": "数值漂移",
+     "detail": "对比历史侧栏宽度：源码 aside w-56(224px)。preview 用 200。应 200→224(单聊侧栏/右栏 spec 同为 w-56/w-72)。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "加列按钮文案：源码『加列（最多 {MAX_COLUMNS}）』(Plus h-3.5)。preview 只写『加列』，缺『（最多 N）』后缀。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "消息气泡圆角：源码 rounded-2xl(16) + user rounded-tr-sm / bot rounded-tl-sm，sm=2px。preview 用 borderTopRightRadius/LeftRadius 4。应 4→2。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "assistant 气泡 footer 源码有 hover 浮现的『存样本』(BookmarkPlus h-3 w-3 hover:emerald)与『改写提示词』(Wand2 h-3 w-3 hover:violet)按钮 + MessageActions。preview 只画了 trace 入口，缺这两动作按钮。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "顶栏 segmented 边框：源码 border border-stone-200(stone-200=#e7e5e4)。preview 用 #e7e5e0。气泡 bot 边框同此 #e7e5e0(应 #e7e5e4)。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "bot 气泡正文 leading 源码 leading-relaxed(1.625) text-[13px]，bg-white border-stone-200 text-stone-800(#292524) shadow-[0_1px_2px_rgba(0,0,0,0.04)]。preview lineHeight 1.55。CompareColumn 头渐变 from-violet-500(#8b5cf6) to-blue-500(#3b82f6)、bot 头像 h-6 w-6 渐变、KeyPicker(h-7 w-[200px] KeyRound h-3.5 stone-400)均正确。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "tokens/motion/chameleon/canvas-edge-dash-flow",
+   "layer": "token",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/ai-copilot-panel.tsx:214",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/node-palette.tsx:146",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/graph-edge.tsx:103-130",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/graph-node.tsx:123-129"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/tokens/motion/chameleon/canvas-edge-dash-flow.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/tokens/motion/chameleon/canvas-edge-dash-flow.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "面板滑入示意里 copilot(从右滑入)迷你卡头：源码 ai-copilot-panel 头图标块 h-7 w-7 rounded-lg bg-blue-50 text-blue-600 + 标题 text-[13px] font-semibold text-stone-900(蓝色系)。preview 把 copilot 头标(Sparkles+'AI 编排助手')着成 violet #7c3aed。应改 blue-600 #2563eb 图标 + stone-900 标题。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "连线箭头(markerEnd)源码 defaultEdgeOptions 固定 ArrowClosed 14x14 color #d6d3d1(所有边箭头恒灰)。preview 给高亮边画 violet #8b5cf6 箭头、fail 边画 rose #fb7185 箭头。箭头应统一 #d6d3d1，仅 stroke 线随状态变色。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "palette(从左滑入)迷你卡宽 168，源码 node-palette 实际 w-[21rem]=336px、rounded-2xl(16) shadow-xl ring-1 ring-stone-900/5、collapsed 触发 h-8 w-8 rounded-lg。token sheet 示意可缩但应注真实宽度。动画类 animate-in fade-in slide-in-from-left-2/right-2 duration-200 标注正确。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "edge 三态/handle 缩放/曲率(curvature 0.2)/transition(stroke,stroke-width,opacity 150ms ease)/dash(高亮 6 4 w2.25、fail 5 3 #fb7185→active #f43f5e、normal #d6d3d1 w1.5)/fail 标签(rounded-full border-rose-200 #fecdd3 bg-rose-50 #fff1f2 text-rose-500 #fb7185)/handle 10→14px(default #d6d3d1、hover #60a5fa)/节点 hover -translate-y-px(NodeCard minWidth 180 正确)——核心 token 均对，仅上述箭头/copilot 头着色需修。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "tokens/palettes/chameleon/node-type-hue-system",
+   "layer": "token",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/controls/var-type-chip.tsx:8-15",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/lib/node-catalog.ts:48-251",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/lib/node-meta.ts:64-295"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/tokens/palettes/chameleon/node-type-hue-system.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/tokens/palettes/chameleon/node-type-hue-system.tsx",
+   "deviations": [
+    {
+     "kind": "编造",
+     "detail": "ring 槽(5 槽之一)被冒充：preview「选中态 ring」section 用 boxShadow:'0 0 0 2px ${n.edge}55'——即 edge-500 色加 0x55(~33%) alpha 的辉光——而源码 node-meta.ts 的 ring 槽是 ring-{hue}-200 的淡色调。两者颜色差异大(如 llm 应是 violet-200 #ddd6fe 的淡紫，preview 渲染成半透明中紫 #8b5cf655)。改：选中态边框/ring 应用各节点 ring-{hue}-200 实色，逐节点 hex：start/kb=ring-emerald-200 #a7f3d0，llm=violet-200 #ddd6fe，image_gen=purple-200 #e9d5ff，tool/doc_extract=orange-200 #fed7aa，if_else/aggregator=amber-200 #fde68a，agent_debate=fuchsia-200 #f5d0fe，iteration=sky-200 #bae6fd，parallel/subflow=indigo-200 #c7d2fe，human_input=pink-200 #fbcfe8，http/list_op=cyan-200 #a5f3fc，assign=rose-200 #fecdd3，classifier=lime-200 #d9f99d，param_extract=blue-200 #bfdbfe，template=teal-200 #99f6e4，answer=green-200 #bbf7d0，noop=stone-200 #e7e5e4；注意源码两个节点 ring 用 300 阶非 200：end=ring-stone-300 #d6d3d1，code=ring-slate-300 #cbd5e1。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "副标题写「5 槽咬合（700 前景 / 200 ring / 50 图标底 / 50/40 整卡色温 / 500 连线 hex）」声称展示 ring-200，但主节点矩阵(NODES.map)每张卡只渲染 iconBg/iconFg/cardTint/edge 四槽，ring 槽完全没在主矩阵出现(只在被冒充的「选中态」section 出现)。ring 作为独立第 5 槽应在每张卡或独立色卡中以真实 ring-{hue}-200 实色展示，与上一条 hex 一致。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "「选中态 ring」demo 只取 NODES[1]/[6]/[10]/[18](llm/agent_debate/http/code)4 个节点，但既然是展示 ring 槽的状态，理想应覆盖全部 23 类或至少每个 hue 家族；当前 4 个采样无法呈现 ring 槽的全色域。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "节点排序与源码 node-meta.ts TYPE_META 顺序不一致：源码顺序为 start,end,llm,image_gen,kb,tool,if_else,agent_debate,iteration,parallel,human_input,http,aggregator,assign,classifier,param_extract,subflow,list_op,doc_extract,code,template,answer,noop；preview 把 end 挪到了最后(start…noop,end)。token 表建议按源码 catalog 的分组顺序(NODE_CATALOG_GROUP_ORDER: 生成/检索&工具/逻辑/编排/变量&输出)或 TYPE_META 原序排列以便对照。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "tokens/palettes/chameleon/themeable-8x4-system",
+   "layer": "token",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/index.css#L20-L60",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/index.css:20-50",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/theme.css#L13-L131",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/theme.css:1-128"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/tokens/palettes/chameleon/themeable-8x4-system.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/tokens/palettes/chameleon/themeable-8x4-system.tsx",
+   "deviations": [
+    {
+     "kind": "结构简化",
+     "detail": "每个 primary 调色板只画 4 个锚阶(50/500/600/700，section 标题自承「锚 50 / 500 / 600 / 700」)，但源码 index.css(blue 默认)与 theme.css(其余 7 色)每个 primary 都定义完整 10 阶 50..900。融合 brief 的 warm-paper-ink-blue 子条目明确文档化了 blue 的 10 阶全色带：50#eff6ff/100#dbeafe/200#bfdbfe/300#93c5fd/400#60a5fa/500#3b82f6/600#2563eb/700#1d4ed8/800#1e40af/900#1e3a8a。preview 丢了 100/200/300/400/800/900 共 6 阶/板。改：每个 primary 板画满 50..900 十色阶色带(各色 theme.css 都有现成 10 阶 hex，如 purple 50#faf5ff/100#f3e8ff/200#e9d5ff/300#d8b4fe/400#c084fc/500#a855f7/600#9333ea/700#7e22ce/800#6b21a8/900#581c87，green/orange/rose/cyan/amber/teal 同理照 theme.css)。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "primary 默认 @theme 的语义角色未体现：源码/brief 标注 primary-100 #dbeafe=focus ring/选中底、primary-500 #3b82f6=focus border、primary-700 #1d4ed8=hover、primary-600 #2563eb=CTA/链接/active。preview 仅在脚注列 600 hex，未把 100/500/700 的交互态角色(focus ring/focus border/hover)以示例呈现。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "neutral 卡的 hex 行只列 warm·paper·ink 三值(第 113 行 `{n.warm} · {n.paper} · {n.ink}`)，漏标 warm-2 的 hex 文本(warm-2 仅作为卡边框+hex 行底色出现，未以文字标注其值)。源码 4 中性各定义 warm/warm-2/paper/ink 四值(stone f4f3ee/slate f1f5f9/zinc f4f4f5/gray f3f4f6)，hex 行应补 warm-2 值。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "融合 brief 含 themeable-neutral-accent-switch 子条目，其区分点之一是 reduced-motion: transition-duration 100ms !important，以及 :root[data-anim] 三档(disabled 0ms/agile 80ms/smooth 默认)的动效切换层。preview 仅在副标题提「运行时 data-attribute 切换」，未展示 anim 动效档位/reduced-motion 这一可切换维度(8 primary×4 neutral×3 anim)。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/canvas/chameleon/ai-copilot-panel",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/ai-copilot-panel.tsx:213-339"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/canvas/chameleon/ai-copilot-panel.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/canvas/chameleon/ai-copilot-panel.tsx",
+   "deviations": [
+    {
+     "kind": "编造",
+     "detail": "源码 aside 是纯 `flex h-full w-96 flex-col bg-white`，无左边框、无投影；preview 额外加了 borderLeft '1px solid rgba(226,232,240,0.8)' 和 boxShadow '-4px 0 24px rgb(0 0 0/6%)'。源码 aside 不带这两者（边框只在 header 的 border-b）。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "进度气泡蓝点 source `h-1.5 w-1.5`=6px 用于 editor-page 运行徽标；但 ai-copilot 进度气泡蓝点 source 是 `h-1.5 w-1.5`=6px（行 288），preview 6px 正确——此处无误，仅核对。发送钮 source `shadow-sm`，preview boxShadow '0 1px 2px rgb(0 0 0/10%)' 比 shadow-sm(0 1px 2px rgb(0 0 0/5%)) 偏重一倍透明度。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "源码进度气泡有 5 种文案态（调用模型中…/第 N 轮生成中…/生成中·已产出 N 字/校验图结构中…/第 N 轮校验未过修正重试中…）+ retry 的 amber 子条；preview 只画了「生成中·已产出 412 字」+ amber 子条一种。可接受但属代表性单态。"
+    }
+   ],
+   "needs_rewrite": false
+  }
+ ]
+}

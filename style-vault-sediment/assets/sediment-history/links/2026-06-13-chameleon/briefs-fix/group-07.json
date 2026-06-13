@@ -1,0 +1,178 @@
+{
+ "group": 7,
+ "entries": [
+  {
+   "id": "blocks/canvas/chameleon/bezier-edge-add",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/edge-insert-menu.tsx:49-235",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/graph-edge.tsx:33-218"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/canvas/chameleon/bezier-edge-add.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/canvas/chameleon/bezier-edge-add.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "插入菜单节点行图标前景色用了 edge 的 500 阶（大模型 #8b5cf6 / 意图分类 #84cc16 / 知识库 #10b981），但菜单复用 NODE_CATALOG 的 it.color 是 600 阶：大模型 text-violet-600=#7c3aed、意图分类 text-lime-600=#65a30d、知识库 text-emerald-600=#059669。应改成 600 阶。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "EDGE_COLOR 有 4 态：normal #d6d3d1 / active var(--primary-500)=#3b82f6 / fail #fb7185 / failActive #f43f5e。preview 画了 normal(dimmed)/active(highlighted)/fail，缺 failActive（fail 边被选中时 #f43f5e 加粗 2.25）。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "插入菜单源码按 NODE_CATALOG_GROUP_ORDER 全量分组（生成/检索&工具/逻辑/编排/变量&输出）渲染所有 allowed 节点；preview 只画了「生成」(大模型/意图分类) + 「检索&工具」(知识库) 共 3 行 2 组。属代表性简化。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "「+」按钮源码有闭/开两态：闭 `border-stone-300 bg-white text-stone-500`，开 `border-blue-300 bg-blue-50 text-blue-600`。preview 只画开态。另闭态 hover 有 `hover:scale-110`。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "插入菜单 source 是 `rounded-xl`(=12) `border-stone-200/80` + `shadow-xl ring-1 ring-stone-900/5`；preview boxShadow '0 12px 32px rgb(0 0 0/12%), 0 0 0 1px rgb(28 25 23/5%)' 近似但非 shadow-xl 标准值。菜单列表区 source `px-1.5 py-1.5`，分组标题 `px-1.5 pb-0.5 text-[9.5px]`，节点行 `gap-2 rounded-lg px-1.5 py-1.5`、图标块 `h-6 w-6 rounded-md`(=24/6) preview 24/6 正确。"
+    }
+   ],
+   "needs_rewrite": false
+  },
+  {
+   "id": "blocks/canvas/chameleon/graph-node-card",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/graph-node.tsx:297-331",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/graph-node.tsx:33-39",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/nodes/graph-node.tsx:70-355"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/canvas/chameleon/graph-node-card.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/canvas/chameleon/graph-node-card.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "classifier 多出口行标签色用了 #65a30d(lime-600)；源码 BRANCH_TONES.branch.text=`text-lime-700`=#4d7c0f（handle 边色 `!border-lime-500`=#84cc16 preview 正确）。标签文字应改 #4d7c0f。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "classifier 卡 type 副标题色 preview 用 #4d7c0f(lime-700)正确，但卡图标前景 color 用 #4d7c0f；源码 TYPE_META.classifier.color=`text-lime-700`=#4d7c0f 正确——核对无误。pulse 动画 preview 在 #60a5fa↔#bfdbfe 间，源码 running 是 `border-primary-400 animate-pulse`（primary-400≈#60a5fa）+ Tailwind animate-pulse 是整体 opacity 脉冲非边色切换；preview 自造了边色脉冲，观感近似但机制不同。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "源码 STATUS_COLOR 有 pending(border-stone-300)/running/success(border-emerald-400)/failed(border-rose-500)/skipped(border-stone-200)/errorHandled(border-amber-400) 6 态 + errorMessage('✗' text-rose-600) + runNote('⟳' text-blue-600) + if_else 多CASE(IF/ELIF/ELSE 行)/userSelect 选项分支/dangling 悬挂出口；preview 画了 default/hover/selected/running/errorHandled + 经典 if_else + 多分类，覆盖良好但缺 failed/skipped 边框与 ✗/⟳ 文案行（代表性可接受）。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "默认非选中卡 shadow 源码 `shadow-soft`=0 1px 2px rgb(0 0 0/4%),0 4px 12px rgb(0 0 0/3%) preview 正确；selected/hover `shadow-card`=0 1px 3px rgb(0 0 0/5%),0 2px 8px rgb(0 0 0/3%) preview 正确。selected ring 源码 `ring-2 ring-offset-2 ring-offset-warm`+meta.ring，preview outline 2px+offset 2 正确。"
+    }
+   ],
+   "needs_rewrite": false
+  },
+  {
+   "id": "blocks/canvas/chameleon/subflow-group-editor",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/subgraph-canvas.tsx:93-571",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/subgraph-editor-modal.tsx:24-63",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/graphs/components/subgraph-fields.tsx:39-196"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/canvas/chameleon/subflow-group-editor.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/canvas/chameleon/subflow-group-editor.tsx",
+   "deviations": [
+    {
+     "kind": "数值漂移",
+     "detail": "SubgraphField 摘要按钮源码 `rounded-md border border-slate-200 bg-white px-2 py-2 text-[11.5px] hover:border-blue-200 hover:bg-blue-50`；preview radius 6/border #e2e8f0/padding 8/字号11.5✓，Network 图标 `h-3.5`=14 text-sky-600=#0284c7 preview 14/#0284c7✓，摘要 `font-mono text-[10.5px] text-stone-400`✓，Pencil `h-3`=12 preview 12✓。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "源码 ParallelBranchesField 在 branches 为空时显示虚线空态卡『还没有分支；点下方「添加分支」』；preview 直接画了 2 条分支（属常态，可接受）。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "Modal 内 SubgraphCanvas 实际含完整 NodePalette + Controls/MiniMap(!bg-slate-100) + 自动整理 Panel + NodeInspector；preview 用缩略示意（2 节点 + 1 贝塞尔 + 占位 MiniMap/Controls/自动整理按钮），属合理代表性缩略。modal 外壳 source `h-[88vh] w-[min(1180px,94vw)] bg-slate-50`，preview 高 480 缩略示意。"
+    }
+   ],
+   "needs_rewrite": false
+  },
+  {
+   "id": "blocks/chat/chameleon/composer-attach-send",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/composer.tsx:23-74",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/file-attach-button.tsx:65-152",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/param-panel.tsx:31-339",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/playground/components/template-vars-panel.tsx:18-46"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/chat/chameleon/composer-attach-send.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/chat/chameleon/composer-attach-send.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "模板变量名 chip 源码 `bg-stone-100`=#f5f5f4 + `text-stone-600`=#57534e；preview bg 用了 #f5f4ee（偏暖、非 stone-100）。应改 #f5f5f4。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "Composer 卡边框 source `border-stone-200`=#e7e5e4；preview #e7e5e0（偏暖一点）。AttachmentChip bg source `bg-stone-50/60`=rgba(250,250,249,0.6)（stone-50=#fafaf9）；preview rgba(250,250,247,0.6)（用了 #fafaf7）。均为 sub-像素级暖偏，建议对齐 stone 真值。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "源码发送按钮 disabled（输入空且无附件时 `disabled` 半透明）态未体现；preview 两张卡都是可点态（default 可发送 + streaming 停止），覆盖尚可。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "param-panel 容器 source `space-y-3 text-[12.5px]`，label `mb-1 block text-stone-600`(#57534e)✓。生成模式提示条 source `rounded-md border border-violet-200(#ddd6fe) bg-violet-50(#f5f3ff) px-2.5 py-2 text-[11px] text-violet-700(#6d28d9)` preview✓。KB chip source `rounded-full bg-amber-50(#fffbeb) px-2 py-0.5 text-[10.5px] text-amber-700(#b45309)` preview✓。NumberField Input `!h-7 !w-20 text-right text-[12px]`(=28/80) preview✓，Max Tokens allowEmpty→placeholder '∞' preview✓。附件按钮 `h-7 w-7 rounded-md border-stone-200/70 text-stone-500` + Paperclip `h-3.5 w-3.5` preview 28/6/14✓，hover→amber-300/amber-50/40/amber-700 未在静态 preview 体现（hover 态）。"
+    }
+   ],
+   "needs_rewrite": false
+  },
+  {
+   "id": "blocks/chat/chameleon/message-actions-bar",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/chat/message-actions.tsx:99-359",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/chat/resolve-actions.ts:1-110"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/chat/chameleon/message-actions-bar.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/chat/chameleon/message-actions-bar.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "次要偏差：工具条 border 源码 border-stone-200/70=rgba(231,229,228,0.7)（stone-200 #e7e5e4），preview 用 rgba(231,229,224,0.7) 近似偏暖一档；菜单背景 preview #fffefb(paper) 而 DropdownMenuContent 实际多为白底——可接受。active amber：bg-amber-100=#fef3c7 ✓ text-amber-800=#92400e ✓；danger active bg-rose-100=#ffe4e6? 实为 #ffe1e2，preview 用 #ffe4e6(rose-100 旧值) 近似。整体主条 gap-0.5=2 ✓ rounded-md=6 ✓ p-0.5=2 ✓ shadow-sm ✓ backdrop-blur ✓，icon h-3 w-3=12 ✓，Check text-emerald-600=#059669 ✓。结构与状态覆盖较完整，无需重写。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "ActionBtn 源码 'rounded px-1 py-1'（rounded=4，px/py=4），preview padding:4 + borderRadius:4 ✓。MenuRow 源码 label text-[12.5px]，icon text-stone-500，gap-2=8；preview ✓。DropdownMenuContent min-w-[9rem]=144px ✓ align=end ✓。delete 前 Separator + text-rose-600=#dc2626 ✓。"
+    }
+   ],
+   "needs_rewrite": false
+  },
+  {
+   "id": "blocks/filters/chameleon/table-toolbar-refresh-leading",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/table/table-toolbar.tsx:71-139"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/filters/chameleon/table-toolbar-refresh-leading.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/filters/chameleon/table-toolbar-refresh-leading.tsx",
+   "deviations": [
+    {
+     "kind": "图标错",
+     "detail": "filter Select 触发器的下拉箭头尺寸错。源码 SelectTrigger 内置 ChevronDown class='h-4 w-4 opacity-50'（16px、50% 不透明度）。preview 画成 ChevronDown size 12 实色 #a8a29e。应 16px 且 opacity 0.5。（不影响整体一眼像不像，故不强制重写）"
+    }
+   ],
+   "needs_rewrite": false
+  },
+  {
+   "id": "blocks/layout/chameleon/domain-tab-app-shell",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/layout/main-layout.tsx:42-65"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/layout/chameleon/domain-tab-app-shell.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/layout/chameleon/domain-tab-app-shell.tsx",
+   "deviations": [
+    {
+     "kind": "编造",
+     "detail": "TopBar 品牌 logo 源码是 `<img src=\"/logo-sm.png\" h-7 w-7>`(28px 图片)，preview 用蓝紫渐变方块 linear-gradient(135deg,#3b82f6,#2563eb) 占位。属合理占位但非源码实物（源码无渐变）。tracking-tight 源码=-0.025em，preview letterSpacing -0.01em 偏小。其余 TopBar/SecondaryNav/main 数值(h-14=56、gap-4=16、px-4=16、域 tab rounded-[10px] px-3.5 py-2 text-[13.5px] 蓝药丸、icon 17px、main px-6 py-4) 均与源码一致。"
+    }
+   ],
+   "needs_rewrite": false
+  }
+ ]
+}

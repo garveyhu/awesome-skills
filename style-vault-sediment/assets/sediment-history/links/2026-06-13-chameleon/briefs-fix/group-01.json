@@ -1,0 +1,258 @@
+{
+ "group": 1,
+ "entries": [
+  {
+   "id": "blocks/display/chameleon/app-card-gallery-grid",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/agents/components/app-card.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/agents/pages/agents-page.tsx:259-290",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/pages/kbs-page.tsx:83-130"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/display/chameleon/app-card-gallery-grid.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/display/chameleon/app-card-gallery-grid.tsx",
+   "deviations": [
+    {
+     "kind": "结构简化",
+     "detail": "网格列策略不符：源码是 'grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'（响应式 1/2/3/4 列，gap-3=12），preview 用 'repeat(auto-fill, minmax(248px,1fr))'。应改成响应式断点网格。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "草稿徽标 source 'bg-stone-100 text-stone-500' = bg #f5f5f4 / text #78716c；preview 用 bg #f5f4ee(warm-2 偏暖) / fg #78716c。应改 bg 为 #f5f5f4(stone-100)。其余徽标色正确：已发布 bg-emerald-50 #ecfdf5 / text-emerald-700 #047857 ✓（preview #ecfdf5/#047857 ✓）；已嵌入 bg-blue-50 #eff6ff / text-blue-700 #1d4ed8（preview #eff6ff/#1d4ed8 ✓）。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "图标块/徽标按 kind 着色正确：code tile bg-indigo-50 #eef2ff / text-indigo-600 #4f46e5，badge text-indigo-700 #4338ca（preview ✓）；chatflow sky-50 #f0f9ff / sky-600 #0284c7 / sky-700 #0369a1 ✓；workflow violet-50 #f5f3ff / violet-600 #7c3aed / violet-700 #6d28d9 ✓；external amber-50 #fffbeb / amber-600 #d97706 / amber-700 #b45309 ✓。无误。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "KB 卡变体缺失：visual_spec 与 source(kbs-page.tsx) 明确 KB 卡高度是 h-[132px]（应用卡 h-[148px]），preview 只画了 148px 应用卡，未给 132px KB 卡变体；且 KB 新建卡文案应是『创建知识库 / 导入文档，自动分段 + 向量化』而 preview 只有应用卡的『新建应用 / 对话 / 流程编排，或接入代码应用』。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "卡片其余尺寸基本正确：h-[148px] ✓ rounded-xl=12 ✓ p-4=16 ✓ 图标块 h-9 w-9=36 rounded-lg=8 ✓ Icon h-5 w-5=20 strokeWidth 1.75 ✓ group-hover -rotate-6 scale-105 ✓ 高光线 inset-x-4 top-0 h-0.5 via-primary-500(#3b82f6) ✓ hover border-primary-200=#bfdbfe ✓。名称 text-[13.5px] font-medium text-stone-900=#1c1917 ✓ key font-mono text-[10.5px] text-stone-400=#a8a29e ✓ 描述 line-clamp-2 text-[11.5px] text-stone-500=#78716c（preview #78716c ✓）。三点 MoreVertical h-4 w-4=16 在 h-7 w-7=28 按钮内（preview size 16/28 ✓）。骨架 h-[148px] rounded-xl opacity-60 ✓。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/display/chameleon/eval-spreadsheet-airtable",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/components/dataset-spreadsheet.tsx"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/display/chameleon/eval-spreadsheet-airtable.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/display/chameleon/eval-spreadsheet-airtable.tsx",
+   "deviations": [
+    {
+     "kind": "数值漂移",
+     "detail": "『新增行』按钮样式不符：源码 <Button size=\"sm\" variant=\"secondary\">（button.tsx：size sm=h-7(28px)/px-2.5(10px)/text-[11.5px]；variant secondary=bg-stone-100(#f5f5f4) text-stone-900(#1c1917)，无边框）。preview 用 height:32 / padding:0 12px / fontSize:12.5 / 白底 + border #d6d3d1 / text #44403c——尺寸偏大、且 secondary 应是 stone-100 实底无边框，不是白底带边框。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "『列』ColumnMenu 按钮源码是 <Button size=\"sm\" variant=\"ghost\" className=\"text-stone-500\">（h-7=28px px-2.5=10px text-[11.5px]，ghost 透明底 hover bg-stone-100），preview 用 height:32 / padding:0 8px / fontSize:12.5。应 28px 高 / 11.5px 字。Columns3 mr-1 h-3.5 w-3.5=14 ✓。隐藏数 chip 源码 'ml-1 rounded bg-stone-200/70 px-1 text-[10px] text-stone-500'，preview ✓近似。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "th padding 源码 px-3 py-2.5 = 12/10，preview '10px 12px' ✓；text-[11px] font-medium text-stone-500=#78716c ✓；thead bg-[var(--color-warm-2)]/40 = #f4f3ee@40% = rgba(244,243,238,0.4) ✓ + border-b border-stone-200/70 ✓。tbody divide-y divide-stone-100(#f5f5f4) text-[12.5px]，preview 行分隔用 #f1f0eb（非 stone-100 #f5f5f4）偏暖；行 hover:bg-stone-50(#fafaf9)，preview 编辑行 bg #fafaf9 ✓但那是固定第二行高亮非 hover。td px-3 py-2=12/8 ✓。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "编辑态 textarea 源码 'rounded border border-blue-300(#93c5fd) bg-white px-1.5(6) py-1(4) text-[12.5px] leading-snug ring-2 ring-blue-100(#dbeafe)'，preview border #93c5fd ✓ boxShadow '0 0 0 2px #dbeafe'(模拟 ring-2 ring-blue-100) ✓ padding '4px 6px' ✓ rounded 4 ✓。基本准确。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "NoteCell 备注列源码是 textarea(border-transparent hover:border-stone-200 focus:border-blue-300 bg-transparent focus:bg-white text-[12px] text-stone-600 placeholder:text-stone-300)，preview 用 <input> 而非 textarea，且未体现 hover:border-stone-200 态——可接受静态近似但应为 textarea。redacted 脱敏单元格源码 Lock h-3 w-3 + text-stone-400 + Tooltip『采样脱敏，不可直接编辑：{preview}』，preview Lock size 12 + '采样脱敏' ✓近似。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "JSON Popover 浮层 PopoverContent w-[28rem]，查看态用 JsonViewer 语法高亮（键/值上色）。preview 自画 pre 高亮：键 #2563eb(蓝)、值字符串 #047857(绿)——属合理近似，但真实 JsonViewer 配色未必如此（无法 1:1 校验）。Popover bg preview #fffefb + 阴影 '0 8px 24px/0 2px 8px' 为编造的弹层阴影；标题 text-[11.5px] font-medium text-stone-600=#57534e ✓，编辑/查看切换按钮 text-[11px] text-stone-500=#78716c ✓。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/display/chameleon/kb-chunk-card-wall",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/components/chunk-card.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/pages/kb-document-detail-page.tsx:113-119"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/display/chameleon/kb-chunk-card-wall.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/display/chameleon/kb-chunk-card-wall.tsx",
+   "deviations": [
+    {
+     "kind": "结构简化",
+     "detail": "文档信息卡(DocumentInfoCard)严重简化：源码是 flex items-start justify-between，左列(标题区+meta+标签+元数据)，右列两个堆叠按钮『重新分块』(Button sm ghost + RotateCcw)『保存修改』(Button sm primary)。preview 的信息卡完全没有这两个右侧操作按钮。需补右侧 Button 列。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "信息卡标题行缺要素：源码 标题行 = source_type 图标(FileText/Globe/ScrollText h-3.5 w-3.5 text-stone-500) + h2 text-[16px] font-medium text-stone-900 + StatusBadge(rounded-full px-2 py-0.5 text-[10.5px] font-medium，如 ready=bg-emerald-50 text-emerald-700)。preview 标题用 fontSize:14(应 16) 且无来源图标、无状态徽标。"
+    },
+    {
+     "kind": "编造",
+     "detail": "信息卡 meta 行字段编造：源码 meta 行(text-[11.5px] text-stone-500 gap-x-4 gap-y-1)为『类型: {mime} / 来源: {source_type} / 大小: {KB} / 统计: {chunk_count} chunks · {token_count} tokens(mono) / 创建: {时间}』。preview 写成『来源 · 手动上传 / 分段策略 · 语义切分 / 更新 · 2026-06-10』——字段全是编的，且漏掉 visual_spec 明确要求的『N chunks · M tokens』mono 统计串。应改为源码字段。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "标签/元数据区简化：源码是 mt-3 space-y-3 两段：『标签』label(text-[11.5px] text-stone-600) + TagEditor，『元数据』label + DocMetaFields(键值字段填值编辑器)。preview 只直接平铺了 3 个 pill 标签，没有『标签』『元数据』小标题，DocMetaFields 元数据字段编辑器整段缺失。"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "chunk 网格列数不符：源码 'grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3'(响应式 1/2/3 列)，preview 固定 'repeat(2, minmax(0,1fr))' 只有 2 列。应响应式 1/2/3。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "chunk 卡 hover 边框应是 hover:border-amber-300(#fcd34d) hover:shadow-sm 适用于所有卡(非编辑)；preview 把 #fcd34d 边框只给了 editing 卡，且给 editing 卡加了 boxShadow，而源码 editing 态并不改边框/阴影(只换正文为 Textarea)。应：普通卡 border-stone-200/70 默认无阴影、hover 才 amber-300+shadow-sm；editing 卡边框仍是 stone-200/70。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "keywords chip 源码 'rounded bg-stone-100(#f5f5f4) px-1.5 py-0.5 text-[10px] text-stone-500(#78716c)'，preview 用 bg #f4f3ee(warm-2 偏暖)。应改 #f5f5f4。卡头 #seq 区 font-mono text-[11px] text-stone-500=#78716c ✓，命中数 text-emerald-600=#059669 ✓，已停用 text-stone-400=#a8a29e ✓。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "保存按钮 source <Button size=\"sm\">(h-7=28 px-2.5=10 text-[11.5px] bg-primary-600=#2563eb rounded-md=6) + Check mr-1 h-3 w-3=12；取消 <Button size=\"sm\" variant=\"ghost\">(text-stone-700) + X h-3 w-3。preview 高 28 ✓ padding 0 10 ✓ 但字号 12(应 11.5)、取消文字 #57534e(应 stone-700 #44403c)。卡 rounded-lg=8 ✓ p-3=12 ✓ 正文 text-[12.5px] leading-relaxed whitespace-pre-wrap text-stone-800=#292524 ✓ 截断阈值 480 ✓ 展开按钮 text-[11px] text-amber-700=#b45309 ✓ 停用 opacity-55 ✓ 图标动作 h-3 w-3=12 ✓。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "搜索框缺清除按钮：源码 Input h-8=32 pr-7 pl-8 text-[12.5px] + 左 Search 图标 left-2.5(10) + 有输入时右侧 X 清除按钮(right-2 h-3.5 w-3.5 text-stone-400 hover:text-stone-600)。preview 搜索框无 X 清除按钮。计数文案源码『共 N 块』/搜索时『命中 N 块』text-[11.5px] text-stone-500=#78716c ✓。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "SectionCard 容器：源码 rounded-xl=12 border border-stone-200/40 bg-[var(--color-paper)]=#fffefb p-5=20 shadow-[var(--shadow-soft)]=(0 1px 2px rgb(0 0 0/4%),0 4px 12px rgb(0 0 0/3%))。preview 信息卡 padding 16(应 20)、阴影用 '0 1px 3px/0 2px 8px'(非 shadow-soft 值)、border /0.5(应 /0.4)。bg #fffefb ✓ rounded 12 ✓。切块墙 SectionCard padding 20 ✓但阴影同样偏差。TablePagination 分页器整块未渲染(spec 要求)。"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/display/chameleon/kb-chunking-3pane-preview",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/pages/kb-chunking-preview-page.tsx"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/display/chameleon/kb-chunking-3pane-preview.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/display/chameleon/kb-chunking-3pane-preview.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "CleanRow 开关用了 emerald #10b981 当 on 态。源码用项目 Switch 组件，选中色 = bg-primary-600（默认 blue 主题 = #2563eb），未选 bg-stone-300 #d6d3d1。应改成蓝色 #2563eb 轨道。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "Switch 尺寸错。源码 Switch=h-5 w-9（20×36px）border-2 border-transparent，thumb h-4 w-4（16px）bg-white shadow，translate-x-4（16px）。preview 画成 32×18、thumb 14、translateX(14)。应为 36×20、thumb 16、移 16。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "mode 选中按钮底色错。源码 border-amber-400(#fbbf24) bg-amber-50/60 text-amber-800(#92400e)。amber-50/60 = rgba(255,251,235,0.6)。preview 用 rgba(254,243,199,0.6)（这是 amber-100/60），明度阶偏深。应改 rgba(255,251,235,0.6)。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "中栏 Chunks 列表缺加载/空态：源码 previewMut.isPending&&!result → 「生成中…」py-10 text-center text-[12px] text-stone-400；无切块 → 「无切块」/「请输入原文」。preview 只画了有数据态。（次要）"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "header 缺 chunks 计数前的 KbQ 加载 Spinner 整页态，且重跑按钮 RotateCw 在 pending 时 animate-spin（mr-1 h-3 w-3）—— preview 是静态无 spin 态。（次要）"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/display/chameleon/kb-hit-test-3pane",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/kbs/components/hit-test-panel.tsx"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/display/chameleon/kb-hit-test-3pane.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/display/chameleon/kb-hit-test-3pane.tsx",
+   "deviations": [
+    {
+     "kind": "颜色错",
+     "detail": "关键词高亮 <mark> 颜色错。源码 highlight.ts 用 class bg-amber-100 rounded px-0.5 text-stone-900 → 底色 amber-100=#fef3c7、字 stone-900=#1c1917、圆角 rounded(4)。preview 用 background #fef08a（yellow-200）+ color #854d0e（amber-800）+ borderRadius 2 + padding '0 1px'。应改底 #fef3c7、字 #1c1917、radius 4、padding 0 2px(px-0.5)。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "「多查询扩展」开关用 emerald #10b981。源码是项目 Switch，选中 bg-primary-600=#2563eb（蓝）。应改蓝色，尺寸同样 36×20 thumb16（preview 现为 32×18 thumb14）。"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "搜索按钮尺寸/字号错。源码用 Button（默认 variant=primary bg-primary-600 #2563eb，size=md → h-8=32px px-3 text-[12.5px]），Search h-3.5 w-3.5=14 mr-1。preview 画成 height 36 + fontSize 13。应 height 32、fontSize 12.5。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "右栏 ScoreBreakdown 全模式进度条轨道色错。源码 ChannelRow 轨道 bg-stone-100=#f5f5f4。preview 用 #f4f3ee（warm-2）。应 #f5f5f4。条高 h-1.5=6 ✓，label w-16=64 ✓，值 w-9=36 ✓。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "缺空态：源码 Centered icon 用 SearchX h-8 w-8 strokeWidth 1.4 text-stone-400(#a8a29e) + 文案 text-[12.5px]（中栏「输入 query 后开始检索」、右栏「选中左侧 chunk 查看原文与分项得分」）。preview 三栏全是命中态，未体现 SearchX 空态。（次要）"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/display/chameleon/responsive-overlay-data-table",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/table/column-header.tsx:13-25",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/table/data-table.tsx:146-291"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/display/chameleon/responsive-overlay-data-table.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/display/chameleon/responsive-overlay-data-table.tsx",
+   "deviations": [
+    {
+     "kind": "结构简化",
+     "detail": "骨架行数错。源码 renderSkeleton 时 Array.from({length: 8}) 画 8 行。preview 只画了 4 行（Array length 4）。应为 8 行。每 cell px-3 py-3，内 div.skeleton h-2(8) rounded-full width=`${40+((i*7+c.key.length)%50)}%`（preview 把 c.key.length 换成 c*3，宽度公式漂移）。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "tbody 分隔线色错。源码 divide-y divide-stone-100 = #f5f5f4。preview 行 borderTop 用 #f1f0eb。应 #f5f5f4。（注：skeleton 渐变 #ebe9e3→#f5f4ee→#ebe9e3 + 400px + shimmer 1.6s 正确，global-progress 渐变 #3b82f6/#2563eb 正确。）"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "数据行缺 hover 态：源码数据行 group transition-colors hover:bg-stone-50；onRowClick 时 cursor-pointer。preview 主表处于 overlay opacity-50 态、未展示 hover:bg-stone-50。（次要，因主表演示的是 refreshing overlay 态）"
+    },
+    {
+     "kind": "结构简化",
+     "detail": "缺空态行：源码 empty 时 colSpan 全列 py-8 text-center text-stone-400，内 flex-col items-center gap-2 含 emptyText+emptyExtra。preview 未画空态变体。（次要）"
+    }
+   ],
+   "needs_rewrite": true
+  },
+  {
+   "id": "blocks/display/chameleon/run-compare-heatmap-matrix",
+   "layer": "block",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/components/run-compare-matrix.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/system/datasets/components/run-compare-stats.tsx"
+   ],
+   "md_path": "/Users/links/.agents/skills/style-vault/references/blocks/display/chameleon/run-compare-heatmap-matrix.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/blocks/display/chameleon/run-compare-heatmap-matrix.tsx",
+   "deviations": [
+    {
+     "kind": "结构简化",
+     "detail": "对比统计图表区被大幅简化。源码 RunCompareStats 用真实 recharts：①能力雷达 RadarChart（PolarGrid/PolarAngleAxis）②分数分布 BarChart ③逐题得分 LineChart（lg:col-span-2 占满整行）④逐样本胜负 bars。preview 只画了 2 个「占位柱形」卡片（能力雷达被画成柱状而非雷达），且完全缺失「逐题得分」折线图整行卡片。应补：雷达图（多边形辐射）+ 独立的逐题得分折线全宽卡片。色板 #3b82f6/#10b981/#f59e0b/#8b5cf6/#f43f5e/#06b6d4 ✓。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "AI 总结分析块边框色错。源码 border-violet-200/70（violet-200=#ddd6fe → rgba(221,214,254,0.7)）bg-violet-50/30。preview 用 rgba(196,181,253,0.7)（这是 violet-300 #c4b5fd），明度阶偏深。应 rgba(221,214,254,0.7)。bg rgba(245,243,255,0.3) ✓。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "score 单元格 null/无分档底色错。源码 scoreBg null → bg-stone-100 text-stone-400（#f5f5f4/#a8a29e）。preview 用 bg #f4f3ee。应 #f5f5f4。（有分三档 #ecfdf5/#047857、#fffbeb/#b45309、#fef2f2/#b91c1c 均正确。）"
+    },
+    {
+     "kind": "数值漂移",
+     "detail": "逐样本胜负的 胜/平/负 数字字体错。源码 spans 仅 className=tnum（tabular-nums）+ 颜色，无 font-mono，用正文 Inter。preview 给这些数字加了 fontFamily MONO。应去掉 mono，保留 tabular-nums。"
+    },
+    {
+     "kind": "颜色错",
+     "detail": "胜负进度条轨道色：源码 bg-stone-100=#f5f5f4；preview 用 #f4f3ee。条色 #34d399/#d6d3d1/#fb7185 ✓，h-1.5=6 ✓。"
+    },
+    {
+     "kind": "缺状态",
+     "detail": "点击行弹出的 Modal（size xl：问题 + 预期块 rounded-md border-emerald-200/70 bg-emerald-50/40 + OutputBlock pre max-h-72 bg-stone-50 font-mono text-[11.5px] + 各运行列 grid 卡 p-2.5 + 得分 chip scoreBg）未在 preview 体现。（次要，交互态触发）"
+    }
+   ],
+   "needs_rewrite": true
+  }
+ ]
+}

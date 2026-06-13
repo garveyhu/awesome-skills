@@ -1,0 +1,115 @@
+{
+ "group": 5,
+ "entries": [
+  {
+   "id": "components/display/chameleon/stat-tile-delta",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/mini-stat.tsx:36-48",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/stat-bar.tsx:11-44",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/stat-tile.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/stat-tile.tsx:37-98"
+   ],
+   "visual_spec": "[components/display/chameleon/stat-tile] 容器: 'flex items-start justify-between rounded-xl(12px) border border-stone-200 bg-[var(--color-paper)](#ffffff) p-5(20px)'。左: label 'text-xs(12px) text-stone-500' + value 'mt-2 truncate font-mono text-2xl(24px) tracking-tight text-stone-900'（loading 显 —）+ 'mt-1 flex items-center gap-2(8px) text-[11px]' 含 hint 'truncate text-stone-400' 与 delta 'inline-flex shrink-0 items-center gap-0.5 font-medium' + 颜色（up&!inverse→emerald-600 #059669 / 坏→red-600 #dc2626 / 0→stone-400）+ <TrendingUp|TrendingDown className='h-3 w-3'/> + '+N.N%'。右图标 chip（5 tone TONE_CHIP）: 'flex h-10(40px) w-10 shrink-0 items-center justify-center rounded-lg(8px)' + primary 'bg-primary-50 text-primary-600'(随主题) / success 'bg-emerald-50 text-emerald-600' / warning 'bg-amber-50 text-amber-600' / danger 'bg-red-50 text-red-600' / neutral 'bg-stone-100 text-stone-500'，内 <Icon className='h-5 w-5'/>。lucide: TrendingDown, TrendingUp。signature: mono text-2xl 大数字 + 右侧 themeable primary-50 图标 chip。\n\n[components/display/chameleon/stat-tile-delta] 外层 flex items-start justify-between rounded-xl(12) border border-stone-200 bg-[var(--color-paper)] p-5(20)。label text-xs stone-500；value mt-2 font-mono text-2xl(24) tracking-tight stone-900；hint text-[11px] stone-400；delta inline-flex gap-0.5 font-medium + TrendingUp/Down h-3 w-3，good=emerald-600/bad=red-600/零=stone-400，((delta*100).toFixed(1))%。icon 块 h-10 w-10(40) rounded-lg，tone chip: primary bg-primary-50 text-primary-600 / success emerald / warning amber / danger red / neutral stone。\n\n[components/display/chameleon/icon-mono-mini-stat] 卡: flex items-center gap-3(12) rounded-xl(12) border border-stone-200 bg-[var(--color-paper)] px-4(16) py-3(12)。图标块: flex h-9 w-9(36) shrink-0 items-center justify-center rounded-lg(8) + tone 类，内 Icon h-[18px] w-[18px](18)。右: min-w-0，数字 div tnum font-mono text-[19px](19) leading-none font-semibold text-stone-900，标签 div mt-1 truncate text-[11px](11) text-stone-500。tone 配色: primary bg-primary-50 text-primary-600 / success bg-emerald-50 text-emerald-600 / warning bg-amber-50 text-amber-600 / danger bg-red-50 text-red-600 / violet bg-violet-50 text-violet-600 / sky bg-sky-50 text-sky-600 / neutral bg-stone-100 text-stone-500。\n\n[components/display/chameleon/hairline-stat-bar] StatBar 容器: flex flex-wrap gap-y-3(12) py-1。StatItem: div mr-4(16) border-r border-stone-100 pr-4(16) last:mr-0 last:border-r-0 last:pr-0（右侧竖发丝分隔，最后一项去掉）。label: div text-[10.5px](10.5) tracking-wide text-stone-400。value 行: mt-1 flex items-baseline gap-1.5(6)，span tnum text-[15px](15) font-semibold，tone=ok text-emerald-600 / err text-rose-600 / 默认 text-stone-800，mono 时 font-mono text-[13px](13)。sub: span tnum text-[11px](11) font-normal text-stone-400。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/display/chameleon/stat-tile-delta.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/display/chameleon/stat-tile-delta.tsx"
+  },
+  {
+   "id": "components/feedback/chameleon/amber-nav-progress",
+   "layer": "component",
+   "dedup": "variant",
+   "ref_target": "blocks/feedback/waveflow/top-progress-bar",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/nav-progress-bar.tsx:11-54",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/nav-progress-bar.tsx:38-54"
+   ],
+   "visual_spec": "[components/feedback/chameleon/amber-climb-nav-progress] 外层(visible 时): pointer-events-none fixed left-0 right-0 top-0 z-[1000] h-[2px](2) bg-transparent。内层: h-full bg-amber-500 shadow-[0_0_8px_rgba(217,119,6,0.6)] transition-[width,opacity]，style.width=`${width}%`，opacity= width===100&&!pending?0:1，transitionDuration= pending?'600ms':'200ms'，transitionTimingFunction= pending?'cubic-bezier(0.16,1,0.3,1)':'ease-out'。爬升逻辑: pending 时 setWidth(0) → requestAnimationFrame setWidth(85)；pending 清零 setWidth(100) → 250ms 后 setVisible(false)。\n\n[blocks/feedback/chameleon/amber-creep-progress-bar] 外层 div: pointer-events-none fixed left-0 right-0 top-0 z-[1000] h-[2px] bg-transparent。内层条: h-full bg-amber-500(#f59e0b) shadow-[0_0_8px_rgba(217,119,6,0.6)](琥珀微光)；style width=`${width}%`(0→85→100)、opacity=(width===100 && !pending ? 0 : 1)、transitionDuration=pending?600ms:200ms、transitionTimingFunction=pending?cubic-bezier(0.16,1,0.3,1):ease-out。行为：pending 时 setVisible(true)+width 0，下一帧 requestAnimationFrame 升到 85；pending 清零先 width=100 再 250ms 后 setVisible(false)+width 0 淡出。与 waveflow/top-progress-bar 区分：waveflow 蓝色 4-stop linear-gradient(transparent→#3b82f6→#2563eb→transparent) indeterminate translateX(-100%→100%) 1.1s 循环、z-[300]、500ms 防闪；本条单色 amber-500 实心 determinate 爬升语义、z-[1000]、cubic-bezier 创意爬升曲线、琥珀发光阴影。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/feedback/chameleon/amber-nav-progress.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/feedback/chameleon/amber-nav-progress.tsx"
+  },
+  {
+   "id": "components/feedback/chameleon/loading-skeleton-kit",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/image-gen-loading.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/image-gen-loading.tsx:19-57",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/common/skeleton.tsx:21-95"
+   ],
+   "visual_spec": "[components/feedback/chameleon/shimmer-skeleton-kit] Skeleton: div class='skeleton' + ROUNDED[rounded] + style{width,height}；rounded 映射 none/sm/md/lg/full → rounded-none/sm/md/lg/full，默认 md。SkeletonText: flex flex-col style.gap=gap(默认8)，lines 默认3，每行 Skeleton height=lineHeight(默认10) width= 末行?`${lastLineWidth*100}%`(默认0.6→60%):'100%' rounded=full。SkeletonCard: flex flex-col gap-3(12) rounded-lg(8) border border-stone-200/60 bg-paper p-4(16)，avatar 时顶部 flex items-center gap-3 + Skeleton 36x36 rounded-full + flex-1 内 Skeleton h10 w-40% rounded-full，再 SkeletonText lines。.skeleton 类: linear-gradient(90deg,#ebe9e3 0%,#f5f4ee 50%,#ebe9e3 100%) + background-size 400px + animation:shimmer 1.6s ease-in-out infinite。\n\n[components/feedback/chameleon/image-gen-loading-skeleton] 框: .skeleton relative flex aspect-[4/3] w-full flex-col items-center justify-center gap-2.5(=10) rounded-xl(=12) border border-stone-200。图标: ImageIcon h-9 w-9(=36) text-stone-300 + 右下 -right-2 -bottom-2 h-5 w-5 rounded-full bg-white shadow-sm 内 Loader2 h-3.5 w-3.5 animate-spin text-violet-500。标题 text-[13px] font-medium text-stone-600「正在生成图片」。计时 font-mono text-[12px] tabular-nums text-stone-400 mm:ss(250ms 刷新)。hint max-w-[80%] text-center text-[11px] leading-snug text-stone-400。\n\n[components/feedback/chameleon/image-gen-skeleton-loader] 外层 .skeleton aspect-[4/3] w-full rounded-xl(12) border border-stone-200 flex-col items-center justify-center gap-2.5(10)。中心 ImageIcon h-9 w-9(36) text-stone-300 + 角标 absolute -right-2 -bottom-2 h-5 w-5 rounded-full bg-white shadow-sm 内含 Loader2 h-3.5 animate-spin text-violet-500。文案「正在生成图片」text-[13px] font-medium stone-600；计时 font-mono text-[12px] tabular-nums stone-400 格式 m:ss（250ms 轮询）；hint text-[11px] stone-400。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/feedback/chameleon/loading-skeleton-kit.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/feedback/chameleon/loading-skeleton-kit.tsx"
+  },
+  {
+   "id": "components/feedback/chameleon/modal-sheet-confirm",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/modal.tsx:14-132",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/sheet.tsx:14-94",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/lib/confirm.tsx:25-53"
+   ],
+   "visual_spec": "[components/feedback/chameleon/sized-modal-shell] Overlay: 'modal-overlay fixed inset-0 z-50 bg-stone-950/20'。Content: 'modal-content fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 flex max-h-[90vh] flex-col overflow-hidden rounded-2xl(16px) border border-stone-200 bg-paper(#ffffff) shadow-pop' + SIZE_CLASS {sm:w-[400px], md:w-[520px], lg:w-[720px], xl:w-[960px]}。Close: 'absolute right-3.5(14px) top-3.5 rounded-md p-1 text-stone-400 opacity-80 hover:bg-stone-100 hover:text-stone-700 hover:opacity-100 focus:ring-1 focus:ring-blue-200' 内 <X className='h-4 w-4' strokeWidth={1.75}/>。Header: 'flex flex-col gap-1(4px) border-b border-stone-200/70 px-5(20px) pb-3.5(14px) pt-4(16px)'。Body: 'flex-1 overflow-y-auto px-5 py-4(16px)'。Footer: 'flex items-center justify-end gap-2(8px) border-t border-stone-200/70 bg-warm-2/30 px-5 py-3(12px)'（暖底 warm-2 默认 #f4f4f5）。Title 'text-[14px] font-semibold tracking-tight text-stone-900'。Description 'text-[12px] leading-relaxed text-stone-500'。区分 Dialog: rounded-2xl 非 rounded-lg、4 档固定宽、三段式 Header/Body/Footer 含暖底 footer、preventClose/closeOnBackdrop props。lucide: X。@radix-ui/react-dialog。\n\n[components/feedback/chameleon/right-slide-sheet] Overlay: 'fixed inset-0 z-50 bg-stone-950/20'。Content: 'fixed inset-y-0 z-50 flex h-full flex-col bg-[var(--color-paper)](#ffffff) shadow-pop border-stone-200' + side right 'right-0 w-[480px] border-l' / left 'left-0 w-[480px] border-r'（width prop 可覆写）。Close 'absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100' 内 <X className='h-4 w-4'/>。Header 'flex flex-col space-y-2(8px) border-b border-stone-200 p-6(24px)'。Body 'flex-1 overflow-auto p-6'。Footer 'flex justify-end gap-2(8px) border-t border-stone-200 px-6 py-4(16px)'。Title 'text-lg(18px) font-semibold'。Description 'text-xs(12px) text-stone-500'。lucide: X。@radix-ui/react-dialog。\n\n[components/feedback/chameleon/imperative-confirm] 无自身 JSX 视觉，是命令式 API：confirm({title, description?, confirmText='确认', cancelText='取消', danger?}) → Promise<boolean>。document.body 挂 host div + createRoot + render <ConfirmDialog open variant={danger?'danger':'default'} onConfirm/onCancel/>。close 时 setTimeout 200ms 后 root.unmount()（等动画跑完防 flash）。视觉由 @/core/components/common/confirm-dialog 提供。react-dom/client createRoot。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/feedback/chameleon/modal-sheet-confirm.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/feedback/chameleon/modal-sheet-confirm.tsx"
+  },
+  {
+   "id": "components/feedback/chameleon/neon-loader",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/theme.css:155-225",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/assets/styles/theme.css:156-225",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/neon-loader.tsx",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/neon-loader.tsx:1-71"
+   ],
+   "visual_spec": "[components/feedback/chameleon/neon-loader] 外层 div className='inline-flex items-center gap-2 rounded-lg'（gap 8px / radius 8px），glow 时追加 'neon-loader--glow px-3 py-1.5'（px 12px / py 6px）。环 span className='neon-loader__ring shrink-0' style={{ '--neon-d': `${d}px`, '--neon-t': `${t}px` }} aria-hidden。文案 span className='neon-loader__text font-medium tracking-wide'（weight 500 / letter-spacing .025em）+ 尺寸字号。\n\nSIZES: xs { d:12, t:2, text:'text-[11px]' } / sm { d:14, t:2.25, text:'text-[11.5px]' } / md { d:16, t:2.5, text:'text-[12px]' } / lg { d:24, t:3.25, text:'text-[13.5px]' }。textClassName 可覆盖字号。样式实现见 tokens/motion/chameleon/neon-ai-loader（conic-gradient 紫#8b5cf6→品红#d946ef→青#22d3ee 旋转环 + 流光文字 + 呼吸辉光）。无 lucide 图标（纯 CSS 环）。\n\n[components/feedback/chameleon/neon-loader] inline-flex items-center gap-2(8px) rounded-lg。环走 .neon-loader__ring（见 motion token），label 走 .neon-loader__text 流光 font-medium tracking-wide。size: xs text-[11px]/sm text-[11.5px]/md text-[12px]/lg text-[13.5px]。glow=true 时 px-3(12) py-1.5(6) + neon-loader--glow 呼吸辉光。aria-hidden 在环上。\n\n[components/feedback/chameleon/neon-loader-conic-glow] 环 .neon-loader__ring: width/height=var(--neon-d) [xs=12 sm=14 md=16 lg=24]; border-radius:9999px; background:conic-gradient(from 90deg, transparent 0%, #8b5cf6 35%, #d946ef 55%, #22d3ee 75%, transparent 100%); mask:radial-gradient(farthest-side, transparent calc(100%-var(--neon-t)), #000 0) [环厚 xs=2 sm=2.25 md=2.5 lg=3.25]; filter:drop-shadow(0 0 3px rgba(139,92,246,.85)) drop-shadow(0 0 7px rgba(34,211,238,.5)); animation:neon-spin .85s linear infinite。文字 .neon-loader__text: background:linear-gradient(90deg,#7c3aed,#d946ef,#22d3ee,#7c3aed) background-size:200%; bg-clip:text color:transparent; animation:neon-shimmer 2.6s linear infinite; font-medium tracking-wide。glow 底 .neon-loader--glow: bg rgba(139,92,246,.05) + box-shadow 0 0 0 1px rgba(139,92,246,.22),0 0 16px rgba(139,92,246,.14); animation:neon-breathe 2.4s ease-in-out infinite; px-3 py-1.5。容器 inline-flex items-center gap-2 rounded-lg。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/feedback/chameleon/neon-loader.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/feedback/chameleon/neon-loader.tsx"
+  },
+  {
+   "id": "components/feedback/chameleon/radix-overlay-primitives",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/dialog.tsx:12-88",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/dropdown-menu.tsx:12-107",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/popover.tsx:11-28",
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/tooltip.tsx:13-60"
+   ],
+   "visual_spec": "[components/feedback/chameleon/radix-dialog-shell] Overlay: 'fixed inset-0 z-50 bg-stone-950/20 data-[state=open]:animate-in data-[state=closed]:animate-out'。Content: 'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg(512px) translate-x-[-50%] translate-y-[-50%] gap-4(16px) bg-[var(--color-paper)](#ffffff) p-6(24px) shadow-pop rounded-lg(8px) border border-stone-200' + 右上 Close 'absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100' 内 <X className='h-4 w-4'/>。Header 'flex flex-col space-y-1.5(6px) text-left'。Footer 'flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2(8px)'。Title 'text-lg(18px) font-semibold leading-none tracking-tight'。Description 'text-sm(14px) text-stone-500'。shadow-pop=0 8px 24px rgb(0 0 0/8%),0 2px 8px rgb(0 0 0/4%)。lucide: X。@radix-ui/react-dialog。\n\n[components/feedback/chameleon/radix-popover-shell] PopoverContent: 'shadow-pop z-50 w-72(288px) rounded-lg(8px) border border-stone-200 bg-[var(--color-paper)](#ffffff) p-3(12px) text-stone-900 outline-none'，默认 align=center sideOffset=6。shadow-pop=0 8px 24px rgb(0 0 0/8%),0 2px 8px rgb(0 0 0/4%)。@radix-ui/react-popover。\n\n[components/feedback/chameleon/radix-dropdown-menu] Content/SubContent: 'z-50 min-w-[8rem](128px) overflow-hidden rounded-md(6px) border border-stone-200 bg-[var(--color-paper)](#ffffff) p-1(4px) text-stone-900 shadow-pop'，默认 sideOffset=4。Item/SubTrigger: 'relative flex cursor-pointer select-none items-center rounded-sm px-2(8px) py-1.5(6px) text-sm(14px) outline-none transition-colors hover:bg-stone-100 focus:bg-stone-100 data-[disabled]:opacity-50'，inset 时 pl-8(32px)，SubTrigger 加 data-[state=open]:bg-stone-100。Label: 'px-2 py-1.5 text-xs(12px) font-semibold text-stone-500'。Separator: '-mx-1 my-1 h-px bg-stone-200'。@radix-ui/react-dropdown-menu。\n\n[components/feedback/chameleon/dark-tooltip] TooltipContent: 'z-50 overflow-hidden rounded-md(6px) bg-stone-900(#1c1917) px-2(8px) py-1(4px) text-[11px] font-medium leading-tight text-stone-50 shadow-md data-[state=delayed-open]:animate-in data-[state=closed]:animate-out'，默认 sideOffset=6。便利包装 <Tooltip content side='top' align='center' delayDuration={250} disabled>：disabled||!content 时直透 children。@radix-ui/react-tooltip。lucide: 无。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/feedback/chameleon/radix-overlay-primitives.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/feedback/chameleon/radix-overlay-primitives.tsx"
+  },
+  {
+   "id": "components/indicators/chameleon/status-pill-ping-dot",
+   "layer": "component",
+   "dedup": "variant",
+   "ref_target": "components/indicators/waveflow/status-dot-ring",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/status-badge.tsx:19-60"
+   ],
+   "visual_spec": "[components/indicators/chameleon/status-pill-ping-dot] 外层 pill: 'inline-flex items-center gap-1.5(6px) whitespace-nowrap rounded-md(6px) px-2(8px) py-0.5(2px) text-[11px] font-medium' + tone.pill。6 tone: success {dot:'bg-emerald-500(#10b981)', pill:'bg-emerald-50 text-emerald-700'}; error {dot:'bg-red-500(#ef4444)', pill:'bg-red-50 text-red-700'}; warning {dot:'bg-amber-500(#f59e0b)', pill:'bg-amber-50 text-amber-700'}; info/running {dot:'bg-sky-500(#0ea5e9)', pill:'bg-sky-50 text-sky-700'}; neutral {dot:'bg-stone-400(#a8a29e)', pill:'bg-stone-100 text-stone-600'}. 点容器 'relative flex h-1.5(6px) w-1.5'，pulse 时叠 'absolute inline-flex h-full w-full animate-ping rounded-full opacity-75'+dot 色，实点 'relative inline-flex h-1.5 w-1.5 rounded-full'+dot 色。区分 waveflow status-dot-ring: 有 pill 底色（waveflow 仅 dot+inline label 无底）、animate-ping 脉冲、6 态（含 running/info sky 色）非 3 态、点 6px 非 7px、用 Tailwind animate-ping 非 box-shadow ring。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/indicators/chameleon/status-pill-ping-dot.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/indicators/chameleon/status-pill-ping-dot.tsx"
+  },
+  {
+   "id": "components/inputs/chameleon/codemirror-json-editor",
+   "layer": "component",
+   "dedup": "new",
+   "ref_target": "",
+   "source_files": [
+    "/Users/links/Coding/Archer/Chameleon/frontend/src/core/components/ui/json-editor.tsx:24-109"
+   ],
+   "visual_spec": "[components/inputs/chameleon/codemirror-json-editor] 外框 'overflow-hidden rounded-md(6px) border border-stone-200'。顶栏 'flex items-center justify-between border-b border-stone-100 bg-stone-50/80 px-2(8px) py-1(4px)': label 'text-[10.5px] font-medium text-stone-500'（默认 'JSON'）+ 格式化按钮 'text-[10.5px] text-stone-500 hover:text-stone-800'。CodeMirror editorTheme: '&{fontSize:12px; backgroundColor:transparent}' + '.cm-content{fontFamily:ui-monospace,SFMono-Regular,Menlo,monospace}' + '.cm-gutters{backgroundColor:transparent; border:none}' + '&.cm-focused{outline:none}'，minHeight 110px maxHeight 320px，basicSetup{lineNumbers, foldGutter, autocompletion:false}。错误条 'border-t border-rose-100 bg-rose-50 px-2 py-1 text-[10.5px] text-rose-600' 显 '⚠ JSON 语法错误：{error}'。wrap 时加 EditorView.lineWrapping。@codemirror/lang-json + @uiw/react-codemirror。signature: 透明底嵌入式 CodeMirror + 顶栏格式化 + rose 错误条。",
+   "md_path": "/Users/links/.agents/skills/style-vault/references/components/inputs/chameleon/codemirror-json-editor.md",
+   "tsx_path": "/Users/links/Coding/Archer/style-vault/frontend/src/preview/components/inputs/chameleon/codemirror-json-editor.tsx"
+  }
+ ]
+}
