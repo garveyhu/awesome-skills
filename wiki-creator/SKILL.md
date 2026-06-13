@@ -1,11 +1,23 @@
 ---
 name: wiki-creator
-description: Deep-scan a project and generate structured, DeepWiki-style multi-file Markdown documentation under docs/. Use when the user asks to generate project documentation, create a wiki, write project docs, generate a docs folder, or produce a documentation set for a codebase. Output is Chinese, uses Mermaid diagrams, and is compatible with Docsify display via the docsify-station-creator skill.
+description: Deep-scan a project and generate structured, DeepWiki-style multi-file Markdown documentation under docs/. Use when the user asks to generate project documentation, create a wiki, write project docs, generate a docs folder, or produce a documentation set for a codebase. Output is Chinese, uses Mermaid diagrams, and is compatible with Docsify display via the docsify-station-creator skill. Supports three detail levels (低/中/高, default 中) controlling how thorough the generated docs are.
 ---
 
 # Wiki Creator
 
 Deep-scan a project codebase and generate structured multi-file Markdown documentation under `docs/`. Output narrative flows top-down: concept → design → implementation → extension. All content in Chinese. Use Mermaid for all diagrams.
+
+## 详细程度（生成前先确认，默认「中」）
+
+Before scanning, **ask the user which detail level** (use AskUserQuestion; default to **中** if they don't care). The level controls **how thorough** the docs are — section depth, code-snippet density, diagram richness. It does **NOT** prescribe a fixed file count or a canned doc tree: **you decide the actual structure dynamically from what the project is** (a tiny CLI and a 14-module platform at the same level produce very different trees).
+
+| 档位 | 倾向 | 每篇深度 | 图（Mermaid） |
+|---|---|---|---|
+| **低（精简）** | 只覆盖最核心的少数方面，宁缺毋滥 | 概览为主，章节简短，少代码细节 | 关键处点到即可 |
+| **中（标准，默认）** | 覆盖项目真实存在的主要方面 | 模块级讲清结构与主流程 | 每个主要领域约 1 张 |
+| **高（详尽）** | 尽量展开项目各层面 | 逐模块实现走读、边界条件、关键代码片段、跨模块引用 | 流程图 + 时序图 + 类图/ER，多图 |
+
+档位只调"挖多深"，不规定"分几篇"——文件数量、如何分册/合并，全部由你按项目实际**动态判断**。When unsure, pick 中.
 
 ## Workflow
 
@@ -56,13 +68,13 @@ docs/
 └── 06-deployment.md
 ```
 
-Number of files is flexible (typically 4–10). Choose based on project complexity. Do NOT force-create docs for aspects the project doesn't have.
+Decide the number and split of files **dynamically from the project** — the detail level only changes how thorough each doc is, never a fixed count or template tree. Do NOT force-create docs for aspects the project doesn't have.
 
 Present the planned structure to the user for confirmation before proceeding to Phase 3.
 
 ### Phase 3: Generate Documentation
 
-For each planned document file:
+Scale each file's section depth, code-snippet density, and diagram count to the chosen **detail level** (低 / 中 / 高 — see the table above). For each planned document file:
 
 1. **Re-read relevant source files** — do not write from memory of Phase 1 alone. Go back and read the actual code to ensure accuracy.
 2. **Write content** following the templates in [references/doc-templates.md](references/doc-templates.md).
