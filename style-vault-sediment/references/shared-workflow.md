@@ -488,6 +488,29 @@ plan.md 已落盘在 <path>，可在修复后重跑。
 
 **plan.md 保留**（步骤 4 已落盘）。不清理。
 
+### sync 失败属于他批 / 并发会话时（不要误伤本批 · 必做）
+
+**惨痛教训**（2026-06-13 · quiver 沉淀撞上活跃 chameleon 会话）：全量 `yarn sync` 因**另一批/并发会话**写入的半成品条目（未入字典的 tag / `@` 开头未引号的 YAML）而失败，本批 16 条本身全合法——但默认「sync 失败就停 + 清理」会误把合法的本批也中止/回滚。`yarn sync` 是**全树**校验，失败不等于本批失败。
+
+#### 硬规矩
+
+1. **sync 失败必须先看报错条目的 id 前缀（namespace），判定失败属于本批还是他批**：
+   - 失败**全在本批 namespace** → 按上面「步骤 6 中途失败」原流程（停 + 清网站侧 + 不 commit）。
+   - 失败**全在他批 / 别的 namespace**（并发或遗留会话的半成品）→ **不允许**当成本批失败而中止或回滚已写好的本批条目。
+2. 他批污染时**一律**改走 **scoped 校验 + 精确提交 + 延后 registry**：
+   - 对本批逐条复刻 sync 的校验（tags 全在 taxonomy / theme·platform·category 合法 / 非 token 的 preview 文件齐全 / uses·refs 目标均存在），全过才提交。
+   - **不允许**重新生成 / 提交 `registry.json`——避免把他批的半成品/错误状态固化进 registry。报告里注明「registry 待下次干净 sync 自动登记」。
+3. **不允许为了让全量 sync 变绿去改 / 删他批或并发会话的文件**。如需临时移出做隔离 sync，**必须**用 `rsync --ignore-existing` 无损还原；一旦发现对方会话仍在实时写入（被移走的目录又冒出新文件），**立即停手并还原**，不再干扰。
+
+#### 自检问题（sync 失败时自问）
+
+- [ ] 报错条目的 id 前缀属于本批 namespace，还是别的 namespace（他批/并发）？
+- [ ] 本批每一条都过了 scoped 校验（tags / theme / platform / category / preview / uses / refs）吗？
+- [ ] 我有没有为了绿 sync 去改、删、移别的会话的文件？移走的有没有无损还原？
+- [ ] 我是不是重新生成并提交了 registry.json、把他批的错误状态固化了？
+
+失败全属他批 + 本批 scoped 全过 → 精确提交本批、延后 registry，不中止。
+
 ---
 
 ## 步骤 7 · 网站仓 commit（skill 仓延后到步骤 8）
@@ -742,7 +765,8 @@ docs(skill): 沉淀教训 · <简短模式描述>
 | 场景 | 动作 |
 |---|---|
 | **步骤 4 用户整批 reject** | 放弃所有改动，不写任何文件，不 commit，**plan.md 不落盘**。正常结束对话。 |
-| **步骤 6 某条 `yarn sync` 失败** | 停止后续；skill 仓已写的前 k-1 条**保留**（未 commit）；网站仓 `git checkout -- src/preview/` 清理；释放锁；打印错误 + 修复指引；`plan.md` 已落盘保留 |
+| **步骤 6 某条 `yarn sync` 失败（报错属本批 namespace）** | 停止后续；skill 仓已写的前 k-1 条**保留**（未 commit）；网站仓 `git checkout -- src/preview/` 清理；释放锁；打印错误 + 修复指引；`plan.md` 已落盘保留 |
+| **步骤 6 全量 sync 失败但报错全在他批/并发会话的 namespace** | 不当成本批失败：对本批做 scoped 校验（tags/theme/platform/category/preview/uses·refs），全过则**精确提交本批**、**不重生成 registry.json**（报告注明待下次干净 sync），**不改/删/固化他批文件**。详见步骤 6「sync 失败属于他批/并发会话时」节 |
 | **用户 Ctrl-C / 打断** | 同 sync 失败：清网站侧，保 skill 侧未 commit 文件，释放锁 |
 | **步骤 5 并发锁冲突** | 直接拒启，打印"另一个会话正在沉淀 `<other-topic>`"。**不做任何写入**，不释放锁（锁属于其它会话）。 |
 | **步骤 1 taxonomy.py 报错** | 停止，提示用户修环境（`style-vault` skill 是否安装、`python3` 是否在 PATH、PyYAML 是否已安装） |

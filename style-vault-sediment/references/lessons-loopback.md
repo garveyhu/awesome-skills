@@ -136,6 +136,7 @@ grep -rn "关键词" ~/.agents/skills/style-vault-sediment/{SKILL.md,references/
 | 2026-04-27 | skill 仓 commit 用 `git add -A` 把无关的循环 symlink `wiki-creator/wiki-creator` 拉进 commit，事后单独打 chore commit 修。**根因是 skill 仓多 skill 共存时 -A 会污染** | [shared-workflow.md · 精确 add 硬规矩](shared-workflow.md#精确-add-硬规矩必做--skill--vault-两仓都遵守) | 2026-04-27 acme rebuild |
 | 2026-04-27 | sage tier3 沉淀的 38 条 preview .tsx 全部用 emoji（👤🛡⚙💾📦🧩📊🐬🐘等）替代源码使用的 lucide-react 图标。**根因是 preview 里"省事用 emoji"被默认接受**——但 icon 选型本身是风格的一部分，emoji 跟线性矢量是两种视觉语言，整套风格立刻变味 | [sediment-from-project.md · preview 写 icon 的硬规矩](sediment-from-project.md#preview-写-icon-的硬规矩用源码同款-icon-库禁用-emoji-替代必做) | 2026-04-27-sage |
 | 2026-04-27 | sage tier3 preview 的 padding / borderRadius / fontSize / shadow / 颜色 hex 大量"凭印象差不多"——和 skill .md 里写的"视觉特征"具体数值脱节，整套气质漂移。**根因是没把 skill .md 的"视觉特征"放进工作集就直接写 preview** | [sediment-from-project.md · preview 必须深度还原源码具体数值](sediment-from-project.md#preview-必须深度还原源码具体数值必做) | 2026-04-27-sage |
+| 2026-06-13 | quiver 沉淀时撞上**活跃的并发 chameleon 会话**，其半成品条目（未入字典 tag / `@` 开头 YAML）让全量 `yarn sync` 一直无法变绿；差点按"sync 失败就停/回滚"误伤本批 16 条合法条目。**根因是 step 6 错误处理默认"sync 失败 = 本批失败"，没区分全树校验里失败的是本批还是他批/并发会话** | [shared-workflow.md · sync 失败属于他批/并发会话时](shared-workflow.md#sync-失败属于他批--并发会话时不要误伤本批--必做) + 错误矩阵新增行 | 2026-06-13-quiver-night-studio |
 
 ---
 
