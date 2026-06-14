@@ -8,6 +8,8 @@
       rel="stylesheet"
       href="https://garveyhu.github.io/resources/docsify/themes/vue.css"
     />
+    <!-- 数学公式样式（KaTeX，自托管） -->
+    <link rel="stylesheet" href="https://garveyhu.github.io/resources/katex/katex.min.css" />
     <!-- 动画模式（可选）：启用 Animated 时在此加 <link rel="stylesheet" href="assets/anim-kit/anim.css" /> -->
     <link
       rel="icon"
@@ -290,60 +292,37 @@
       .mermaid:hover {
         opacity: 0.9;
       }
-      .image-viewer-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(255, 255, 255, 0.95);
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.2s;
+      /* Mermaid/图 全屏预览器：打开即居中适配屏幕，居中/光标缩放不漂移，带工具栏 */
+      .iv-overlay {
+        position: fixed; inset: 0; z-index: 9999;
+        background: rgba(248, 250, 252, 0.97);
+        display: flex; align-items: center; justify-content: center;
+        overflow: hidden; opacity: 0; transition: opacity 0.2s;
       }
-      .image-viewer-overlay.active {
-        opacity: 1;
+      .iv-overlay.active { opacity: 1; }
+      body.dark .iv-overlay { background: rgba(16, 20, 30, 0.97); }
+      .iv-stage { cursor: grab; will-change: transform; touch-action: none; }
+      .iv-stage:active { cursor: grabbing; }
+      .iv-stage img { display: block; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+      .iv-toolbar {
+        position: fixed; top: 16px; right: 16px; z-index: 10000;
+        display: flex; gap: 6px; padding: 6px;
+        background: var(--glass); border: 1px solid var(--border); border-radius: 12px;
+        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: var(--shadow);
       }
-      body.dark .image-viewer-overlay {
-        background: rgba(30, 30, 30, 0.95);
+      .iv-toolbar button {
+        width: 36px; height: 36px; border-radius: 9px; border: 1px solid transparent;
+        background: transparent; color: var(--fg-soft); cursor: pointer;
+        display: grid; place-items: center; transition: color .15s, background .15s;
       }
-      .image-viewer-container {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: move;
-      }
-      .image-viewer-container img {
-        max-width: none;
-        max-height: none;
-        user-select: none;
-      }
-      .image-viewer-close {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-        width: 40px;
-        height: 40px;
-        background: rgba(0, 0, 0, 0.5);
-        border: none;
-        border-radius: 50%;
-        color: white;
-        font-size: 24px;
-        cursor: pointer;
-        z-index: 10000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s;
-      }
-      .image-viewer-close:hover {
-        background: rgba(0, 0, 0, 0.8);
-        transform: scale(1.1);
+      .iv-toolbar button:hover { color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+      .iv-toolbar button svg { width: 18px; height: 18px; }
+      .iv-toolbar .iv-sep { width: 1px; background: var(--border); margin: 5px 2px; }
+      .iv-hint {
+        position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 10000;
+        color: var(--fg-mut); font-size: 12px; padding: 5px 14px; border-radius: 999px;
+        background: var(--glass); border: 1px solid var(--border);
+        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); opacity: .92; pointer-events: none;
       }
       .docsify-copy-code-button:hover { color: var(--accent) !important; }
       .docsify-copy-code-button.success {
@@ -1024,6 +1003,22 @@
         // 右侧目录生成插件
         plugins: [
           function (hook) {
+            // 修复 marked 的 CJK 加粗 bug：中文标点紧贴 ** 紧贴 ASCII 标点时（如 转型：**"…"**）不识别加粗。
+            // 渲染前在交界处插入发丝空格 U+200A（几乎不可见），跳过代码块与含行内代码的行，避免误伤。
+            hook.beforeEach(function (md) {
+              var CJK = '—‘-‟…　-〿㐀-鿿＀-￯';
+              var AP = '"\'\\(\\[\\)\\]\\.,!?;:<>';
+              var reO = new RegExp('([' + CJK + '])(\\*{1,3})(?=[' + AP + '])', 'g');
+              var reC = new RegExp('([' + AP + '])(\\*{1,3})(?=[' + CJK + '])', 'g');
+              var lines = md.split('\n'), inF = false, out = [];
+              for (var i = 0; i < lines.length; i++) {
+                var ln = lines[i];
+                if (/^\s*(```|~~~)/.test(ln)) { inF = !inF; out.push(ln); continue; }
+                if (inF || ln.indexOf('`') >= 0) { out.push(ln); continue; }
+                out.push(ln.replace(reO, '$1 $2').replace(reC, '$1$2 '));
+              }
+              return out.join('\n');
+            });
             hook.doneEach(function () {
               // 左侧菜单树滚动条：docsify 动态生成 .sidebar，首次渲染后绑定（滚动时显示，停 ~0.7s 隐藏；hover 也显示）
               (function () {
@@ -1056,16 +1051,43 @@
                   window.addEventListener("hashchange", function () { setTimeout(go, 30); });
                 }
               })();
-              // 修复：搜索带 ?id= 跳转后左侧目录不高亮当前文档（剥掉 ?id 与 .md 再匹配）
+              // 高亮当前文档 + 选中项自动滚入侧栏可视区。
+              // norm 取最后一个 # 之后（兼容 file:// 完整 href）、剥 ?id 与 .md、统一前导斜杠。
+              // 延时补两次：盖过 docsify 内建高亮在 file://(offline.html) 下匹配失败后清空 active 的情况。
               (function () {
-                var norm = function (h) { return decodeURIComponent((h || "").replace(/^#/, "").split("?")[0].replace(/\.md$/, "")); };
-                var path = norm(location.hash);
-                document.querySelectorAll(".sidebar-nav a").forEach(function (a) {
-                  var on = norm(a.getAttribute("href")) === path;
-                  a.classList.toggle("active", on);
-                  var li = a.closest("li");
-                  if (li) li.classList.toggle("active", on);
-                });
+                function hl() {
+                  var norm = function (h) {
+                    h = (h || "").toString();
+                    var i = h.lastIndexOf("#"); if (i >= 0) h = h.slice(i + 1);
+                    h = h.split("?")[0].replace(/\.md$/i, "");
+                    try { h = decodeURIComponent(h); } catch (e) {}
+                    h = h.replace(/\/(readme|index)$/i, "").replace(/\/+$/, ""); // 目录索引归一：/README、/index、尾斜杠 视为同一页
+                    if (h.charAt(0) !== "/") h = "/" + h;
+                    return h;
+                  };
+                  var path = norm(location.hash), activeA = null;
+                  document.querySelectorAll(".sidebar-nav a").forEach(function (a) {
+                    var on = norm(a.getAttribute("href")) === path;
+                    a.classList.toggle("active", on);
+                    var li = a.closest("li");
+                    if (li) li.classList.toggle("active", on);
+                    if (on) activeA = a;
+                  });
+                  if (activeA) {
+                    var sb = document.querySelector(".sidebar");
+                    if (sb) {
+                      var aR = activeA.getBoundingClientRect(), sR = sb.getBoundingClientRect();
+                      if (aR.top < sR.top + 8 || aR.bottom > sR.bottom - 8) {
+                        sb.scrollTop += (aR.top - sR.top) - (sR.height - aR.height) / 2;
+                      }
+                    }
+                  }
+                }
+                hl(); setTimeout(hl, 0); setTimeout(hl, 80);
+                if (!window.__hlBound) {
+                  window.__hlBound = true;
+                  window.addEventListener("hashchange", function () { setTimeout(hl, 30); });
+                }
               })();
 
               // GitHub 风格提示框：把 > [!TYPE] blockquote 转成带标题的彩色 callout
@@ -1194,6 +1216,9 @@
 
     <!-- Panzoom -->
     <script src="https://garveyhu.github.io/resources/panzoom/panzoom.min.js"></script>
+    <!-- 数学公式渲染（KaTeX + docsify-katex）：$...$ 行内、$$...$$ 块级 -->
+    <script src="https://garveyhu.github.io/resources/katex/katex.min.js"></script>
+    <script src="https://garveyhu.github.io/resources/katex/docsify-katex.js"></script>
 
     <!-- 代码高亮 -->
     <!-- 按 Prism 依赖顺序加载（js→ts→jsx→tsx、css→scss、json→json5）；html/markup 已在 Prism 核心内置 -->
@@ -1241,68 +1266,80 @@
           }
         }
 
-        // Panzoom 图片查看（提取为函数，每次页面切换后重新绑定）
+        // Mermaid 全屏预览：点击 SVG 打开；打开即居中适配屏幕；缩放围绕中心/光标，不漂移
+        var IV_ICON = {
+          minus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14"/></svg>',
+          plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+          fit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>',
+          close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+        };
+        function openViewer(svg) {
+          if (!window.Panzoom) return;
+          var vb = svg.viewBox && svg.viewBox.baseVal;
+          var rect = svg.getBoundingClientRect();
+          var natW = (vb && vb.width) || rect.width || 800;
+          var natH = (vb && vb.height) || rect.height || 600;
+          var blob = new Blob([new XMLSerializer().serializeToString(svg)], { type: "image/svg+xml;charset=utf-8" });
+          var url = URL.createObjectURL(blob);
+
+          var overlay = document.createElement("div"); overlay.className = "iv-overlay";
+          var stage = document.createElement("div"); stage.className = "iv-stage";
+          var img = document.createElement("img"); img.src = url; img.draggable = false;
+          stage.appendChild(img); overlay.appendChild(stage);
+
+          var bar = document.createElement("div"); bar.className = "iv-toolbar";
+          function mkBtn(icon, title) { var b = document.createElement("button"); b.type = "button"; b.title = title; b.setAttribute("aria-label", title); b.innerHTML = icon; bar.appendChild(b); return b; }
+          var bOut = mkBtn(IV_ICON.minus, "缩小 (-)");
+          var bFit = mkBtn(IV_ICON.fit, "适配屏幕 (0 / 双击)");
+          var bIn = mkBtn(IV_ICON.plus, "放大 (+)");
+          var sep = document.createElement("div"); sep.className = "iv-sep"; bar.appendChild(sep);
+          var bClose = mkBtn(IV_ICON.close, "关闭 (Esc)");
+          overlay.appendChild(bar);
+
+          var hint = document.createElement("div"); hint.className = "iv-hint";
+          hint.textContent = "滚轮缩放 · 拖拽平移 · 双击适配 · Esc 关闭";
+          overlay.appendChild(hint);
+          document.body.appendChild(overlay);
+
+          function fit() {
+            var s = Math.min((window.innerWidth * 0.92) / natW, (window.innerHeight * 0.84) / natH);
+            img.style.width = (natW * s) + "px"; img.style.height = (natH * s) + "px";
+          }
+          fit();
+
+          var pz = Panzoom(stage, { maxScale: 16, minScale: 0.4, step: 0.3, cursor: "grab" });
+          stage.addEventListener("wheel", function (e) { pz.zoomWithWheel(e); }, { passive: false });
+          requestAnimationFrame(function () { overlay.classList.add("active"); });
+
+          function doFit() { fit(); pz.reset({ animate: true }); }
+          bIn.onclick = function () { pz.zoomIn({ animate: true }); };
+          bOut.onclick = function () { pz.zoomOut({ animate: true }); };
+          bFit.onclick = doFit;
+          stage.addEventListener("dblclick", doFit);
+          window.addEventListener("resize", doFit);
+
+          function close() {
+            overlay.classList.remove("active");
+            document.removeEventListener("keydown", onKey);
+            window.removeEventListener("resize", doFit);
+            setTimeout(function () { try { pz.destroy(); } catch (e) {} overlay.remove(); URL.revokeObjectURL(url); }, 200);
+          }
+          bClose.onclick = close;
+          overlay.addEventListener("click", function (e) { if (e.target === overlay) close(); });
+          function onKey(e) {
+            if (e.key === "Escape") close();
+            else if (e.key === "+" || e.key === "=") pz.zoomIn({ animate: true });
+            else if (e.key === "-" || e.key === "_") pz.zoomOut({ animate: true });
+            else if (e.key === "0") doFit();
+          }
+          document.addEventListener("keydown", onKey);
+        }
         function setupPanzoom() {
           document.querySelectorAll(".mermaid svg").forEach((svg) => {
             if (svg._panzoomBound) return;
             svg._panzoomBound = true;
             svg.style.cursor = "zoom-in";
-            svg.addEventListener("click", function () {
-              const blob = new Blob(
-                [new XMLSerializer().serializeToString(svg)],
-                { type: "image/svg+xml" }
-              );
-              const url = URL.createObjectURL(blob);
-
-              const overlay = document.createElement("div");
-              overlay.className = "image-viewer-overlay";
-              const container = document.createElement("div");
-              container.className = "image-viewer-container";
-              const img = document.createElement("img");
-              img.src = url;
-              const closeBtn = document.createElement("button");
-              closeBtn.className = "image-viewer-close";
-              closeBtn.innerHTML = "&times;";
-
-              container.appendChild(img);
-              overlay.appendChild(container);
-              overlay.appendChild(closeBtn);
-              document.body.appendChild(overlay);
-
-              img.onload = function () {
-                const panzoom = Panzoom(img, {
-                  maxScale: 10,
-                  minScale: 0.05,
-                  step: 0.3,
-                  cursor: "move",
-                });
-                const scale = Math.min(
-                  (window.innerWidth * 0.9) / img.naturalWidth,
-                  (window.innerHeight * 0.9) / img.naturalHeight,
-                  0.5
-                );
-                panzoom.zoom(scale, { animate: false });
-                container.addEventListener("wheel", panzoom.zoomWithWheel);
-                setTimeout(() => overlay.classList.add("active"), 10);
-
-                const close = () => {
-                  overlay.classList.remove("active");
-                  setTimeout(() => {
-                    panzoom.destroy();
-                    document.body.removeChild(overlay);
-                    URL.revokeObjectURL(url);
-                  }, 200);
-                };
-                closeBtn.onclick = close;
-                overlay.onclick = (e) => e.target === overlay && close();
-                document.addEventListener("keydown", function esc(e) {
-                  if (e.key === "Escape") {
-                    close();
-                    document.removeEventListener("keydown", esc);
-                  }
-                });
-              };
-            });
+            svg.addEventListener("click", function () { openViewer(svg); });
           });
         }
 

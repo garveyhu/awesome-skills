@@ -73,3 +73,23 @@ const hello = "world";
 ```
 
 可用类型：`NOTE` `TIP` `IMPORTANT` `WARNING` `CAUTION`。普通 `>` 引用仍按引用样式渲染，不受影响。
+
+### 数学公式（KaTeX）
+
+支持 LaTeX 公式，由自托管的 KaTeX（`garveyhu.github.io/resources/katex`）+ docsify-katex 渲染，不依赖外部 CDN：
+
+```markdown
+行内：$E = mc^2$、$\sqrt{d_k}$。
+块级：
+$$ \text{Attention}(Q,K,V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right) V $$
+```
+
+`$...$` 行内、`$$...$$` 块级。新增其它公式无需改动；如需升级 KaTeX，更新 resources 仓库 `katex/`（含 `fonts/`）即可。
+
+### 中文加粗（自动修复）
+
+marked 对「中文标点紧贴 `**` 紧贴 ASCII 标点」（如 `转型：**"…"**`）不识别加粗。站点已内置 `beforeEach` 修复，渲染前在交界处插入发丝空格，正常书写即可、无需规避。
+
+### Mermaid / 图片全屏预览
+
+点击 Mermaid 图（或正文图片）打开全屏预览：**打开即居中适配屏幕**；工具栏支持缩小 / 适配 / 放大 / 关闭；滚轮缩放、拖拽平移、双击适配、键盘 `+ / - / 0 / Esc`。
