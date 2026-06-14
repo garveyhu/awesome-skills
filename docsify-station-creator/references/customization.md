@@ -16,7 +16,7 @@
 
 ## 项目图标（favicon）
 
-favicon 是内置的**渐变方块标记**（无 emoji，符合本 skill 的克制 emoji 原则）。如需换色，编辑 `docs/docsify/index.html` 里 favicon SVG 的 `stop-color`。**不要换回 emoji favicon。**
+favicon 是内置的**墨黑底 + 白色线稿书**标记（纯色、无渐变、无 emoji，符合克制 emoji 原则，且不依赖主题色，换任何强调色都不冲突）。如需换色，编辑 `docs/docsify/index.html` 里 favicon SVG 的 `fill`（底色 `%231e293b`）与 `stroke`（线稿 `%23ffffff`）。**不要换回纯色块或 emoji favicon。**
 
 ## 添加代码语言高亮
 

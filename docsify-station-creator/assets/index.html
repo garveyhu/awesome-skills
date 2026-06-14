@@ -11,7 +11,7 @@
     <!-- 动画模式（可选）：启用 Animated 时在此加 <link rel="stylesheet" href="assets/anim-kit/anim.css" /> -->
     <link
       rel="icon"
-      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%235ed1ff'/><stop offset='0.5' stop-color='%23a78bfa'/><stop offset='1' stop-color='%23f472b6'/></linearGradient></defs><rect rx='26' width='100' height='100' fill='url(%23g)'/></svg>"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect rx='24' width='100' height='100' fill='%231e293b'/><path d='M50 33 C43.5 28 33 27 26.5 29.5 V69 C33 66.5 43.5 67.5 50 72 C56.5 67.5 67 66.5 73.5 69 V29.5 C67 27 56.5 28 50 33 Z' fill='none' stroke='%23ffffff' stroke-width='4' stroke-linejoin='round'/><path d='M50 33 V72' stroke='%23ffffff' stroke-width='3.5'/></svg>"
     />
 
     <style>
@@ -236,6 +236,19 @@
       body.dark #right-toc:hover {
         scrollbar-color: #555 transparent;
       }
+      /* 左侧菜单树滚动条：与右侧目录一致 —— 默认隐藏，滚动 / 悬停才显示 */
+      .sidebar::-webkit-scrollbar { width: 6px; }
+      .sidebar::-webkit-scrollbar-track { background: transparent; }
+      .sidebar::-webkit-scrollbar-thumb { background: transparent; border-radius: 3px; transition: background 0.3s; }
+      .sidebar.scrolling::-webkit-scrollbar-thumb,
+      .sidebar:hover::-webkit-scrollbar-thumb { background: #ccc; }
+      body.dark .sidebar.scrolling::-webkit-scrollbar-thumb,
+      body.dark .sidebar:hover::-webkit-scrollbar-thumb { background: #555; }
+      .sidebar { scrollbar-width: thin; scrollbar-color: transparent transparent; transition: scrollbar-color 0.3s; }
+      .sidebar.scrolling,
+      .sidebar:hover { scrollbar-color: #ccc transparent; }
+      body.dark .sidebar.scrolling,
+      body.dark .sidebar:hover { scrollbar-color: #555 transparent; }
       @media screen and (max-width: 1200px) {
         #right-toc {
           display: none;
@@ -374,7 +387,7 @@
         --shadow: 0 12px 44px -14px #000a, 0 2px 10px -4px #0008;
       }
       /* 阅读偏好：仅非默认值作用到正文，默认与原版一致 */
-      html[data-fs='s'] .markdown-section { font-size: 15px; }
+      html[data-fs='s'] .markdown-section { font-size: 13.5px; }
       html[data-fs='l'] .markdown-section { font-size: 17.5px; }
       html[data-fs='xl'] .markdown-section { font-size: 19px; }
       html[data-width='compact'] .markdown-section { max-width: 680px; }
@@ -392,6 +405,11 @@
       .sidebar .app-name-link {
         font-size: 17px; font-weight: 800; letter-spacing: .2px;
         background: var(--title-grad); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      }
+      /* 标题样式：纯色（主题色）—— 默认渐变，设置面板可切 */
+      html[data-title='solid'] .sidebar .app-name-link {
+        background: none; -webkit-background-clip: border-box; background-clip: border-box;
+        -webkit-text-fill-color: var(--accent); color: var(--accent);
       }
       .sidebar-nav > ul > li > p, .sidebar-nav > ul > li > strong {
         font-size: 11.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
@@ -464,6 +482,7 @@
       #station-drawer .sd-body { padding: 8px 22px 22px; overflow-y: auto; }
       #station-drawer .sd-row { margin-top: 20px; }
       #station-drawer .sd-label { font-size: 12px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--fg-mut); margin-bottom: 9px; }
+      #station-drawer .sd-toggle-row .sd-label kbd { margin-left: 6px; font-size: 10px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--fg-mut); border: 1px solid var(--border); border-radius: 4px; padding: 0 5px; font-family: inherit; }
       #station-drawer .seg { display: flex; background: var(--bg-elev); border: 1px solid var(--border); border-radius: 11px; padding: 3px; gap: 3px; }
       #station-drawer .seg button { flex: 1; border: none; background: transparent; color: var(--fg-soft); cursor: pointer; font-size: 13px; padding: 7px 6px; border-radius: 8px; transition: all .15s; font-family: inherit; }
       #station-drawer .seg button:hover { color: var(--fg); }
@@ -505,6 +524,7 @@
       #station-cmdk-actions .cmdk-action { width: 100%; display: flex; align-items: center; gap: 11px; padding: 9px 11px; border: none; background: transparent; color: var(--fg-soft); cursor: pointer; border-radius: 9px; font-size: 13.5px; font-family: inherit; text-align: left; }
       #station-cmdk-actions .cmdk-action:hover { background: var(--grad-soft); color: var(--fg); }
       #station-cmdk-actions .cmdk-action svg { width: 16px; height: 16px; opacity: .8; flex: none; }
+      #station-cmdk-actions .cmdk-action kbd { margin-left: auto; font-size: 11px; color: var(--fg-mut); border: 1px solid var(--border); border-radius: 5px; padding: 1px 7px; font-family: inherit; line-height: 1.5; }
       #station-cmdk .results-panel { padding: 6px; }
       #station-cmdk .matching-post { border: none !important; padding: 10px 12px !important; border-radius: 9px; cursor: pointer; }
       #station-cmdk .matching-post:hover, #station-cmdk .matching-post.sel { background: var(--grad-soft); }
@@ -701,6 +721,13 @@
           </div>
         </div>
         <div class="sd-row">
+          <div class="sd-label">标题</div>
+          <div class="seg">
+            <button data-set="title" data-val="grad">渐变</button>
+            <button data-set="title" data-val="solid">纯色</button>
+          </div>
+        </div>
+        <div class="sd-row">
           <div class="sd-label">字号</div>
           <div class="seg">
             <button data-set="fs" data-val="s">A−</button>
@@ -741,10 +768,6 @@
             <button data-set="nav" data-val="roomy">宽松</button>
           </div>
         </div>
-        <div class="sd-row sd-toggle-row">
-          <div class="sd-label">专注模式</div>
-          <button class="switch" data-toggle="zen" aria-label="专注模式"></button>
-        </div>
         <div class="sd-row">
           <div class="sd-label">动效</div>
           <div class="seg">
@@ -753,12 +776,20 @@
           </div>
         </div>
         <div class="sd-row sd-toggle-row">
-          <div class="sd-label">阅读进度条</div>
-          <button class="switch" data-toggle="progress" aria-label="阅读进度条"></button>
+          <div class="sd-label">专注模式 <kbd>F</kbd></div>
+          <button class="switch" data-toggle="zen" aria-label="专注模式"></button>
         </div>
         <div class="sd-row sd-toggle-row">
-          <div class="sd-label">右侧目录</div>
+          <div class="sd-label">菜单树 <kbd>M</kbd></div>
+          <button class="switch" data-toggle="menu" aria-label="菜单树"></button>
+        </div>
+        <div class="sd-row sd-toggle-row">
+          <div class="sd-label">右侧目录 <kbd>O</kbd></div>
           <button class="switch" data-toggle="toc" aria-label="右侧目录"></button>
+        </div>
+        <div class="sd-row sd-toggle-row">
+          <div class="sd-label">阅读进度条 <kbd>B</kbd></div>
+          <button class="switch" data-toggle="progress" aria-label="阅读进度条"></button>
         </div>
         <div class="sd-foot">
           <button class="sd-reset" id="station-sd-reset">恢复默认设置</button>
@@ -787,6 +818,23 @@
           <button class="cmdk-action" data-action="home">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
             返回首页
+          </button>
+          <div class="cmdk-hint">视图切换</div>
+          <button class="cmdk-action" data-action="zen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+            专注模式 <kbd>F</kbd>
+          </button>
+          <button class="cmdk-action" data-action="sidebar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
+            收起 / 展开左侧菜单 <kbd>M</kbd>
+          </button>
+          <button class="cmdk-action" data-action="toc">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/></svg>
+            收起 / 展开右侧目录 <kbd>O</kbd>
+          </button>
+          <button class="cmdk-action" data-action="progress">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h7"/><path d="M3 8h18"/><path d="M3 16h12"/></svg>
+            阅读进度条 <kbd>B</kbd>
           </button>
         </div>
       </div>
@@ -825,7 +873,7 @@
       // ===== Docsify Station 设置系统（主题移入设置面板） =====
       (function () {
         var STORE = 'station-settings';
-        var DEFAULTS = { theme: 'light', accent: 'ocean', fs: 'm', width: 'normal', font: 'sans', leading: 'normal', nav: 'cozy', motion: 'full', progress: false, toc: true, zen: false };
+        var DEFAULTS = { theme: 'light', accent: 'ocean', fs: 'm', width: 'normal', font: 'sans', leading: 'normal', nav: 'cozy', motion: 'full', progress: false, toc: true, zen: false, menu: true, title: 'grad' };
         function read() { try { return JSON.parse(localStorage.getItem(STORE) || '{}'); } catch (e) { return {}; } }
         var settings = Object.assign({}, DEFAULTS, read());
         if (!localStorage.getItem(STORE)) { var old = localStorage.getItem('theme'); if (old === 'dark' || old === 'light') settings.theme = old; }
@@ -835,12 +883,13 @@
         function $(id) { return document.getElementById(id); }
         function apply() {
           var r = document.documentElement;
-          r.dataset.accent = settings.accent; r.dataset.fs = settings.fs; r.dataset.width = settings.width; r.dataset.font = settings.font; r.dataset.leading = settings.leading; r.dataset.nav = settings.nav;
+          r.dataset.accent = settings.accent; r.dataset.fs = settings.fs; r.dataset.width = settings.width; r.dataset.font = settings.font; r.dataset.leading = settings.leading; r.dataset.nav = settings.nav; r.dataset.title = settings.title;
           document.body.classList.toggle('dark', isDark());
           document.body.classList.toggle('reduce-motion', settings.motion === 'reduced');
           document.body.classList.toggle('zen', settings.zen);
           document.body.classList.toggle('no-toc', !settings.toc);
           document.body.classList.toggle('no-progress', !settings.progress);
+          document.body.classList.toggle('close', !settings.menu); // 左侧菜单树收起（docsify 原生 body.close）
           refresh();
         }
         function set(k, v) { settings[k] = v; save(); apply(); }
@@ -864,6 +913,10 @@
         var tt = null;
         function toast(m) { var el = $('station-toast'); el.textContent = m; el.classList.add('show'); clearTimeout(tt); tt = setTimeout(function () { el.classList.remove('show'); }, 1800); }
 
+        // 左侧菜单树收起/展开（settings.menu 持久化 → apply 里切 body.close；抽屉开关/快捷键/命令面板三处同步）
+        function toggleSidebar() { set('menu', !settings.menu); toast(settings.menu ? '左侧菜单 已展开' : '左侧菜单 已收起'); }
+        function typingInField() { var el = document.activeElement; return !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable); }
+
         // 命令面板：复用 docsify 搜索索引
         var moved = false;
         function ensure() { if (moved) return; var s = document.querySelector('.sidebar .search') || document.querySelector('.search'); if (s) { $('station-cmdk-search').appendChild(s); moved = true; } }
@@ -886,6 +939,10 @@
           else if (a === 'settings') openD();
           else if (a === 'top') window.scrollTo({ top: 0, behavior: 'smooth' });
           else if (a === 'home') window.location.hash = '#/';
+          else if (a === 'zen') { set('zen', !settings.zen); toast(settings.zen ? '专注模式 开' : '专注模式 关'); }
+          else if (a === 'sidebar') toggleSidebar();
+          else if (a === 'toc') { set('toc', !settings.toc); toast(settings.toc ? '右侧目录 显示' : '右侧目录 隐藏'); }
+          else if (a === 'progress') { set('progress', !settings.progress); toast(settings.progress ? '进度条 开' : '进度条 关'); }
         });
         var sel = -1;
         function items() { return Array.prototype.slice.call(document.querySelectorAll('#station-cmdk-search .matching-post')); }
@@ -903,7 +960,16 @@
             if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
             else if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
             else if (e.key === 'Enter') { var it = items(); if (sel >= 0 && it[sel]) (it[sel].querySelector('a') || it[sel]).click(); }
+            return;
           }
+          // 单键快捷键：无修饰键、不在输入框、命令面板/设置抽屉未开时才触发（跨平台一致，无需 Cmd/Ctrl）
+          if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey || typingInField()) return;
+          if ($('station-drawer').classList.contains('open')) return;
+          var k = e.key.toLowerCase();
+          if (k === 'f') { e.preventDefault(); set('zen', !settings.zen); toast(settings.zen ? '专注模式 开' : '专注模式 关'); }
+          else if (k === 'm') { e.preventDefault(); toggleSidebar(); }
+          else if (k === 'o') { e.preventDefault(); set('toc', !settings.toc); toast(settings.toc ? '右侧目录 显示' : '右侧目录 隐藏'); }
+          else if (k === 'b') { e.preventDefault(); set('progress', !settings.progress); toast(settings.progress ? '进度条 开' : '进度条 关'); }
         });
 
         // 阅读进度条
@@ -959,6 +1025,18 @@
         plugins: [
           function (hook) {
             hook.doneEach(function () {
+              // 左侧菜单树滚动条：docsify 动态生成 .sidebar，首次渲染后绑定（滚动时显示，停 ~0.7s 隐藏；hover 也显示）
+              (function () {
+                var sb = document.querySelector(".sidebar");
+                if (!sb || sb.__sbBound) return;
+                sb.__sbBound = true;
+                var st = null;
+                sb.addEventListener("scroll", function () {
+                  sb.classList.add("scrolling");
+                  clearTimeout(st);
+                  st = setTimeout(function () { sb.classList.remove("scrolling"); }, 700);
+                }, { passive: true });
+              })();
               // 导航滚动自管：有 ?id= 锚点→滚到该小节；纯切页→回顶（docsify 在本设置下不滚锚点、也会继承上页滚动位置）
               (function () {
                 function go() {
