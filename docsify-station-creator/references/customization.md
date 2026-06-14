@@ -20,15 +20,15 @@ favicon 是内置的**墨黑底 + 白色线稿书**标记（纯色、无渐变�
 
 ## 添加代码语言高亮
 
-已内置语言（模板默认全部加载，与 resources 仓库 `prism/components/` 一致）：
+已内置语言（模板默认全部加载，与 cdn 仓库 `libs/prism/components/` 一致）：
 `bash` · `yaml` · `json` · `json5` · `javascript` · `typescript` · `jsx` · `tsx` · `css` · `scss` · `python` · `java` · `kotlin` · `go` · `rust` · `sql` · `docker` · `markdown`。`html`/`xml` 等 markup 已在 Prism 核心内置，无需单独加载。
 
-需要别的语言时（资源走自托管仓库 `garveyhu.github.io/resources`，不用 CDN）两步：
-1. 把语言组件放进 resources 仓库 `prism/components/prism-[语言].min.js` 并 `git push`（Pages 自动更新）。
+需要别的语言时（资源走自托管仓库 `cdn.archeruuu.com/libs`，不用 CDN）两步：
+1. 把语言组件放进 cdn 仓库 `libs/prism/components/prism-[语言].min.js` 并 `git push`（Pages 自动更新）。
 2. 在 `docs/docsify/index.html` 的 `<!-- 代码高亮 -->` 部分加一行（注意 Prism 依赖顺序，如 `tsx` 要在 `jsx`/`typescript` 之后）：
 
 ```html
-<script src="https://garveyhu.github.io/resources/prism/components/prism-[语言].min.js"></script>
+<script src="https://cdn.archeruuu.com/libs/prism/components/prism-[语言].min.js"></script>
 ```
 
 ## Markdown 编写规范
@@ -76,7 +76,7 @@ const hello = "world";
 
 ### 数学公式（KaTeX）
 
-支持 LaTeX 公式，由自托管的 KaTeX（`garveyhu.github.io/resources/katex`）+ docsify-katex 渲染，不依赖外部 CDN：
+支持 LaTeX 公式，由自托管的 KaTeX（`cdn.archeruuu.com/libs/katex`）+ docsify-katex 渲染，不依赖外部 CDN：
 
 ```markdown
 行内：$E = mc^2$、$\sqrt{d_k}$。
@@ -84,7 +84,7 @@ const hello = "world";
 $$ \text{Attention}(Q,K,V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right) V $$
 ```
 
-`$...$` 行内、`$$...$$` 块级。新增其它公式无需改动；如需升级 KaTeX，更新 resources 仓库 `katex/`（含 `fonts/`）即可。
+`$...$` 行内、`$$...$$` 块级。新增其它公式无需改动；如需升级 KaTeX，更新 cdn 仓库 `libs/katex/`（含 `fonts/`）即可。
 
 ### 中文加粗（自动修复）
 

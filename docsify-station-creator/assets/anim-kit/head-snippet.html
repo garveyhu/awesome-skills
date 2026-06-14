@@ -9,10 +9,10 @@
 
 <!-- ② 加在 </body> 之前：动画引擎库 + 框架 + 各动画 + 挂载钩子 -->
 
-<!-- 动画引擎库：GSAP 必需，从自托管 resources 仓库引（勿引外部 CDN）。
-     若新动画用到 D3 / anime，先把库放进 resources 仓库再引本仓库地址，同样不引外部 CDN。 -->
-<script src="https://garveyhu.github.io/resources/gsap/gsap.min.js"></script>
-<script src="https://garveyhu.github.io/resources/gsap/ScrollTrigger.min.js"></script>
+<!-- 动画引擎库：GSAP 必需，从自托管 CDN 引（勿引第三方 CDN）。
+     若新动画用到 D3 / anime，先把库放进 cdn 仓库 `libs/` 再引，同样不引第三方 CDN。 -->
+<script src="https://cdn.archeruuu.com/libs/gsap/gsap.min.js"></script>
+<script src="https://cdn.archeruuu.com/libs/gsap/ScrollTrigger.min.js"></script>
 <script>if (window.gsap && window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);</script>
 
 <!-- 动画框架 -->

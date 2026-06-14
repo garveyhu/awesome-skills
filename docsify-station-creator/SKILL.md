@@ -181,11 +181,11 @@ docsify 默认靠 HTTP 拉取 markdown，所以**不能直接 `file://` 双击�
 python3 docs/docsify/scripts/build-offline.py
 ```
 
-脚本把**本项目自己的东西**内联进单个 HTML：所有 markdown（`window.__MD__` + XHR/fetch 拦截，**后缀匹配**兼容 file:// 下相对 `_sidebar`/`_coverpage` 被拼前缀的情况）+ 本地相对资源（Animated 的 `assets/anim*`）。**共享第三方库（`garveyhu.github.io/resources` 的 docsify/mermaid/gsap/prism…）保持引用、不内联**。产出 **`docs/docsify/offline.html`**。
+脚本把**本项目自己的东西**内联进单个 HTML：所有 markdown（`window.__MD__` + XHR/fetch 拦截，**后缀匹配**兼容 file:// 下相对 `_sidebar`/`_coverpage` 被拼前缀的情况）+ 本地相对资源（Animated 的 `assets/anim*`）。**共享第三方库（`cdn.archeruuu.com/libs` 的 docsify/mermaid/gsap/prism…）保持引用、不内联**。产出 **`docs/docsify/offline.html`**。
 
 - **小巧**：只内联项目内容/动画（典型几百 KB），不再把 MB 级库塞进去。
 - **双击即开**：file:// 打开即可、无需本地服务器；**需联网**以从 github 取共享库。
-- **只请求你的 github**：除共享库走 `garveyhu.github.io` 外无任何外部请求（无 CDN、无网络字体）。
+- **只请求你的 github**：除共享库走 `cdn.archeruuu.com` 外无任何外部请求（无 CDN、无网络字体）。
 - 文档/动画改动后**重跑脚本**刷新。
 - 正经**部署**直接当静态站托管即可（任意静态服务器，无需 Node）。
 
@@ -206,7 +206,7 @@ docs/docsify/assets/anim/                                          ← 本项目
 
 Paste the two snippets from [assets/anim-kit/head-snippet.html](assets/anim-kit/head-snippet.html):
 - `<head>`: `<link rel="stylesheet" href="assets/anim-kit/anim.css" />`
-- before `</body>`: GSAP from the self-hosted resources repo (`garveyhu.github.io/resources/gsap/…`, **no external CDN** — if a new animation needs D3/anime, add it to the resources repo first) + `anim-core.js` + one `<script src="assets/anim/<name>.js">` **per animation used** + the mount hook (a docsify `doneEach` plugin calling `AnimCore.mountAll()`).
+- before `</body>`: GSAP from the self-hosted CDN (`cdn.archeruuu.com/libs/gsap/…`, **no external CDN** — if a new animation needs D3/anime, add it to the cdn repo first) + `anim-core.js` + one `<script src="assets/anim/<name>.js">` **per animation used** + the mount hook (a docsify `doneEach` plugin calling `AnimCore.mountAll()`).
 
 Theme: `anim.css` defines the CSS color variables for both `body.dark` (this skill's convention) and `html[data-theme]`, and `anim-core.js` reads them from `document.body` — so animations auto-match the site's light/dark theme. No extra wiring.
 
@@ -237,17 +237,17 @@ Theme: `anim.css` defines the CSS color variables for both `body.dark` (this ski
 
 ## 静态资源（自托管，不用第三方 CDN）
 
-所有与文档项目无关的第三方库与主题，统一托管在个人资源仓库 **`garveyhu/resources`**（GitHub Pages），`index.html` 模板里已把全部资源链接写成：
+所有与文档项目无关的第三方库与主题，统一托管在个人 CDN 仓库 **`garveyhu/cdn`** 的 `libs/` 下，经 **Cloudflare Worker 反代 + 自定义域名**访问（非 GitHub Pages、非第三方 CDN）。`index.html` 模板里已把全部资源链接写成：
 
 ```
-https://garveyhu.github.io/resources/<path>
+https://cdn.archeruuu.com/libs/<lib>/<path>
 ```
 
-- 涵盖：`docsify/`（核心 + vue.css 主题 + search/copy-code/pagination 插件）、`prism/components/`、`mermaid/`、`gsap/`、`panzoom/`。
+- 涵盖：`docsify/`（核心 + vue.css 主题 + search/copy-code/pagination 插件）、`prism/components/`、`mermaid/`、`gsap/`、`panzoom/`、`katex/`（含 `fonts/`，数学公式）。
 - **不引用任何第三方 CDN（jsdelivr 等）**；vue.css 已剥除 gstatic 字体 `@import`，站点用系统字体栈，**不加载任何网络字体**。
-- 生成的站点天然只请求 `garveyhu.github.io` + 本站自己的 md / 项目专属动画（`docsify/assets/anim*`）。
-- 要加一个库或 prism 语言：把文件放进 `resources` 仓库对应目录、`git push`（Pages 自动更新），再在 `index.html` 加一行引用即可。
-- 这是个人化托管地址；若换人使用，需自建同结构的 resources 仓库（启用 Pages）并改基地址。
+- 生成的站点天然只请求 `cdn.archeruuu.com` + 本站自己的 md / 项目专属动画（`docsify/assets/anim*`）。
+- 要加一个库或 prism 语言：把文件放进 `cdn` 仓库的 `libs/<lib>/` 对应目录、`git push`（Cloudflare 边缘缓存随源站更新），再在 `index.html` 加一行引用即可。
+- 这是个人化托管地址；若换人使用，需自建同结构的资源仓库（Cloudflare Worker + 域名，或 GitHub Pages）并把基地址改成自己的。
 - 注意：更新 vue.css 等**压缩单行**文件时，剥 `@import` 要用「子串替换」而非「删整行」——整行就是整张表，删行会把样式删空。
 
 ## Customization

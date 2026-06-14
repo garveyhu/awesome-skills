@@ -5,7 +5,7 @@
 策略（配合「共享库托管在 github」的架构）：
   - 内联本项目自己的东西：所有 .md（window.__MD__ + XHR/fetch 拦截，后缀匹配兼容 file://），
     以及本地相对资源（Animated 模式的 assets/anim* 等）—— 这样单个文件就够，不必带 assets 目录。
-  - 共享第三方库（https://garveyhu.github.io/resources/... docsify/mermaid/gsap/prism…）保持引用，
+  - 共享第三方库（https://cdn.archeruuu.com/libs/... docsify/mermaid/gsap/prism…）保持引用，
     不内联 —— 文件小、且跨文档站共享缓存。
   - 不引用任何第三方 CDN、不内联巨型库。
 
@@ -166,7 +166,7 @@ def main():
     open(OUTPUT, "w", encoding="utf-8").write(html)
     print("内联 %d 个 markdown + 本地资源" % len(md))
     print("产物：%s（%.0f KB）" % (OUTPUT, os.path.getsize(OUTPUT) / 1024))
-    print("双击用浏览器打开即可（需联网以从 github 取共享库；本项目内容/动画已内联，只请求 garveyhu.github.io）。")
+    print("双击用浏览器打开即可（需联网以从 github 取共享库；本项目内容/动画已内联，只请求 cdn.archeruuu.com）。")
 
 
 if __name__ == "__main__":
