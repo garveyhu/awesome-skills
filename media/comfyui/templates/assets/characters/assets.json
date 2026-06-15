@@ -1,0 +1,52 @@
+{
+  "category": "characters",
+  "out_prefix": "characters/hero",
+  "_note": "整套角色动作:① 先在 _base/ 放一张定妆参考图(hero-base.png,t2i 生成或手绘);② 每个动作=一条 item(vars.prompt 写动作),参考图共享在 defaults.vars.image;③ workflow=i2i 走 skill 的 canonical 图像编辑(锁同一角色)。运行:bash scripts/comfyui/batch.sh assets/characters --project <项目> [--variants 3]。参考图路径相对 assets/characters 根。",
+  "defaults": {
+    "workflow": "i2i",
+    "size": [
+      768,
+      768
+    ],
+    "vars": {
+      "image": "_base/hero-base.png"
+    }
+  },
+  "items": [
+    {
+      "name": "idle",
+      "status": "todo",
+      "vars": {
+        "prompt": "the same character standing idle, relaxed, full body, front view, plain white background, keep identical character design and outfit"
+      }
+    },
+    {
+      "name": "walk",
+      "status": "todo",
+      "vars": {
+        "prompt": "the same character in a walking pose, side view, full body, plain white background, keep identical character design and outfit"
+      }
+    },
+    {
+      "name": "run",
+      "status": "todo",
+      "vars": {
+        "prompt": "the same character running mid-stride, dynamic, side view, full body, plain white background, keep identical character design and outfit"
+      }
+    },
+    {
+      "name": "jump",
+      "status": "todo",
+      "vars": {
+        "prompt": "the same character jumping with both arms raised, full body, plain white background, keep identical character design and outfit"
+      }
+    },
+    {
+      "name": "attack",
+      "status": "todo",
+      "vars": {
+        "prompt": "the same character attacking, swinging forward dynamically, full body, plain white background, keep identical character design and outfit"
+      }
+    }
+  ]
+}

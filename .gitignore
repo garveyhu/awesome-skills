@@ -1,42 +1,6 @@
-# Ignore everything by default
-*
+# links —— 自动生成 by tools/skillctl.py
+# 本来源整目录入库（只放我自己的 skill）；仅忽略垃圾文件
 
-# Allow these skills (whitelist)
-!.gitignore
-!README.md
-!README.zh-CN.md
-!CONTRIBUTING.md
-!react-best-practices/
-!react-best-practices/**
-!wiki-creator/
-!wiki-creator/**
-!docsify-station-creator/
-!docsify-station-creator/**
-!fastapi-best-practices/
-!fastapi-best-practices/**
-!website-creator/
-!website-creator/**
-!docker-best-practices/
-!docker-best-practices/**
-!req-to-ai-spec/
-!req-to-ai-spec/**
-!spechub-best-practices/
-!spechub-best-practices/**
-!style-vault/
-!style-vault/**
-!style-vault-sediment/
-!style-vault-sediment/**
-!solution-vault/
-!solution-vault/**
-!self-improving-workflow/
-!self-improving-workflow/**
-!notion-chat-archiver/
-!notion-chat-archiver/**
-!html-diagram/
-!html-diagram/**
-
-# Still ignore packaged .skill files
 *.skill
-
-# Other
 **/.DS_Store
+**/__pycache__/

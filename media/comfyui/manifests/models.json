@@ -1,0 +1,133 @@
+{
+  "comment": "各工作流所需 ComfyUI 模型 + 魔搭(国内)来源。安装:modelscope download --model <id> <file> --local_dir /tmp/dl 后移到对应 dir。别用 hf-mirror 下 Qwen(Xet 走国际)。",
+  "models": [
+    {
+      "for": "t2i (image_z_image_turbo, Z-Image)",
+      "dir": "diffusion_models",
+      "ms": "已随 ComfyUI/Z-Image 安装",
+      "file": "z_image_turbo_bf16.safetensors",
+      "note": "cozy 快出图默认底模"
+    },
+    {
+      "for": "i2i (image_qwen_image_edit_2511, Qwen-Image-Edit)",
+      "dir": "unet",
+      "ms": "unsloth/Qwen-Image-Edit-2511-GGUF",
+      "file": "qwen-image-edit-2511-Q4_K_M.gguf",
+      "size": "12GB"
+    },
+    {
+      "for": "i2i text encoder (qwen_2.5_vl)",
+      "dir": "text_encoders",
+      "ms": "Comfy-Org/Qwen-Image_ComfyUI",
+      "file": "split_files/text_encoders/qwen_2.5_vl_7b.safetensors",
+      "size": "15GB",
+      "note": "fp16;MPS 不支持 fp8"
+    },
+    {
+      "for": "i2i vae (qwen_image_vae)",
+      "dir": "vae",
+      "ms": "Comfy-Org/Qwen-Image_ComfyUI",
+      "file": "split_files/vae/qwen_image_vae.safetensors",
+      "size": "242MB"
+    },
+    {
+      "for": "i2i 4步加速 (Lightning)",
+      "dir": "loras",
+      "ms": "lightx2v/Qwen-Image-Edit-2511-Lightning",
+      "file": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+      "size": "810MB"
+    }
+  ],
+  "custom_nodes": [
+    {
+      "repo": "city96/ComfyUI-GGUF",
+      "why": "加载 GGUF(i2i Qwen-Image-Edit 必需)",
+      "via": "ghproxy 镜像 zip"
+    },
+    {
+      "repo": "(skill 内置) comfyui-nodes/ → ComfyUI/custom_nodes/",
+      "via": "init / setup_matting 复制",
+      "nodes": {
+        "SaveImageClean": "存干净名(无 _00001_),overwrite/increment;可选 name 输入用源图名",
+        "LoadImageNamed": "LoadImage + 额外输出图名",
+        "MaskRefine": "掩膜合成器:keep 并入 / erase 扣掉手绘选区(约定 ImageToMask alpha=1前景,末尾 InvertMask 再 Join)",
+        "RefineRefresh": "IS_CHANGED 强制每次运行重算(MaskEditor 重绘即时生效)",
+        "Cutout(文件夹包+web扩展)": "前置模式选择 auto(RMBG)/text(SAM2),内部只跑选中模型;web/cutout.js 按 mode 显隐参数"
+      }
+    }
+  ],
+  "matting": {
+    "comment": "Mac 本地神经抠图 + 文字/选区抠图整套。一键复刻:COMFYUI_HOME=... bash scripts/setup/setup_matting.sh。全程国内源(ghproxy/清华/魔搭)。",
+    "custom_node": {
+      "repo": "1038lab/ComfyUI-RMBG",
+      "via": "ghproxy 克隆 → ComfyUI/custom_nodes/ComfyUI-RMBG",
+      "provides": "RMBG-2.0/BEN2/INSPYRENET 自动抠 + SAM2/SAM3/GroundingDINO 文字选取 + Florence2 + SDMatte"
+    },
+    "python_deps": {
+      "via": "VIRTUAL_ENV=<ComfyUI>/.venv uv pip install -i 清华源",
+      "pkgs": [
+        "huggingface-hub",
+        "transparent-background",
+        "segment-anything",
+        "groundingdino-py",
+        "opencv-python",
+        "onnxruntime",
+        "protobuf",
+        "hydra-core",
+        "omegaconf",
+        "iopath",
+        "ftfy",
+        "modelscope"
+      ],
+      "pin": "transformers==4.49.0(关键降级:GroundingDINO/Florence2 在 transformers 5.x 上报 get_head_mask/forced_bos_token_id;4.49 兼容,Z-Image/Qwen-Image-Edit 出图不受影响,已验证)",
+      "skip": "onnxruntime-gpu(CUDA,Mac 不装)"
+    },
+    "models": [
+      {
+        "name": "RMBG-2.0(自动抠主力)",
+        "ms": "briaai/RMBG-2.0",
+        "files": "config.json model.safetensors birefnet.py BiRefNet_config.py",
+        "dir": "models/RMBG/RMBG-2.0",
+        "size": "~844MB"
+      },
+      {
+        "name": "SAM2 tiny(文字选取的分割)",
+        "ms": "1038lab/sam2",
+        "files": "sam2.1_hiera_tiny.safetensors",
+        "dir": "models/sam2",
+        "size": "~156MB"
+      },
+      {
+        "name": "GroundingDINO SwinT(文字→框)",
+        "ms": "1038lab/GroundingDINO",
+        "files": "groundingdino_swint_ogc.safetensors GroundingDINO_SwinT_OGC.cfg.py",
+        "dir": "models/grounding-dino",
+        "size": "~700MB"
+      },
+      {
+        "name": "bert-base-uncased(GroundingDINO 文本编码器必需)",
+        "ms": "google-bert/bert-base-uncased",
+        "files": "config.json model.safetensors tokenizer*.json vocab.txt",
+        "dir": "~/.cache/huggingface/hub/models--bert-base-uncased/snapshots/<hash>(+ refs/main 写该 hash)",
+        "size": "~440MB"
+      },
+      {
+        "name": "BiRefNet(内置 RemoveBackground 节点用,可选)",
+        "ms": "可选",
+        "files": "BiRefNet.safetensors",
+        "dir": "models/background_removal",
+        "note": "RMBG-2.0 已够;内置链需配 InvertMask"
+      }
+    ],
+    "patches": [
+      {
+        "file": "<venv>/.../groundingdino/models/GroundingDINO/bertwarper.py",
+        "what": "get_head_mask 兼容 shim(transformers>=5 删了该方法);降到 4.49 则非必需"
+      }
+    ],
+    "env": {
+      "run.sh": "export HF_ENDPOINT=https://hf-mirror.com / HF_HUB_OFFLINE=1 / TRANSFORMERS_OFFLINE=1(只用本地缓存,模型一律手动从魔搭下)"
+    },
+    "mac_notes": "SAM3Segment 需 triton(CUDA)→ Mac 不可用;文字选取走 SAM2+GroundingDINO,device 选 CPU(Auto/GPU 在 MPS 有 dtype bug);GroundingDINO 提示词必须英文名词。"
+  }
+}

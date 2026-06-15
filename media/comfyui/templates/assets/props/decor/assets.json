@@ -1,0 +1,53 @@
+{
+  "category": "props/decor",
+  "out_prefix": "props/decor",
+  "defaults": {
+    "workflow": "t2i",
+    "style_prefix": "16-bit cozy pixel art, warm palette, crisp clean pixels, a single isolated",
+    "suffix": "clearly coloured, flat even lighting, centered, on a solid uniform magenta background, nothing else, no text",
+    "size": [
+      768,
+      768
+    ],
+    "keyflat": {
+      "tol": 95
+    },
+    "pixelize": {
+      "px": 120,
+      "colors": 32
+    },
+    "variants": 3
+  },
+  "items": [
+    {
+      "name": "table",
+      "status": "todo",
+      "prompt": "a sturdy wooden table"
+    },
+    {
+      "name": "chair",
+      "status": "todo",
+      "prompt": "a simple wooden chair"
+    },
+    {
+      "name": "barrel",
+      "status": "todo",
+      "prompt": "a wooden barrel with iron bands"
+    },
+    {
+      "name": "lamp",
+      "status": "todo",
+      "prompt": "a small lamp with a warm glow"
+    },
+    {
+      "name": "potted-plant",
+      "status": "todo",
+      "prompt": "a small potted green plant"
+    },
+    {
+      "name": "chest",
+      "status": "todo",
+      "prompt": "a closed wooden treasure chest with brass fittings"
+    }
+  ]
+}

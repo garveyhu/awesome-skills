@@ -1,0 +1,4 @@
+__pycache__/
+state/inventory.json
+comfy_outputs/
+*.pyc

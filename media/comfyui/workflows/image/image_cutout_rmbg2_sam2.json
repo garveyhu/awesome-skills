@@ -1,0 +1,713 @@
+{
+  "id": "96a0792d-0d0d-4d3c-9692-f3ce37966380",
+  "revision": 0,
+  "last_node_id": 9,
+  "last_link_id": 11,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImageNamed",
+      "pos": [
+        40,
+        200
+      ],
+      "size": [
+        320,
+        334
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "COMBO",
+          "widget": {
+            "name": "image"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "upload",
+          "name": "upload",
+          "type": "IMAGEUPLOAD",
+          "widget": {
+            "name": "upload"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "图像",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            1,
+            3,
+            8
+          ]
+        },
+        {
+          "localized_name": "遮罩",
+          "name": "MASK",
+          "type": "MASK",
+          "slot_index": 1,
+          "links": [
+            4
+          ]
+        },
+        {
+          "localized_name": "name",
+          "name": "name",
+          "type": "STRING",
+          "slot_index": 2,
+          "links": [
+            11
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImageNamed"
+      },
+      "widgets_values": [
+        "example.png",
+        "image"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "Cutout",
+      "pos": [
+        440,
+        200
+      ],
+      "size": [
+        340,
+        178
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        },
+        {
+          "localized_name": "mode",
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "text_prompt",
+          "name": "text_prompt",
+          "type": "STRING",
+          "widget": {
+            "name": "text_prompt"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "rmbg_model",
+          "name": "rmbg_model",
+          "type": "COMBO",
+          "widget": {
+            "name": "rmbg_model"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "sensitivity",
+          "name": "sensitivity",
+          "type": "FLOAT",
+          "widget": {
+            "name": "sensitivity"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "mask_offset",
+          "name": "mask_offset",
+          "type": "INT",
+          "widget": {
+            "name": "mask_offset"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "mask_blur",
+          "name": "mask_blur",
+          "type": "INT",
+          "widget": {
+            "name": "mask_blur"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "refine_foreground",
+          "name": "refine_foreground",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "refine_foreground"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "sam2_model",
+          "name": "sam2_model",
+          "type": "COMBO",
+          "widget": {
+            "name": "sam2_model"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "dino_model",
+          "name": "dino_model",
+          "type": "COMBO",
+          "widget": {
+            "name": "dino_model"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "device",
+          "name": "device",
+          "type": "COMBO",
+          "widget": {
+            "name": "device"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "threshold",
+          "name": "threshold",
+          "type": "FLOAT",
+          "widget": {
+            "name": "threshold"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "图像",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            2
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Cutout"
+      },
+      "widgets_values": [
+        "auto 自动(RMBG)",
+        "the subject",
+        "RMBG-2.0",
+        1,
+        0,
+        0,
+        false,
+        "sam2.1_hiera_tiny",
+        "GroundingDINO_SwinT_OGC (694MB)",
+        "CPU",
+        0.3
+      ]
+    },
+    {
+      "id": 3,
+      "type": "ImageToMask",
+      "pos": [
+        440,
+        720
+      ],
+      "size": [
+        320,
+        220
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "图像",
+          "name": "image",
+          "type": "IMAGE",
+          "link": 2
+        },
+        {
+          "localized_name": "通道",
+          "name": "channel",
+          "type": "COMBO",
+          "widget": {
+            "name": "channel"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "遮罩",
+          "name": "MASK",
+          "type": "MASK",
+          "slot_index": 0,
+          "links": [
+            5
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageToMask"
+      },
+      "widgets_values": [
+        "alpha"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "RefineRefresh",
+      "pos": [
+        900,
+        200
+      ],
+      "size": [
+        320,
+        220
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "image",
+          "name": "image",
+          "type": "IMAGE",
+          "link": 3
+        },
+        {
+          "localized_name": "mask",
+          "name": "mask",
+          "type": "MASK",
+          "link": 4
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "图像",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": []
+        },
+        {
+          "localized_name": "遮罩",
+          "name": "MASK",
+          "type": "MASK",
+          "slot_index": 1,
+          "links": [
+            6
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "RefineRefresh"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 5,
+      "type": "MaskRefine",
+      "pos": [
+        900,
+        520
+      ],
+      "size": [
+        320,
+        220
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "base_mask",
+          "name": "base_mask",
+          "type": "MASK",
+          "link": 5
+        },
+        {
+          "localized_name": "paint_mask",
+          "name": "paint_mask",
+          "type": "MASK",
+          "link": 6
+        },
+        {
+          "localized_name": "mode",
+          "name": "mode",
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "invert_paint",
+          "name": "invert_paint",
+          "type": "BOOLEAN",
+          "widget": {
+            "name": "invert_paint"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "遮罩",
+          "name": "MASK",
+          "type": "MASK",
+          "slot_index": 0,
+          "links": [
+            7
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "MaskRefine"
+      },
+      "widgets_values": [
+        "keep 补:涂哪留哪",
+        false
+      ]
+    },
+    {
+      "id": 6,
+      "type": "InvertMask",
+      "pos": [
+        1340,
+        200
+      ],
+      "size": [
+        320,
+        220
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "遮罩",
+          "name": "mask",
+          "type": "MASK",
+          "link": 7
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "遮罩",
+          "name": "MASK",
+          "type": "MASK",
+          "slot_index": 0,
+          "links": [
+            9
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "InvertMask"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 8,
+      "type": "SaveImageClean",
+      "pos": [
+        1340,
+        760
+      ],
+      "size": [
+        320,
+        220
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "images",
+          "name": "images",
+          "type": "IMAGE",
+          "link": 10
+        },
+        {
+          "localized_name": "name",
+          "name": "name",
+          "shape": 7,
+          "type": "STRING",
+          "link": 11
+        },
+        {
+          "localized_name": "filename_prefix",
+          "name": "filename_prefix",
+          "type": "STRING",
+          "widget": {
+            "name": "filename_prefix"
+          },
+          "link": null
+        },
+        {
+          "localized_name": "mode",
+          "name": "mode",
+          "shape": 7,
+          "type": "COMBO",
+          "widget": {
+            "name": "mode"
+          },
+          "link": null
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImageClean"
+      },
+      "widgets_values": [
+        "cutout",
+        "increment"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "JoinImageWithAlpha",
+      "pos": [
+        1340,
+        480
+      ],
+      "size": [
+        320,
+        220
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "localized_name": "图像",
+          "name": "image",
+          "type": "IMAGE",
+          "link": 8
+        },
+        {
+          "localized_name": "阿尔法",
+          "name": "alpha",
+          "type": "MASK",
+          "link": 9
+        }
+      ],
+      "outputs": [
+        {
+          "localized_name": "图像",
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "slot_index": 0,
+          "links": [
+            10
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "JoinImageWithAlpha"
+      },
+      "widgets_values": []
+    },
+    {
+      "id": 9,
+      "type": "Note",
+      "_groupify": true,
+      "pos": [
+        40,
+        -80
+      ],
+      "size": [
+        1080,
+        240
+      ],
+      "flags": {},
+      "order": 999,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "color": "#432",
+      "bgcolor": "#653",
+      "widgets_values": [
+        "抠图 · Cutout(RMBG-2.0 自动 / SAM2 文字)\n\n① 左上角选图\n② Cutout 的 mode 选 auto(自动)或 text(文字,英文名词如 dress/person);只跑选中模型\n③ 想修就右键『加载图像』→ 遮罩编辑器涂区域,MaskRefine keep补/erase擦(反了开 invert_paint)\n④ 运行 → 输出 cutout/<源图名>"
+      ]
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      2,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      1,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      4,
+      1,
+      1,
+      4,
+      1,
+      "MASK"
+    ],
+    [
+      5,
+      3,
+      0,
+      5,
+      0,
+      "MASK"
+    ],
+    [
+      6,
+      4,
+      1,
+      5,
+      1,
+      "MASK"
+    ],
+    [
+      7,
+      5,
+      0,
+      6,
+      0,
+      "MASK"
+    ],
+    [
+      8,
+      1,
+      0,
+      7,
+      0,
+      "IMAGE"
+    ],
+    [
+      9,
+      6,
+      0,
+      7,
+      1,
+      "MASK"
+    ],
+    [
+      10,
+      7,
+      0,
+      8,
+      0,
+      "IMAGE"
+    ],
+    [
+      11,
+      1,
+      2,
+      8,
+      1,
+      "STRING"
+    ]
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "title": "① 上传图片(左上选图)",
+      "bounding": [
+        16,
+        144,
+        368,
+        414
+      ],
+      "color": "#3f789e",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 2,
+      "title": "② 抠图模式 auto/text",
+      "bounding": [
+        416,
+        144,
+        388,
+        820
+      ],
+      "color": "#444",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 3,
+      "title": "③ 手绘选区微调(可选)",
+      "bounding": [
+        876,
+        144,
+        368,
+        620
+      ],
+      "color": "#3f789e",
+      "font_size": 24,
+      "flags": {}
+    },
+    {
+      "id": 4,
+      "title": "④ 合成 & 输出",
+      "bounding": [
+        1316,
+        144,
+        368,
+        860
+      ],
+      "color": "#3f789e",
+      "font_size": 24,
+      "flags": {}
+    }
+  ],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 0.6951612903225807,
+      "offset": [
+        654.7047201276104,
+        139.13699970997672
+      ]
+    }
+  },
+  "version": 0.4
+}

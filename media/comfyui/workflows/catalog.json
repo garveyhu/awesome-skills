@@ -1,0 +1,182 @@
+{
+  "_comment": "工作流注册表(单一真源)。每条:category 媒体分类 / task(X2Y:t2i 文生图/i2i 图生图编辑/i2v 图生视频/matte 抠图) / file 路径 / vars CLI注入占位 / models 需要的模型(含魔搭下载信息,install 用)/ nodes 自定义节点 / note。新增工作流:把 json 丢进对应媒体目录 + 在此加一条 → comfy.py install <name> 自动备齐模型与节点。",
+  "defaults": {
+    "t2i": "image_z_image_turbo",
+    "i2i": "image_qwen_image_edit_2511",
+    "i2v": "video_wan2_2_5B_ti2v",
+    "matte": "image_cutout_rmbg2_sam2"
+  },
+  "workflows": {
+    "image_z_image_turbo": {
+      "category": "image",
+      "task": "t2i",
+      "default": true,
+      "file": "image/image_z_image_turbo.json",
+      "vars": {
+        "prompt": "<prompt>",
+        "width": "<width>",
+        "height": "<height>"
+      },
+      "seed": true,
+      "models": [
+        {
+          "name": "Z-Image Turbo 套件",
+          "ms": "(随 ComfyUI/Z-Image 安装)",
+          "dir": "models/diffusion_models",
+          "files": [
+            "z_image_turbo_bf16.safetensors"
+          ],
+          "note": "+ qwen_3_4b 文本编码器 + ae VAE"
+        }
+      ],
+      "nodes": [],
+      "note": "Z-Image Turbo 8步文生图(快)"
+    },
+    "image_qwen_image_edit_2511": {
+      "category": "image",
+      "task": "i2i",
+      "default": true,
+      "file": "image/image_qwen_image_edit_2511.json",
+      "vars": {
+        "prompt": "<prompt>",
+        "image": "<image>"
+      },
+      "seed": true,
+      "models": [
+        {
+          "name": "Qwen-Image-Edit GGUF",
+          "ms": "unsloth/Qwen-Image-Edit-2511-GGUF",
+          "files": [
+            "qwen-image-edit-2511-Q4_K_M.gguf"
+          ],
+          "dir": "models/unet"
+        },
+        {
+          "name": "qwen_2.5_vl 文本编码器",
+          "ms": "Comfy-Org/Qwen-Image_ComfyUI",
+          "files": [
+            "split_files/text_encoders/qwen_2.5_vl_7b.safetensors"
+          ],
+          "dir": "models/text_encoders"
+        },
+        {
+          "name": "qwen_image_vae",
+          "ms": "Comfy-Org/Qwen-Image_ComfyUI",
+          "files": [
+            "split_files/vae/qwen_image_vae.safetensors"
+          ],
+          "dir": "models/vae"
+        },
+        {
+          "name": "Qwen-Edit 4步 Lightning LoRA",
+          "ms": "lightx2v/Qwen-Image-Edit-2511-Lightning",
+          "files": [
+            "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors"
+          ],
+          "dir": "models/loras"
+        }
+      ],
+      "nodes": [
+        "ComfyUI-GGUF",
+        "(skill 内置) comfyui-nodes"
+      ],
+      "note": "Qwen-Image-Edit 自然语言改图(图生图编辑)"
+    },
+    "image_cutout_rmbg2_sam2": {
+      "category": "image",
+      "task": "matte",
+      "default": true,
+      "file": "image/image_cutout_rmbg2_sam2.json",
+      "vars": {
+        "image": "<image>"
+      },
+      "models": [
+        {
+          "name": "RMBG-2.0(自动抠)",
+          "ms": "briaai/RMBG-2.0",
+          "files": [
+            "config.json",
+            "model.safetensors",
+            "birefnet.py",
+            "BiRefNet_config.py"
+          ],
+          "dir": "models/RMBG/RMBG-2.0"
+        },
+        {
+          "name": "SAM2 tiny(文字选取分割)",
+          "ms": "1038lab/sam2",
+          "files": [
+            "sam2.1_hiera_tiny.safetensors"
+          ],
+          "dir": "models/sam2"
+        },
+        {
+          "name": "GroundingDINO SwinT(文字→框)",
+          "ms": "1038lab/GroundingDINO",
+          "files": [
+            "groundingdino_swint_ogc.safetensors",
+            "GroundingDINO_SwinT_OGC.cfg.py"
+          ],
+          "dir": "models/grounding-dino"
+        },
+        {
+          "name": "bert-base-uncased(DINO 文本编码器)",
+          "ms": "google-bert/bert-base-uncased",
+          "files": [
+            "config.json",
+            "model.safetensors",
+            "tokenizer.json",
+            "tokenizer_config.json",
+            "vocab.txt"
+          ],
+          "dir": "HF_CACHE/models--bert-base-uncased"
+        }
+      ],
+      "nodes": [
+        "ComfyUI-RMBG",
+        "(skill 内置) comfyui-nodes"
+      ],
+      "cli": "comfy.py matte 图 出 [--model RMBG-2.0 | --text dress];画布交互用本工作流",
+      "note": "RMBG-2.0 自动 / SAM2 文字抠图(画布:auto/text/手绘三合一)"
+    },
+    "video_wan2_2_5B_ti2v": {
+      "category": "video",
+      "task": "i2v",
+      "default": true,
+      "file": "video/video_wan2_2_5B_ti2v.json",
+      "vars": {
+        "prompt": "<prompt>",
+        "image": "<image>"
+      },
+      "seed": true,
+      "models": [
+        {
+          "name": "Wan 2.2 TI2V 5B",
+          "ms": "Comfy-Org/Wan_2.2_ComfyUI_Repackaged",
+          "files": [
+            "split_files/diffusion_models/wan2.2_ti2v_5B_fp16.safetensors"
+          ],
+          "dir": "models/diffusion_models"
+        },
+        {
+          "name": "umt5 文本编码器",
+          "ms": "Comfy-Org/Wan_2.2_ComfyUI_Repackaged",
+          "files": [
+            "split_files/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors"
+          ],
+          "dir": "models/text_encoders"
+        },
+        {
+          "name": "wan2.2 VAE",
+          "ms": "Comfy-Org/Wan_2.2_ComfyUI_Repackaged",
+          "files": [
+            "split_files/vae/wan2.2_vae.safetensors"
+          ],
+          "dir": "models/vae"
+        }
+      ],
+      "nodes": [],
+      "note": "Wan 2.2 图生视频(Mac 慢,慎用)"
+    }
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "_comment": "统一抠图。流程:加载图像 → Cutout(选模式 auto/text,只跑选中的模型)→ ImageToMask → MaskRefine(把手绘选区 keep补/erase擦 叠上去)→ InvertMask → Join → 命名保存。手绘:右键加载图像→遮罩编辑器涂区域(选区只是辅助微调,叠在 auto/text 上)。RefineRefresh 让重绘即时生效。",
+  "1": {
+    "class_type": "LoadImageNamed",
+    "inputs": {
+      "image": "example.png"
+    }
+  },
+  "2": {
+    "class_type": "Cutout",
+    "inputs": {
+      "image": [
+        "1",
+        0
+      ],
+      "mode": "auto 自动(RMBG)",
+      "rmbg_model": "RMBG-2.0",
+      "sensitivity": 1.0,
+      "mask_offset": 0,
+      "mask_blur": 0,
+      "refine_foreground": false,
+      "text_prompt": "the subject",
+      "sam2_model": "sam2.1_hiera_tiny",
+      "dino_model": "GroundingDINO_SwinT_OGC (694MB)",
+      "device": "CPU",
+      "threshold": 0.3
+    }
+  },
+  "3": {
+    "class_type": "ImageToMask",
+    "inputs": {
+      "image": [
+        "2",
+        0
+      ],
+      "channel": "alpha"
+    }
+  },
+  "4": {
+    "class_type": "RefineRefresh",
+    "inputs": {
+      "image": [
+        "1",
+        0
+      ],
+      "mask": [
+        "1",
+        1
+      ]
+    }
+  },
+  "5": {
+    "class_type": "MaskRefine",
+    "inputs": {
+      "base_mask": [
+        "3",
+        0
+      ],
+      "paint_mask": [
+        "4",
+        1
+      ],
+      "mode": "keep 补:涂哪留哪",
+      "invert_paint": false
+    }
+  },
+  "6": {
+    "class_type": "InvertMask",
+    "inputs": {
+      "mask": [
+        "5",
+        0
+      ]
+    }
+  },
+  "7": {
+    "class_type": "JoinImageWithAlpha",
+    "inputs": {
+      "image": [
+        "1",
+        0
+      ],
+      "alpha": [
+        "6",
+        0
+      ]
+    }
+  },
+  "8": {
+    "class_type": "SaveImageClean",
+    "inputs": {
+      "images": [
+        "7",
+        0
+      ],
+      "filename_prefix": "cutout",
+      "name": [
+        "1",
+        2
+      ],
+      "mode": "increment"
+    }
+  }
+}
