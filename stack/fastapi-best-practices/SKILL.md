@@ -99,9 +99,10 @@ target_metadata = Base.metadata
 
 ### 步骤 6: 创建启动脚本
 
-`run.sh`：
+`scripts/run.sh`（放根目录的 `scripts/` 下，不放项目根）：
 ```bash
 #!/bin/bash
+cd "$(dirname "$0")/.." || exit 1
 uv sync
 uv run python -m {pkg}.app.main
 ```

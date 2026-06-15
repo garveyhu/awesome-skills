@@ -47,7 +47,8 @@
 │   └── env.py
 ├── alembic.ini
 ├── pyproject.toml
-├── run.sh
+├── scripts/
+│   └── run.sh                      # 启动脚本（放 scripts/，不放项目根）
 └── .gitignore
 ```
 
@@ -797,10 +798,13 @@ target_metadata = Base.metadata
 
 ---
 
-### `run.sh`
+### `scripts/run.sh`
+
+放在根目录 `scripts/` 下；脚本先 `cd` 到项目根，便于在任意位置调用：
 
 ```bash
 #!/bin/bash
+cd "$(dirname "$0")/.." || exit 1
 uv sync
 uv run python -m {pkg}.app.main
 ```

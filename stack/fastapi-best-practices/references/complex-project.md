@@ -71,7 +71,8 @@ UV workspace 多包架构，适合大型系统。参考 Sage 项目的 micro-ker
 │   └── env.py
 ├── alembic.ini
 ├── pyproject.toml                   # UV workspace 根
-└── run.sh
+└── scripts/
+    └── run.sh                       # 启动脚本（放 scripts/，不放项目根）
 ```
 
 > **禁止物理外键**：所有关联字段只用 `Column(Integer, index=True, comment="关联 xxx 表 ID")`，不使用 `ForeignKey()`。适用于所有数据库类型（SQLite / MySQL / PostgreSQL）。
