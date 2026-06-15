@@ -28,7 +28,7 @@
         background: #252526;
       }
       body.dark .sidebar-toggle {
-        background: #252526;
+        background: transparent;
       }
       body.dark .sidebar-nav a {
         color: #aaa;
@@ -296,14 +296,13 @@
       .iv-overlay {
         position: fixed; inset: 0; z-index: 9999;
         background: rgba(248, 250, 252, 0.97);
-        display: flex; align-items: center; justify-content: center;
         overflow: hidden; opacity: 0; transition: opacity 0.2s;
       }
       .iv-overlay.active { opacity: 1; }
       body.dark .iv-overlay { background: rgba(16, 20, 30, 0.97); }
-      .iv-stage { cursor: grab; will-change: transform; touch-action: none; }
+      .iv-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; cursor: grab; touch-action: none; }
       .iv-stage:active { cursor: grabbing; }
-      .iv-stage img { display: block; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+      .iv-stage img, .iv-stage svg { display: block; user-select: none; -webkit-user-drag: none; pointer-events: none; max-width: none; }
       .iv-toolbar {
         position: fixed; top: 16px; right: 16px; z-index: 10000;
         display: flex; gap: 6px; padding: 6px;
@@ -1010,22 +1009,6 @@
         // 右侧目录生成插件
         plugins: [
           function (hook) {
-            // 修复 marked 的 CJK 加粗 bug：中文标点紧贴 ** 紧贴 ASCII 标点时（如 转型：**"…"**）不识别加粗。
-            // 渲染前在交界处插入发丝空格 U+200A（几乎不可见），跳过代码块与含行内代码的行，避免误伤。
-            hook.beforeEach(function (md) {
-              var CJK = '—‘-‟…　-〿㐀-鿿＀-￯';
-              var AP = '"\'\\(\\[\\)\\]\\.,!?;:<>';
-              var reO = new RegExp('([' + CJK + '])(\\*{1,3})(?=[' + AP + '])', 'g');
-              var reC = new RegExp('([' + AP + '])(\\*{1,3})(?=[' + CJK + '])', 'g');
-              var lines = md.split('\n'), inF = false, out = [];
-              for (var i = 0; i < lines.length; i++) {
-                var ln = lines[i];
-                if (/^\s*(```|~~~)/.test(ln)) { inF = !inF; out.push(ln); continue; }
-                if (inF || ln.indexOf('`') >= 0) { out.push(ln); continue; }
-                out.push(ln.replace(reO, '$1 $2').replace(reC, '$1$2 '));
-              }
-              return out.join('\n');
-            });
             hook.doneEach(function () {
               // 左侧菜单树滚动条：docsify 动态生成 .sidebar，首次渲染后绑定（滚动时显示，停 ~0.7s 隐藏；hover 也显示）
               (function () {
@@ -1286,12 +1269,11 @@
           var rect = svg.getBoundingClientRect();
           var natW = (vb && vb.width) || rect.width || 800;
           var natH = (vb && vb.height) || rect.height || 600;
-          var blob = new Blob([new XMLSerializer().serializeToString(svg)], { type: "image/svg+xml;charset=utf-8" });
-          var url = URL.createObjectURL(blob);
-
           var overlay = document.createElement("div"); overlay.className = "iv-overlay";
           var stage = document.createElement("div"); stage.className = "iv-stage";
-          var img = document.createElement("img"); img.src = url; img.draggable = false;
+          // 直接克隆 SVG 节点（矢量），而非转成 <img src=svg-blob> 光栅图——放大时按矢量重渲染，不糊
+          var img = svg.cloneNode(true); img.removeAttribute("class"); img.removeAttribute("style");
+          img.setAttribute("preserveAspectRatio", "xMidYMid meet"); img.style.display = "block";
           stage.appendChild(img); overlay.appendChild(stage);
 
           var bar = document.createElement("div"); bar.className = "iv-toolbar";
@@ -1315,7 +1297,21 @@
           fit();
 
           var pz = Panzoom(stage, { maxScale: 16, minScale: 0.4, step: 0.3, cursor: "grab" });
-          stage.addEventListener("wheel", function (e) { pz.zoomWithWheel(e); }, { passive: false });
+          function _clamp(s) { return Math.max(0.4, Math.min(16, s)); }
+          // 滚轮缩放：绑全屏 overlay，任意位置可触发；以光标为锚点（zoomToPoint 围绕光标，不飘左上）
+          overlay.addEventListener("wheel", function (e) {
+            e.preventDefault();
+            pz.zoomToPoint(_clamp(pz.getScale() * (e.deltaY < 0 ? 1.18 : 1 / 1.18)), e);
+          }, { passive: false });
+          // 双指捏合：绑全屏 overlay，任意位置可触发；以双指中心为锚点（panzoom 默认不接管 pinch）
+          var _pd = 0, _ps = 1;
+          overlay.addEventListener("touchstart", function (e) {
+            if (e.touches.length === 2) { var a = e.touches[0], b = e.touches[1]; _pd = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY); _ps = pz.getScale(); }
+          }, { passive: false });
+          overlay.addEventListener("touchmove", function (e) {
+            if (e.touches.length === 2 && _pd) { e.preventDefault(); var a = e.touches[0], b = e.touches[1]; var d = Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY); pz.zoomToPoint(_clamp(_ps * d / _pd), { clientX: (a.clientX + b.clientX) / 2, clientY: (a.clientY + b.clientY) / 2 }); }
+          }, { passive: false });
+          overlay.addEventListener("touchend", function (e) { if (e.touches.length < 2) _pd = 0; });
           requestAnimationFrame(function () { overlay.classList.add("active"); });
 
           function doFit() { fit(); pz.reset({ animate: true }); }
@@ -1323,13 +1319,21 @@
           bOut.onclick = function () { pz.zoomOut({ animate: true }); };
           bFit.onclick = doFit;
           stage.addEventListener("dblclick", doFit);
+          // 移动端双击适配（touch 无 dblclick，检测两次快速、相近位置的单指轻点）
+          var _lastTap = 0, _ltX = 0, _ltY = 0;
+          stage.addEventListener("touchend", function (e) {
+            if (e.touches.length !== 0 || e.changedTouches.length !== 1) return;
+            var t = e.changedTouches[0], now = Date.now();
+            if (now - _lastTap < 320 && Math.abs(t.clientX - _ltX) < 30 && Math.abs(t.clientY - _ltY) < 30) { doFit(); _lastTap = 0; }
+            else { _lastTap = now; _ltX = t.clientX; _ltY = t.clientY; }
+          });
           window.addEventListener("resize", doFit);
 
           function close() {
             overlay.classList.remove("active");
             document.removeEventListener("keydown", onKey);
             window.removeEventListener("resize", doFit);
-            setTimeout(function () { try { pz.destroy(); } catch (e) {} overlay.remove(); URL.revokeObjectURL(url); }, 200);
+            setTimeout(function () { try { pz.destroy(); } catch (e) {} overlay.remove(); }, 200);
           }
           bClose.onclick = close;
           overlay.addEventListener("click", function (e) { if (e.target === overlay) close(); });
