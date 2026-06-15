@@ -50,19 +50,20 @@ html[data-theme='dark'] {
 }
 .anim::after {
   content: attr(data-caption);
-  position: absolute; left: 14px; bottom: 10px;
+  display: block;
+  padding: 2px 16px 12px;
   font-size: 12px; color: var(--fg-mut); pointer-events: none;
 }
 .anim .anim-title {
   font-size: 13px; font-weight: 650; color: var(--fg);
   padding: 12px 16px 0; letter-spacing: .3px;
 }
-.anim .anim-stage { padding: 8px 10px 30px; }
+.anim .anim-stage { padding: 8px 10px 10px; }
 .anim svg { display: block; width: 100%; height: auto; }
 .anim-toolbar { position: absolute; top: 10px; right: 12px; z-index: 5; display: flex; gap: 8px; }
 .anim-btn {
-  font-size: 12px; color: var(--fg-soft); background: var(--bg-elev);
-  border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px; cursor: pointer;
-  transition: color .15s, border-color .15s;
+  font-size: 19px; line-height: 1; color: var(--fg-mut); background: transparent;
+  border: none; padding: 2px 4px; cursor: pointer;
+  transition: color .15s, transform .25s;
 }
-.anim-btn:hover { color: var(--fg); border-color: var(--accent); }
+.anim-btn:hover { color: var(--accent); transform: rotate(-90deg); }

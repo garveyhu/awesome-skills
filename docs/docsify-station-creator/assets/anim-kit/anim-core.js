@@ -60,7 +60,7 @@ window.AnimCore = (function () {
       // 舞台
       var stage = document.createElement('div');
       stage.className = 'anim-stage';
-      stage.style.padding = '8px 10px 30px';
+      stage.style.padding = '8px 10px 10px';
       el.appendChild(stage);
 
       if (!factory) {
@@ -73,7 +73,8 @@ window.AnimCore = (function () {
       bar.className = 'anim-toolbar';
       var replay = document.createElement('button');
       replay.className = 'anim-btn';
-      replay.textContent = '↻ 重播';
+      replay.textContent = '↻';
+      replay.title = '重播';
       bar.appendChild(replay);
       el.appendChild(bar);
 

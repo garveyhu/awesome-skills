@@ -48,6 +48,24 @@ bash ~/.claude/skills/codex-image-gen/scripts/gen-image.sh \
 - 透明背景:prompt 里写 "transparent background" 或 "on a solid green background for chroma key"。
 - 出图后用 Read 工具看一眼成品,不满意就改 prompt 重生成,或追加 `--ref 上一张` 局部调整。
 
+## 批量出图（并发，多张时用这个）
+
+要一次出很多张（系列配图、整套资产）时，**不要串行一张张等**——`gen-image.sh` 是单图工具（一次一张），并发交给批量入口 `scripts/gen-batch.sh`：
+
+1. 为每张图写一个 job 文件：**文件名（去 `.txt`）= 输出图基名，内容 = 完整提示词**。
+   `jobs/01-topic.txt` → 出 `01-topic.png`。
+2. 跑：
+
+```bash
+bash ~/.claude/skills/codex-image-gen/scripts/gen-batch.sh \
+  --jobs <jobs目录> --outdir <输出目录> \
+  [--concurrency 3] [--ref 定妆图.png] [--size 16:9]
+```
+
+- prompt 走文件传入，免命令行转义与长度限制；每个 job 输出独立路径，主路径并发安全；用 FIFO 信号量滚动并发，兼容 macOS 自带 bash 3.2。
+- **`--concurrency` 先从 3 起**：Codex 订阅有服务端速率限制，开太高可能整批被限流。遇报错就降到 1-2，失败的 job 单独重跑即可（已成功的不受影响）。
+- 系列图保持同一角色：所有 job 都带同一张 `--ref` 定妆图。
+
 ## 成本 & 前置
 
 - **走订阅额度,不按张计费**;每张约 1.5w–3w Codex token(agent token 计入 Codex 用量)。

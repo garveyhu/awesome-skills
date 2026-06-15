@@ -256,7 +256,7 @@
           display: none;
         }
         .content {
-          padding-right: 2rem !important;
+          padding-right: 0 !important;
         }
         .theme-toggle-btn {
           right: 20px;
@@ -447,6 +447,13 @@
 
       /* 桌面端隐藏 docsify 自带汉堡折叠键（左下角那条蓝色横条 + 与齿轮冲突） */
       @media (min-width: 769px) { .sidebar-toggle { display: none !important; } }
+      /* 移动端专属适配：保留 docsify 原生菜单树 toggle（左下），把设置齿轮挪到右下，二者不再重叠；正文满宽 + 左右对称内边距 */
+      @media (max-width: 768px) {
+        #station-gear { left: auto; right: 12px; bottom: 10px; }
+        .sidebar-toggle { z-index: 81; }
+        .content { padding-right: 0 !important; padding-left: 0 !important; }
+        .markdown-section { max-width: 100% !important; padding-left: 18px !important; padding-right: 18px !important; }
+      }
 
       /* 设置抽屉 */
       #station-backdrop { position: fixed; inset: 0; background: rgba(4, 8, 16, .42); z-index: 290; opacity: 0; pointer-events: none; transition: opacity .25s; }
