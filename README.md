@@ -47,6 +47,7 @@ These aren't generic "do-anything assistants." Each skill takes a stance: my tec
 |---|---|
 | **comfyui** | Drive a local ComfyUI from natural language for image / video generation, auto-building workflows; model-agnostic, tuned for Apple Silicon |
 | **codex-image-gen** | Generate / edit images via Codex (gpt-image-2), with reference images to lock character & style |
+| **gemini-gen** | Generate images via Gemini member accounts (Nano Banana) over browser cookies — multi-account load-balancing with auto-failover on quota |
 | **browser-gen** | Drive a logged-in Gemini web session for free image / video generation (Veo video · Nano Banana image) |
 | **links-illustrations** | Whimsical hand-drawn Chinese article illustrations featuring the "Little Black" character |
 | **jimeng** | Jimeng / Dreamina image-generation channel |

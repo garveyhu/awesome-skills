@@ -1,6 +1,12 @@
 # links —— 自动生成 by tools/skillctl.py
-# 本来源整目录入库（只放我自己的 skill）；仅忽略垃圾文件
+# 本来源整目录入库（只放我自己的 skill）；仅忽略垃圾文件与本地密钥
 
 *.skill
 **/.DS_Store
 **/__pycache__/
+
+# 本地密钥/账号配置：accounts.json / *.local.* / .env（example 模板照常入库）
+**/accounts.json
+**/*.local.json
+**/*.local.yaml
+**/.env

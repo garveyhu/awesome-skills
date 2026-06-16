@@ -38,13 +38,13 @@
 
 ## 产物上的操作按钮（`find` 可拿到）
 
-- **「下载完整尺寸的图片」** ← 取原图（`find "download full-size image button"`）。**让用户手动点**（automation 点会因非可信手势被判下载失败）。
+- **「下载完整尺寸的图片」** ← Gemini 自带按钮，**别用 automation 点**（手势门控，必失败）。取原图改用 SKILL.md「取产物到磁盘」的 canvas + `<a download>` 法（程序化即可落盘，无需用户手点）。
 - 「分享图片」
 - 「显示更多选项」(三点菜单)
 
 ## 已知坑汇总
 
-1. **自动点下载会失败**：扩展点击非 `isTrusted`、无用户激活，Gemini 下载（File System Access/手势门控）被 Chrome 拦 → 实测「正在下载…」后变下载失败。用户亲手点则成功。→ skill 默认让用户点。
+1. **别点 Gemini 自带下载按钮**：扩展点击非 `isTrusted`、无用户激活，它走 File System Access/手势门控，被 Chrome 拦 → 下载失败。**改用 canvas + `<a download>` data-URL 自抓**（同源 blob 图不污染 canvas，普通 `<a download>` 不受手势门控，程序化点击即落盘到 `~/Downloads`，再 `mv` 到目标）。实测 2026-06 跑通 1024×572 原图。
 2. **输入丢字**：图像/视频视图切换瞬间输入会丢，等视图稳定再输底部 composer。
 3. **原生保存对话框**：若下载弹出 OS「保存到哪」对话框，automation 够不到，交用户处理；别尝试自动操作 OS 对话框。
 4. **别复用用户标签页**：新会话 `tabs_create_mcp` 开新标签页；导航 gemini.google.com/app 复用登录态。

@@ -47,6 +47,7 @@
 |---|---|
 | **comfyui** | 自然语言驱动本地 ComfyUI 出图 / 出视频，自动搭 workflow，模型无关、Apple Silicon 调优 |
 | **codex-image-gen** | 用 Codex（gpt-image-2）出图 / 改图，支持参考图锁定角色与风格 |
+| **gemini-gen** | 用 Gemini 会员号（Nano Banana）走浏览器 cookie 出图，多账号负载均衡、撞额度自动跳号 |
 | **browser-gen** | 驱动已登录的 Gemini 网页免费生图 / 生视频（Veo 视频 · Nano Banana 出图） |
 | **links-illustrations** | 「小黑」IP 的怪诞手绘风中文正文配图，给文章 / 文档配图 |
 | **jimeng** | 即梦 / Dreamina 出图通道 |

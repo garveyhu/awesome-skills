@@ -1,0 +1,13 @@
+{
+  "__doc__": [
+    "复制本文件为 accounts.json，填入你自己的 Gemini 会员号。",
+    "key = 账号别名(用于 --account，随意取)；value = 该号登录的 Gmail 邮箱。",
+    "前提：每个会员号要有独立的 Chrome profile(只登它一个号)，否则多号混登只能薅到 authuser 0。",
+    "accounts.json 已被 gitignore，不会进仓库；不要把真实邮箱写进本 example 文件。"
+  ],
+  "members": {
+    "account_a": "your-first-gemini-account@gmail.com",
+    "account_b": "your-second-gemini-account@gmail.com",
+    "account_c": "your-third-gemini-account@gmail.com"
+  }
+}
