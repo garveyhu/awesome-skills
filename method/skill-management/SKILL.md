@@ -24,17 +24,18 @@ description: >-
 
 ## 核心结构：来源 → 分类 → skill
 
-物理上用**两级目录**承载，第三层是 skill 本身：
+物理上用**两级目录**承载（来源 / 分类），第三层是 skill 本身；**分类可多级**（用 `/` 分隔，如 `media/audio`），工具据 `SKILL.md` 递归识别 skill、支持任意深度：
 
 ```
 <root>/                       # 如 ~/.agents
-├─ <来源A>/<分类>/<skill>/     # 例：mine/stack/react-best-practices/SKILL.md
-├─ <来源B>/<分类>/<skill>/     # 例：community/method/brainstorming/
-└─ …                          # 未来加来源 = 加一个顶层目录
+├─ <来源A>/<分类>/<skill>/         # 例：mine/stack/react-best-practices/SKILL.md
+├─ <来源B>/<分类>/<skill>/         # 例：community/method/brainstorming/
+├─ <来源>/<伞分类>/<子类>/<skill>/  # 例：mine/media/audio/voxcpm/（伞型分类再分子类）
+└─ …                              # 未来加来源 = 加一个顶层目录
 ```
 
 - **来源（source）= 顶层目录**：按「谁创建的」分。`mine`（你自己的，= 会 push 的 GitHub 仓库）、`community`（开源 / 第三方）、未来可加 `company`（公司内部）…**加一个新来源只是加一个目录 + registry 加一行**。
-- **分类（category）= 来源内的场景分组**：`stack` / `docs` / `design` / `media` / `method`…同一个分类可横跨多个来源。
+- **分类（category）= 来源内的场景分组**：`stack` / `docs` / `design` / `media` / `method`…同一个分类可横跨多个来源；**伞型分类可再分子类**（如 `media/image`、`media/audio`），用 `/` 分隔、任意深度。
 - **skill = 第三层**：一个目录一个 `SKILL.md`。
 
 > 关键解耦：「**分类**」给人看（物理文件夹，按场景导航）；「**加载策略**」给机器看（见下「三层」）。两者互不绑死。

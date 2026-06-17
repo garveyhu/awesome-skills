@@ -52,6 +52,12 @@
 | **links-illustrations** | 「小黑」IP 的怪诞手绘风中文正文配图，给文章 / 文档配图 |
 | **jimeng** | 即梦 / Dreamina 出图通道 |
 
+## 音频
+
+| skill | 做什么 |
+|---|---|
+| **voxcpm** | 本地文字转语音 / 配音（VoxCPM2 跑在 Apple MLX）——零样本、文字描述造音色、参考音克隆；离线、48kHz、Apple Silicon 上快过实时 |
+
 ## 方法论
 
 | skill | 做什么 |
@@ -70,7 +76,7 @@ git clone https://github.com/garveyhu/awesome-skills.git
 
 # 把需要的 skill 软链到 Claude Code 的 skill 目录（按需挑，不必全装）
 ln -s "$PWD/awesome-skills/stack/react-best-practices" ~/.claude/skills/
-ln -s "$PWD/awesome-skills/media/comfyui"              ~/.claude/skills/
+ln -s "$PWD/awesome-skills/media/image/comfyui"        ~/.claude/skills/
 ```
 
 装好后在对话里用自然语言触发，或 `/<skill-name>` 显式调用。

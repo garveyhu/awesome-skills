@@ -15,12 +15,15 @@ sources:
   community: "开源 / 第三方来源 · 本地编排，不进我的仓库"
   # company: "公司内部 skill · 加一行 + 建 company/ 目录即可扩展"
 
-# 3) 分类：来源内的场景分组（同一分类可横跨多个来源）
+# 3) 分类：来源内的场景分组（同一分类可横跨多个来源）。分类可多级，用 / 分隔，据 SKILL.md 递归识别
 categories:
   method: "研发方法论 · 计划/TDD/调试/评审"
   stack:  "技术栈实践 · 各框架最佳实践"
   docs:   "写作与文档"
-  media:  "图像与视频生成"
+  # 伞型分类可再分子类（任意深度）：
+  media/image: "出图"
+  media/audio: "配音/音频"
+  media/video: "视频"
 
 # 4) skill：每条登记 source / category / tier
 #    tier: core=进扁平镜像+挂载 / extra=只挂载(按需) / parked=仅留存不装载
@@ -28,8 +31,8 @@ skills:
   # ---- mine（我自己的） ----
   skill-management:        {source: mine, category: method, tier: core}
   my-react-conventions:    {source: mine, category: stack,  tier: core}
-  my-image-pipeline:       {source: mine, category: media,  tier: extra}
+  my-image-pipeline:       {source: mine, category: media/image, tier: extra}  # 多级分类示例
 
   # ---- community（第三方） ----
   brainstorming:           {source: community, category: method, tier: core}   # obra/superpowers
-  some-heavy-skill:        {source: community, category: media,  tier: parked} # 留存但不装载
+  some-heavy-skill:        {source: community, category: media/video, tier: parked} # 留存但不装载

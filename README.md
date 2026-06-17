@@ -52,6 +52,12 @@ These aren't generic "do-anything assistants." Each skill takes a stance: my tec
 | **links-illustrations** | Whimsical hand-drawn Chinese article illustrations featuring the "Little Black" character |
 | **jimeng** | Jimeng / Dreamina image-generation channel |
 
+## Audio
+
+| skill | what it does |
+|---|---|
+| **voxcpm** | Local text-to-speech / voiceover (VoxCPM2 on Apple MLX) — zero-shot, voice design from a text prompt, and voice cloning; offline, 48kHz, faster-than-realtime on Apple Silicon |
+
 ## Methodology
 
 | skill | what it does |
@@ -70,7 +76,7 @@ git clone https://github.com/garveyhu/awesome-skills.git
 
 # Symlink the skills you want into Claude Code's skill dir (pick as needed)
 ln -s "$PWD/awesome-skills/stack/react-best-practices" ~/.claude/skills/
-ln -s "$PWD/awesome-skills/media/comfyui"              ~/.claude/skills/
+ln -s "$PWD/awesome-skills/media/image/comfyui"        ~/.claude/skills/
 ```
 
 Then trigger them in conversation with natural language, or invoke `/<skill-name>` explicitly.

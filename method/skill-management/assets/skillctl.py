@@ -2,7 +2,7 @@
 """skillctl —— 多来源 skill 中央管理工具（通用版，随 skill-management 方法论分发）
 
 放置约定： <root>/scripts/skillctl.py ，单一事实源 <root>/registry.yaml
-物理结构： <root>/<source>/<category>/<skill>/   —— 来源 → 分类 → skill 三级
+物理结构： <root>/<source>/<category>/<skill>/   —— 来源 → 分类 → skill；分类可多级（如 media/audio），据 SKILL.md 递归识别
   含 .git 的来源目录即「会发布的仓库」，其 .gitignore 由本工具维护（整目录入库，仅挡垃圾）
 
 用法（不带参数 = stats 总览）:
@@ -37,7 +37,7 @@ def load_registry():
     skills = {}
     for m in re.finditer(
         r'^\s{2}([A-Za-z0-9_-]+):\s*\{source:\s*([A-Za-z0-9_-]+),\s*'
-        r'category:\s*([A-Za-z0-9_-]+),\s*tier:\s*([A-Za-z0-9_-]+)', txt, re.M):
+        r'category:\s*([A-Za-z0-9_/-]+),\s*tier:\s*([A-Za-z0-9_-]+)', txt, re.M):
         name, src, cat, tier = m.groups()
         skills[name] = dict(source=src, category=cat, tier=tier)
     return mounts, sources, skills
@@ -112,8 +112,8 @@ def stats():
         tag = "会 push" if os.path.isdir(os.path.join(ROOT, s, ".git")) else "本地"
         print(f"    {s:<12}{n:>3}  {bar(n, mxs)}  {c(tag, 'dim')}")
     print(c("\n  分类（按 skill 数）", "dim")); mxc = max(by_cat.values())
-    for k in sorted(by_cat, key=lambda x: -by_cat[x]):
-        print(f"    {k:<12}{by_cat[k]:>3}  {bar(by_cat[k], mxc)}")
+    for k in sorted(by_cat, key=lambda x: (-by_cat[x], x)):
+        print(f"    {k:<14}{by_cat[k]:>3}  {bar(by_cat[k], mxc)}")
     print(c("\n  挂载 & 健康", "dim"))
     mir = len(os.listdir(MIRROR)) if os.path.isdir(MIRROR) else 0
     print(f"    扁平镜像 skills/        {mir:>3} core")
@@ -141,17 +141,20 @@ def doctor():
         d = skill_dir(i, n)
         if not os.path.isdir(d): problems.append(f"缺真身: {i['source']}/{i['category']}/{n}")
         elif not os.path.isfile(os.path.join(d, "SKILL.md")): problems.append(f"缺 SKILL.md: {n}")
+    # 磁盘→registry：递归找含 SKILL.md 的目录=skill，category=相对来源去末段（支持任意深度，如 media/audio）
     for src in sources:
         sd = os.path.join(ROOT, src)
         if not os.path.isdir(sd): continue
-        for cat in os.listdir(sd):
-            cp = os.path.join(sd, cat)
-            if cat in SKIP or not os.path.isdir(cp): continue
-            for s in os.listdir(cp):
-                if s in SKIP or not os.path.isdir(os.path.join(cp, s)): continue
-                if s not in skills: problems.append(f"未登记: {src}/{cat}/{s}")
-                elif skills[s]["source"] != src: problems.append(f"来源串味: {s} 在 {src} 但 registry={skills[s]['source']}")
-                elif skills[s]["category"] != cat: problems.append(f"分类不一致: {s} 磁盘={cat} registry={skills[s]['category']}")
+        for root, dirs, files in os.walk(sd):
+            dirs[:] = [d for d in dirs if d not in SKIP and not d.startswith(".")]
+            if "SKILL.md" not in files: continue
+            rel = os.path.relpath(root, sd)
+            parts = rel.split(os.sep)
+            s, cat = parts[-1], "/".join(parts[:-1])
+            if s not in skills: problems.append(f"未登记: {src}/{rel}")
+            elif skills[s]["source"] != src: problems.append(f"来源串味: {s} 在 {src} 但 registry={skills[s]['source']}")
+            elif skills[s]["category"] != cat: problems.append(f"分类不一致: {s} 磁盘={cat} registry={skills[s]['category']}")
+            dirs[:] = []  # 命中 skill 后不再深入其内部
     core = {n for n, i in skills.items() if i["tier"] == "core"}
     mir = set(os.listdir(MIRROR)) if os.path.isdir(MIRROR) else set()
     for n in core - mir: problems.append(f"镜像缺 core: {n}")
