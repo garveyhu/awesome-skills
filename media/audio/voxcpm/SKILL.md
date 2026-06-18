@@ -26,11 +26,14 @@ python3 "$SK" design --instruct "温柔甜美的年轻女性主播" \
 python3 "$SK" clone --ref-audio voice.wav --ref-text "参考音频里说的原话" \
   --text "这句话会用参考音色说出来。" --out out.wav
 
+# ③' clone --voice —— 读 voice.md 音色 token，自动取 ref-audio/ref-text（固定频道音色首选）
+python3 "$SK" clone --voice path/to/voice.md --text-file script.txt --out narration.wav
+
 # 长旁白：文本入文件，自动按句切分逐段生成再拼接
 python3 "$SK" say --text-file script.txt --out narration.wav
 ```
 
-`info` 子命令打印 venv / 模型路径 / 采样率。
+`info` 子命令打印 venv / 模型路径 / 采样率。`--voice` 指向一份 voice.md（frontmatter 含 `ref_audio`/`ref_text` 相对路径），脚本自动解析——把"频道固定音色"沉成 token 后，配音只需 `--voice`。
 
 ## 关键参数
 

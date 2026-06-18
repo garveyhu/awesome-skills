@@ -58,6 +58,33 @@ def load_model(repo: str):
     return load(path)
 
 
+def load_voice_token(path: str) -> dict:
+    """读 voice.md 音色 token：解析 frontmatter，把 ref_audio/ref_text 的相对路径
+    解析成绝对路径 / 读出转写文本。返回 {ref_audio, ref_text, mode}。"""
+    p = os.path.abspath(os.path.expanduser(path))
+    if os.path.isdir(p):
+        p = os.path.join(p, "voice.md")
+    base = os.path.dirname(p)
+    text = open(p, encoding="utf-8").read()
+    m = re.search(r"^---\s*\n(.*?)\n---", text, re.S)
+    fm: dict[str, str] = {}
+    if m:
+        for line in m.group(1).splitlines():
+            mm = re.match(r"^([A-Za-z_]+):\s*(.+?)\s*(?:#.*)?$", line)
+            if mm:
+                fm[mm.group(1)] = mm.group(2).strip()
+
+    def rel(v: Optional[str]) -> Optional[str]:
+        return None if not v else (v if os.path.isabs(v) else os.path.join(base, v))
+
+    rt = fm.get("ref_text")
+    ref_text = None
+    if rt:
+        rtp = rel(rt)
+        ref_text = open(rtp, encoding="utf-8").read().strip() if rtp and os.path.isfile(rtp) else rt
+    return {"ref_audio": rel(fm.get("ref_audio")), "ref_text": ref_text, "mode": fm.get("mode", "clone")}
+
+
 def split_text(text: str, max_chars: int = 120) -> list[str]:
     """按中英句末标点切分，再贪心打包到 <= max_chars 的块，避免单段过长。"""
     parts = re.split(r"(?<=[。！？!?；;\n])", text)
@@ -155,12 +182,22 @@ def run(args) -> None:
         return
 
     text = read_text(args)
+    ref_audio = getattr(args, "ref_audio", None)
+    ref_text = getattr(args, "ref_text", None)
+    voice = getattr(args, "voice", None)
+    if voice:
+        tok = load_voice_token(voice)
+        ref_audio = ref_audio or tok["ref_audio"]
+        ref_text = ref_text or tok["ref_text"]
+        print(f"· 音色 token {voice}", file=sys.stderr)
+    if args.mode == "clone" and not (ref_audio and ref_text):
+        sys.exit("clone 需要 --ref-audio + --ref-text，或 --voice 指向 voice.md")
     model = load_model(args.model)
     audio, sr = synthesize(
         model, text,
         instruct=getattr(args, "instruct", None),
-        ref_audio=getattr(args, "ref_audio", None),
-        ref_text=getattr(args, "ref_text", None),
+        ref_audio=ref_audio,
+        ref_text=ref_text,
         timesteps=args.timesteps,
         cfg=args.cfg,
         chunk=not args.no_chunk,
@@ -196,8 +233,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     s_clone = sub.add_parser("clone", help="声音克隆：参考音 + 转写复刻音色")
     common(s_clone)
-    s_clone.add_argument("--ref-audio", required=True, dest="ref_audio", help="参考音频 wav")
-    s_clone.add_argument("--ref-text", required=True, dest="ref_text", help="参考音频的逐字转写")
+    s_clone.add_argument("--voice", help="读 voice.md 音色 token 自动取 ref-audio/ref-text（替代手填）")
+    s_clone.add_argument("--ref-audio", dest="ref_audio", help="参考音频 wav（不用 --voice 时必填）")
+    s_clone.add_argument("--ref-text", dest="ref_text", help="参考音频逐字转写（不用 --voice 时必填）")
 
     s_info = sub.add_parser("info", help="打印环境 / 模型路径")
     s_info.add_argument("--model", default=DEFAULT_MODEL)
