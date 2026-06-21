@@ -8,7 +8,10 @@ description: >-
   locally, "用 ComfyUI 出图/出视频", text-to-image, image-to-video, run a
   ComfyUI workflow, 文生图, 图生视频, 本地生图, or batch-generate media. Model-
   agnostic (Z-Image, FLUX, SD/SDXL checkpoints, Wan 2.2 video, …); tuned for
-  macOS / Apple Silicon (MPS).
+  macOS / Apple Silicon (MPS). For generic backend-agnostic image gen with no
+  named backend, `media-gen` routes the choice; call comfyui directly when the
+  user wants local/offline control, a specific local model, video, or a custom
+  ComfyUI workflow.
 ---
 
 # ComfyUI 本地生成 skill

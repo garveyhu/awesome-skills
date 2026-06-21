@@ -50,8 +50,35 @@ VoxCPM2 覆盖 30 语言 + 多种中文方言（粤语 / 四川话 / 东北话 /
 - clone 每句都要编码参考音、**偏慢（RTF ≈ 3）**：长稿成本高。若只是要「某种风格音色」而非复刻特定人，优先用 design。
 - 要长稿 + 固定克隆音色：可先 clone 出几句作为风格锚点，再评估是否值得整稿 clone。
 
+## 逐段去噪（固定步 · 参数记录）
+
+每段生成后默认过一遍去噪（`--no-denoise` 关），解决克隆 v2 音色时逐幕底噪飘（-54/-60dB 与 -99dB 乱跳）。验收：每段 raw 底噪 ≤ -80dB。
+
+**采用方案：RNNoise（arnndn）**——speech 专用、用 skill 自带 `assets/rnnoise/sh.rnnn`，VAD 门控、对语音体几乎零损伤。
+
+```
+# voxcpm_gen.py 里逐段执行的 ffmpeg 链
+highpass=f=50,arnndn=m=assets/rnnoise/sh.rnnn
+```
+
+| 滤镜 | 作用 | 实测 |
+|------|------|------|
+| `highpass=f=50` | 砍 50Hz 以下次声轰鸣 | 不影响人声基频 |
+| `arnndn=m=sh.rnnn` | RNNoise speech 去噪 | 噪段 -60dB → -inf；干净段不动 |
+
+**为什么不用 afftdn**：afftdn（`nr=12:nf=-50`）也能压到 -inf，但 RNNoise 是 speech 训练的循环网络、门控更准，且能复用 skill 已冻结的 `sh.rnnn` 资产；二者音色损伤都极小（RMS / 高频差 <0.05dB），优先 arnndn。
+
+**校验底噪**：
+```bash
+ffmpeg -hide_banner -i seg.wav -af astats=metadata=1 -f null - 2>&1 | grep -i "Noise floor dB"
+# 同时看 RMS level dB / 4kHz+ 高频 RMS 确认不闷：去噪前后应基本不变
+```
+
+去噪过度的反面信号：RMS 明显掉、4kHz+ 高频能量塌（发闷）、语音被门掉（时长变短）——本方案实测均无。
+
 ## 产物
 
 - 48kHz / 单声道 / float WAV。
 - 默认落 `voxcpm_outputs/<mode>-<时间>.wav`；`--out` 指定路径。
 - 要 MP3/AAC 或并轨视频：用 ffmpeg 后处理（本 skill 只出 wav）。
+- raw 层默认已去噪（底噪 ≤ -80dB）；要纯生模型输出用 `--no-denoise`。

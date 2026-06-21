@@ -8,6 +8,9 @@ description: >-
   Nano Banana image — a third media-generation route alongside local ComfyUI
   and 即梦/Dreamina. Especially useful for VIDEO (Gemini Veo「制作视频」) since
   local Mac video is too slow and the 即梦 CLI is gated behind maestro vip.
+  For generic backend-agnostic image gen with no named backend, `media-gen`
+  routes the choice; call browser-gen directly when the user names browser-gen
+  or wants free Gemini-web video (Veo) via the logged-in browser.
 ---
 
 # browser-gen —— 用浏览器驱动 Gemini 免费生图/生视频

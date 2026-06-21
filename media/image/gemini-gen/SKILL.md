@@ -1,6 +1,6 @@
 ---
 name: gemini-gen
-description: 用 Gemini 会员号(Nano Banana)生成图片,多账号 cookie 隔离 + 负载均衡 + 撞额度自动跳号。当用户要用 Gemini / Nano Banana 出图、"用 gemini 会员画图"、想薅 Gemini Pro/Advanced 订阅免费图额度、或要在多个 Gemini 会员号之间轮着出图分摊额度时使用。经逆向的 Gemini web API(gemini-webapi)走浏览器 cookie,不用 API key、不用浏览器自动化;产物存 PNG,支持参考图。是继 codex-image-gen / comfyui / jimeng / browser-gen 之后的又一条出图后端。
+description: 用 Gemini 会员号(Nano Banana)生成图片,多账号 cookie 隔离 + 负载均衡 + 撞额度自动跳号。当用户要用 Gemini / Nano Banana 出图、"用 gemini 会员画图"、想薅 Gemini Pro/Advanced 订阅免费图额度、或要在多个 Gemini 会员号之间轮着出图分摊额度时使用。经逆向的 Gemini web API(gemini-webapi)走浏览器 cookie,不用 API key、不用浏览器自动化;产物存 PNG,支持参考图。是继 codex-image-gen / comfyui / jimeng / browser-gen 之后的又一条出图后端。通用生图/程序化出图未点名具体后端时,由 `media-gen` 统一路由选后端;用户显式点名 Gemini/Nano Banana(或要薅会员免费额度/多账号轮换)时仍直调本 skill。
 ---
 
 # Gemini 会员号生图(多账号负载均衡)

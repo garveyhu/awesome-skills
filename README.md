@@ -49,8 +49,8 @@ These aren't generic "do-anything assistants." Each skill takes a stance: my tec
 | **codex-image-gen** | Generate / edit images via Codex (gpt-image-2), with reference images to lock character & style |
 | **gemini-gen** | Generate images via Gemini member accounts (Nano Banana) over browser cookies — multi-account load-balancing with auto-failover on quota |
 | **browser-gen** | Drive a logged-in Gemini web session for free image / video generation (Veo video · Nano Banana image) |
-| **links-illustrations** | Whimsical hand-drawn Chinese article illustrations featuring the "Little Black" character |
-| **jimeng** | Jimeng / Dreamina image-generation channel |
+| **jimeng** | Jimeng/Dreamina image + video via the cloud API (AK/SK, **no vip needed**): text/image-to-image, P-image edit, inpaint, text/image-to-video, and **motion-mimic — drive a character image with a template video (IP animation made easy)**; CLI fallback |
+| **media-gen** | A unified image-gen entry point: one call routes to gemini-gen / comfyui / codex / … by config & availability, with a quota-failover fallback chain, auto-injects style-lock v1, and returns a unified result contract (à la Pixelle's MediaService) |
 
 ## Audio
 

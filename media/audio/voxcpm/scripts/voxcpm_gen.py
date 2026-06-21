@@ -32,6 +32,9 @@ os.environ.setdefault("HF_ENDPOINT", "https://hf-mirror.com")
 
 import argparse
 import re
+import shutil
+import subprocess
+import tempfile
 import time
 from typing import Optional
 
@@ -40,6 +43,10 @@ from scipy.io import wavfile
 
 DEFAULT_MODEL = "mlx-community/VoxCPM2-8bit"   # 也可换 -4bit(更小更快) / -bf16(更高质量)
 DEFAULT_SR = 48000
+
+# RNNoise 模型（speech 专用）——随 skill 一起冻结，arnndn 吃它做去噪
+_RNNN = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                     "assets", "rnnoise", "sh.rnnn")
 
 
 def resolve_model_path(repo: str) -> str:
@@ -104,6 +111,37 @@ def split_text(text: str, max_chars: int = 120) -> list[str]:
     return chunks or [text]
 
 
+def denoise_segment(audio: np.ndarray, sr: int) -> np.ndarray:
+    """每段生成后过一遍去噪（固定步，不是可选）。
+
+    为什么必须有这步：VoxCPM2 的 CFM 扩散是逐段随机的，克隆 v2 参考音（本身底噪 -64dB）
+    时，有的段干净（-99dB）、有的段带底噪（-54/-60dB），去噪不做就逐幕飘。
+    这里用 RNNoise（speech 专用，asset/rnnoise/sh.rnnn）经 ffmpeg arnndn 把每段底噪
+    压到 ≤-80dB（实测多到 -inf），同时 RMS / 高频能量基本不动——不闷、不伤音色。
+    叠一道 highpass=50 砍次声轰鸣。ffmpeg 不可用或失败则原样返回（不阻断出片）。
+    """
+    if not (shutil.which("ffmpeg") and os.path.isfile(_RNNN)):
+        return audio
+    with tempfile.TemporaryDirectory() as td:
+        src = os.path.join(td, "in.wav")
+        dst = os.path.join(td, "out.wav")
+        wavfile.write(src, sr, audio)
+        cmd = [
+            "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
+            "-i", src, "-af", f"highpass=f=50,arnndn=m={_RNNN}", dst,
+        ]
+        try:
+            subprocess.run(cmd, check=True, capture_output=True)
+            cleaned_sr, cleaned = wavfile.read(dst)
+            out = np.asarray(cleaned).squeeze().astype(np.float32)
+            # wavfile 读回若是整型量化，归一回 [-1, 1]
+            if np.issubdtype(np.asarray(cleaned).dtype, np.integer):
+                out = out / float(np.iinfo(np.asarray(cleaned).dtype).max)
+            return out
+        except (subprocess.CalledProcessError, FileNotFoundError, ValueError):
+            return audio
+
+
 def synthesize(
     model,
     text: str,
@@ -116,8 +154,13 @@ def synthesize(
     chunk: bool = True,
     max_chars: int = 120,
     gap_sec: float = 0.25,
+    denoise: bool = True,
 ) -> tuple[np.ndarray, int]:
-    """合成音频。长文本按句切分逐段生成、段间插入静音后拼接。返回 (float32 波形, 采样率)。"""
+    """合成音频。长文本按句切分逐段生成、（默认）逐段去噪、段间插入静音后拼接。
+
+    返回 (float32 波形, 采样率)。`denoise=True` 是固定步：每段生成后立刻过 RNNoise，
+    保证 raw 层底噪稳定 ≤-80dB（解决逐幕去噪不稳）。
+    """
     segments = split_text(text, max_chars) if chunk else [text]
     audios: list[np.ndarray] = []
     sr = DEFAULT_SR
@@ -134,9 +177,12 @@ def synthesize(
         ))
         sr = int(getattr(res, "sample_rate", DEFAULT_SR) or DEFAULT_SR)
         a = np.asarray(res.audio).squeeze().astype(np.float32)
+        if denoise:
+            a = denoise_segment(a, sr)
         audios.append(a)
         total_dur += len(a) / sr
-        print(f"  [{i}/{len(segments)}] {len(a)/sr:5.1f}s  «{seg[:18]}…»", file=sys.stderr)
+        tag = "" if denoise else " (raw)"
+        print(f"  [{i}/{len(segments)}] {len(a)/sr:5.1f}s{tag}  «{seg[:18]}…»", file=sys.stderr)
     gen_dt = time.time() - t0
 
     if len(audios) == 1:
@@ -202,6 +248,7 @@ def run(args) -> None:
         cfg=args.cfg,
         chunk=not args.no_chunk,
         max_chars=args.max_chars,
+        denoise=not args.no_denoise,
     )
     out = save_wav(audio, sr, args.out or default_out(args.mode))
     print(out)  # stdout 只吐产物路径，方便上层取用
@@ -222,6 +269,8 @@ def build_parser() -> argparse.ArgumentParser:
         sp.add_argument("--cfg", type=float, default=2.0, help="无分类器引导强度")
         sp.add_argument("--no-chunk", action="store_true", help="不按句切分（短文本用）")
         sp.add_argument("--max-chars", type=int, default=120, help="分句打包的单段最大字数")
+        sp.add_argument("--no-denoise", action="store_true",
+                        help="关闭逐段去噪（默认开：RNNoise 把每段底噪压到 ≤-80dB，保 raw 层稳定）")
         sp.add_argument("--play", action="store_true", help="生成后 afplay 试听")
 
     s_say = sub.add_parser("say", help="零样本：内置音色配音")

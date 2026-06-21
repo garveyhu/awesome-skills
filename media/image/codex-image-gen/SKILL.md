@@ -1,6 +1,6 @@
 ---
 name: codex-image-gen
-description: 用 Codex(订阅账号,gpt-image-2)生成或编辑图片。当用户要求“生成/画/做一张图片、插图、图标、封面、配图、icon、illustration、generate/make/draw an image”,且未指定其他出图后端(comfyui / jimeng 等)时使用。通过 `codex exec` 调内置 image_gen 出图,产物存为 PNG;支持参考图锁定角色/风格一致性。
+description: 用 Codex(订阅账号,gpt-image-2)生成或编辑图片,特长是用参考图锁定角色/风格一致性。当用户显式点名用 Codex 出图,或需要参考图锁角色/风格的场景时使用。通过 `codex exec` 调内置 image_gen 出图,产物存为 PNG。通用生图/程序化出图未点名具体后端时,由 `media-gen` 统一路由选后端,不在此抢默认。
 ---
 
 # Codex 生图

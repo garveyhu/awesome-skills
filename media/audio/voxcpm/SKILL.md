@@ -44,7 +44,17 @@ python3 "$SK" say --text-file script.txt --out narration.wav
 | `--model` | `mlx-community/VoxCPM2-8bit` | 可换 `-4bit`（更小更快）/ `-bf16`（更高质量） |
 | `--max-chars` | 120 | 长文本分句打包的单段上限 |
 | `--no-chunk` | 关 | 短文本不切分 |
+| `--no-denoise` | 关 | 关闭逐段去噪（默认开，见下「去噪是固定步」）|
 | `--play` | 关 | 生成后 `afplay` 试听 |
+
+## 去噪是固定步（raw 层稳定铁律）
+
+**每段生成后都过一遍 RNNoise 去噪，默认开，不是可选项。** VoxCPM2 的 CFM 扩散逐段随机，克隆 v2 参考音（本身底噪 ≈ -64dB）时会逐幕飘——同一参考音、同一参数，有的段干净（-99dB）、有的段带底噪（-54/-60dB）。去噪不做就翻车。
+
+- **怎么修的**：`synthesize()` 里每段生成后立刻调 `denoise_segment()`，经 ffmpeg `highpass=f=50,arnndn=m=assets/rnnoise/sh.rnnn`（RNNoise speech 专用模型）压底噪，再拼接。highpass 砍次声轰鸣，arnndn 做 VAD 门控去噪。
+- **验收标准**：每段 **raw 底噪 ≤ -80dB**（实测多到 -inf）。校验：`ffmpeg -i seg.wav -af astats=metadata=1 -f null - 2>&1 | grep "Noise floor dB"`。
+- **不伤音色**：RMS 与 4kHz+ 高频能量去噪前后差 < 0.05dB（实测），不闷、不截语音、时长不变。
+- **逃生口**：`--no-denoise` 关掉（会退回逐幕不稳的 raw 行为，仅调试用）。ffmpeg 缺失或去噪失败时自动原样返回，不阻断出片。
 
 ## 速度与选型（重要）
 

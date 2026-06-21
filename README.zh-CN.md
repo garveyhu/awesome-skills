@@ -49,8 +49,8 @@
 | **codex-image-gen** | 用 Codex（gpt-image-2）出图 / 改图，支持参考图锁定角色与风格 |
 | **gemini-gen** | 用 Gemini 会员号（Nano Banana）走浏览器 cookie 出图，多账号负载均衡、撞额度自动跳号 |
 | **browser-gen** | 驱动已登录的 Gemini 网页免费生图 / 生视频（Veo 视频 · Nano Banana 出图） |
-| **links-illustrations** | 「小黑」IP 的怪诞手绘风中文正文配图，给文章 / 文档配图 |
-| **jimeng** | 即梦 / Dreamina 出图通道 |
+| **jimeng** | 即梦 / Dreamina 图像+视频(云 API 直连·AK/SK·**不需 vip**):文生图/图生图/P图改图/局部重绘/文生·图生视频/**动作模仿(角色图+模板视频→驱动角色动·IP 动画神器)**;CLI 备选 |
+| **media-gen** | 统一生图入口：一个调用按配置/可用性路由到 gemini-gen/comfyui/codex 等后端 + 失败跳号降级链，自动注入 style-lock v1，返统一结果契约（学 Pixelle MediaService） |
 
 ## 音频
 
