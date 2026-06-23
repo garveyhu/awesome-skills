@@ -64,6 +64,7 @@
 |---|---|
 | **skill-management** | 我管理 skill 的方法论本身：把大量 skill 按「来源 → 分类 → skill」三级组织、单一 `registry` 驱动、跨 Claude Code 与 Codex 复用，自带工具。**别人的 AI 读完即可复刻同一套** |
 | **self-improving-workflow** | 通用方法论：4 个评审子 agent 协同学习 + `/run` 单入口长任务自主执行 |
+| **loop-harness** | 搭建并跑「高质量长期自主迭代 loop 任务」的脚手架 + harness（优化/审计/迁移/深度打磨）。任务书+台账+日志文件即记忆，**外部客观验证门**（agent 报脚本结果·不报自评），**进度检测停止/升级**（非步数·停滞求人），记忆防漂移 + 多智能体。**从一个真跑 100 轮的 loop 提炼**，与 Ralph loop + BabyAGI + evaluator-optimizer 同构。建在 `/loop` 或 `/schedule` 之上 |
 
 ---
 

@@ -64,6 +64,7 @@ These aren't generic "do-anything assistants." Each skill takes a stance: my tec
 |---|---|
 | **skill-management** | My skill-management methodology itself: organize many skills as source → category → skill, driven by a single `registry`, reusable across Claude Code & Codex, with bundled tooling. **Any AI can read it and replicate the whole setup** |
 | **self-improving-workflow** | A universal methodology: four reviewer sub-agents for collaborative learning + a single `/run` entrypoint for long-running autonomous execution |
+| **loop-harness** | Scaffold + harness for high-quality long-running autonomous iteration loops (optimization / audit / migration / deep grinding). Taskbook + ledger + log file-driven memory, an **external objective verification gate** (report what the script says, not self-judgment), **progress-detection stop/escalate** (not step count), anti-drift memory + multi-agent. Distilled from a real 100-round loop; isomorphic to Ralph loop + BabyAGI + evaluator-optimizer. Runs on top of `/loop` or `/schedule` |
 
 ---
 
