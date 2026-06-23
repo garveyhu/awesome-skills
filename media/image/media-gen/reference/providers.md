@@ -15,7 +15,7 @@
 | **直连 API 槽位（通用）** | 要其它付费直连模型 | 付费（按量） | ✅ | 视模型 | `slot·需用户配 key` |
 | **jimeng / Dreamina** | 云端高质量图 / 视频；**当前账号需 maestro vip** | 付费额度 | ✅ | ✗ | `slot·需权限+付费` |
 
-> 与 Media-Studio `0-内核/能力矩阵.md` 第 3 行、`1-资产库/风格锁/style-lock.md` 的 `backend` 声明同源：默认 `gemini-gen` → `codex-image-gen` → `comfyui` → `dashscope` → `browser-gen` 逐级降级（dashscope 是有成本但稳定的直连 API，排在免费/订阅/本地档之后、半自动兜底之前）。
+> 与 Media-Studio `0-内核/能力矩阵.md` 第 3 行、`1-资产库/风格锁/画风锁.md` 的 `backend` 声明同源：默认 `gemini-gen` → `codex-image-gen` → `comfyui` → `dashscope` → `browser-gen` 逐级降级（dashscope 是有成本但稳定的直连 API，排在免费/订阅/本地档之后、半自动兜底之前）。
 
 ## 默认降级链
 

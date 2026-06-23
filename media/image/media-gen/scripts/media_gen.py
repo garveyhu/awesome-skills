@@ -37,10 +37,10 @@ def find_style_lock(out_path: Path, explicit: Optional[str]) -> Optional[Path]:
     if explicit:
         p = Path(explicit).expanduser()
         return p if p.exists() else None
-    # 从 out 目录逐级上溯找 Media-Studio 的 style-lock.md
+    # 从 out 目录逐级上溯找 Media-Studio 的画风锁（style-lock token 真身文件 画风锁.md）
     cur = out_path.resolve().parent
     for _ in range(12):
-        cand = cur / "1-资产库" / "风格锁" / "style-lock.md"
+        cand = cur / "1-资产库" / "风格锁" / "画风锁.md"
         if cand.exists():
             return cand
         if cur.parent == cur:
@@ -50,7 +50,7 @@ def find_style_lock(out_path: Path, explicit: Optional[str]) -> Optional[Path]:
 
 
 def parse_style_lock(path: Path) -> dict:
-    """读 style-lock.md frontmatter 取 locked_prompt / negative_prompt / version。"""
+    """读 画风锁.md（style-lock token）frontmatter 取 locked_prompt / negative_prompt / version。"""
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---"):
         return {}
@@ -121,7 +121,7 @@ def cmd_gen(args: argparse.Namespace) -> int:
             sl_version = sl.get("version") or "v1"
             log(f"style-lock 注入：{sl_path}（{sl_version}）")
         else:
-            log("未找到 style-lock.md，跳过注入（非品牌图可忽略）")
+            log("未找到 画风锁.md，跳过注入（非品牌图可忽略）")
     else:
         log("--no-style-lock：跳过 style-lock 注入")
 

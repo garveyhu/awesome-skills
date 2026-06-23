@@ -4,7 +4,7 @@
 
 ## 事实源
 
-`Media-Studio/1-资产库/风格锁/style-lock.md` 的 frontmatter：
+`Media-Studio/1-资产库/风格锁/画风锁.md` 的 frontmatter：
 
 ```yaml
 locked_prompt: "dark technical aesthetic, near-black #0A0C12 background, single mint-green #34E0B0 accent glow, thin wireframe geometry, data-flow lines, subtle film grain, matte non-reflective, volumetric light from one direction, generous negative space, asymmetric composition, low saturation, precise and restrained"
@@ -49,7 +49,7 @@ style-lock v1 的 `seed` / `sref` 当前为空（首批出图后回填）。注�
 
 ## 与 frontmatter `backend` 声明的关系
 
-style-lock.md 写了 `backend: gemini-gen`（静态主后端声明）。本 skill 的路由：
+画风锁.md 写了 `backend: gemini-gen`（静态主后端声明）。本 skill 的路由：
 
 - **不**直接照搬 frontmatter 的 backend 当唯一后端——而是用本 skill 的**默认降级链 + 可用性探测 + `--prefer`**。
 - 二者本就同源（默认链首即 gemini-gen），所以一般行为一致；区别在本 skill 会**自动降级**，frontmatter 只是静态声明。

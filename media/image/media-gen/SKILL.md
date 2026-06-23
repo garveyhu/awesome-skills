@@ -68,7 +68,7 @@ python3 "$MG" contract           # 打印统一结果契约 schema
 | `--prefer` | 可选。后端偏好（`gemini-gen`/`comfyui`/`codex-image-gen`/…），把它提到链首；仍会降级，除非 `--no-fallback`。 |
 | `--no-fallback` | 可选。只试链首一个后端，失败即失败，不降级。 |
 | `--no-style-lock` | 可选。关掉 style-lock 注入（非品牌图才关）。 |
-| `--style-lock` | 可选。指定 style-lock.md 路径（默认自动找 Media-Studio `1-资产库/风格锁/style-lock.md`）。 |
+| `--style-lock` | 可选。指定 画风锁.md 路径（默认自动找 Media-Studio `1-资产库/风格锁/画风锁.md`）。 |
 | `--dry-run` | 可选。只打印路由决策 + 降级链 + 可用性，不真生成。 |
 
 ## 路由 + 降级（核心）
@@ -90,10 +90,10 @@ python3 "$MG" contract           # 打印统一结果契约 schema
 
 ## 吃 style-lock v1（品牌一致）
 
-所有生图**默认**自动拼 style-lock：读 `1-资产库/风格锁/style-lock.md` 的 frontmatter，把 `locked_prompt` 拼到用户 prompt 前、`negative_prompt` 透传给支持负向的后端（comfyui）。这样跨内容画风不漂移。注入规则、各后端如何吃负向 / seed / sref 见 [`reference/style-lock-injection.md`](reference/style-lock-injection.md)。
+所有生图**默认**自动拼 style-lock：读 `1-资产库/风格锁/画风锁.md` 的 frontmatter，把 `locked_prompt` 拼到用户 prompt 前、`negative_prompt` 透传给支持负向的后端（comfyui）。这样跨内容画风不漂移。注入规则、各后端如何吃负向 / seed / sref 见 [`reference/style-lock-injection.md`](reference/style-lock-injection.md)。
 
 - frontmatter 的 `backend: gemini-gen` + 降级链与本 skill 默认链一致（同源），但**本 skill 的 `--prefer` / 可用性**优先于 frontmatter 的静态声明。
-- 没传 `--style-lock` 时自动向上找 Media-Studio 的 style-lock.md；找不到则跳过注入并在 stderr 提示（不报错）。
+- 没传 `--style-lock` 时自动向上找 Media-Studio 的 画风锁.md；找不到则跳过注入并在 stderr 提示（不报错）。
 
 ## 统一结果契约（借 Pixelle MediaService）
 
