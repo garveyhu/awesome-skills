@@ -50,26 +50,31 @@ description: >-
 2. **各 agent 挂载点的软链**：把 `core + extra` 软链进每个 agent 的 skill 目录（`mounts` 列表，见下「跨 agent」）。
 3. **白名单 `.gitignore`**：只有「会 push 的来源目录」是 git 仓库，且它整目录只含你自己的 skill——所以 `.gitignore` 只挡垃圾即可，**第三方天然不在这个目录、永不外泄**。
 
-## 三层加载策略（控制 token）
+## 四层加载策略（控制 token）
 
 每个 skill 在 registry 里标一个 `tier`：
 
-| tier | 进扁平镜像（通用 always-on） | 进 agent 挂载点 | 用途 |
+| tier | 进扁平镜像（通用 always-on） | 进全局挂载点（`~/.claude` 等） | 用途 |
 |---|---|---|---|
 | `core` | ✅ | ✅ | 广泛常用、廉价 |
 | `extra` | ❌ | ✅ | 重型 / 小众，按需 |
+| `project` | ❌ | ❌（移出全局）→ 改挂某项目目录（opt-in） | 只在某工作目录用、不该污染全局 |
 | `parked` | ❌ | ❌ | 仅留存，不装载 |
 
 改 tier 即调装载范围——不挪文件、不动目录。
+
+**`tier: project` 配 `project: <名>` + `projects:` 段——把「只有某工作目录才用得到」的 skill 移出全局。** 它不进扁平镜像、也不进各 agent 的全局挂载点（`sync` 会把它从全局 prune 掉），只按 `project:` 字段归属某个项目。`projects:` 段（registry 里，类比 `sources:`）声明 `<项目名>: "<目录绝对路径>"`，**支持非 git 目录**。**默认只「声明 + 移出全局」、不挂载**；要把它推进项目时跑 `skillctl mount <项目>`——软链进该目录的 `.claude/skills/`（真身仍在来源目录，单一事实源不破），`unmount` 撤销；也可在脚本里把 `SYNC_AUTOMOUNT_PROJECTS` 置 `True` 让 `sync` 顺带挂载。**注：Claude 原生从 git 根的 `.claude/skills` 读 project skill，要 Claude 自动加载、`projects:` 路径须指向 git 根。**
 
 ## 工具 skillctl
 
 `assets/skillctl.py`，零第三方依赖，三个子命令：
 
 ```bash
-python3 scripts/skillctl.py          # stats：一眼看生态（来源/分类/层级分布 + 挂载健康 + 未纳管 foreign）
-python3 scripts/skillctl.py sync     # 据 registry 重建：扁平镜像 + 各挂载点软链 + 白名单 .gitignore
-python3 scripts/skillctl.py doctor   # 体检：缺 SKILL.md / registry↔磁盘漂移 / 来源串味 / 孤儿·断链
+python3 scripts/skillctl.py            # stats：一眼看生态（来源/分类/层级分布 + 挂载健康 + 项目级 skill + 未纳管 foreign）
+python3 scripts/skillctl.py sync       # 据 registry 重建：扁平镜像 + 各挂载点软链 + 白名单 .gitignore
+python3 scripts/skillctl.py doctor     # 体检：缺 SKILL.md / registry↔磁盘漂移 / 来源串味 / 孤儿·断链
+python3 scripts/skillctl.py mount <项目>   # opt-in：把 tier:project skill 软链进该项目 .claude/skills/（默认 sync 不挂）
+python3 scripts/skillctl.py unmount <项目> # 撤销该项目的软链
 ```
 
 工作流：**只改 registry.yaml → 跑 sync → doctor 验收**。`stats` 里的「未纳管 foreign」会暴露任何绕过 registry 偷偷塞进挂载点的 skill。
@@ -86,7 +91,7 @@ python3 scripts/skillctl.py doctor   # 体检：缺 SKILL.md / registry↔磁盘
 
 1. **选 `<root>`**（如 `~/.agents`），建来源目录：`mine/`（你自己的，将来 git 仓库）、`community/`（第三方）。
 2. **把每个 skill 放到 `<来源>/<分类>/<skill>/`**，每个 skill 一个 `SKILL.md`。
-3. **写 `<root>/registry.yaml`**——参 `assets/registry.example.yaml`，填 `mounts`、`sources`、`categories`，以及每个 skill 的 `{source, category, tier}`。
+3. **写 `<root>/registry.yaml`**——参 `assets/registry.example.yaml`，填 `mounts`、`sources`、可选 `projects`、`categories`，以及每个 skill 的 `{source, category, tier}`（项目级 skill 再加 `project: <名>`）。
 4. **放工具**：把 `assets/skillctl.py` 拷到 `<root>/scripts/skillctl.py`。
 5. **`python3 scripts/skillctl.py sync`** → 生成扁平镜像 + 各挂载点软链 + 白名单。
 6. **`python3 scripts/skillctl.py`** 看 stats 总览；**`doctor`** 验收无漂移。
