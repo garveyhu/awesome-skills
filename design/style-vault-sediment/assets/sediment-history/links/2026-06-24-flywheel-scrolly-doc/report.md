@@ -23,7 +23,9 @@
 | 新增 | block | blocks/display/flywheel/layered-atlas-grid | 分层硬卡网格 | brutalist,bento · confident,playful |
 | 新增 | page | pages/landing/flywheel/scrolly-explainer-doc | 滚动叙事单页文档站 | brutalist,editorial · confident,energetic,playful |
 | 新增 | style | styles/marketing-brand/memphis-scrolly-doc | 孟菲斯滚动叙事文档站 | brutalist,editorial · confident,energetic,playful |
-| 新增 | product | products/flywheel-inside | 飞轮的内部 | category:content · brutalist,editorial |
+| 新增 | product | products/media-studio | media-studio | category:content · brutalist,editorial |
+
+> **修订（同会话 · 用户验收后）**：product 改名 `flywheel-inside` → `media-studio`（id+name+preview 同步重命名）；补 `refs.pages/blocks/components/tokens` 全列表（原只 refs.style，导致详情页页面/模块/组件/原语 栏 ·0 全空）；product 封面 preview 从 stat 卡改为**整屏 hero**（min-h-screen 垂直居中 · emo 黑猫 · 孟菲斯几何 · 滚动提示），还原原站样式。
 
 ## 元信息来源
 - AI 自动填（Y 授权）：全部 14 条
