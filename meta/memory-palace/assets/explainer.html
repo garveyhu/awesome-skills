@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>记忆宫殿 · 原理与使用</title>
+<link rel="preconnect" href="https://fonts.googleapis.cn" />
+<link rel="preconnect" href="https://fonts.gstatic.cn" crossorigin />
+<link href="https://fonts.googleapis.cn/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    /* —— 冻结 design token —— */
+    --paper:#F3EEE3; --paper-2:#EBE3D3; --raised:#F7F3EA;
+    --ink:#20180F; --ink-2:#5C5345; --line:#D9CFBA;
+    --coral:#C5512B;            /* 唯一锐利强调色 */
+    --coral-tint:#EBC7B4;
+    --navy:#1E2C36;            /* 仅用于终端/代码深块 */
+    --serif:'Fraunces','PingFang SC','Songti SC',Georgia,serif;
+    --sans:'Space Grotesk','PingFang SC','Noto Sans SC',sans-serif;
+    --mono:'Space Mono','SFMono-Regular',ui-monospace,monospace;
+    --col:min(1040px,92vw);
+    --r:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--sans); color:var(--ink); background:var(--paper);
+    line-height:1.7; -webkit-font-smoothing:antialiased; letter-spacing:.01em;
+    overflow-x:hidden;
+  }
+  /* 颗粒质感层（去塑料感） */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:9999; pointer-events:none;
+    opacity:.05; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  /* 氛围光晕 */
+  body::after{
+    content:""; position:fixed; top:-20vh; right:-10vw; width:60vw; height:60vw; z-index:-1;
+    background:radial-gradient(circle, rgba(197,81,43,.10), transparent 62%); pointer-events:none;
+  }
+  ::selection{background:var(--coral); color:var(--paper)}
+
+  /* —— 通用排版 —— */
+  .wrap{width:var(--col); margin-inline:auto}
+  .mono{font-family:var(--mono)}
+  .eyebrow{font-family:var(--mono); font-size:.72rem; letter-spacing:.22em; text-transform:uppercase; color:var(--coral); font-weight:700}
+  h2{font-family:var(--serif); font-weight:600; font-size:clamp(1.9rem,4.4vw,3rem); line-height:1.08; letter-spacing:-.01em}
+  h3{font-family:var(--serif); font-weight:600; font-size:1.28rem; letter-spacing:-.01em}
+  p{color:var(--ink-2)} p strong, li strong{color:var(--ink); font-weight:600}
+  a{color:var(--coral); text-decoration:none}
+  code{font-family:var(--mono); font-size:.84em; background:var(--paper-2); padding:.08em .42em; border-radius:6px; color:var(--ink)}
+  section{padding:clamp(64px,9vh,120px) 0; position:relative}
+  .secnum{font-family:var(--mono); font-size:.8rem; color:var(--coral); letter-spacing:.12em}
+  .lead{font-size:clamp(1.02rem,1.7vw,1.18rem); max-width:62ch}
+
+  /* —— 顶栏 —— */
+  nav{position:sticky; top:0; z-index:50; backdrop-filter:blur(6px);
+      background:color-mix(in srgb, var(--paper) 82%, transparent); border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex; align-items:center; justify-content:space-between; height:58px}
+  .brand{font-family:var(--serif); font-weight:600; font-size:1.05rem; display:flex; align-items:center; gap:.5em}
+  .brand .dot{width:9px; height:9px; border-radius:50%; background:var(--coral); display:inline-block}
+  .navlinks{display:flex; gap:1.4rem; font-size:.82rem; font-family:var(--mono)}
+  .navlinks a{color:var(--ink-2)} .navlinks a:hover{color:var(--coral)}
+  @media(max-width:760px){.navlinks{display:none}}
+
+  /* —— Hero —— */
+  .hero{padding-top:clamp(56px,11vh,120px)}
+  .hero .kicker{font-family:var(--mono); font-size:.78rem; letter-spacing:.2em; color:var(--ink-2); text-transform:uppercase}
+  .hero h1{font-family:var(--serif); font-weight:600; font-size:clamp(2.6rem,7vw,5rem); line-height:1.02; letter-spacing:-.02em; margin:.32em 0 .1em; max-width:16ch}
+  .hero h1 em{font-style:italic; color:var(--coral)}
+  .hero .wordmark{font-family:var(--serif); font-style:italic; font-weight:400; color:var(--ink-2); font-size:clamp(1.1rem,2.4vw,1.6rem)}
+  .hero .sub{font-size:clamp(1.05rem,1.9vw,1.3rem); max-width:54ch; margin-top:1.6rem; color:var(--ink)}
+  .hero .tags{display:flex; flex-wrap:wrap; gap:.6rem; margin-top:2rem}
+  .tag{font-family:var(--mono); font-size:.74rem; border:1px solid var(--line); border-radius:100px; padding:.4em 1em; color:var(--ink-2); background:var(--raised)}
+  .hr{height:1px; background:var(--line); margin:0; border:0}
+
+  /* —— 卡片/网格 —— */
+  .grid{display:grid; gap:18px}
+  .card{background:var(--raised); border:1px solid var(--line); border-radius:var(--r); padding:26px 24px; position:relative}
+  .card .lab{font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; color:var(--coral)}
+
+  /* 问题对照 */
+  .vs{display:grid; grid-template-columns:1fr auto 1fr; gap:22px; align-items:center; margin-top:34px}
+  @media(max-width:720px){.vs{grid-template-columns:1fr; gap:14px} .vs .arrow{transform:rotate(90deg)}}
+  .vs .arrow{font-family:var(--mono); color:var(--coral); font-size:1.6rem}
+  .panel{border-radius:var(--r); padding:26px; border:1px solid var(--line)}
+  .panel.bad{background:var(--navy); color:#d7cfc2}
+  .panel.bad h3{color:#fff} .panel.bad .x{color:var(--coral-tint)}
+  .panel.good{background:var(--raised)}
+  .panel .head{display:flex; align-items:center; gap:.6em; margin-bottom:.7em}
+  .lockbox{font-family:var(--mono); font-size:.78rem; color:#9b9486}
+  .panel ul{list-style:none; display:grid; gap:.5em; margin-top:.4em; font-size:.92rem}
+  .panel li::before{content:"—"; color:var(--coral); margin-right:.6em}
+
+  /* 适配层图 */
+  .arch{margin-top:36px; background:var(--raised); border:1px solid var(--line); border-radius:var(--r); padding:34px 26px}
+  .tools{display:flex; gap:14px; justify-content:center; flex-wrap:wrap}
+  .chip{flex:1; min-width:150px; max-width:230px; text-align:center; border:1px dashed var(--coral); border-radius:10px; padding:14px 10px; background:color-mix(in srgb,var(--coral) 5%, var(--raised))}
+  .chip b{font-family:var(--sans); font-weight:600; display:block}
+  .chip small{font-family:var(--mono); font-size:.68rem; color:var(--ink-2)}
+  .downarrows{display:flex; justify-content:center; color:var(--coral); font-family:var(--mono); margin:.4em 0; font-size:1.3rem; letter-spacing:1.2em; padding-left:1.2em}
+  .truth{margin:0 auto; max-width:560px; text-align:center; border:2px solid var(--ink); border-radius:12px; padding:18px; background:var(--paper)}
+  .truth .t1{font-family:var(--serif); font-weight:600; font-size:1.25rem}
+  .truth .t2{font-family:var(--mono); font-size:.74rem; color:var(--ink-2); margin-top:.3em}
+  .archnote{text-align:center; margin-top:18px; font-size:.92rem}
+
+  /* 五层 */
+  .layers{display:grid; gap:12px; margin-top:34px}
+  .layer{display:grid; grid-template-columns:120px 1fr auto; gap:20px; align-items:center;
+         background:var(--raised); border:1px solid var(--line); border-left:4px solid var(--coral); border-radius:10px; padding:18px 22px}
+  @media(max-width:720px){.layer{grid-template-columns:1fr; gap:6px}}
+  .layer .code{font-family:var(--mono); font-weight:700; color:var(--ink)}
+  .layer .desc{color:var(--ink-2); font-size:.95rem}
+  .layer .who{font-family:var(--mono); font-size:.7rem; color:var(--coral); white-space:nowrap}
+  .layer:nth-child(1){border-left-color:#C5512B}
+  .layer:nth-child(2){border-left-color:#B07A2E}
+  .layer:nth-child(3){border-left-color:#7E8A55}
+  .layer:nth-child(4){border-left-color:#3E7E86}
+  .layer:nth-child(5){border-left-color:#7C5CC4}
+
+  /* —— 飞轮 signature —— */
+  .flywheel-sec{background:linear-gradient(180deg,transparent, color-mix(in srgb,var(--coral) 4%, var(--paper)) 40%, transparent)}
+  .fly{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:40px; align-items:center; margin-top:40px}
+  @media(max-width:820px){.fly{grid-template-columns:1fr}}
+  .wheel{position:relative; width:min(420px,86vw); aspect-ratio:1; margin:0 auto}
+  .ring{position:absolute; inset:6%; border:2px dashed var(--coral); border-radius:50%; animation:spin 36s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .hub{position:absolute; inset:27%; border-radius:50%; background:var(--paper); border:1px solid var(--line);
+       display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:10px; box-shadow:0 12px 40px -22px rgba(32,24,15,.5)}
+  .hub .hk{font-family:var(--mono); font-size:.64rem; letter-spacing:.14em; color:var(--coral)}
+  .hub .hb{font-family:var(--serif); font-weight:600; font-size:1.05rem; line-height:1.15; margin-top:.2em}
+  .node{position:absolute; width:74px; height:74px; margin:-37px 0 0 -37px; border-radius:50%;
+        background:var(--raised); border:1px solid var(--line); display:flex; flex-direction:column; align-items:center; justify-content:center;
+        cursor:pointer; transition:.25s; text-align:center}
+  .node .nn{font-family:var(--mono); font-size:.6rem; color:var(--ink-2)}
+  .node .nt{font-weight:600; font-size:.84rem}
+  .node[data-i="0"]{left:50%; top:6%}
+  .node[data-i="1"]{left:94%; top:50%}
+  .node[data-i="2"]{left:50%; top:94%}
+  .node[data-i="3"]{left:6%; top:50%}
+  .node.active{background:var(--coral); border-color:var(--coral); color:var(--paper); transform:scale(1.12)}
+  .node.active .nn{color:var(--coral-tint)}
+  .flydetail{min-height:200px}
+  .flydetail .step{font-family:var(--mono); color:var(--coral); font-size:.78rem; letter-spacing:.12em}
+  .flydetail h3{margin:.3em 0 .5em; font-size:1.5rem}
+  .flydetail p{font-size:1.02rem}
+  .philo{margin-top:22px; border-top:1px solid var(--line); padding-top:18px; font-size:.92rem}
+  .philo b{color:var(--coral)}
+
+  /* 六维 */
+  .bars{margin-top:30px; display:grid; gap:12px}
+  .bar{display:grid; grid-template-columns:130px 1fr 50px; gap:14px; align-items:center}
+  @media(max-width:640px){.bar{grid-template-columns:96px 1fr 42px}}
+  .bar .bn{font-size:.9rem} .bar .bn small{font-family:var(--mono); color:var(--ink-2); font-size:.74rem}
+  .track{height:12px; background:var(--paper-2); border-radius:100px; overflow:hidden}
+  .fill{height:100%; background:linear-gradient(90deg,var(--coral),var(--coral-tint)); width:0; border-radius:100px; transition:width 1.1s cubic-bezier(.2,.8,.2,1)}
+  .bar .bv{font-family:var(--mono); font-size:.82rem; text-align:right; color:var(--ink-2)}
+  .gates{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:30px}
+  @media(max-width:640px){.gates{grid-template-columns:1fr}}
+
+  /* 使用 steps */
+  .steps{counter-reset:s; display:grid; gap:14px; margin-top:30px}
+  .step-row{display:grid; grid-template-columns:auto 1fr; gap:20px; align-items:start; background:var(--raised); border:1px solid var(--line); border-radius:12px; padding:20px 22px}
+  .step-row .idx{counter-increment:s; font-family:var(--serif); font-weight:600; font-size:1.8rem; color:var(--coral); line-height:1; min-width:40px}
+  .step-row .idx::before{content:counter(s,decimal-leading-zero)}
+  .term{background:var(--navy); color:#e7e0d4; border-radius:10px; padding:14px 16px; font-family:var(--mono); font-size:.78rem; margin-top:10px; overflow-x:auto; line-height:1.7}
+  .term .c{color:#9b9486} .term .g{color:var(--coral-tint)}
+
+  /* 表 */
+  table{width:100%; border-collapse:collapse; margin-top:28px; font-size:.9rem; background:var(--raised); border:1px solid var(--line); border-radius:var(--r); overflow:hidden}
+  th,td{text-align:left; padding:13px 16px; border-bottom:1px solid var(--line); vertical-align:top}
+  th{font-family:var(--mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-2); background:var(--paper-2)}
+  tr:last-child td{border-bottom:0}
+  td code{font-size:.78em}
+
+  /* 致敬 */
+  .credits{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px; margin-top:30px}
+  .credit{border:1px solid var(--line); border-radius:12px; padding:18px; background:var(--raised)}
+  .credit .src{font-family:var(--serif); font-weight:600; font-size:1.05rem}
+  .credit .what{font-size:.86rem; color:var(--ink-2); margin-top:.3em}
+
+  /* 速查 + footer */
+  .cheat{background:var(--navy); color:#e7e0d4; border-radius:var(--r); padding:30px; margin-top:30px; font-family:var(--mono); font-size:.82rem; line-height:1.9}
+  .cheat h3{color:#fff; font-family:var(--serif); margin-bottom:.6em}
+  .cheat .k{color:var(--coral-tint)} .cheat .c{color:#9b9486}
+  footer{padding:60px 0 80px; border-top:1px solid var(--line); margin-top:40px}
+  footer .wrap{display:flex; justify-content:space-between; flex-wrap:wrap; gap:14px; align-items:center; font-family:var(--mono); font-size:.76rem; color:var(--ink-2)}
+
+  /* reveal */
+  .reveal{opacity:0; transform:translateY(22px); transition:opacity .7s ease, transform .7s cubic-bezier(.2,.8,.2,1)}
+  .reveal.in{opacity:1; transform:none}
+  @media(prefers-reduced-motion:reduce){
+    .ring{animation:none} .reveal{opacity:1; transform:none; transition:none}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <span class="brand"><span class="dot"></span>记忆宫殿 · MemoryPalace</span>
+    <span class="navlinks">
+      <a href="#why">问题</a><a href="#core">立场</a><a href="#layers">五层</a>
+      <a href="#flywheel">飞轮</a><a href="#distill">蒸馏</a><a href="#use">使用</a>
+    </span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">跨平台 · 本地 Markdown · 你掌控的资产</div>
+    <h1>把 AI 的记忆，<br>变成你<em>带得走</em>的资产</h1>
+    <div class="wordmark">a platform-agnostic memory palace</div>
+    <p class="sub">一座用纯 Markdown 写的「第二大脑」。Claude Code、Codex 和以后任何 CLI 共读共写同一个 vault——记忆从藏在模型里的黑箱，变成你<strong>看得见、改得了、带得走</strong>的东西。越用越懂你。</p>
+    <div class="tags">
+      <span class="tag">Obsidian Vault = 真理源</span>
+      <span class="tag">工具 = 可弃适配器</span>
+      <span class="tag">你审批 才晋升</span>
+      <span class="tag">内核不调 LLM</span>
+    </div>
+  </div>
+</header>
+<hr class="hr" />
+
+<!-- WHY -->
+<section id="why">
+  <div class="wrap reveal">
+    <div class="secnum">01 — 为什么</div>
+    <h2>记忆不该锁在别人的黑箱里</h2>
+    <p class="lead" style="margin-top:18px">大多数 AI 产品的 memory 是藏起来的：你不知道它记了什么，也不知道它为什么突然误解你；换个工具，一切清零。它的「懂你」是租来的，不是你的资产。</p>
+    <div class="vs">
+      <div class="panel bad">
+        <div class="head"><h3>黑箱 memory</h3></div>
+        <div class="lockbox">memory · 🔒 vendor-locked</div>
+        <ul class="x">
+          <li>看不见记了什么</li>
+          <li>改不动、删不掉</li>
+          <li>绑死单一厂商，换工具归零</li>
+          <li>突然误解你也无从排查</li>
+        </ul>
+      </div>
+      <div class="arrow">→</div>
+      <div class="panel good">
+        <div class="head"><h3>Obsidian = 本地 Markdown</h3></div>
+        <div class="lockbox" style="color:var(--coral)">vault · 你掌控</div>
+        <ul>
+          <li>每条记忆都是肉眼可读的 <code>.md</code></li>
+          <li>随手改 / 删 / 用 wikilink 连</li>
+          <li>多个 agent 共读同一个 vault</li>
+          <li>git 版本化，任意回滚</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin-top:22px; font-size:.92rem">灵感源自 Karpathy 把 Obsidian 当 AI 共享大脑的思路，再吸收 OpenClaw / Hermes / open-second-brain 的记忆机制，最后长在你自己「单一事实源 · 防漂移 · 经验飞轮」的体系上。</p>
+  </div>
+</section>
+
+<!-- CORE -->
+<section id="core" style="background:var(--paper-2)">
+  <div class="wrap reveal">
+    <div class="secnum">02 — 核心立场</div>
+    <h2>Vault 是真理，<br>工具是可弃适配器</h2>
+    <p class="lead" style="margin-top:18px">「不管 agent 工具怎么变」的全部秘密在一句话：<strong>把记忆和契约都放进 Vault；每个工具只给一个 5 行的 stub 指向它。</strong>换工具 = 重写 5 行，大脑分毫不动。</p>
+    <div class="arch">
+      <div class="tools">
+        <div class="chip"><b>Claude Code</b><small>~/.claude/CLAUDE.md</small></div>
+        <div class="chip"><b>Codex</b><small>~/.codex/AGENTS.md</small></div>
+        <div class="chip"><b>未来任何 CLI</b><small>复制同一句即可</small></div>
+      </div>
+      <div class="downarrows">↓ ↓ ↓</div>
+      <div class="truth">
+        <div class="t1">PROTOCOL.md · 唯一读写契约</div>
+        <div class="t2">读 first · 写 back · 不越权 · 单一事实源</div>
+      </div>
+      <p class="archnote"><strong>真理层</strong> = 00-RULES / 01-PROJECTS / 02-SOURCES / 03-MAPS / 04-FEEDBACK<br><span style="font-size:.85rem">和你管 skill 用 <code>registry.yaml</code> 单一事实源 + 薄挂载，是同一套手法。</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- LAYERS -->
+<section id="layers">
+  <div class="wrap reveal">
+    <div class="secnum">03 — 结构</div>
+    <h2>五层 · 按生命周期切，互不重叠</h2>
+    <p class="lead" style="margin-top:18px">沿用视频的五文件夹骨架，内核换成业界的记忆机制。每层职责单一，谁能写、写什么，边界清晰。</p>
+    <div class="layers">
+      <div class="layer"><span class="code">00-RULES</span><span class="desc">身份层：我是谁 · 沟通风格 · 禁用词 · 跨领域铁律。<b>最高法律</b>，常驻注入每个会话。</span><span class="who">仅晋升 + 你审批</span></div>
+      <div class="layer"><span class="code">01-PROJECTS</span><span class="desc">项目层：每项目一目录，内分 <code>decisions</code>(共同决定) + <code>feedback</code>(我打回的产出)；支持任意层级嵌套子项目。</span><span class="who">agent 可直接写</span></div>
+      <div class="layer"><span class="code">02-SOURCES</span><span class="desc">资料层：爬回来的文章 / 工具 / vendor 文档（Web Clipper 一键转 md）。</span><span class="who">agent / 插件</span></div>
+      <div class="layer"><span class="code">03-MAPS</span><span class="desc">图层：流程图 / 决策树 / 架构。讲半天不如扔一张图。</span><span class="who">agent / 你</span></div>
+      <div class="layer"><span class="code">04-FEEDBACK</span><span class="desc">飞轮中枢：每日 <code>journal</code> + 蒸馏 <code>candidates</code> + 留痕 <code>DREAMS</code>。</span><span class="who">引擎 + 你审批</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- FLYWHEEL (signature) -->
+<section id="flywheel" class="flywheel-sec">
+  <div class="wrap reveal">
+    <div class="secnum">04 — 机制 · signature</div>
+    <h2>越用越懂你的飞轮</h2>
+    <p class="lead" style="margin-top:18px">最有用的不是记录对话，而是<strong>升级迭代</strong>。四步转一圈，升级一次，所有 agent 都不再犯同样的错。点节点看每一步 ↓</p>
+    <div class="fly">
+      <div class="wheel" id="wheel">
+        <div class="ring"></div>
+        <div class="hub"><span class="hk">FLYWHEEL</span><span class="hb" id="hubLabel">捕获</span></div>
+        <div class="node" data-i="0"><span class="nn">01</span><span class="nt">捕获</span></div>
+        <div class="node" data-i="1"><span class="nn">02</span><span class="nt">蒸馏</span></div>
+        <div class="node" data-i="2"><span class="nn">03</span><span class="nt">审批</span></div>
+        <div class="node" data-i="3"><span class="nn">04</span><span class="nt">注入</span></div>
+      </div>
+      <div class="flydetail">
+        <div class="step" id="fStep">STEP 01 · 写</div>
+        <h3 id="fTitle">捕获 — 落进每日 journal</h3>
+        <p id="fBody">工作中的纠正、决策、偏好，agent 追加到 <code>04-FEEDBACK/journal/今天.md</code>（前缀 <code>决策:/偏好:/纠正:</code>）。上下文压缩前还会 auto-flush，先把要紧的抢救进 journal，防长会话丢记忆。</p>
+        <div class="philo">
+          <b>核心哲学：</b>LLM 只负责「抽候选」和「用记忆」，<b>绝不</b>负责「决定什么进长期库」——打分、去重、晋升门全是确定性规则。记忆永不被模型幻觉污染。
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DISTILL -->
+<section id="distill" style="background:var(--paper-2)">
+  <div class="wrap reveal">
+    <div class="secnum">05 — 蒸馏内部</div>
+    <h2>六维加权打分，确定性把门</h2>
+    <p class="lead" style="margin-top:18px">夜间脚本扫 journal + Claude/Codex 会话日志，给每条候选打分。达标的才进「待审批」，<strong>绝不直接改 00-RULES</strong>。权重借自 OpenClaw 的 Dreaming：</p>
+    <div class="bars" id="bars">
+      <div class="bar"><span class="bn">relevance<br><small>相关度</small></span><div class="track"><div class="fill" data-w="100"></div></div><span class="bv">0.30</span></div>
+      <div class="bar"><span class="bn">frequency<br><small>重复次数</small></span><div class="track"><div class="fill" data-w="80"></div></div><span class="bv">0.24</span></div>
+      <div class="bar"><span class="bn">diversity<br><small>来源多样</small></span><div class="track"><div class="fill" data-w="50"></div></div><span class="bv">0.15</span></div>
+      <div class="bar"><span class="bn">recency<br><small>新近度</small></span><div class="track"><div class="fill" data-w="50"></div></div><span class="bv">0.15</span></div>
+      <div class="bar"><span class="bn">consolidation<br><small>巩固已有</small></span><div class="track"><div class="fill" data-w="33"></div></div><span class="bv">0.10</span></div>
+      <div class="bar"><span class="bn">richness<br><small>信息量</small></span><div class="track"><div class="fill" data-w="20"></div></div><span class="bv">0.06</span></div>
+    </div>
+    <div class="gates">
+      <div class="card"><span class="lab">确定性门</span><h3 style="margin:.3em 0">重复够了才进铁律</h3><p style="font-size:.92rem">跨项目要进 <code>00-RULES</code> 的，必须重复 ≥2 次（<code>min_freq_global</code>）。偶发的一句话不会污染你的最高法律。</p></div>
+      <div class="card"><span class="lab">去重 / 冲突</span><h3 style="margin:.3em 0">ADD · UPDATE · NOOP</h3><p style="font-size:.92rem">借 mem0 思路：新候选先和已有记忆比相似度——太像就标 UPDATE/NOOP，而不是又新建一条。</p></div>
+    </div>
+    <p style="margin-top:24px; font-size:.92rem"><strong>为什么内核不调 LLM？</strong>抽候选这步是<strong>可换的 CLI provider</strong>（claude / codex / gemini 等本地 CLI，可配主选 + 兜底），聪明但可替换、不占主力额度；而「决定记什么进长期库」交给确定性规则（可信、可审计、可回滚）。每次蒸馏都留痕 <code>DREAMS.md</code>，记忆怎么变的全程看得见。吸收自 open-second-brain：<em>no LLM inside the algorithm, no surprise hallucinations in your memory</em>。</p>
+  </div>
+</section>
+
+<!-- USE -->
+<section id="use">
+  <div class="wrap reveal">
+    <div class="secnum">06 — 使用方式</div>
+    <h2>一天的样子（混合模式）</h2>
+    <p class="lead" style="margin-top:18px">自动出草稿 + 你审批晋升。你只在最后一步花几分钟，其余自动转。</p>
+    <div class="steps">
+      <div class="step-row"><span class="idx"></span><div>
+        <h3>读 —— 已自动</h3>
+        <p>照常用 Claude Code / Codex。它们已被 stub 配置成「答你的事先读宫殿、不瞎猜」。从下一个会话起、任何项目里都生效。</p>
+      </div></div>
+      <div class="step-row"><span class="idx"></span><div>
+        <h3>写 —— 随手记</h3>
+        <p>跟 agent 说一句，或自己在 Obsidian 里写。落进 journal 或对应项目。</p>
+        <div class="term"><span class="c"># 对 agent：</span><br>"把刚才的决定记进大脑" <span class="c">→ 追加到 04-FEEDBACK/journal/今天.md</span></div>
+      </div></div>
+      <div class="step-row"><span class="idx"></span><div>
+        <h3>蒸馏 —— 夜间自动</h3>
+        <p>cron 每晚 03:00 跑（用本地 CLI 抽候选，可挑额度宽的、不占主力），出候选到 <code>candidates.md</code>，绝不动 00-RULES。想先预览就 <code>--shadow</code>。</p>
+        <div class="term"><span class="g">/</span>memory-palace distill <span class="c"># 或 mp.py distill --vault &lt;宫殿&gt; · --shadow 干跑</span></div>
+      </div></div>
+      <div class="step-row"><span class="idx"></span><div>
+        <h3>审批 —— 你拍板</h3>
+        <p>跑 <code>/memory-palace review</code>，勾选通过的候选，晋升进 00-RULES / 项目，留痕 DREAMS，git 可回滚。</p>
+        <div class="term"><span class="g">/</span>memory-palace review <span class="c"># 勾 [x] → mp.py promote 晋升 + commit</span></div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SEAMS -->
+<section id="seams" style="background:var(--paper-2)">
+  <div class="wrap reveal">
+    <div class="secnum">07 — 接缝</div>
+    <h2>和你现有体系怎么共存</h2>
+    <p class="lead" style="margin-top:18px">不造重复、不漂移。记忆宫殿只管「我这个人」，其余各归各位、互相指向。</p>
+    <table>
+      <thead><tr><th>现有资产</th><th>处置</th><th>为什么</th></tr></thead>
+      <tbody>
+        <tr><td>工具自带的规则目录<br>(如 <code>~/.claude/rules</code>)</td><td>可集中进宫殿 + 软链回去</td><td>真身在 vault、各 CLI 共读一份；<code>mp.py link</code> 重建软链</td></tr>
+        <tr><td>skill / 插件系统</td><td>各管各的，宫殿只链接不复制</td><td>单一事实源仍是它们各自的注册表</td></tr>
+        <tr><td>已有的项目专属知识库</td><td>留原地，宫殿放索引卡指过去</td><td>成熟独立体系，吞并反而破坏它的单一事实源</td></tr>
+        <tr><td>工具自带的私有 memory<br>(如 <code>~/.claude/.../memory/</code>)</td><td>降级为工具专属操作便签</td><td>实质记忆一律进 vault，避免两套打架</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- CREDITS -->
+<section id="credits">
+  <div class="wrap reveal">
+    <div class="secnum">08 — 思想来源</div>
+    <h2>站在谁的肩膀上</h2>
+    <div class="credits">
+      <div class="credit"><div class="src">Karpathy + 社区</div><div class="what">Obsidian 当 AI 共享大脑、五文件夹骨架、nightly-distill、你审批门。</div></div>
+      <div class="credit"><div class="src">OpenClaw</div><div class="what">Dreaming 蒸馏：Light 暂存 → Deep 六维加权过门 → REM 只反思；DREAMS 可复查、压缩前 auto-flush。</div></div>
+      <div class="credit"><div class="src">Hermes (Nous)</div><div class="what">会话末 extraction pass、把 skill 当一等「程序记忆」、hybrid 检索。</div></div>
+      <div class="credit"><div class="src">open-second-brain</div><div class="what">内核不调 LLM 的确定性晋升、置信度 band、一个 vault 多运行时、可回滚。</div></div>
+      <div class="credit"><div class="src">mem0</div><div class="what">候选写回的 ADD / UPDATE / DELETE / NOOP 去重与冲突决策。</div></div>
+      <div class="credit"><div class="src">你的纪律</div><div class="what">单一事实源 · 不漂移 · 生命周期分区 · 经验飞轮——这套机制最终长在使用者自己的工作纪律上。</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CHEAT -->
+<section id="cheat" style="padding-top:0">
+  <div class="wrap reveal">
+    <div class="secnum">速查卡</div>
+    <div class="cheat">
+      <h3>路径与命令</h3>
+      <span class="c"># 概念 / 搭建（用 memory-palace skill）</span><br>
+      <span class="k">/memory-palace help</span>  ·  <span class="k">/memory-palace init</span><br><br>
+      <span class="c"># 充实记忆：深度访谈 / 从本地 agent 导入</span><br>
+      <span class="k">/memory-palace interview</span>  ·  <span class="k">/memory-palace extract</span><br><br>
+      <span class="c"># 飞轮：蒸馏出候选 → 你审批晋升</span><br>
+      <span class="k">/memory-palace distill</span>  ·  <span class="k">/memory-palace review</span><br><br>
+      <span class="c"># 体检优化</span><br>
+      <span class="k">/memory-palace analyze</span><br><br>
+      <span class="c"># 底层引擎（也可直接命令行用）</span><br>
+      mp.py distill|promote|analyze|link --vault &lt;你的宫殿&gt;<br>
+      <span class="c"># 夜间自动（crontab -e）</span><br>
+      0 3 * * * mp.py distill --vault &lt;你的宫殿&gt;
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>记忆宫殿 · 平台无关的第二大脑 · 2026</span>
+    <span>signature moment = 飞轮 · 其余克制留白</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  // —— 滚动揭示 ——
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  }, {threshold:.12});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  // —— 六维条形动画 ——
+  var barsSec = document.getElementById('bars');
+  if(barsSec){
+    var bo = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){
+          e.target.querySelectorAll('.fill').forEach(function(f){ f.style.width = f.dataset.w + '%'; });
+          bo.unobserve(e.target);
+        }
+      });
+    }, {threshold:.3});
+    bo.observe(barsSec);
+  }
+
+  // —— 飞轮交互 ——
+  var steps = [
+    {step:'STEP 01 · 写', title:'捕获 — 落进每日 journal',
+     body:'工作中的纠正、决策、偏好，agent 追加到 04-FEEDBACK/journal/今天.md（前缀 决策:/偏好:/纠正:）。上下文压缩前还会 auto-flush，先把要紧的抢救进 journal，防长会话丢记忆。'},
+    {step:'STEP 02 · 打分', title:'蒸馏 — 六维加权出候选',
+     body:'mp.py distill 夜间扫 journal + Claude/Codex 会话，调可换的本地 CLI（claude/codex/gemini…）抽候选，再用确定性六维加权打分、去重，达标写进 candidates.md。绝不直接改 00-RULES——只出草稿。'},
+    {step:'STEP 03 · 你拍板', title:'审批 — /memory-palace review 晋升',
+     body:'你勾选通过的候选，mp.py promote 才把它晋升到 00-RULES / 项目，留痕 DREAMS.md，git 提交可回滚。只有过了这道门才成为永久记忆。'},
+    {step:'STEP 04 · 读', title:'注入 — 所有 agent 受益',
+     body:'PROTOCOL 让每个工具答你的事前先读 00-RULES + grep vault。所以升级一次、全工具同时变聪明——这就是越用越懂你。'}
+  ];
+  var nodes = Array.prototype.slice.call(document.querySelectorAll('.node'));
+  var fStep=document.getElementById('fStep'), fTitle=document.getElementById('fTitle'),
+      fBody=document.getElementById('fBody'), hub=document.getElementById('hubLabel');
+  var names=['捕获','蒸馏','审批','注入'], cur=-1, timer=null;
+  function set(i){
+    if(i===cur) return; cur=i;
+    nodes.forEach(function(n){ n.classList.toggle('active', +n.dataset.i===i); });
+    fStep.textContent=steps[i].step; fTitle.textContent=steps[i].title; fBody.textContent=steps[i].body;
+    hub.textContent=names[i];
+  }
+  nodes.forEach(function(n){
+    n.addEventListener('mouseenter', function(){ stop(); set(+n.dataset.i); });
+    n.addEventListener('click', function(){ stop(); set(+n.dataset.i); });
+  });
+  var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  function auto(){ timer=setInterval(function(){ set((cur+1)%4); }, 2600); }
+  function stop(){ if(timer){ clearInterval(timer); timer=null; } }
+  set(0);
+  if(!reduce){
+    var wheel=document.getElementById('wheel');
+    var wo=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ auto(); } else { stop(); } });
+    }, {threshold:.4});
+    wo.observe(wheel);
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+# Memory Palace 配置 · init 时拷进 <vault>/.mp/config.toml，按需改
+
+[sources]
+scan_days = 3                  # 日常蒸馏扫最近几天（OpenClaw 默认带今昨）
+include_journal = true
+include_claude = true
+include_codex = true
+claude_projects = "~/.claude/projects"
+codex_sessions = ["~/.codex/sessions", "~/.codex/archived_sessions"]
+max_files = 40
+max_user_turns_per_file = 60
+
+[llm]
+# 抽候选用哪个本地 CLI——只借「无头出文本」能力；打分/去重/晋升永远是确定性 Python。
+enabled = true
+provider = "claude"            # 默认 claude；可改 gemini / codex / antigravity（看你装了哪个、哪个额度宽）
+fallback = ["codex"]           # 主 provider 失败/限额时按序兜底；全失败回退纯启发式
+timeout_sec = 180
+max_prompt_chars = 12000
+
+# 各 CLI 无头调用：命令 = command + args + [可选 output_file_arg+临时文件] + prompt
+# 用 PATH 里的命令名即可；找不到的自动跳过。cron 里建议改成绝对路径。
+[llm.providers.claude]
+command = "claude"
+args = ["-p"]
+
+[llm.providers.codex]
+command = "codex"
+args = ["exec", "--skip-git-repo-check"]
+output_file_arg = "-o"         # codex 答案不走 stdout，用 -o 写文件再读
+
+[llm.providers.gemini]
+command = "gemini"
+args = ["-p"]
+
+[llm.providers.antigravity]
+command = "agy"
+args = ["-p"]
+
+[scoring]
+# 六维加权（和=1），借自 OpenClaw 的 Dreaming
+w_relevance = 0.30
+w_frequency = 0.24
+w_diversity = 0.15
+w_recency = 0.15
+w_consolidation = 0.10
+w_richness = 0.06
+promote_threshold = 0.50       # 总分达标才进「待审批」
+min_freq_global = 2            # 跨项目铁律(scope=global)至少重复几次才建议进 00-RULES
+dedupe_similarity = 0.72       # 与已有记忆相似度 ≥ 此值 → UPDATE/NOOP 而非 ADD
+
+# 中央集权（可选）：把各工具的规则目录软链到本宫殿真身，mp.py link 据此重建。
+# 键=系统路径，值=vault 内相对路径。按需取消注释。
+# [links]
+# "~/.claude/rules" = "00-RULES/rules"

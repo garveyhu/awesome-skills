@@ -1,0 +1,21 @@
+# 系统 / 编辑器噪音
+.DS_Store
+Icon?
+
+# Obsidian 易变 / 含本地敏感态（插件清单在 community-plugins.json，换机重装）
+.obsidian/workspace*.json
+.obsidian/cache
+.obsidian/plugins/
+.trash/
+
+# mp 引擎日志 / 临时
+.mp/*.log
+
+# 蒸馏原始转储：可能含敏感会话内容，永不入库
+04-FEEDBACK/_raw/
+
+# 凭据 / 密钥永不入库
+.env
+*.secret
+*.key
+secrets.*
