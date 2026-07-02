@@ -26,14 +26,18 @@ python3 "$SK" design --instruct "温柔甜美的年轻女性主播" \
 python3 "$SK" clone --ref-audio voice.wav --ref-text "参考音频里说的原话" \
   --text "这句话会用参考音色说出来。" --out out.wav
 
-# ③' clone --voice —— 读 voice.md 音色 token，自动取 ref-audio/ref-text（固定频道音色首选）
+# ③' clone（频道固定音色首选）—— 自动读 _channel/channel.json 的 voice.profiles[default]
+#     在频道目录内 / 设 $MEDIA_STUDIO_CHANNEL 即可，连 --voice 都不用；多音色用 --voice-profile <key>
+python3 "$SK" clone --text-file script.txt --out narration.wav
+
+# ③'' clone --voice —— 显式指一份 voice.md（channel.json 缺失时的兜底）
 python3 "$SK" clone --voice path/to/voice.md --text-file script.txt --out narration.wav
 
 # 长旁白：文本入文件，自动按句切分逐段生成再拼接
 python3 "$SK" say --text-file script.txt --out narration.wav
 ```
 
-`info` 子命令打印 venv / 模型路径 / 采样率。`--voice` 指向一份 voice.md（frontmatter 含 `ref_audio`/`ref_text` 相对路径），脚本自动解析——把"频道固定音色"沉成 token 后，配音只需 `--voice`。
+`info` 子命令打印 venv / 模型路径 / 采样率（+ 解析到的频道音色 profile）。**音色 ref 解析优先级**：显式 `--ref-audio/--ref-text` > **频道 `_channel/channel.json` 的 `voice.profiles[default]`**（`ref_wav`/`ref_text`/`sample_rate`，经 `_shared/ms_channel.py` 读取，`--voice-profile` 选 key）> `--voice` 指的 voice.md frontmatter。频道里的 `ref_wav` 相对路径文件若还没就位（P3 物理迁移前），自动回落 voice.md 解析出的旧路径——两阶段都不断、零回归。
 
 ## 关键参数
 
@@ -70,7 +74,7 @@ python3 "$SK" say --text-file script.txt --out narration.wav
 
 ## 兜底：高质量 PyTorch 路线
 
-需要更高保真、或 MLX 版异常时，可退回原版 VoxCPM2（PyTorch）在 `/Users/links/Coding/Hub/VoxCPM`（模型已在 `pretrained_models/VoxCPM2`，4.6GB）。**但慢得多**（MPS RTF ≈ 11，降噪器还卡 CPU），仅作高质量兜底，不做日常批量。
+需要更高保真、或 MLX 版异常时，可退回原版 VoxCPM2（PyTorch）在 `$VOXCPM_HOME`（默认 `/Users/links/Coding/Hub/VoxCPM`，模型在其 `pretrained_models/VoxCPM2`，4.6GB）。**但慢得多**（MPS RTF ≈ 11，降噪器还卡 CPU），仅作高质量兜底，不做日常批量。
 
 ## 排错
 

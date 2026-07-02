@@ -1,20 +1,25 @@
 # style-lock 注入规则
 
-所有生图**默认**自动拼 style-lock v1，保跨内容品牌画风一致（暗场数据流·克制科技脸·近黑 #0A0C12 + 唯一薄荷青 #34E0B0 + 几何线框）。这一层是「品牌一致性」的关键——单条内容不自由发挥，统一吃冻结 token。
+所有生图**默认**自动拼 style-lock，保跨内容品牌画风一致——单条内容不自由发挥，统一吃当前频道冻结的 token。**具体画风/配色一律以频道事实源为准，本文不复述色值以免漂移。**
 
 ## 事实源
 
-`Media-Studio/1-资产库/风格锁/画风锁.md` 的 frontmatter：
+当前频道的 style-lock，按优先级：
+
+1. **`channel.json` 的 `brand.style_lock`**（机器单一事实源，经 `_shared/ms_channel.py` 读取）——`image_prompt` / `negative_prompt` / `version`。
+2. 回落 `<频道根>/风格卡/风格锁/画风锁.md` 的 frontmatter（`locked_prompt` / `negative_prompt` / `version` / `seed` / `sref`）。
+
+frontmatter 形态（**下为通用示意·非任何频道真值**）：
 
 ```yaml
-locked_prompt: "dark technical aesthetic, near-black #0A0C12 background, single mint-green #34E0B0 accent glow, thin wireframe geometry, data-flow lines, subtle film grain, matte non-reflective, volumetric light from one direction, generous negative space, asymmetric composition, low saturation, precise and restrained"
-negative_prompt: "purple-blue gradient, glassmorphism, neon overload, busy, cluttered, glossy plastic, lens flare spam, multiple light sources, cute, childish, watermark, text artifacts"
-backend: gemini-gen      # 静态声明的主后端；本 skill 的 --prefer / 可用性 优先于它
-seed:                    # 待锁（首批出图后回填）
-sref:                    # 待锁
+locked_prompt: "<当前频道的锁定画风描述：美学/配色/构图/质感，读 channel.json 或 画风锁.md>"
+negative_prompt: "<要规避的 AI 味/杂质：如 purple-blue gradient, glassmorphism, watermark, text artifacts ...>"
+backend: <主后端>        # 静态声明；本 skill 的 --prefer / 可用性 优先于它
+seed:                    # 可选，锁可复现
+sref:                    # 可选，风格参考图
 ```
 
-路由器自动向上查找该文件（从 `--out` 目录逐级上溯，或 `--style-lock` 显式指定）。找不到 → 跳过注入，stderr 提示，**不报错**（非品牌场景也能用）。
+路由器优先读 channel.json，其次自动向上查找 画风锁.md（从 `--out` 目录逐级上溯，或 `--style-lock` 显式指定）。两者皆无 → 跳过注入，stderr 提示，**不报错**（非品牌场景也能用）。
 
 ## 注入规则（按后端能力分流）
 
@@ -29,9 +34,9 @@ sref:                    # 待锁
 <locked_prompt>, <用户 prompt>. avoid: <negative_prompt>
 ```
 
-例：
+例（`<locked_prompt>` 为当前频道实际锁定的画风，运行时从 channel.json 读取）：
 - 用户 prompt：`一条数据流穿过暗场`
-- prompt_final：`dark technical aesthetic, near-black #0A0C12 ... precise and restrained, 一条数据流穿过暗场. avoid: purple-blue gradient, glassmorphism, ...`
+- prompt_final：`<当前频道 locked_prompt 全文>, 一条数据流穿过暗场. avoid: <当前频道 negative_prompt>`
 
 ## seed / sref（待锁）
 

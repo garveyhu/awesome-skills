@@ -28,7 +28,18 @@
 """
 import json, hashlib, hmac, datetime, base64, urllib.request, urllib.error, time, argparse, sys
 
-RES = "/Users/links/.agents/resources.json"
+RES = "/Users/links/.agents/resources.json"  # 兜底：原硬编码路径（零回归）
+try:  # 经 _shared/ms_channel 定位凭据（$AGENTS_RESOURCES > 上溯 _secrets > ~/.agents/resources.json）
+    import pathlib as _pl
+    for _anc in _pl.Path(__file__).resolve().parents:
+        if (_anc / "_shared" / "ms_channel.py").exists():
+            sys.path.insert(0, str(_anc / "_shared")); break
+    import ms_channel as _msc
+    _hit = _msc.find_secrets()
+    if _hit:
+        RES = str(_hit)
+except Exception:
+    pass
 d = json.load(open(RES))["media_generation"]["volcengine"]["personal"]
 AK, SK = d["access_key_id"], d["secret_access_key"]
 HOST, REGION, SERVICE, VER = "visual.volcengineapi.com", "cn-north-1", "cv", "2022-08-31"

@@ -12,10 +12,12 @@
 **/.env
 
 # 不提交的 skill（publish: false · 自媒体频道专属/私有，本地用不外发）
+media/audio/stock-sourcing
 media/content/script-craft/
 media/content/topic-craft/
 media/content/topic-radar/
 media/image/links-illustrations/
+media/image/stock-sourcing
 media/studio/ip-architect/
 media/studio/publish-matrix/
 media/studio/review-loop/
@@ -24,11 +26,15 @@ media/video/animation/sprite-motion/
 media/video/animation/video-master/
 media/video/edit/caption-track/
 media/video/edit/cover-factory/
+media/video/edit/reframe/
 media/video/edit/video-polish/
 media/video/edit/video-qc/
 media/video/edit/voice-sync/
 media/video/gen/ai-video-gen/
+media/video/gen/concept-canvas/
 media/video/workflow/asset-bridge/
+media/video/workflow/asset-index/
 media/video/workflow/content-clone/
 media/video/workflow/narrative-rhythm/
 media/video/workflow/produce-pipeline/
+media/video/workflow/stock-sourcing/

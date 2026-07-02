@@ -34,7 +34,7 @@ description: >-
 MG=~/.claude/skills/media-gen/scripts/media_gen.py   # 或 skill 真身 .../media/image/media-gen/scripts/
 
 # ① 最简：一句提示词 → 走默认降级链，自动拼 style-lock，返统一结果
-python3 "$MG" gen --prompt "一条数据流穿过暗场，几何线框，薄荷青辉光" --out out/hero.png
+python3 "$MG" gen --prompt "一条数据流穿过暗场，几何线框，柔和辉光" --out out/hero.png
 
 # ② 带尺寸 + 参考图（锁角色/画风）
 python3 "$MG" gen --prompt "同一角色，全身，纯背景" \
@@ -68,7 +68,7 @@ python3 "$MG" contract           # 打印统一结果契约 schema
 | `--prefer` | 可选。后端偏好（`gemini-gen`/`comfyui`/`codex-image-gen`/…），把它提到链首；仍会降级，除非 `--no-fallback`。 |
 | `--no-fallback` | 可选。只试链首一个后端，失败即失败，不降级。 |
 | `--no-style-lock` | 可选。关掉 style-lock 注入（非品牌图才关）。 |
-| `--style-lock` | 可选。指定 画风锁.md 路径（默认自动找 Media-Studio `1-资产库/风格锁/画风锁.md`）。 |
+| `--style-lock` | 可选。指定 画风锁.md 路径（默认自动找 Media-Studio `风格卡/风格锁/画风锁.md`）。 |
 | `--dry-run` | 可选。只打印路由决策 + 降级链 + 可用性，不真生成。 |
 
 ## 路由 + 降级（核心）
@@ -90,7 +90,7 @@ python3 "$MG" contract           # 打印统一结果契约 schema
 
 ## 吃 style-lock v1（品牌一致）
 
-所有生图**默认**自动拼 style-lock：读 `1-资产库/风格锁/画风锁.md` 的 frontmatter，把 `locked_prompt` 拼到用户 prompt 前、`negative_prompt` 透传给支持负向的后端（comfyui）。这样跨内容画风不漂移。注入规则、各后端如何吃负向 / seed / sref 见 [`reference/style-lock-injection.md`](reference/style-lock-injection.md)。
+所有生图**默认**自动拼 style-lock：读 `风格卡/风格锁/画风锁.md` 的 frontmatter，把 `locked_prompt` 拼到用户 prompt 前、`negative_prompt` 透传给支持负向的后端（comfyui）。这样跨内容画风不漂移。注入规则、各后端如何吃负向 / seed / sref 见 [`reference/style-lock-injection.md`](reference/style-lock-injection.md)。
 
 - frontmatter 的 `backend: gemini-gen` + 降级链与本 skill 默认链一致（同源），但**本 skill 的 `--prefer` / 可用性**优先于 frontmatter 的静态声明。
 - 没传 `--style-lock` 时自动向上找 Media-Studio 的 画风锁.md；找不到则跳过注入并在 stderr 提示（不报错）。
@@ -126,6 +126,6 @@ python3 "$MG" contract           # 打印统一结果契约 schema
 ## 边界与诚实底线
 
 - **本 skill 只路由，不重造生图**——所有像素都由底下后端产，本 skill 负责选 + 降级 + 统一结果。
-- **不注册账号、不硬编码 key、不擅自调未授权付费接口**——key **运行时读** `1-资产库/发布配置/media-api-keys.json`，绝不写进脚本/不回显/不入库；`ark` / `jimeng` 等未配 key 或需权限的后端是**槽位**，路由判定为槽位时给清晰提示，**绝不假装生成**。
+- **不注册账号、不硬编码 key、不擅自调未授权付费接口**——key **运行时读** `_secrets/media-api-keys.json`，绝不写进脚本/不回显/不入库；`ark` / `jimeng` 等未配 key 或需权限的后端是**槽位**，路由判定为槽位时给清晰提示，**绝不假装生成**。
 - **诚实标完成度**：当前真能路由——`gemini-gen` / `codex-image-gen` / `comfyui`（现成可调）+ `dashscope`（通义万象直连 API，**key 已配·已真测 t2i 出真图**·有成本·**带审核降级中性化重试**）；槽位——`browser-gen`（半自动）、`ark`（Seedream，**待用户填 key**）、`jimeng`（付费需 vip）。结果 `attempts` 里如实记每个后端 `ok/failed/unavailable/slot`。审核降级逻辑已写对并单测验证（`providers.py --selfcheck`），**未真触发审核测**（克制·不烧 API）。
 - 本地可逆、不 push。

@@ -68,7 +68,7 @@ def _aspect_to_dashscope_size(aspect: Optional[str]) -> str:
 
 
 # ── 直连 API key 配置（绝不硬编码：运行时读配置文件）─────────────────────────
-# 事实源：Media-Studio/1-资产库/发布配置/media-api-keys.json（从 --out / cwd 上溯找）。
+# 事实源：Media-Studio/_secrets/media-api-keys.json（从 --out / cwd 上溯找）。
 # 也允许环境变量覆盖（MEDIAGEN_KEYS_FILE 指向配置文件）。
 def _find_keys_file() -> Optional[Path]:
     env = os.environ.get("MEDIAGEN_KEYS_FILE")
@@ -79,7 +79,7 @@ def _find_keys_file() -> Optional[Path]:
     for start in starts:
         cur = start.resolve()
         for _ in range(14):
-            cand = cur / "1-资产库" / "发布配置" / "media-api-keys.json"
+            cand = cur / "风格卡" / "发布配置" / "media-api-keys.json"
             if cand.exists():
                 return cand
             if cur.parent == cur:
@@ -588,11 +588,11 @@ def _selfcheck_moderation() -> int:
         failures += 0 if ok else 1
         print(f"  detect {'OK ' if ok else 'FAIL'}: {str(msg)[:46]!r:48s} → {got} (want {expected})")
     # 2) 中性化保留主题、去触发词
-    p = "数据流像血一样崩溃，near-black #0A0C12, 唯一薄荷青 #34E0B0, 几何线框"
+    p = "数据流像血一样崩溃，暗色背景，几何线框"
     neutral, changed = neutralize_prompt(p)
     assert changed, "中性化应改写"
     assert "血" not in neutral and "崩溃" not in neutral, "触发词未去除"
-    assert "薄荷青" in neutral and "0A0C12" in neutral.upper().replace("0A0C12", "0A0C12"), "画面主题/品牌色丢失"
+    assert "几何线框" in neutral, "画面主题丢失"
     print(f"  neutralize OK: -> {neutral[:80]}...")
     # 3) 空 prompt 不崩
     n2, c2 = neutralize_prompt("")

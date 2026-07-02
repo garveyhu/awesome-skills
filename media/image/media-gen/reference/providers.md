@@ -15,7 +15,7 @@
 | **直连 API 槽位（通用）** | 要其它付费直连模型 | 付费（按量） | ✅ | 视模型 | `slot·需用户配 key` |
 | **jimeng / Dreamina** | 云端高质量图 / 视频；**当前账号需 maestro vip** | 付费额度 | ✅ | ✗ | `slot·需权限+付费` |
 
-> 与 Media-Studio `0-内核/能力矩阵.md` 第 3 行、`1-资产库/风格锁/画风锁.md` 的 `backend` 声明同源：默认 `gemini-gen` → `codex-image-gen` → `comfyui` → `dashscope` → `browser-gen` 逐级降级（dashscope 是有成本但稳定的直连 API，排在免费/订阅/本地档之后、半自动兜底之前）。
+> 与 Media-Studio `0-内核/能力矩阵.md` 第 3 行、`风格卡/风格锁/画风锁.md` 的 `backend` 声明同源：默认 `gemini-gen` → `codex-image-gen` → `comfyui` → `dashscope` → `browser-gen` 逐级降级（dashscope 是有成本但稳定的直连 API，排在免费/订阅/本地档之后、半自动兜底之前）。
 
 ## 默认降级链
 
@@ -158,7 +158,7 @@ aspect → size 换算表（dashscope，星号分隔）：`16:9→1280*720` · `
 
 ## 直连 API key 配置（绝不硬编码）
 
-dashscope / ark 的 key **运行时读** `Media-Studio/1-资产库/发布配置/media-api-keys.json`（从 cwd / skill 目录逐级上溯找；也可用环境变量 `MEDIAGEN_KEYS_FILE` 指定）——**绝不写进脚本、不回显、不入库**。结构：
+dashscope / ark 的 key **运行时读** `Media-Studio/_secrets/media-api-keys.json`（从 cwd / skill 目录逐级上溯找；也可用环境变量 `MEDIAGEN_KEYS_FILE` 指定）——**绝不写进脚本、不回显、不入库**。结构：
 
 ```jsonc
 {

@@ -49,6 +49,54 @@ _RNNN = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                      "assets", "rnnoise", "sh.rnnn")
 
 
+def load_channel():
+    """惰性加载当前频道（ms_channel·零依赖标准库）；找不到/坏了返回 None（零回归安全）。
+
+    走 _shared/ms_channel.py（dev 真身 / vendored 两处都成立）；惰性调用，
+    say/design 不付频道解析成本。mlx-audio venv 下也能 import（stdlib json）。
+    """
+    try:
+        import pathlib
+
+        for _anc in pathlib.Path(__file__).resolve().parents:
+            cand = _anc / "_shared" / "ms_channel.py"
+            if cand.exists():
+                if str(cand.parent) not in sys.path:
+                    sys.path.insert(0, str(cand.parent))
+                break
+        import ms_channel
+
+        return ms_channel.load(required=False)
+    except Exception:
+        return None
+
+
+def resolve_channel_ref(ch, profile_key, md_tok):
+    """从 channel.json voice.profiles 解析 (ref_audio, ref_text)，优先频道、exists() 兜底回 voice.md。
+
+    返回 (ref_audio_abs|None, ref_text_content|None)。文件路径走 _shared/README 第 5 条过渡兜底：
+    P3 物理迁移前 channel 相对路径指向 _channel/（还没建）→ ch.path 不存在 → 回落 md_tok 解析出的
+    旧路径 / 转写，行为=现状（零回归）。若频道仅一个 profile，选 key 不改变结果；
+    无频道 / 无 profile 时返回 (None, None)，由调用方报「需配置音色」，绝不冒充某频道音色。
+    """
+    if ch is None:
+        return None, None
+    prof = ch.voice_profile(profile_key)
+    if not prof:
+        return None, None
+    ref_audio = md_tok.get("ref_audio")
+    rw = prof.get("ref_wav")
+    if rw:
+        p = ch.path(rw)
+        ref_audio = str(p) if p.exists() else ref_audio
+    ref_text = md_tok.get("ref_text")
+    rt = prof.get("ref_text")
+    if rt:
+        p = ch.path(rt)
+        ref_text = p.read_text(encoding="utf-8").strip() if p.is_file() else ref_text
+    return ref_audio, ref_text
+
+
 def resolve_model_path(repo: str) -> str:
     """把 HF 风格 repo id 经魔搭解析成本地路径（幂等，已缓存秒返）。"""
     if os.path.isdir(repo):
@@ -114,7 +162,7 @@ def split_text(text: str, max_chars: int = 120) -> list[str]:
 def denoise_segment(audio: np.ndarray, sr: int) -> np.ndarray:
     """每段生成后过一遍去噪（固定步，不是可选）。
 
-    为什么必须有这步：VoxCPM2 的 CFM 扩散是逐段随机的，克隆 v2 参考音（本身底噪 -64dB）
+    为什么必须有这步：VoxCPM2 的 CFM 扩散是逐段随机的，克隆参考音（本身底噪 -64dB）
     时，有的段干净（-99dB）、有的段带底噪（-54/-60dB），去噪不做就逐幕飘。
     这里用 RNNoise（speech 专用，asset/rnnoise/sh.rnnn）经 ffmpeg arnndn 把每段底噪
     压到 ≤-80dB（实测多到 -inf），同时 RMS / 高频能量基本不动——不闷、不伤音色。
@@ -140,6 +188,24 @@ def denoise_segment(audio: np.ndarray, sr: int) -> np.ndarray:
             return out
         except (subprocess.CalledProcessError, FileNotFoundError, ValueError):
             return audio
+
+
+def edge_fade(a: np.ndarray, sr: int, ms: float = 8.0) -> np.ndarray:
+    """给一段波形首尾各加 ms 毫秒升余弦淡入淡出（去咔哒 / declick）。
+
+    为什么必须有这步：VoxCPM 每块可能从「非零采样」骤起 / 骤停；逐块拼接时在块与
+    段间静音（np.zeros）交界处形成一条陡沿（阶跃），听感是一声「咔哒 / pop / 切换杂音」。
+    首尾磨成 8ms 斜坡后阶跃消失；8ms 远短于一个音节起振，不吃字、不改音色。就地安全。
+    """
+    n = len(a)
+    w = int(sr * ms / 1000.0)
+    if w < 2 or n < 2 * w:
+        return a
+    ramp = np.sin(np.linspace(0.0, np.pi / 2.0, w, dtype=np.float32)) ** 2  # 升余弦 0→1
+    out = a.copy()
+    out[:w] *= ramp
+    out[-w:] *= ramp[::-1]
+    return out
 
 
 def synthesize(
@@ -179,6 +245,7 @@ def synthesize(
         a = np.asarray(res.audio).squeeze().astype(np.float32)
         if denoise:
             a = denoise_segment(a, sr)
+        a = edge_fade(a, sr)  # 每块首尾去咔哒：消块↔静音交界的阶跃 pop（切换杂音）
         audios.append(a)
         total_dur += len(a) / sr
         tag = "" if denoise else " (raw)"
@@ -221,23 +288,40 @@ def read_text(args) -> str:
 
 def run(args) -> None:
     if args.mode == "info":
+        ch = load_channel()
+        prof = ch.voice_profile() if ch else {}
+        sr = prof.get("sample_rate") or DEFAULT_SR  # 频道 voice.default 采样率·兜底 DEFAULT_SR
         print(f"venv      {_VENV_PY}")
         print(f"model     {args.model}")
         print(f"path      {resolve_model_path(args.model)}")
-        print(f"sr        {DEFAULT_SR} Hz")
+        print(f"sr        {sr} Hz")
+        if ch is not None:
+            print(f"channel   {ch.name}  voice.default={ch.get('voice.default')}  "
+                  f"profiles={list((ch.get('voice.profiles') or {}).keys())}")
         return
 
     text = read_text(args)
     ref_audio = getattr(args, "ref_audio", None)
     ref_text = getattr(args, "ref_text", None)
     voice = getattr(args, "voice", None)
-    if voice:
-        tok = load_voice_token(voice)
-        ref_audio = ref_audio or tok["ref_audio"]
-        ref_text = ref_text or tok["ref_text"]
-        print(f"· 音色 token {voice}", file=sys.stderr)
+    profile_key = getattr(args, "voice_profile", None)
+
+    # ── 音色 ref 解析：channel.json voice.profiles（优先·文件 exists() 兜底）→ voice.md（--voice）──
+    # 只在 clone（需 ref）或显式 --voice 时介入；say/design 无 --voice、无 profile，行为不变（零回归）。
+    if not (ref_audio and ref_text) and (voice or args.mode == "clone"):
+        md_tok = load_voice_token(voice) if voice else {"ref_audio": None, "ref_text": None}
+        ch = load_channel()
+        c_audio, c_text = resolve_channel_ref(ch, profile_key, md_tok)
+        ref_audio = ref_audio or c_audio or md_tok.get("ref_audio")
+        ref_text = ref_text or c_text or md_tok.get("ref_text")
+        if voice:
+            print(f"· 音色 token {voice}", file=sys.stderr)
+        if ch is not None and ch.voice_profile(profile_key):
+            _pk = profile_key or ch.get("voice.default")
+            print(f"· 频道音色 channel.json voice.profiles[{_pk}]", file=sys.stderr)
     if args.mode == "clone" and not (ref_audio and ref_text):
-        sys.exit("clone 需要 --ref-audio + --ref-text，或 --voice 指向 voice.md")
+        sys.exit("clone 需要 --ref-audio + --ref-text，或 --voice 指向 voice.md，"
+                 "或频道 channel.json voice.profiles")
     model = load_model(args.model)
     audio, sr = synthesize(
         model, text,
@@ -283,6 +367,8 @@ def build_parser() -> argparse.ArgumentParser:
     s_clone = sub.add_parser("clone", help="声音克隆：参考音 + 转写复刻音色")
     common(s_clone)
     s_clone.add_argument("--voice", help="读 voice.md 音色 token 自动取 ref-audio/ref-text（替代手填）")
+    s_clone.add_argument("--voice-profile", dest="voice_profile", default=None,
+                         help="channel.json voice.profiles 的 key（默认取 voice.default）")
     s_clone.add_argument("--ref-audio", dest="ref_audio", help="参考音频 wav（不用 --voice 时必填）")
     s_clone.add_argument("--ref-text", dest="ref_text", help="参考音频逐字转写（不用 --voice 时必填）")
 
