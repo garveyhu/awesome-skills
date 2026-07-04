@@ -14,7 +14,7 @@ description: >-
 
 入口 `scripts/voxcpm_gen.py`，**任意 python 调用即可**（脚本会自动重定向到专用 venv `~/.venvs/mlx-audio`，并把模型经魔搭解析好）。stdout 只吐产物 wav 路径，进度走 stderr。
 
-**自动出厂清理**（每段生成后）：① `trim_tail_glitch` 裁段尾杂音毛刺（治 VoxCPM「每段末尾半个字」的已知毛刺·默认开·`--no-trim-tail` 关）② `edge_fade` 首尾去咔哒 ③ `denoise` 逐段去底噪（默认开·`--no-denoise` 关·长稿停顿易产音乐噪声时关它、交给出片管线 `tone_even`）。
+**自动出厂清理**（每段生成后）：① `edge_fade` 首尾去咔哒 ② `denoise` 逐段去底噪（默认开·`--no-denoise` 关·长稿停顿易产音乐噪声时关它、交给出片管线 `tone_even`）。注：不做「段尾毛刺裁剪」——那个会误伤以短字收尾的正常句（把结尾字裁掉）；VoxCPM 的段尾毛刺应在**训练数据端根治**（见 voice-lab `prepare_dataset` 裁 clip 尾），而非推理时补。
 
 ```bash
 SK=~/.claude/skills/voxcpm/scripts/voxcpm_gen.py   # 或 skill 真身 .../media/audio/voxcpm/scripts/
@@ -31,7 +31,9 @@ python3 "$SK" clone --ref-audio voice.wav --ref-text "参考音频里说的原�
   --text "这句话会用参考音色说出来。" --out out.wav
 
 # ③' clone（频道固定音色首选）—— 自动读 _channel/channel.json 的 voice.profiles[default]
-#     在频道目录内 / 设 $MEDIA_STUDIO_CHANNEL 即可，连 --voice 都不用；多音色用 --voice-profile <key>
+#     在频道目录内 / 设 $MEDIA_STUDIO_CHANNEL 即可，连 --voice 都不用；多音色用 --voice-profile <key>。
+#     LoRA 型 profile（engine=voxcpm2-mlx-lora）会**自动加载专属合并模型**（mlx_model）+
+#     prompt_wav/prompt_text 提示条——出片管线（voicegen）走的就是这条，不必手传 --model
 python3 "$SK" clone --text-file script.txt --out narration.wav
 
 # ③'' clone --voice —— 显式指一份 voice.md（channel.json 缺失时的兜底）
@@ -41,7 +43,16 @@ python3 "$SK" clone --voice path/to/voice.md --text-file script.txt --out narrat
 python3 "$SK" say --text-file script.txt --out narration.wav
 ```
 
-`info` 子命令打印 venv / 模型路径 / 采样率（+ 解析到的频道音色 profile）。**音色 ref 解析优先级**：显式 `--ref-audio/--ref-text` > **频道 `_channel/channel.json` 的 `voice.profiles[default]`**（`ref_wav`/`ref_text`/`sample_rate`，经 `_shared/ms_channel.py` 读取，`--voice-profile` 选 key）> `--voice` 指的 voice.md frontmatter。频道里的 `ref_wav` 相对路径文件若还没就位（P3 物理迁移前），自动回落 voice.md 解析出的旧路径——两阶段都不断、零回归。
+`info` 子命令打印 venv / 模型路径 / 采样率 / engine（+ 解析到的频道音色 profile）。**音色解析优先级**：显式 `--ref-audio/--ref-text`（及显式 `--model`）> **频道 `_channel/channel.json` 的 `voice.profiles[default]`**（经 `_shared/ms_channel.py` 读取，`--voice-profile` 选 key）> `--voice` 指的 voice.md frontmatter。
+
+**频道 profile 两型（`engine` 字段路由·`resolve_channel_ref`）**：
+
+| 型 | engine | 字段 | 行为 |
+|----|--------|------|------|
+| **LoRA 型（生产推荐）** | `voxcpm2-mlx-lora` | `mlx_model` + 可选 `prompt_wav`/`prompt_text` | `--model` 自动取 `mlx_model`（voice-lab 训 LoRA→合并→转 MLX 的专属音色模型·音色烤进权重·稳定不抽卡）；提示条可选（提声纹相似度 0.866→0.889·`prompt_text` 为内联转写文本，也兼容文件路径）；无提示条也能出声（音色在权重）。`mlx_model` 目录缺失 / engine 未知 → 清晰报错 fail-fast，不静默降级到基座冒充频道音色 |
+| 零样本型 | 缺省 / `voxcpm-mlx` | `ref_wav`/`ref_text`（文件路径） | 原行为·基座 + 参考音克隆·向后兼容。相对路径文件若还没就位（P3 物理迁移前）自动回落 voice.md 解析出的旧路径——零回归 |
+
+⚠ 音色字段可指向**频道外绝对路径**（如 voice-lab 工作台）= 外部依赖：风格卡打包分发时音色不自包含。
 
 ## 关键参数
 
@@ -49,7 +60,7 @@ python3 "$SK" say --text-file script.txt --out narration.wav
 |------|------|------|
 | `--timesteps` | 10 | CFM 扩散步数。**越低越快**；7 是速度/质量平衡点；要更快可降到 5 |
 | `--cfg` | 2.0 | 无分类器引导强度，越高越贴指令、可能越僵 |
-| `--model` | `mlx-community/VoxCPM2-8bit` | 可换 `-4bit`（更小更快）/ `-bf16`（更高质量） |
+| `--model` | 频道 LoRA 型 profile 的 `mlx_model` → 否则 `mlx-community/VoxCPM2-8bit` | 可显式传 repo id 或本地目录覆盖；基座可换 `-4bit`（更小更快）/ `-bf16`（更高质量） |
 | `--max-chars` | 120 | 长文本分句打包的单段上限 |
 | `--no-chunk` | 关 | 短文本不切分 |
 | `--no-denoise` | 关 | 关闭逐段去噪（默认开，见下「去噪是固定步」）|
@@ -67,7 +78,7 @@ python3 "$SK" say --text-file script.txt --out narration.wav
 ## 速度与选型（重要）
 
 - **say / design 是快路**（RTF ≈ 0.4~0.5）：5 分钟旁白约 2~3 分钟出。**做自媒体批量配音优先用 design 定个音色 + 长文本切分。**
-- **clone 偏慢**（RTF ≈ 3）：每次都要编码参考音；只在必须复刻特定嗓音时用，长稿会成倍变慢。
+- **零样本 clone 偏慢**（RTF ≈ 3）：每次都要编码参考音；只在必须复刻特定嗓音时用，长稿会成倍变慢。**频道 LoRA 型 profile 的 clone 不受此累**（音色在权重·提示条编码开销小·RTF ≈ 0.5-0.9，生产出片走这条）。
 - 想要中文方言（粤语 / 四川话 / 东北话等）或调情感语速：写进 `--instruct` 描述里（design 模式）。
 
 ## 模型管理（别乱放）

@@ -11,6 +11,9 @@
   · 模型走魔搭 ModelScope，落标准缓存 ~/.cache/modelscope（见 ~/.claude/rules/model-download.md）
   · 推理用专用 venv ~/.venvs/mlx-audio（mlx-audio + modelscope），脚本会自动重定向到它
   · 长文本按句切分逐段生成再拼接，适合 5 分钟级旁白
+  · 频道音色两型（channel.json voice.profiles·engine 字段路由·见 resolve_channel_ref）：
+    LoRA 型 voxcpm2-mlx-lora（mlx_model 专属合并模型 + 可选 prompt_wav/prompt_text 提示条）
+    与零样本型（ref_wav/ref_text 基座克隆·向后兼容）
 """
 import os
 import sys
@@ -44,6 +47,10 @@ from scipy.io import wavfile
 DEFAULT_MODEL = "mlx-community/VoxCPM2-8bit"   # 也可换 -4bit(更小更快) / -bf16(更高质量)
 DEFAULT_SR = 48000
 
+# 频道音色 profile 的 engine 路由值（channel.json voice.profiles[].engine）
+ENGINE_LORA = "voxcpm2-mlx-lora"                    # LoRA 型：音色工作台训 LoRA→合并→转 MLX 的专属模型
+ENGINES_ZEROSHOT = ("", "voxcpm-mlx", "voxcpm2-mlx")  # 零样本型：基座 + 参考音克隆（含缺省无 engine）
+
 # RNNoise 模型（speech 专用）——随 skill 一起冻结，arnndn 吃它做去噪
 _RNNN = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                      "assets", "rnnoise", "sh.rnnn")
@@ -72,33 +79,69 @@ def load_channel():
 
 
 def resolve_channel_ref(ch, profile_key, md_tok):
-    """从 channel.json voice.profiles 解析 (ref_audio, ref_text)，优先频道、exists() 兜底回 voice.md。
+    """从 channel.json voice.profiles 解析 (model, ref_audio, ref_text)——按 `engine` 字段路由两型 profile。
 
-    返回 (ref_audio_abs|None, ref_text_content|None)。文件路径走 _shared/README 第 5 条过渡兜底：
-    P3 物理迁移前 channel 相对路径指向 _channel/（还没建）→ ch.path 不存在 → 回落 md_tok 解析出的
-    旧路径 / 转写，行为=现状（零回归）。若频道仅一个 profile，选 key 不改变结果；
-    无频道 / 无 profile 时返回 (None, None)，由调用方报「需配置音色」，绝不冒充某频道音色。
+    · LoRA 型（engine=voxcpm2-mlx-lora）：音色工作台（voice-lab）训 LoRA → 合并进底座 → 转 MLX 的
+      **专属音色模型**。model = `mlx_model`（音色烤进权重·必须是存在的目录，缺/坏直接报错不静默降级
+      到基座冒充频道音色）；参考音 = `prompt_wav` + `prompt_text`（可选克隆提示条·把声纹相似度
+      0.866→0.889；prompt_text 是**内联转写文本**，也兼容填成文件路径）。
+    · 零样本型（无 engine / voxcpm-mlx / voxcpm2-mlx）：`ref_wav`/`ref_text` 指参考音 wav / 转写文件
+      （原行为·向后兼容），model=None（用默认基座）。文件 exists() 兜底回 md_tok（voice.md）——
+      P3 物理迁移前 channel 相对路径可能还没就位 → 回落旧路径 / 转写，行为=现状（零回归）。
+    · 未知 engine：清晰报错（fail-fast·不猜、绝不冒充某频道音色）。
+
+    路径可为绝对路径（音色资产在频道外 = 外部依赖·风格卡分发不自包含）或相对频道根（ch.path 兼容
+    两者）。无频道 / 无 profile 时返回 (None, None, None)，由调用方报「需配置音色」。
     """
     if ch is None:
-        return None, None
+        return None, None, None
     prof = ch.voice_profile(profile_key)
     if not prof:
-        return None, None
-    ref_audio = md_tok.get("ref_audio")
-    rw = prof.get("ref_wav")
-    if rw:
-        p = ch.path(rw)
-        ref_audio = str(p) if p.exists() else ref_audio
-    ref_text = md_tok.get("ref_text")
-    rt = prof.get("ref_text")
-    if rt:
-        p = ch.path(rt)
-        ref_text = p.read_text(encoding="utf-8").strip() if p.is_file() else ref_text
-    return ref_audio, ref_text
+        return None, None, None
+
+    engine = (prof.get("engine") or "").strip()
+    if engine == ENGINE_LORA:
+        model = None
+        mm = prof.get("mlx_model")
+        if mm:
+            p = ch.path(os.path.expanduser(mm))
+            if not p.is_dir():
+                sys.exit(f"channel.json voice profile（engine={engine}）的 mlx_model 不是有效目录：{p}\n"
+                         "→ 音色为外部依赖：确认音色工作台的合并模型已就位（voices/<名>/mlx-8bit）")
+            model = str(p)
+        ref_audio = md_tok.get("ref_audio")
+        pw = prof.get("prompt_wav")
+        if pw:
+            p = ch.path(os.path.expanduser(pw))
+            ref_audio = str(p) if p.exists() else ref_audio
+        ref_text = md_tok.get("ref_text")
+        pt = prof.get("prompt_text")
+        if pt:
+            p = ch.path(os.path.expanduser(pt))
+            ref_text = p.read_text(encoding="utf-8").strip() if p.is_file() else pt
+        return model, ref_audio, ref_text
+
+    if engine in ENGINES_ZEROSHOT:
+        ref_audio = md_tok.get("ref_audio")
+        rw = prof.get("ref_wav")
+        if rw:
+            p = ch.path(rw)
+            ref_audio = str(p) if p.exists() else ref_audio
+        ref_text = md_tok.get("ref_text")
+        rt = prof.get("ref_text")
+        if rt:
+            p = ch.path(rt)
+            ref_text = p.read_text(encoding="utf-8").strip() if p.is_file() else ref_text
+        return None, ref_audio, ref_text
+
+    sys.exit(f"channel.json voice profile 的 engine 未知：{engine!r}\n"
+             f"→ 支持：{ENGINE_LORA}（LoRA 型·mlx_model [+ prompt_wav/prompt_text]）"
+             "或缺省/voxcpm-mlx（零样本型·ref_wav/ref_text）")
 
 
 def resolve_model_path(repo: str) -> str:
-    """把 HF 风格 repo id 经魔搭解析成本地路径（幂等，已缓存秒返）。"""
+    """把 HF 风格 repo id 经魔搭解析成本地路径（幂等，已缓存秒返）；本地目录（如 LoRA 合并模型）原样返回。"""
+    repo = os.path.expanduser(repo)
     if os.path.isdir(repo):
         return repo
     from modelscope import snapshot_download
@@ -217,50 +260,6 @@ def edge_fade(a: np.ndarray, sr: int, ms: float = 8.0) -> np.ndarray:
     return out
 
 
-def trim_tail_glitch(
-    a: np.ndarray,
-    sr: int,
-    *,
-    sil_db: float = -42.0,
-    min_gap: float = 0.13,
-    max_glitch: float = 0.5,
-    keep_tail: float = 0.12,
-) -> np.ndarray:
-    """裁掉 VoxCPM 每段生成末尾的杂音毛刺。
-
-    为什么必须有这步：VoxCPM 的 CFM 生成常在**真实语音结束、进入静音之后**，于最末尾
-    再吐一小段短促响声（实测 ~80-260ms、可达 -22dBFS）——听感是「最后半个字被掐」。
-    edge_fade 只磨 8ms、denoise 只压底噪，都去不掉它；--no-denoise 下尤其暴露。
-    结构判据：从**最后一个有声帧**回溯（毛刺后常还有小静音，故不能从末帧判），若它与
-    主体之间隔着 >=min_gap 的静音、且这段末尾有声簇短于 max_glitch，判为毛刺 → 切在真实
-    语音尾 + keep_tail（自然收尾）。正常结尾（末尾有声簇较长 / 无中间静音）原样不动。
-    """
-    fl = int(0.02 * sr)
-    if fl < 1 or len(a) < 4 * fl:
-        return a
-    e = np.array([
-        20 * np.log10(np.sqrt((a[i:i + fl] ** 2).mean()) + 1e-9)
-        for i in range(0, len(a) - fl, fl)
-    ])
-    voiced = e > sil_db
-    idx = np.flatnonzero(voiced)
-    if len(idx) == 0:
-        return a
-    lv = int(idx[-1])                       # 最后一个有声帧（不是最后一帧）
-    i = lv
-    while i >= 0 and voiced[i]:
-        i -= 1                              # i = 毛刺簇前最后一个静音帧
-    j = i
-    while j >= 0 and not voiced[j]:
-        j -= 1                              # j = 静音 gap 前最后一个有声帧（真实语音尾）
-    gap = (i - j) * 0.02
-    cluster = (lv - i) * 0.02
-    if j > 3 and gap >= min_gap and 0 < cluster <= max_glitch:
-        cut = int((j + 1) * fl + keep_tail * sr)
-        return a[:min(cut, len(a))]
-    return a
-
-
 def synthesize(
     model,
     text: str,
@@ -274,7 +273,6 @@ def synthesize(
     max_chars: int = 120,
     gap_sec: float = 0.25,
     denoise: bool = True,
-    trim_tail: bool = True,
 ) -> tuple[np.ndarray, int]:
     """合成音频。长文本按句切分逐段生成、（默认）逐段去噪、段间插入静音后拼接。
 
@@ -297,8 +295,6 @@ def synthesize(
         ))
         sr = int(getattr(res, "sample_rate", DEFAULT_SR) or DEFAULT_SR)
         a = np.asarray(res.audio).squeeze().astype(np.float32)
-        if trim_tail:
-            a = trim_tail_glitch(a, sr)  # 裁 VoxCPM 段尾杂音毛刺（真实语音后那声「半个字」）
         if denoise:
             a = denoise_segment(a, sr)
         a = edge_fade(a, sr)  # 每块首尾去咔哒：消块↔静音交界的阶跃 pop（切换杂音）
@@ -328,6 +324,38 @@ def save_wav(audio: np.ndarray, sr: int, out: str) -> str:
     return out
 
 
+def apply_warmth_eq(path: str, warmth: float) -> None:
+    """可选「暖声 EQ」——微调音色**亮度/厚度**（不改基频·声音仍是模型本音）。
+
+    默认关（`--warmth 0`）；声音尽量用模型原生的。要调音色亮度时才开：
+      · warmth > 0：加低中频厚度 + 压高频清脆 → 更暖/沉/厚（去「薄荷清脆」）。
+      · warmth < 0：反向 → 更亮/脆。
+      · 参数按 |warmth| 线性缩放；warmth=1.0 = 下面这套「厚」档，1.5~2 更狠（可能偏闷）。
+
+    配方（warmth=1.0）：低频 +4.5dB@120 · 240Hz +4 · 4kHz -4.5 · 高频 -4.5dB@6500。
+    实测：EQ 只塑形、变化温和（改不了基频/性别感）；要「深沉」的大改动靠**换慢/沉的
+    参考音**（clone 的 prompt 决定说法），EQ 只做收尾的亮度微调。ffmpeg 不在则跳过。
+    """
+    if not warmth:
+        return
+    import shutil
+    if not shutil.which("ffmpeg"):
+        return
+    k = warmth
+    af = (f"bass=g={4.5 * k:.2f}:f=120,"
+          f"equalizer=f=240:width_type=q:w=1:g={4.0 * k:.2f},"
+          f"equalizer=f=4000:width_type=q:w=1.8:g={-4.5 * k:.2f},"
+          f"treble=g={-4.5 * k:.2f}:f=6500")
+    tmp = path + ".eq.wav"
+    try:
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", path, "-af", af,
+                        "-ar", str(DEFAULT_SR), tmp], check=True)
+        os.replace(tmp, path)
+    except Exception:  # noqa: BLE001
+        if os.path.exists(tmp):
+            os.remove(tmp)
+
+
 def default_out(mode: str) -> str:
     stamp = time.strftime("%Y%m%d-%H%M%S")
     return os.path.join("voxcpm_outputs", f"{mode}-{stamp}.wav")
@@ -347,13 +375,18 @@ def run(args) -> None:
         ch = load_channel()
         prof = ch.voice_profile() if ch else {}
         sr = prof.get("sample_rate") or DEFAULT_SR  # 频道 voice.default 采样率·兜底 DEFAULT_SR
+        eng = (prof.get("engine") or "").strip()
+        # 模型解析同 clone：显式 --model > 频道 LoRA 型 profile 的 mlx_model > 默认基座
+        model_repo = args.model or (prof.get("mlx_model") if eng == ENGINE_LORA else None) or DEFAULT_MODEL
         print(f"venv      {_VENV_PY}")
-        print(f"model     {args.model}")
-        print(f"path      {resolve_model_path(args.model)}")
+        print(f"model     {model_repo}")
+        print(f"path      {resolve_model_path(os.path.expanduser(str(model_repo)))}")
         print(f"sr        {sr} Hz")
         if ch is not None:
             print(f"channel   {ch.name}  voice.default={ch.get('voice.default')}  "
                   f"profiles={list((ch.get('voice.profiles') or {}).keys())}")
+            if eng:
+                print(f"engine    {eng}")
         return
 
     text = read_text(args)
@@ -362,23 +395,27 @@ def run(args) -> None:
     voice = getattr(args, "voice", None)
     profile_key = getattr(args, "voice_profile", None)
 
-    # ── 音色 ref 解析：channel.json voice.profiles（优先·文件 exists() 兜底）→ voice.md（--voice）──
-    # 只在 clone（需 ref）或显式 --voice 时介入；say/design 无 --voice、无 profile，行为不变（零回归）。
+    # ── 音色解析：channel.json voice.profiles（engine 路由两型·文件 exists() 兜底）→ voice.md（--voice）──
+    # 只在 clone（需音色）或显式 --voice 时介入；say/design 无 --voice、无 profile，行为不变（零回归）。
+    ch_model = None
     if not (ref_audio and ref_text) and (voice or args.mode == "clone"):
         md_tok = load_voice_token(voice) if voice else {"ref_audio": None, "ref_text": None}
         ch = load_channel()
-        c_audio, c_text = resolve_channel_ref(ch, profile_key, md_tok)
+        ch_model, c_audio, c_text = resolve_channel_ref(ch, profile_key, md_tok)
         ref_audio = ref_audio or c_audio or md_tok.get("ref_audio")
         ref_text = ref_text or c_text or md_tok.get("ref_text")
         if voice:
             print(f"· 音色 token {voice}", file=sys.stderr)
         if ch is not None and ch.voice_profile(profile_key):
             _pk = profile_key or ch.get("voice.default")
-            print(f"· 频道音色 channel.json voice.profiles[{_pk}]", file=sys.stderr)
-    if args.mode == "clone" and not (ref_audio and ref_text):
+            _tag = "·LoRA 合并模型（音色在权重）" if ch_model else ""
+            print(f"· 频道音色 channel.json voice.profiles[{_pk}]{_tag}", file=sys.stderr)
+    # clone 硬闸：零样本型必须有 ref；LoRA 型音色烤进权重·无提示条也能出声（有 prompt 更贴·0.889）
+    if args.mode == "clone" and not ch_model and not (ref_audio and ref_text):
         sys.exit("clone 需要 --ref-audio + --ref-text，或 --voice 指向 voice.md，"
-                 "或频道 channel.json voice.profiles")
-    model = load_model(args.model)
+                 "或频道 channel.json voice.profiles（LoRA 型 mlx_model / 零样本型 ref_wav+ref_text）")
+    # 模型优先级：显式 --model > 频道 LoRA 型 profile 的 mlx_model > 默认基座
+    model = load_model(args.model or ch_model or DEFAULT_MODEL)
     audio, sr = synthesize(
         model, text,
         instruct=getattr(args, "instruct", None),
@@ -389,9 +426,9 @@ def run(args) -> None:
         chunk=not args.no_chunk,
         max_chars=args.max_chars,
         denoise=not args.no_denoise,
-        trim_tail=not args.no_trim_tail,
     )
     out = save_wav(audio, sr, args.out or default_out(args.mode))
+    apply_warmth_eq(out, getattr(args, "warmth", 0.0))  # 可选暖声 EQ·默认 0 不动
     print(out)  # stdout 只吐产物路径，方便上层取用
     if args.play:
         os.system(f'afplay "{out}"')
@@ -405,15 +442,18 @@ def build_parser() -> argparse.ArgumentParser:
         sp.add_argument("--text", help="要合成的文本")
         sp.add_argument("--text-file", help="从文件读文本（长旁白用这个）")
         sp.add_argument("--out", help="输出 wav 路径（默认 voxcpm_outputs/<mode>-<时间>.wav）")
-        sp.add_argument("--model", default=DEFAULT_MODEL, help="模型 repo（默认 VoxCPM2-8bit）")
+        sp.add_argument("--model", default=None,
+                        help="模型 repo 或本地目录（缺省：clone 下频道 LoRA 型 profile 取 mlx_model·"
+                             f"否则 {DEFAULT_MODEL}）")
         sp.add_argument("--timesteps", type=int, default=10, help="CFM 步数：越低越快，7 是快/质量平衡点")
         sp.add_argument("--cfg", type=float, default=2.0, help="无分类器引导强度")
         sp.add_argument("--no-chunk", action="store_true", help="不按句切分（短文本用）")
         sp.add_argument("--max-chars", type=int, default=120, help="分句打包的单段最大字数")
         sp.add_argument("--no-denoise", action="store_true",
                         help="关闭逐段去噪（默认开：RNNoise 把每段底噪压到 ≤-80dB，保 raw 层稳定）")
-        sp.add_argument("--no-trim-tail", action="store_true",
-                        help="关闭段尾毛刺裁剪（默认开：裁掉 VoxCPM 每段末尾那声「半个字」杂音毛刺）")
+        sp.add_argument("--warmth", type=float, default=0.0,
+                        help="可选暖声 EQ 强度（默认 0=不动·声音用模型本音）：>0 更暖/厚/沉(去薄荷清脆)、"
+                             "<0 更亮/脆；1.0=厚档、1.5~2 更狠。只调音色亮度不改基频。要大改「深沉」靠换沉的参考音")
         sp.add_argument("--play", action="store_true", help="生成后 afplay 试听")
 
     s_say = sub.add_parser("say", help="零样本：内置音色配音")
@@ -432,7 +472,7 @@ def build_parser() -> argparse.ArgumentParser:
     s_clone.add_argument("--ref-text", dest="ref_text", help="参考音频逐字转写（不用 --voice 时必填）")
 
     s_info = sub.add_parser("info", help="打印环境 / 模型路径")
-    s_info.add_argument("--model", default=DEFAULT_MODEL)
+    s_info.add_argument("--model", default=None)
 
     return p
 
