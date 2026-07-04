@@ -8,9 +8,13 @@ description: >-
 
 给 Claude 补「音频自由」：在这台 Mac 上离线把文字合成成 48kHz 录音棚级语音，速度快过实时（M3 实测 RTF ≈ 0.4~0.6），能力对标出图生态——文字描述造音色、参考音克隆、长旁白一把出。
 
+> **角色边界**：本 skill = **MLX VoxCPM 运行时**（zero-shot 克隆 / 内置 / 造音色 + media-studio 出片管线的 TTS 引擎）。要给某频道**训练一个稳定的专属音色**（录音 → LoRA 微调 → 合并 → MLX），去 **voice-lab 音色工作台**（`~/Coding/Archer/voice-lab`·管训练与生产模型）。二者分工：voice-lab 产模型、本 skill 管运行——训好的合并模型直接 `clone/say --model <voice-lab>/models/<名>/mlx-8bit` 就能跑（`load_model` 已放行 trust_remote_code·支持加载本地微调/合并模型）。
+
 ## 一条命令的三模式
 
 入口 `scripts/voxcpm_gen.py`，**任意 python 调用即可**（脚本会自动重定向到专用 venv `~/.venvs/mlx-audio`，并把模型经魔搭解析好）。stdout 只吐产物 wav 路径，进度走 stderr。
+
+**自动出厂清理**（每段生成后）：① `trim_tail_glitch` 裁段尾杂音毛刺（治 VoxCPM「每段末尾半个字」的已知毛刺·默认开·`--no-trim-tail` 关）② `edge_fade` 首尾去咔哒 ③ `denoise` 逐段去底噪（默认开·`--no-denoise` 关·长稿停顿易产音乐噪声时关它、交给出片管线 `tone_even`）。
 
 ```bash
 SK=~/.claude/skills/voxcpm/scripts/voxcpm_gen.py   # 或 skill 真身 .../media/audio/voxcpm/scripts/

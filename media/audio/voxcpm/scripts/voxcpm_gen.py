@@ -107,6 +107,15 @@ def resolve_model_path(repo: str) -> str:
 
 def load_model(repo: str):
     """加载 mlx-audio TTS 模型（吃本地目录路径）。"""
+    # 本地微调/合并出的 VoxCPM（如 voice-lab 的 mlx-8bit）带自定义分词器 tokenization_voxcpm2.py，
+    # AutoTokenizer 会要 trust_remote_code。这些自定义码就是 VoxCPM 自带的（安全）→ 非交互下自动放行，
+    # 让 skill 既能跑官方基座、也能跑 voice-lab 训出的专属音色模型。
+    try:
+        import transformers.dynamic_module_utils as _dmu
+
+        _dmu.resolve_trust_remote_code = lambda *a, **k: True  # type: ignore
+    except Exception:
+        pass
     from mlx_audio.tts.utils import load
     path = resolve_model_path(repo)
     print(f"· 模型 {repo}\n· 路径 {path}", file=sys.stderr)
@@ -208,6 +217,50 @@ def edge_fade(a: np.ndarray, sr: int, ms: float = 8.0) -> np.ndarray:
     return out
 
 
+def trim_tail_glitch(
+    a: np.ndarray,
+    sr: int,
+    *,
+    sil_db: float = -42.0,
+    min_gap: float = 0.13,
+    max_glitch: float = 0.5,
+    keep_tail: float = 0.12,
+) -> np.ndarray:
+    """裁掉 VoxCPM 每段生成末尾的杂音毛刺。
+
+    为什么必须有这步：VoxCPM 的 CFM 生成常在**真实语音结束、进入静音之后**，于最末尾
+    再吐一小段短促响声（实测 ~80-260ms、可达 -22dBFS）——听感是「最后半个字被掐」。
+    edge_fade 只磨 8ms、denoise 只压底噪，都去不掉它；--no-denoise 下尤其暴露。
+    结构判据：从**最后一个有声帧**回溯（毛刺后常还有小静音，故不能从末帧判），若它与
+    主体之间隔着 >=min_gap 的静音、且这段末尾有声簇短于 max_glitch，判为毛刺 → 切在真实
+    语音尾 + keep_tail（自然收尾）。正常结尾（末尾有声簇较长 / 无中间静音）原样不动。
+    """
+    fl = int(0.02 * sr)
+    if fl < 1 or len(a) < 4 * fl:
+        return a
+    e = np.array([
+        20 * np.log10(np.sqrt((a[i:i + fl] ** 2).mean()) + 1e-9)
+        for i in range(0, len(a) - fl, fl)
+    ])
+    voiced = e > sil_db
+    idx = np.flatnonzero(voiced)
+    if len(idx) == 0:
+        return a
+    lv = int(idx[-1])                       # 最后一个有声帧（不是最后一帧）
+    i = lv
+    while i >= 0 and voiced[i]:
+        i -= 1                              # i = 毛刺簇前最后一个静音帧
+    j = i
+    while j >= 0 and not voiced[j]:
+        j -= 1                              # j = 静音 gap 前最后一个有声帧（真实语音尾）
+    gap = (i - j) * 0.02
+    cluster = (lv - i) * 0.02
+    if j > 3 and gap >= min_gap and 0 < cluster <= max_glitch:
+        cut = int((j + 1) * fl + keep_tail * sr)
+        return a[:min(cut, len(a))]
+    return a
+
+
 def synthesize(
     model,
     text: str,
@@ -221,6 +274,7 @@ def synthesize(
     max_chars: int = 120,
     gap_sec: float = 0.25,
     denoise: bool = True,
+    trim_tail: bool = True,
 ) -> tuple[np.ndarray, int]:
     """合成音频。长文本按句切分逐段生成、（默认）逐段去噪、段间插入静音后拼接。
 
@@ -243,6 +297,8 @@ def synthesize(
         ))
         sr = int(getattr(res, "sample_rate", DEFAULT_SR) or DEFAULT_SR)
         a = np.asarray(res.audio).squeeze().astype(np.float32)
+        if trim_tail:
+            a = trim_tail_glitch(a, sr)  # 裁 VoxCPM 段尾杂音毛刺（真实语音后那声「半个字」）
         if denoise:
             a = denoise_segment(a, sr)
         a = edge_fade(a, sr)  # 每块首尾去咔哒：消块↔静音交界的阶跃 pop（切换杂音）
@@ -333,6 +389,7 @@ def run(args) -> None:
         chunk=not args.no_chunk,
         max_chars=args.max_chars,
         denoise=not args.no_denoise,
+        trim_tail=not args.no_trim_tail,
     )
     out = save_wav(audio, sr, args.out or default_out(args.mode))
     print(out)  # stdout 只吐产物路径，方便上层取用
@@ -355,6 +412,8 @@ def build_parser() -> argparse.ArgumentParser:
         sp.add_argument("--max-chars", type=int, default=120, help="分句打包的单段最大字数")
         sp.add_argument("--no-denoise", action="store_true",
                         help="关闭逐段去噪（默认开：RNNoise 把每段底噪压到 ≤-80dB，保 raw 层稳定）")
+        sp.add_argument("--no-trim-tail", action="store_true",
+                        help="关闭段尾毛刺裁剪（默认开：裁掉 VoxCPM 每段末尾那声「半个字」杂音毛刺）")
         sp.add_argument("--play", action="store_true", help="生成后 afplay 试听")
 
     s_say = sub.add_parser("say", help="零样本：内置音色配音")
