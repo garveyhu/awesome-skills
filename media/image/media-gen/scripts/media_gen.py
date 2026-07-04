@@ -96,7 +96,7 @@ def inject_style_lock(user_prompt: str, sl: dict) -> tuple[str, str]:
 def channel_style_lock() -> Optional[dict]:
     """优先从 channel.json 取 style-lock（brand.style_lock.image_prompt / negative_prompt）。
 
-    Channel-1 的 image_prompt 与 画风锁.md 的 locked_prompt 一字不差 → 生成 prompt 零回归；
+    当前频道（`_channel/<slug>/`）的 image_prompt 与其 画风锁.md 的 locked_prompt 一字不差 → 生成 prompt 零回归；
     频道未解析 / 无该字段时返 None → 上层回落「上溯找 画风锁.md」旧逻辑。
     """
     if ms_channel is None:

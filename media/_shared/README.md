@@ -32,10 +32,10 @@ keys = ms_channel.find_secrets()              # 凭据文件定位
 
 ## ★ 纯净度 + 零回归铁律（最高约束）
 
-**内核与 skill 不许有任何频道（如 Channel-1）的品牌 / IP / 色 / 音色 / 赛道痕迹；
-Channel-1 的产出靠「channel.json 在就读它」保持一字不差——不靠 skill 藏频道值。**
+**内核与 skill 不许有任何频道实例（`_channel/<slug>/`）的品牌 / IP / 色 / 音色 / 赛道痕迹；
+各频道的产出靠「channel.json 在就读它」保持一字不差——不靠 skill 藏频道值。**
 
-1. **频道值只活在 channel.json**：skill 读 `ch.get(...)`，兜底一律**中性占位**（灰阶色 / "a mascot" / 空 prompt / None），**绝不**回落到 Channel-1 的真值。
+1. **频道值只活在 channel.json**：skill 读 `ch.get(...)`，兜底一律**中性占位**（灰阶色 / "a mascot" / 空 prompt / None），**绝不**回落到任何频道实例的真值。
    `值 = (ch.get(...) if ch else None) or <中性占位>`。
 2. **零回归靠 channel.json 在场**：实际工作流永远解析得到当前频道（env / cwd / `.active` / 单频道自动），
    skill 读 channel.json = 该频道真值 → 产出不变。中性兜底只在「无频道」时生效（非工作流路径）。
