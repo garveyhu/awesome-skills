@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """voxcpm_gen —— 本地 TTS 配音（VoxCPM2 on Apple MLX）。
 
-三模式：
+模式：
   say     零样本：纯文本配音（内置音色）
   design  音色设计：用一句文字描述造音色（无需参考音）
   clone   声音克隆：用一段参考音 + 其转写复刻音色
+  batch   批量克隆：一份 manifest·模型只载一次·合成多段（省逐段重载 ~3GB 模型·长旁白多幕神器）
   info    打印环境 / 模型路径 / 采样率
 
 设计要点（别乱放 / 跑得动）：
@@ -370,6 +371,85 @@ def read_text(args) -> str:
     sys.exit("需要 --text 或 --text-file")
 
 
+def _resolve_clone_voice(args, *, is_clone: bool):
+    """解析 clone 音色 → (ch_model, ref_audio, ref_text)。run(clone) 与 run_batch 共用（不重复逻辑）。
+
+    channel.json voice.profiles（engine 路由两型·文件 exists() 兜底）→ voice.md（--voice）。
+    只在 clone（需音色·is_clone）或显式 --voice 时介入；say/design 不进来（行为不变·零回归）。
+    """
+    ref_audio = getattr(args, "ref_audio", None)
+    ref_text = getattr(args, "ref_text", None)
+    voice = getattr(args, "voice", None)
+    profile_key = getattr(args, "voice_profile", None)
+    ch_model = None
+    if not (ref_audio and ref_text) and (voice or is_clone):
+        md_tok = load_voice_token(voice) if voice else {"ref_audio": None, "ref_text": None}
+        ch = load_channel()
+        ch_model, c_audio, c_text = resolve_channel_ref(ch, profile_key, md_tok)
+        ref_audio = ref_audio or c_audio or md_tok.get("ref_audio")
+        ref_text = ref_text or c_text or md_tok.get("ref_text")
+        if voice:
+            print(f"· 音色 token {voice}", file=sys.stderr)
+        if ch is not None and ch.voice_profile(profile_key):
+            _pk = profile_key or ch.get("voice.default")
+            _tag = "·LoRA 合并模型（音色在权重）" if ch_model else ""
+            print(f"· 频道音色 channel.json voice.profiles[{_pk}]{_tag}", file=sys.stderr)
+    return ch_model, ref_audio, ref_text
+
+
+def run_batch(args) -> None:
+    """批量克隆：一份 manifest·模型只载一次·合成多段（省逐段重载 ~3GB 模型）。
+
+    manifest = JSON 数组 `[{text_file|text, out}, ...]`；音色 / 模型 / timesteps / cfg / max-chars
+    全段共享（本就是「同一频道音色批量出多幕旁白」的场景·由调用方保证一致）。逐段 try 兜底——
+    一段失败不废整批。stdout 只吐**一行 JSON** `{"outputs":[{out,duration,ok[,error]}]}`（逐段状态·
+    顺序 == manifest 顺序·上层按段校验/重试）；其余日志全走 stderr。
+    """
+    import json
+    import pathlib
+
+    manifest = json.loads(pathlib.Path(args.manifest).read_text(encoding="utf-8"))
+    if not isinstance(manifest, list) or not manifest:
+        sys.exit(f"batch manifest 需为非空 JSON 数组：{args.manifest}")
+
+    ch_model, ref_audio, ref_text = _resolve_clone_voice(args, is_clone=True)
+    if not ch_model and not (ref_audio and ref_text):
+        sys.exit("batch(clone) 需要频道 channel.json voice.profiles，或 --voice 指向 voice.md，"
+                 "或 --ref-audio + --ref-text")
+
+    model = load_model(args.model or ch_model or DEFAULT_MODEL)   # ★ 只载一次·省 N-1 次重载
+    total = len(manifest)
+    outputs: list[dict] = []
+    for idx, it in enumerate(manifest, 1):
+        out_path = it.get("out")
+        try:
+            txt = it.get("text")
+            if not txt and it.get("text_file"):
+                txt = pathlib.Path(it["text_file"]).read_text(encoding="utf-8").strip()
+            if not txt:
+                raise ValueError("manifest 段缺 text / text_file")
+            if not out_path:
+                raise ValueError("manifest 段缺 out")
+            print(f"·· batch [{idx}/{total}] → {out_path}", file=sys.stderr)
+            audio, sr = synthesize(
+                model, txt,
+                ref_audio=ref_audio,
+                ref_text=ref_text,
+                timesteps=args.timesteps,
+                cfg=args.cfg,
+                chunk=not args.no_chunk,
+                max_chars=args.max_chars,
+                denoise=not args.no_denoise,
+            )
+            save_wav(audio, sr, out_path)
+            apply_warmth_eq(out_path, getattr(args, "warmth", 0.0))
+            outputs.append({"out": out_path, "duration": round(len(audio) / sr, 3), "ok": True})
+        except Exception as e:  # noqa: BLE001 逐段兜底：一段失败不废整批（上层按段重试·保 M-5 硬化语义）
+            outputs.append({"out": out_path, "ok": False, "error": str(e)[:200]})
+            print(f"·· batch [{idx}/{total}] 失败：{e}", file=sys.stderr)
+    print(json.dumps({"outputs": outputs}, ensure_ascii=False))   # stdout：唯一结果行
+
+
 def run(args) -> None:
     if args.mode == "info":
         ch = load_channel()
@@ -389,27 +469,11 @@ def run(args) -> None:
                 print(f"engine    {eng}")
         return
 
-    text = read_text(args)
-    ref_audio = getattr(args, "ref_audio", None)
-    ref_text = getattr(args, "ref_text", None)
-    voice = getattr(args, "voice", None)
-    profile_key = getattr(args, "voice_profile", None)
+    if args.mode == "batch":
+        return run_batch(args)
 
-    # ── 音色解析：channel.json voice.profiles（engine 路由两型·文件 exists() 兜底）→ voice.md（--voice）──
-    # 只在 clone（需音色）或显式 --voice 时介入；say/design 无 --voice、无 profile，行为不变（零回归）。
-    ch_model = None
-    if not (ref_audio and ref_text) and (voice or args.mode == "clone"):
-        md_tok = load_voice_token(voice) if voice else {"ref_audio": None, "ref_text": None}
-        ch = load_channel()
-        ch_model, c_audio, c_text = resolve_channel_ref(ch, profile_key, md_tok)
-        ref_audio = ref_audio or c_audio or md_tok.get("ref_audio")
-        ref_text = ref_text or c_text or md_tok.get("ref_text")
-        if voice:
-            print(f"· 音色 token {voice}", file=sys.stderr)
-        if ch is not None and ch.voice_profile(profile_key):
-            _pk = profile_key or ch.get("voice.default")
-            _tag = "·LoRA 合并模型（音色在权重）" if ch_model else ""
-            print(f"· 频道音色 channel.json voice.profiles[{_pk}]{_tag}", file=sys.stderr)
+    text = read_text(args)
+    ch_model, ref_audio, ref_text = _resolve_clone_voice(args, is_clone=(args.mode == "clone"))
     # clone 硬闸：零样本型必须有 ref；LoRA 型音色烤进权重·无提示条也能出声（有 prompt 更贴·0.889）
     if args.mode == "clone" and not ch_model and not (ref_audio and ref_text):
         sys.exit("clone 需要 --ref-audio + --ref-text，或 --voice 指向 voice.md，"
@@ -470,6 +534,16 @@ def build_parser() -> argparse.ArgumentParser:
                          help="channel.json voice.profiles 的 key（默认取 voice.default）")
     s_clone.add_argument("--ref-audio", dest="ref_audio", help="参考音频 wav（不用 --voice 时必填）")
     s_clone.add_argument("--ref-text", dest="ref_text", help="参考音频逐字转写（不用 --voice 时必填）")
+
+    s_batch = sub.add_parser("batch", help="批量克隆：一份 manifest·模型载一次·合成多段（省重复加载）")
+    common(s_batch)
+    s_batch.add_argument("--manifest", required=True,
+                         help="JSON 数组文件：[{text_file|text, out}, ...]（音色 / 参数全段共享）")
+    s_batch.add_argument("--voice", help="读 voice.md 音色 token（同 clone·替代手填 ref）")
+    s_batch.add_argument("--voice-profile", dest="voice_profile", default=None,
+                         help="channel.json voice.profiles 的 key（默认取 voice.default）")
+    s_batch.add_argument("--ref-audio", dest="ref_audio", help="参考音频 wav（不用频道音色 / --voice 时）")
+    s_batch.add_argument("--ref-text", dest="ref_text", help="参考音频逐字转写")
 
     s_info = sub.add_parser("info", help="打印环境 / 模型路径")
     s_info.add_argument("--model", default=None)
