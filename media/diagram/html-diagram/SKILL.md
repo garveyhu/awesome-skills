@@ -2,8 +2,9 @@
 name: html-diagram
 description: Render diagrams (system architecture, link/topology maps, narrative architecture decks, sequence flows, timelines, etc.) as self-contained single-file HTML by picking a style from the style library and adapting one of its samples. Triggers include `/html-diagram`, "画一张 HTML 图", "用 HTML 画 X", "html 架构图 / 链路图 / 流程图", "html 可视化", "single-file html diagram", "interactive html diagram", "deck-style html"。Output is one HTML file with inlined CSS/SVG/JS, no build step. PURE RENDERING LAYER — does NOT brainstorm content, only formalizes content already in context (chat history, design docs, markdown notes). DO NOT trigger for: mermaid charts (use mermaid-visualizer), Excalidraw boards (use excalidraw-diagram), PNG/PDF posters (use canvas-design), generic frontend pages (use frontend-design / website-creator).
 metadata:
-  version: 1.1.0
+  version: 1.2.0
   changelog:
+    - "1.2.0: Add two styles — paper-dossier (warm-paper engineering-grid analytics report; sample analytics-report) and nebula-graph (deep-space glow canvas force/tree knowledge graph; sample knowledge-graph). Both samples de-identified to a fictional 'Orbit' platform and made fully self-contained (nebula-graph inlines window.DOMAIN_GRAPH, no external data file)."
     - "1.1.0: Sediment 10 advanced patterns into dark-techy.md (multi-tier panel, platform-with-modules, type-differentiated visuals, region grouping, multi-row proxy, collapsible legend, elastic entrance, layout centering, naming consistency, ID stability)"
     - "1.0: Initial style library (dark-techy / slate-mono-grid)"
 ---

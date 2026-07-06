@@ -70,6 +70,36 @@
 
 ---
 
+## paper-dossier · 暖纸档案报表
+
+`#f6f7f2` 暖纸底 + 28px 工程网格 + 硬边直角面板 + 6 色语义（tier→tone）+ Avenir/JetBrains Mono + 双色径向晕。像工程评估报告 / 代码审计档案。
+**适合**：代码库/领域盘点评估、工作量估算与分工、架构治理报告、模块审计、数据表+图表混排的分析档案；浅色长看、可打印。
+
+**Samples**:
+
+| sample | 形态 | 适合内容 |
+|---|---|---|
+| `analytics-report.html` | 多区块数据评估报告（sticky pill 导航 + KPI 板 + 泳道图谱 + 占比条/星盘/负载 + 文件夹对照 + 可排序明细表，一份 `domains[]` 驱动） | 领域/代码盘点、工作量估算、模块审计、技术尽调、"一堆条目 × 多维指标 + 占比 + 排序"的分析报告 |
+
+→ `styles/paper-dossier.md`
+
+---
+
+## nebula-graph · 深空星云图谱
+
+`#080b12` 深空底 + 3 团 blur 辉光 + 暖珊瑚多色 + canvas 力导向/树布局 + 玻璃 HUD + 右侧抽屉。发光球节点 + 高亮粒子流，可拖拽/缩放/点开抽屉。
+**适合**：领域知识图谱、限界上下文图、模块依赖星图、微服务关系网、概念/实体关系的可交互探索。
+
+**Samples**:
+
+| sample | 形态 | 适合内容 |
+|---|---|---|
+| `knowledge-graph.html` | 自包含交互式知识图谱（全屏 canvas 树↔网双布局 + 图例分层隐藏 + 点节点开抽屉，内联 `window.DOMAIN_GRAPH` 数据） | 领域/上下文知识图谱、依赖星图、关系网络探索、"节点 + 层级 + 归属 + 少量跨组关系"的交互浏览 |
+
+→ `styles/nebula-graph.md`
+
+---
+
 ## 裸 `/html-diagram` 输出格式
 
 ```
@@ -110,6 +140,22 @@
   样例：
     file://${SKILL_DIR}/assets/styles/schematic/samples/topology-poster.html
       ↳ 单页 1920×1080 网络拓扑海报（适合浅色环境长看）
+
+▎ paper-dossier · 暖纸档案报表
+  #f6f7f2 暖纸底 / 28px 工程网格 / 硬边直角面板 / 6 色语义 / Avenir + JetBrains Mono
+  适合：领域/代码盘点评估、工作量估算与分工、架构治理报告、模块审计（浅色长看 / 可打印）
+
+  样例：
+    file://${SKILL_DIR}/assets/styles/paper-dossier/samples/analytics-report.html
+      ↳ 多区块数据评估报告（KPI 板 + 泳道图谱 + 占比条/星盘/负载 + 可排序表）
+
+▎ nebula-graph · 深空星云图谱
+  #080b12 深空底 / 3 团辉光 / 暖珊瑚多色 / canvas 力导向+树布局 / 玻璃 HUD + 抽屉
+  适合：领域知识图谱、限界上下文图、模块依赖星图、微服务关系网、关系交互探索
+
+  样例：
+    file://${SKILL_DIR}/assets/styles/nebula-graph/samples/knowledge-graph.html
+      ↳ 自包含交互式知识图谱（拖拽 / 缩放 / 树↔网切换 / 点节点开抽屉）
 
 用法：
   /html-diagram <style-name> 画一个 xxx

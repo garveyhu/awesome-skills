@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<!--
+  nebula-graph · knowledge-graph sample
+  深空底 + 珊瑚暖调 + 径向辉光 + canvas 力导向/树布局 · 玻璃 HUD + 右侧抽屉
+  自包含单文件：图数据内联在下方 window.DOMAIN_GRAPH（改填只动那一段），无外部依赖。
+  演示内容为虚构的 "Orbit 电商中台" 领域知识图谱，非真实项目。
+-->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Orbit · 领域知识图谱 / Domain Graph</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#080b12; --bg2:#0d1220; --panel:rgba(16,21,34,.72); --panel-b:rgba(255,255,255,.09);
+    --ink:#EAF0FB; --ink2:#A7B2CC; --ink3:#6C7793; --faint:#4b5570;
+    --coral:#FF7A45; --coral-l:#FFA574; --amber:#F3B95F; --mint:#5FD6A0; --blue:#63A2FF; --cream:#F4E9D8;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --disp:'Space Grotesk','PingFang SC','Noto Sans SC',sans-serif;
+    --sans:'Space Grotesk','PingFang SC','Hiragino Sans GB','Noto Sans SC',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  #cv{position:fixed;inset:0;z-index:1;display:block;touch-action:none}
+  .bg-vignette{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 22%, #131a2b 0%, var(--bg2) 42%, var(--bg) 100%);}
+  .bg-glow{position:fixed;z-index:0;pointer-events:none;filter:blur(72px);opacity:.4}
+  .bg-glow.a{top:-8%;left:34%;width:520px;height:520px;background:radial-gradient(circle,#FF7A45,transparent 65%)}
+  .bg-glow.b{bottom:-14%;right:5%;width:460px;height:460px;background:radial-gradient(circle,#5FD6A0,transparent 65%);opacity:.28}
+  .bg-glow.c{bottom:0;left:-6%;width:440px;height:440px;background:radial-gradient(circle,#63A2FF,transparent 65%);opacity:.26}
+
+  .hud{position:fixed;z-index:10;pointer-events:none}.hud>*{pointer-events:auto}
+  .glass{background:var(--panel);backdrop-filter:blur(16px) saturate(140%);border:1px solid var(--panel-b);border-radius:16px;box-shadow:0 20px 60px -30px rgba(0,0,0,.8)}
+  .top{top:22px;left:24px;right:24px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+  .title{display:flex;flex-direction:column;gap:6px}
+  .title .badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--ink3);text-transform:uppercase}
+  .title .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--coral);box-shadow:0 0 12px var(--coral)}
+  .title h1{font-family:var(--disp);font-size:22px;font-weight:600;letter-spacing:-.01em;line-height:1.1}
+  .title h1 em{font-style:normal;color:var(--coral)}
+  .title .sub{font-size:12.5px;color:var(--ink2)}
+  .back{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--ink2);text-decoration:none;padding:9px 15px}
+  .back:hover{color:var(--ink)} .back svg{width:15px;height:15px}
+  .dock{bottom:22px;left:24px;display:flex;flex-direction:column;gap:10px;max-width:300px}
+  .legend{padding:14px 16px;display:flex;flex-direction:column;gap:9px}
+  .legend .lh{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:var(--ink3);text-transform:uppercase;margin-bottom:2px}
+  .legend .row{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink2);cursor:pointer;transition:color .15s}
+  .legend .row:hover{color:var(--ink)} .legend .row.off{opacity:.4}
+  .legend .orb{width:13px;height:13px;border-radius:50%;flex:0 0 13px}
+  .legend .orb.ctx{background:var(--coral);box-shadow:0 0 10px -1px var(--coral)}
+  .legend .orb.sub{background:var(--amber);box-shadow:0 0 10px -1px var(--amber)}
+  .legend .orb.reg{background:var(--mint);box-shadow:0 0 10px -1px var(--mint)}
+  .legend .orb.intg{background:var(--blue);box-shadow:0 0 10px -1px var(--blue)}
+  .legend .orb.generic{background:#B99BFF;box-shadow:0 0 10px -1px #B99BFF}
+  .legend .orb.core{background:var(--coral);box-shadow:0 0 0 2px rgba(255,122,69,.35),0 0 10px -1px var(--coral)}
+  .legend .orb.support{background:#F0A868;box-shadow:0 0 10px -1px #F0A868}
+  .legend .row small{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--faint)}
+  .tools{bottom:22px;right:24px;display:flex;gap:8px}
+  .btn{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:500;color:var(--ink2);background:var(--panel);backdrop-filter:blur(14px);border:1px solid var(--panel-b);border-radius:11px;padding:9px 13px;cursor:pointer;transition:.15s}
+  .btn:hover{color:var(--ink);border-color:rgba(255,255,255,.22);transform:translateY(-1px)} .btn svg{width:14px;height:14px}
+  .btn.on{color:var(--coral-l);border-color:rgba(255,122,69,.45);background:rgba(255,122,69,.10)}
+  .hint{top:24px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;color:var(--ink3);background:rgba(16,21,34,.55);border:1px solid var(--panel-b);border-radius:100px;padding:7px 16px;transition:opacity .5s}
+  @media (max-width:820px){.hint,.title .sub{display:none}.top{left:16px;right:16px;top:16px}.dock{left:16px;bottom:16px}.tools{right:16px;bottom:16px}}
+
+  .panel{position:fixed;z-index:11;top:0;right:0;height:100%;width:390px;max-width:88vw;padding:26px 26px 30px;background:linear-gradient(180deg,rgba(14,19,32,.94),rgba(9,12,20,.96));backdrop-filter:blur(20px) saturate(150%);border-left:1px solid var(--panel-b);box-shadow:-30px 0 80px -40px rgba(0,0,0,.9);transform:translateX(102%);transition:transform .42s cubic-bezier(.22,.9,.24,1);overflow-y:auto;overscroll-behavior:contain}
+  .panel.open{transform:none}
+  .panel::-webkit-scrollbar{width:8px}.panel::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:8px}
+  .panel .pclose{position:absolute;top:20px;right:22px;width:32px;height:32px;border-radius:9px;border:1px solid var(--panel-b);background:rgba(255,255,255,.04);color:var(--ink2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+  .panel .pclose:hover{color:var(--ink);border-color:rgba(255,255,255,.24)} .panel .pclose svg{width:15px;height:15px}
+  .p-kind{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:14px}
+  .p-kind .k-orb{width:9px;height:9px;border-radius:50%}
+  .p-idx{font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .p-name{font-family:var(--disp);font-size:30px;font-weight:600;letter-spacing:-.015em;line-height:1.08;margin-bottom:2px}
+  .p-slug{font-family:var(--mono);font-size:12.5px;color:var(--coral-l);margin-bottom:14px}
+  .p-desc{font-size:14.5px;color:var(--ink2);line-height:1.62}
+  .p-desc code,.p-region code{font-family:var(--mono);font-size:12.5px;color:var(--coral-l)}
+  .p-label{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin:22px 0 11px;display:flex;align-items:center;gap:9px}
+  .p-label::after{content:'';flex:1;height:1px;background:var(--panel-b)}
+  .subs{display:flex;flex-direction:column;gap:7px}
+  .subrow{display:flex;align-items:center;gap:11px;background:rgba(255,255,255,.03);border:1px solid var(--panel-b);border-radius:10px;padding:9px 12px}
+  .subrow .sd{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 9px -1px var(--amber);flex:0 0 7px}
+  .subrow b{font-size:14px;font-weight:600;color:var(--ink)}
+  .subrow small{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ink3)}
+  .pkgs{display:flex;flex-wrap:wrap;gap:6px}
+  .pk{font-family:var(--mono);font-size:11.5px;color:var(--ink2);background:rgba(255,255,255,.035);border:1px solid var(--panel-b);border-radius:6px;padding:3px 8px}
+  .p-region{margin-top:18px;display:flex;gap:11px;align-items:flex-start;background:rgba(95,214,160,.09);border:1px solid rgba(95,214,160,.25);border-radius:12px;padding:13px 15px;font-size:13px;color:var(--ink2);line-height:1.55}
+  .p-region svg{width:16px;height:16px;flex:0 0 16px;margin-top:1px;color:var(--mint)}
+  .p-region code{color:var(--mint)}
+</style>
+</head>
+<body>
+<div class="bg-vignette"></div>
+<div class="bg-glow a"></div><div class="bg-glow b"></div><div class="bg-glow c"></div>
+<canvas id="cv"></canvas>
+
+<div class="hud top">
+  <div class="glass" style="padding:15px 18px">
+    <div class="title">
+      <span class="badge"><span class="dot"></span>DOMAIN KNOWLEDGE GRAPH</span>
+      <h1>Orbit · <em>领域知识图谱</em></h1>
+      <span class="sub">核心 3 · 支撑 6 · 通用 3 · 演示数据 · 拖动探索 · 点节点看领域 · 滚轮缩放</span>
+    </div>
+  </div>
+  <div class="glass back" title="自包含演示 · 图数据已内联在文件里">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M6.6 7.4 11 16.4M17.4 7.4 13 16.4M7 6h10"/></svg>内联演示数据
+  </div>
+</div>
+<div class="glass hud hint" id="hint">点亮一个领域节点，展开它的子域与典型迁入包 →</div>
+<div class="hud dock">
+  <div class="glass legend" id="legend">
+    <div class="lh">领域分层 · 点击可隐藏</div>
+    <div class="row" data-g="core"><span class="orb core"></span>核心域 · core<small>3</small></div>
+    <div class="row" data-g="support"><span class="orb support"></span>支撑域 · supporting<small>6</small></div>
+    <div class="row" data-g="generic"><span class="orb generic"></span>通用能力域 · shared<small>3</small></div>
+    <div class="row" data-g="sub"><span class="orb sub"></span>子域 · subdomain<small>37</small></div>
+    <div class="row" data-g="reg"><span class="orb reg"></span>地区差异 · regional<small>4</small></div>
+    <div class="row" data-g="intg"><span class="orb intg"></span>外部集成 · integration<small>6</small></div>
+  </div>
+</div>
+<div class="hud tools">
+  <button class="btn" id="btnTree"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="12" r="2.2"/><circle cx="18" cy="5" r="2.2"/><circle cx="18" cy="12" r="2.2"/><circle cx="18" cy="19" r="2.2"/><path d="M7.2 12h3M10.2 12V5.6a.6.6 0 01.6-.6h4.9M10.2 12h5.6M10.2 12v6.4a.6.6 0 00.6.6h4.9"/></svg><span>树状布局</span></button>
+  <button class="btn" id="btnReset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9 9 9 0 00-6.4 2.6L3 8"/><path d="M3 3v5h5"/></svg>重置视图</button>
+  <button class="btn" id="btnSpin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/></svg>重新布局</button>
+</div>
+<aside class="panel" id="panel">
+  <button class="pclose" id="pclose"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  <div id="pbody"></div>
+</aside>
+
+<script>
+/* ============================================================
+   数据区 —— 改填只动这一段（把 Orbit 换成你自己的领域）。
+   ctx: 每个 bounded context 一项
+     { id, zh, tier:'core'|'support'|'generic', val(节点大小),
+       subs:[[slug, 中文],...], pkgs:[典型迁入包...],
+       region:bool(是否有地区差异), rtext(地区差异说明), desc(领域职责 HTML) }
+   intg: 外部集成条目名数组
+   summary.counts / summary.subtitle: 图例计数与副标题
+   ============================================================ */
+window.DOMAIN_GRAPH = {
+  summary: {
+    counts: { core:3, support:6, generic:3, sub:37, reg:4, intg:6 },
+    subtitle: '核心 3 · 支撑 6 · 通用 3 · 演示数据'
+  },
+  colors: { hub:'#F4E9D8', ctx:'#FF7A45', support:'#F0A868', sub:'#F3B95F', reg:'#5FD6A0', intg:'#63A2FF', intgitem:'#7E97C9', generic:'#B99BFF' },
+  ctx: [
+    { id:'account', zh:'账户', tier:'core', val:11,
+      subs:[['profile','档案'],['org','组织'],['auth','认证'],['store','门店']],
+      pkgs:['user-center','org-tree','rbac-core','store-base'],
+      region:true, rtext:'不同地区实名校验、证照口径不一致，落 regional/&lt;region&gt;/account 的 policy。',
+      desc:'账户、组织、门店、认证与主数据——所有业务的身份底座。其它领域通过 <code>account</code> 的 port 取当前主体，不直接读它的表。' },
+    { id:'catalog', zh:'商品', tier:'core', val:10,
+      subs:[['sku','单品'],['category','类目'],['price','价格'],['shelf','上下架']],
+      pkgs:['product-core','category-tree','price-engine'],
+      region:false,
+      desc:'商品、类目、SKU、价格与上下架。商品是交易的原料，营销优惠不在 <code>catalog</code> 内联算，走 promotion 试算。' },
+    { id:'order', zh:'订单', tier:'core', val:10,
+      subs:[['place','下单'],['state','状态机'],['snapshot','快照'],['split','拆合单']],
+      pkgs:['order-core','order-state','trade-snapshot'],
+      region:true, rtext:'部分地区有独立开票 / 结算规则，落 regional/&lt;region&gt;/order 的 policy。',
+      desc:'下单、订单状态机、拆合单与交易快照——业务生命周期主轴。聚合根一致性在 <code>order</code> 内闭环，履约与支付走领域事件。' },
+    { id:'payment', zh:'支付', tier:'support', val:7,
+      subs:[['cashier','收银台'],['channel','渠道路由'],['refund','退款'],['reconcile','对账']],
+      pkgs:['pay-gateway','channel-router','recon-job'],
+      region:true, rtext:'渠道可用性、费率按地区差异，落 regional/&lt;region&gt;/payment。',
+      desc:'收银台、渠道路由、退款与对账。对外渠道（微信 / 支付宝）实现下沉 integration，<code>payment</code> 只依赖内部 port。' },
+    { id:'inventory', zh:'库存', tier:'support', val:6,
+      subs:[['deduct','扣减'],['lock','锁定'],['transfer','调拨']],
+      pkgs:['stock-core','stock-lock'],
+      region:false,
+      desc:'库存扣减、锁定、调拨与盘点。热点扣减用乐观锁 + 分段，<code>inventory</code> 对订单只暴露"预占 / 确认 / 释放"三个动作。' },
+    { id:'fulfillment', zh:'履约', tier:'support', val:6,
+      subs:[['pick','拣货'],['ship','发货'],['track','轨迹']],
+      pkgs:['wms-adapter','logistics-track'],
+      region:false,
+      desc:'拣货、发货、物流轨迹与签收。物流公司对接实现放 integration，<code>fulfillment</code> 编排履约状态。' },
+    { id:'promotion', zh:'营销', tier:'support', val:6,
+      subs:[['coupon','优惠券'],['activity','活动'],['seckill','秒杀']],
+      pkgs:['coupon-core','marketing-activity','seckill-engine'],
+      region:true, rtext:'地区专属活动 / 补贴规则落 regional/&lt;region&gt;/promotion。',
+      desc:'优惠券、活动、满减与秒杀。下单时向 <code>promotion</code> 请求价格试算，营销规则不侵入 catalog / order。' },
+    { id:'membership', zh:'会员', tier:'support', val:5,
+      subs:[['level','等级'],['points','积分'],['benefit','权益']],
+      pkgs:['member-core','points-ledger'],
+      region:false,
+      desc:'会员等级、积分、成长值与权益。积分是有账本的资产，<code>membership</code> 内保证幂等与流水可追溯。' },
+    { id:'messaging', zh:'消息', tier:'support', val:5,
+      subs:[['sms','短信'],['push','推送'],['template','模板']],
+      pkgs:['msg-center','template-engine'],
+      region:false,
+      desc:'站内信、短信、Push 与模板。触达通道能力沉到 <code>notification</code> 通用域，<code>messaging</code> 只管业务语义。' },
+    { id:'notification', zh:'通知中心', tier:'generic', val:5,
+      subs:[['route','通道路由'],['retry','重试']],
+      pkgs:['notify-shared'],
+      region:false,
+      desc:'通用触达能力：短信 / 邮件 / Push 的通道抽象、重试与限流。任何业务可复用，不含具体业务语义。' },
+    { id:'workflow', zh:'工作流', tier:'generic', val:4,
+      subs:[['engine','引擎'],['task','任务']],
+      pkgs:['flow-engine'],
+      region:false,
+      desc:'通用审批 / 流程编排引擎。领域把"多步骤 + 人工节点"的流程委托给它，自己只定义节点动作。' },
+    { id:'audit', zh:'变更留痕', tier:'generic', val:4,
+      subs:[['log','日志'],['diff','对比']],
+      pkgs:['audit-trail'],
+      region:false,
+      desc:'通用变更留痕：谁在何时改了什么、前后 diff。挂在需要合规审计的领域上，横切复用。' }
+  ],
+  intg: ['WeChatPay','Alipay','SF-Express','SMS-Gateway','ES-Search','OSS-CDN']
+};
+
+/* ===================== 领域数据 ===================== */
+const GRAPH = window.DOMAIN_GRAPH || { summary:{ counts:{}, subtitle:'' }, ctx:[], intg:[], colors:{} };
+const CTX = GRAPH.ctx || [];
+const INTG = GRAPH.intg || [];
+const COLORS = Object.assign({ hub:'#F4E9D8', ctx:'#FF7A45', support:'#F0A868', sub:'#F3B95F', reg:'#5FD6A0', intg:'#63A2FF', intgitem:'#7E97C9', generic:'#B99BFF' }, GRAPH.colors || {});
+const SUMMARY = GRAPH.summary || { counts:{} };
+const CORE_SUPPORT_TOTAL = CTX.filter(c => c.tier !== 'generic').length;
+const LEGEND_LABELS = { core:'核心域 · core', support:'支撑域 · supporting', generic:'通用能力域 · shared', sub:'子域 · subdomain', reg:'地区差异 · regional', intg:'外部集成 · integration' };
+const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function hydrateGraphChrome(){
+  const subtitle = document.querySelector('.title .sub');
+  if (subtitle && SUMMARY.subtitle) subtitle.textContent = SUMMARY.subtitle + ' · 拖动探索 · 点节点看领域 · 滚轮缩放';
+  document.querySelectorAll('#legend .row').forEach(row => {
+    const key = row.dataset.g;
+    const label = LEGEND_LABELS[key] || row.childNodes[1]?.textContent || key;
+    const small = row.querySelector('small');
+    row.childNodes.forEach(node => { if (node.nodeType === Node.TEXT_NODE) node.remove(); });
+    row.insertBefore(document.createTextNode(label), small);
+    if (small) small.textContent = String((SUMMARY.counts || {})[key] || 0);
+  });
+}
+hydrateGraphChrome();
+
+/* ===================== 构图 + 初始布局 ===================== */
+const nodes=[], links=[], NById={};
+function N(o){ nodes.push(o); NById[o.id]=o; return o; }
+function L(s,t,type){ links.push({s,t,type}); }
+const TAU=Math.PI*2;
+N({id:'__hub', zh:'orbit', type:'hub', r:12, x:0, y:0});
+N({id:'__intg', zh:'integration', type:'intg', r:11, x:0, y:-360,
+   desc:'远程入口 / 同步转换 / 三方平台 DTO / 防腐层——统一下沉 <code>platform/integration</code>，不长期占 modules 一级。核心业务只经领域内 port/facade 调，外部实现放 adapter。'});
+N({id:'__reg', zh:'regional', type:'reg', r:11, x:150, y:210,
+   desc:'地区差异不进 modules，按「地区 / 领域 / 子域」组织：<code>regional/&lt;region&gt;/&lt;context&gt;/&lt;subdomain&gt;</code>，内放 policy · adapter · mapper。4 类强地区差异挂在有 ● 的领域上。'});
+L('__hub','__intg','ext'); L('__hub','__reg','ext');
+const TIER_POS={ core:{radius:170,a0:-Math.PI/2,span:TAU}, support:{radius:330,a0:-Math.PI/2+0.4,span:TAU}, generic:{radius:250,a0:Math.PI*0.58,span:Math.PI*0.95} };
+const byTier={core:[],support:[],generic:[]}; CTX.forEach(c=>byTier[c.tier].push(c));
+let bi=0;
+CTX.forEach(c=>{
+  const list=byTier[c.tier], k=list.indexOf(c), tp=TIER_POS[c.tier];
+  const a = tp.a0 + tp.span*(list.length>1? k/list.length : 0.5);
+  const cx=Math.cos(a)*tp.radius, cy=Math.sin(a)*tp.radius, isG=c.tier==='generic';
+  N({id:c.id, zh:c.zh, type:isG?'generic':'ctx', tier:c.tier, idx:isG?0:++bi, r:6.5+c.val*0.42, x:cx, y:cy, data:c});
+  L('__hub', c.id, c.tier);
+  c.subs.forEach(([sl,zh],j)=>{ const sid=c.id+'::'+sl, sa=a+(j-(c.subs.length-1)/2)*0.42;
+    N({id:sid, zh, slug:sl, type:'sub', r:3.4, parent:c.id, pzh:c.zh, x:cx+Math.cos(sa)*58, y:cy+Math.sin(sa)*58});
+    L(c.id, sid, 'sub'); });
+  if(c.region) L(c.id,'__reg','reg');
+});
+INTG.forEach((n,k)=>{ const a=-Math.PI/2 + (k-(INTG.length-1)/2)*0.5;
+  N({id:'intg::'+n, zh:n, type:'intgitem', r:3.2, x:Math.cos(a)*70, y:-360+Math.sin(a)*70});
+  L('__intg','intg::'+n,'intgitem'); });
+nodes.forEach(n=>{ n.vx=0; n.vy=0; n.nbr=new Set(); });
+links.forEach(l=>{ l.source=NById[l.s]; l.target=NById[l.t]; l.source.nbr.add(l.t); l.target.nbr.add(l.s); });
+const REST={core:170,support:330,generic:250,sub:50,reg:120,intgitem:46,ext:210};
+
+/* ===================== Canvas 引擎 ===================== */
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+let W=0,H=0,dpr=Math.min(window.devicePixelRatio||1,2);
+const cam={x:0,y:0,scale:1,tx:0,ty:0,ts:1};
+let alpha=1, treeMode=true;
+function resize(){ W=window.innerWidth; H=window.innerHeight; cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+'px'; cv.style.height=H+'px'; }
+window.addEventListener('resize', resize); resize();
+
+/* 树状布局：hub 为根 → 领域(核心/支撑/通用 + 地区/外部)等距一排 → 子域紧凑挂正下方，根在上逐层向下 */
+function computeTree(){
+  const domOrder=[...byTier.core,...byTier.support,...byTier.generic].map(c=>c.id);
+  const level1=[...domOrder,'__reg','__intg'];
+  const YG=[0,118,205], DOMGAP=112, SUBGAP=15;
+  level1.forEach((id,i)=>{ const n=NById[id]; if(!n)return; n._tx=i*DOMGAP; n._ty=YG[1]; });
+  const layChildren=(pid, ids)=>{ const px=NById[pid]._tx, span=(ids.length-1)*SUBGAP;
+    ids.forEach((sid,k)=>{ const n=NById[sid]; if(!n)return; n._tx=px-span/2+k*SUBGAP; n._ty=YG[2]; }); };
+  domOrder.forEach(id=>{ const c=CTX.find(x=>x.id===id); layChildren(id, c.subs.map(([sl])=>id+'::'+sl)); });
+  layChildren('__intg', INTG.map(n=>'intg::'+n));
+  const xs=level1.map(id=>NById[id]._tx); NById['__hub']._tx=(Math.min(...xs)+Math.max(...xs))/2; NById['__hub']._ty=YG[0];
+  let minx=1e9,maxx=-1e9,miny=1e9,maxy=-1e9;
+  nodes.forEach(n=>{ minx=Math.min(minx,n._tx);maxx=Math.max(maxx,n._tx);miny=Math.min(miny,n._ty);maxy=Math.max(maxy,n._ty); });
+  const cx=(minx+maxx)/2, cy=(miny+maxy)/2; nodes.forEach(n=>{ n._tx-=cx; n._ty-=cy; });
+}
+
+function physics(){
+  if(treeMode){ for(const nd of nodes){ if(nd.pin)continue; nd.x+=((nd._tx||0)-nd.x)*0.16; nd.y+=((nd._ty||0)-nd.y)*0.16; } return; }
+  if(alpha<0.02) return;
+  const n=nodes.length;
+  for(let i=0;i<n;i++){ const a=nodes[i];
+    for(let j=i+1;j<n;j++){ const b=nodes[j];
+      let dx=a.x-b.x, dy=a.y-b.y, d2=dx*dx+dy*dy; if(d2<0.01)d2=0.01;
+      const d=Math.sqrt(d2), f=Math.min(2600/d2, 9)*alpha, ux=dx/d, uy=dy/d;
+      a.vx+=ux*f; a.vy+=uy*f; b.vx-=ux*f; b.vy-=uy*f;
+    }
+  }
+  for(const l of links){ const a=l.source,b=l.target; let dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||0.01;
+    const f=(d-(REST[l.type]||120))/d*0.045*alpha; a.vx+=dx*f; a.vy+=dy*f; b.vx-=dx*f; b.vy-=dy*f; }
+  for(const nd of nodes){ nd.vx-=nd.x*0.016*alpha; nd.vy-=nd.y*0.016*alpha;
+    if(nd.pin){ nd.vx=nd.vy=0; continue; }
+    nd.vx*=0.80; nd.vy*=0.80; nd.x+=nd.vx; nd.y+=nd.vy; }
+  alpha*=0.986;
+}
+function reheat(v){ alpha=Math.max(alpha,v||0.9); }
+
+/* view helpers */
+function toScreen(wx,wy){ return [ (wx-cam.x)*cam.scale + W/2, (wy-cam.y)*cam.scale + H/2 ]; }
+function toWorld(sx,sy){ return [ (sx-W/2)/cam.scale + cam.x, (sy-H/2)/cam.scale + cam.y ]; }
+function fit(pad){ pad=pad||90; let minx=1e9,miny=1e9,maxx=-1e9,maxy=-1e9;
+  for(const n of nodes){ if(n.hidden)continue; const px=treeMode?(n._tx||0):n.x, py=treeMode?(n._ty||0):n.y;
+    minx=Math.min(minx,px);miny=Math.min(miny,py);maxx=Math.max(maxx,px);maxy=Math.max(maxy,py);}
+  const w=maxx-minx||1,h=maxy-miny||1; const s=Math.min((W-pad*2)/w,(H-pad*2)/h,2.2);
+  cam.tx=(minx+maxx)/2; cam.ty=(miny+maxy)/2; cam.ts=s; }
+function animateCam(){ cam.x+=(cam.tx-cam.x)*0.12; cam.y+=(cam.ty-cam.y)*0.12; cam.scale+=(cam.ts-cam.scale)*0.12; }
+
+/* highlight state */
+const hiN=new Set(), hiL=new Set(); let selId=null, hoverId=null;
+function setHi(node){ hiN.clear(); hiL.clear();
+  if(node){ hiN.add(node.id); node.nbr.forEach(id=>hiN.add(id));
+    for(const l of links){ if(l.s===node.id||l.t===node.id) hiL.add(l); } } }
+function hex(h,a){ const n=parseInt(h.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; }
+function grp(n){ if(n.type==='hub')return 'core'; if(n.tier)return n.tier; if(n.type==='intgitem')return 'intg'; return n.type; }
+function nodeColor(n){ if(n.type==='generic')return COLORS.generic; if(n.tier==='support')return COLORS.support; if(n.type==='ctx')return COLORS.ctx; return COLORS[n.type]||'#fff'; }
+function linkCol(l,a){ if(l.type==='reg')return hex(COLORS.reg,a); if(l.type==='intgitem'||l.type==='ext')return hex(COLORS.intg,a); if(l.type==='sub')return hex(COLORS.sub,a); if(l.type==='generic')return hex(COLORS.generic,a); if(l.type==='support')return hex(COLORS.support,a); return hex(COLORS.ctx,a); }
+
+/* ===================== 渲染 ===================== */
+let t0=performance.now();
+function draw(now){
+  const time=(now-t0)/1000;
+  physics(); animateCam();
+  ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
+  ctx.save(); ctx.translate(W/2,H/2); ctx.scale(cam.scale,cam.scale); ctx.translate(-cam.x,-cam.y);
+  const dim = hiN.size>0;
+  // links
+  ctx.lineCap='round';
+  for(const l of links){ const a=l.source,b=l.target; if(a.hidden||b.hidden)continue;
+    if(treeMode && l.type==='reg')continue; // 树状模式隐藏地区差异交叉连线，保持树的清爽
+    const on=hiL.has(l); ctx.strokeStyle=linkCol(l, on?0.85:(dim?0.05:0.13)); ctx.lineWidth=(on?1.9:0.8)/cam.scale;
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+    if(on && !REDUCED){ for(let p=0;p<3;p++){ const tt=((time*0.5)+(p/3))%1; const px=a.x+(b.x-a.x)*tt, py=a.y+(b.y-a.y)*tt;
+      ctx.beginPath(); ctx.arc(px,py,2.1/cam.scale,0,TAU); ctx.fillStyle=linkCol(l,0.95); ctx.fill(); } }
+  }
+  // nodes
+  const order=nodes.slice().sort((x,y)=> (hiN.has(x.id)?1:0)-(hiN.has(y.id)?1:0));
+  for(const nd of order){ if(nd.hidden)continue;
+    const c=nodeColor(nd), act = !dim || hiN.has(nd.id), r=nd.r, sel=nd.id===selId;
+    const g=ctx.createRadialGradient(nd.x,nd.y,0,nd.x,nd.y,r*(act?3.3:1.9));
+    g.addColorStop(0,hex(c,act?0.5:0.10)); g.addColorStop(1,hex(c,0));
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(nd.x,nd.y,r*(act?3.3:1.9),0,TAU); ctx.fill();
+    ctx.beginPath(); ctx.arc(nd.x,nd.y,r,0,TAU); ctx.fillStyle=act?c:hex(c,0.3); ctx.fill();
+    ctx.lineWidth=1/cam.scale; ctx.strokeStyle=hex('#ffffff',act?0.5:0.1); ctx.stroke();
+    if(nd.tier==='core' && act && !sel){ ctx.beginPath(); ctx.arc(nd.x,nd.y,r+3.5/cam.scale,0,TAU); ctx.strokeStyle=hex(c,0.55); ctx.lineWidth=1.2/cam.scale; ctx.stroke(); }
+    if(sel){ ctx.beginPath(); ctx.arc(nd.x,nd.y,r+5/cam.scale,0,TAU); ctx.strokeStyle=hex(c,0.9); ctx.lineWidth=1.7/cam.scale; ctx.stroke(); }
+    const big = nd.type==='ctx'||nd.type==='hub'||nd.type==='reg'||nd.type==='intg'||nd.type==='generic';
+    if(act && (big || cam.scale>1.7 || hoverId===nd.id || (selId && hiN.has(nd.id)))){
+      const fs=(nd.type==='hub'?15:nd.type==='ctx'?13:11)/cam.scale;
+      ctx.font=`${nd.type==='sub'||nd.type==='intgitem'?'':'600 '}${fs}px 'Space Grotesk','PingFang SC','Noto Sans SC',sans-serif`;
+      ctx.textAlign='center'; ctx.textBaseline='top';
+      ctx.fillStyle=hex('#ffffff',act?0.92:0.4); ctx.shadowColor='rgba(0,0,0,.8)'; ctx.shadowBlur=6;
+      ctx.fillText(nd.zh, nd.x, nd.y+r+3/cam.scale); ctx.shadowBlur=0;
+    }
+  }
+  ctx.restore();
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+computeTree();
+setTimeout(()=>fit(70),120); fit(70);
+
+/* ===================== 交互 ===================== */
+function pick(sx,sy){ let best=null,bd=1e9;
+  for(const n of nodes){ if(n.hidden)continue; const [px,py]=toScreen(n.x,n.y); const d=Math.hypot(px-sx,py-sy), hit=n.r*cam.scale+7;
+    if(d<hit && d<bd){ bd=d; best=n; } } return best; }
+let drag=null, dragMoved=false, down=null;
+cv.addEventListener('mousemove',e=>{ const sx=e.clientX,sy=e.clientY;
+  if(drag){ dragMoved=true; const [wx,wy]=toWorld(sx,sy);
+    if(drag.node){ drag.node.x=wx-drag.ox; drag.node.y=wy-drag.oy; drag.node.pin=true; reheat(0.5); }
+    else { cam.x=drag.cx-(sx-drag.sx)/cam.scale; cam.y=drag.cy-(sy-drag.sy)/cam.scale; cam.tx=cam.x;cam.ty=cam.y;cam.ts=cam.scale; }
+    return; }
+  const n=pick(sx,sy); const id=n?n.id:null;
+  if(id!==hoverId){ hoverId=id; cv.style.cursor=n?'pointer':'grab'; if(!selId) setHi(n); }
+});
+cv.addEventListener('mousedown',e=>{ const sx=e.clientX,sy=e.clientY; const n=pick(sx,sy); dragMoved=false; down={sx,sy};
+  if(n){ const [wx,wy]=toWorld(sx,sy); drag={node:n,ox:wx-n.x,oy:wy-n.y}; }
+  else { drag={node:null,sx,sy,cx:cam.x,cy:cam.y}; cv.style.cursor='grabbing'; } });
+window.addEventListener('mouseup',e=>{ if(drag){ if(drag.node) drag.node.pin=false; }
+  if(!dragMoved){ const n=pick(e.clientX,e.clientY); if(n) selectNode(n); else deselect(); }
+  drag=null; cv.style.cursor=hoverId?'pointer':'grab'; });
+cv.addEventListener('wheel',e=>{ e.preventDefault(); const f=e.deltaY<0?1.12:0.893;
+  const [wx,wy]=toWorld(e.clientX,e.clientY); cam.scale=Math.max(0.3,Math.min(5,cam.scale*f));
+  cam.x=wx-(e.clientX-W/2)/cam.scale; cam.y=wy-(e.clientY-H/2)/cam.scale; cam.tx=cam.x;cam.ty=cam.y;cam.ts=cam.scale; },{passive:false});
+cv.style.cursor='grab';
+
+function selectNode(n){ selId=n.id; setHi(n); document.getElementById('hint').style.opacity=0; openPanel(n);
+  if(treeMode) spreadSubs(n);
+  focusSubtree(n); }
+function spreadSubs(n){ const kids=nodes.filter(m=>m.parent===n.id || (n.id==='__intg'&&m.type==='intgitem'));
+  if(!kids.length) return;
+  const w=kids.map(s=>Math.min(148, Math.max(70,(s.zh||'').length*17))); // 各子域按标签长度自适应宽度：不密不疏
+  const total=w.reduce((a,b)=>a+b,0); let x=n._tx-total/2;
+  kids.forEach((s,k)=>{ s._tx=x+w[k]/2; x+=w[k]; s._ty=n._ty+168; }); }
+function focusSubtree(n){
+  const gx=m=>treeMode?(m._tx||0):m.x, gy=m=>treeMode?(m._ty||0):m.y;
+  const kids=nodes.filter(m=>m.parent===n.id || (n.id==='__intg'&&m.type==='intgitem'));
+  const grp=[n,...kids];
+  let minx=1e9,miny=1e9,maxx=-1e9,maxy=-1e9;
+  grp.forEach(m=>{ minx=Math.min(minx,gx(m));maxx=Math.max(maxx,gx(m));miny=Math.min(miny,gy(m));maxy=Math.max(maxy,gy(m)); });
+  const w=(maxx-minx)||1, h=(maxy-miny)||1, availW=W-460, availH=H-230; // 右侧留出面板空间
+  let s=Math.min(availW/(w+150), availH/(h+150), 2.1);             // 子域已拉宽，放大到标签清晰不重叠
+  cam.ts=Math.max(s, 1.3);
+  cam.tx=(minx+maxx)/2 + 225/cam.ts;                               // 内容左移，避开面板
+  cam.ty=(miny+maxy)/2;
+}
+function deselect(){ selId=null; setHi(null); closePanel(); if(treeMode){ computeTree(); fit(); } }
+
+/* ===================== 面板 ===================== */
+const panel=document.getElementById('panel'), pbody=document.getElementById('pbody');
+function kindMeta(t){ return {hub:['业务核心','#F4E9D8'],ctx:['业务领域 · Bounded Context','#FF7A45'],sub:['子域 · Subdomain','#F3B95F'],reg:['地区差异 · Regional','#5FD6A0'],intg:['外部集成 · Integration','#63A2FF'],intgitem:['外部集成条目','#7E97C9'],generic:['通用能力域 · Shared Kernel','#B99BFF']}[t]||['','#fff']; }
+function openPanel(n){ const [kind,kc]= n.type==='generic'?['通用能力域 · Shared Kernel',COLORS.generic] : n.tier==='core'?['核心域 · Core Domain',COLORS.ctx] : n.tier==='support'?['支撑域 · Supporting',COLORS.support] : kindMeta(n.type);
+  let h=`<div class="p-kind"><span class="k-orb" style="background:${kc};box-shadow:0 0 10px -1px ${kc}"></span>${kind}</div>`;
+  if(n.type==='ctx'||n.type==='generic'){ const c=n.data;
+    h+= n.type==='generic' ? `<div class="p-idx">通用能力域 · 任何业务可复用</div>` : `<div class="p-idx">${String(n.idx).padStart(2,'0')} / ${String(CORE_SUPPORT_TOTAL).padStart(2,'0')}</div>`;
+    h+=`<div class="p-name">${c.zh}</div><div class="p-slug">modules/${c.id}/</div><div class="p-desc">${c.desc}</div>`;
+    h+=`<div class="p-label">建议子域 · ${c.subs.length}</div><div class="subs">`+c.subs.map(([sl,zh])=>`<div class="subrow"><span class="sd"></span><b>${zh}</b><small>${sl}</small></div>`).join('')+`</div>`;
+    h+=`<div class="p-label">典型迁入 · ${c.pkgs.length} 个旧包</div><div class="pkgs">`+c.pkgs.map(p=>`<span class="pk">${p}</span>`).join('')+`</div>`;
+    if(c.region) h+=`<div class="p-region"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-5.5 7-11a7 7 0 10-14 0c0 5.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><div>${c.rtext}</div></div>`;
+  } else if(n.type==='sub'){ h+=`<div class="p-name">${n.zh}</div><div class="p-slug">modules/${n.parent}/${n.slug}/</div><div class="p-desc">「${n.pzh}」领域下的子域。领域内保留熟悉的 MVC：<code>controller · service · domain · dto · mapper · policy</code>，但目录先体现业务归属。</div>`;
+  } else if(n.type==='hub'){ h+=`<div class="p-name">核心业务</div><div class="p-slug">modules/</div><div class="p-desc">一套代码支撑多地区 / 多租户。modules 一级<b style="color:var(--ink)">只表达业务上下文</b>，收拢成若干个 bounded context；同一业务生命周期的聚合不再被类名前缀拆碎。点任意一个领域看它管什么。</div>`;
+  } else if(n.type==='reg'||n.type==='intg'){ h+=`<div class="p-name">${n.zh}</div><div class="p-slug">${n.type==='reg'?'regional/':'platform/integration/'}</div><div class="p-desc">${n.desc}</div>`;
+  } else { h+=`<div class="p-name">${n.zh}</div><div class="p-slug">platform/integration/${n.zh}</div><div class="p-desc">外部集成条目——<b style="color:var(--ink)">不进核心业务</b>。外部平台 DTO / 签名 / HTTP client / MQ consumer / 同步日志进 integration 或 regional；核心业务不能直接依赖它的 controller 或 converter。</div>`; }
+  pbody.innerHTML=h; panel.classList.add('open');
+}
+function closePanel(){ panel.classList.remove('open'); }
+document.getElementById('pclose').onclick=()=>deselect();
+
+/* ===================== 控件 ===================== */
+const btnTree=document.getElementById('btnTree');
+function setTree(on){ treeMode=on; btnTree.classList.toggle('on',on); btnTree.querySelector('span').textContent=on?'网状布局':'树状布局';
+  nodes.forEach(n=>n.pin=false);
+  if(on){ computeTree(); deselect(); setTimeout(()=>{ if(!selId) fit(70); },40); }
+  else { reheat(1); setTimeout(()=>fit(),650); } }
+btnTree.onclick=()=>setTree(!treeMode);
+btnTree.classList.add('on');
+btnTree.querySelector('span').textContent='网状布局';
+document.getElementById('btnReset').onclick=()=>{ deselect(); nodes.forEach(n=>n.pin=false); if(treeMode)computeTree(); fit(); };
+document.getElementById('btnSpin').onclick=()=>{ if(treeMode) setTree(false); else { nodes.forEach(n=>{ n.pin=false; }); reheat(1); } };
+const hidden={core:false,support:false,generic:false,sub:false,reg:false,intg:false};
+document.querySelectorAll('#legend .row').forEach(r=>{ r.onclick=()=>{ const g=r.dataset.g; hidden[g]=!hidden[g]; r.classList.toggle('off',hidden[g]);
+  nodes.forEach(n=>{ if(n.type!=='hub') n.hidden = hidden[grp(n)]; }); reheat(0.4); }; });
+</script>
+</body>
+</html>

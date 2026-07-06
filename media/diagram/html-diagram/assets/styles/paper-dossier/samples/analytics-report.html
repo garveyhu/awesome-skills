@@ -1,0 +1,1310 @@
+<!doctype html>
+<!--
+  paper-dossier · analytics-report sample
+  暖纸底 + 28px 工程网格 + 硬边面板 + 6 色语义 · 多区块数据评估报告
+  自包含单文件：所有数据内联在末尾 <script> 的 domains[] 里，改填即替换那份数组。
+  演示内容为虚构的 "Orbit 电商中台" 领域工作量评估，非真实项目。
+-->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Orbit 中台 · 领域工作量评估</title>
+  <style>
+    :root {
+      --paper: #f6f7f2;
+      --ink: #111314;
+      --muted: #69716d;
+      --line: #d9ded7;
+      --blue: #155f8a;
+      --red: #d43f2f;
+      --green: #237963;
+      --amber: #aa6d12;
+      --violet: #6f5aa8;
+      --slate: #38454d;
+      --white: #fff;
+      --soft: rgba(255, 255, 255, .76);
+      --shadow: 0 18px 42px rgba(25, 38, 44, .11);
+      --display: "Avenir Next", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      --sans: "Avenir Next", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      --mono: "JetBrains Mono", "SFMono-Regular", "Cascadia Code", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: var(--sans);
+      background:
+        linear-gradient(90deg, rgba(17, 19, 20, .04) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(17, 19, 20, .04) 1px, transparent 1px),
+        radial-gradient(circle at 8% 10%, rgba(212, 63, 47, .12), transparent 34rem),
+        radial-gradient(circle at 90% 18%, rgba(21, 95, 138, .13), transparent 32rem),
+        var(--paper);
+      background-size: 28px 28px, 28px 28px, auto, auto, auto;
+    }
+
+    .shell {
+      width: min(1880px, calc(100vw - 40px));
+      margin: 0 auto;
+    }
+
+    .mast {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid rgba(17, 19, 20, .14);
+      background: rgba(246, 247, 242, .9);
+      backdrop-filter: blur(18px);
+    }
+
+    .mast-inner {
+      min-height: 58px;
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) auto;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    h1, h2, h3 { letter-spacing: 0; }
+
+    .brand h1 {
+      margin: 0;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--display);
+      font-size: clamp(22px, 1.55vw, 30px);
+      font-weight: 850;
+      line-height: 1;
+    }
+
+    .brand h1::before {
+      content: "";
+      width: 7px;
+      height: 30px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, var(--red), var(--amber));
+      box-shadow: 0 8px 18px rgba(212, 63, 47, .22);
+    }
+
+    .brand span {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: .06em;
+      padding: 5px 9px;
+      border: 1px solid rgba(17, 19, 20, .12);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .62);
+    }
+
+    .nav {
+      position: relative;
+      display: flex;
+      gap: 3px;
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+      overflow-x: auto;
+      min-width: 0;
+      padding: 4px;
+      border: 1px solid rgba(17, 19, 20, .12);
+      border-radius: 999px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, .78), rgba(237, 241, 234, .66)),
+        radial-gradient(circle at 20% 0, rgba(21, 95, 138, .12), transparent 42%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .9),
+        0 10px 24px rgba(25, 38, 44, .08);
+      scrollbar-width: none;
+    }
+
+    .nav::-webkit-scrollbar { display: none; }
+
+    .nav a {
+      position: relative;
+      isolation: isolate;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 30px;
+      padding: 0 12px 0 9px;
+      border: 0;
+      border-radius: 999px;
+      color: #344047;
+      text-decoration: none;
+      background: transparent;
+      font-size: 12px;
+      font-weight: 760;
+      white-space: nowrap;
+      transition: color .2s ease, transform .2s ease;
+    }
+
+    .nav a::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: inherit;
+      background: #111314;
+      opacity: 0;
+      transform: scale(.94);
+      transition: opacity .2s ease, transform .2s ease;
+    }
+
+    .nav a b {
+      display: inline-grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      color: var(--blue);
+      background: rgba(21, 95, 138, .1);
+      font-family: var(--mono);
+      font-size: 10px;
+      line-height: 1;
+      transition: color .2s ease, background .2s ease;
+    }
+
+    .nav a:hover {
+      color: var(--ink);
+      transform: translateY(-1px);
+    }
+
+    .nav a:hover::before {
+      opacity: .07;
+      transform: scale(1);
+    }
+
+    .nav a.is-active {
+      color: #fff;
+    }
+
+    .nav a.is-active::before {
+      opacity: 1;
+      transform: scale(1);
+      box-shadow: 0 8px 18px rgba(17, 19, 20, .22);
+    }
+
+    .nav a.is-active b {
+      color: #111314;
+      background: #fff;
+    }
+
+    .summary {
+      overflow-x: auto;
+      padding: 10px 0 4px;
+    }
+
+    .metric-board {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(156px, 1fr));
+      gap: 8px;
+      min-width: 1020px;
+    }
+
+    .metric {
+      min-height: 48px;
+      border: 1px solid rgba(17, 19, 20, .14);
+      background: var(--soft);
+      box-shadow: 0 8px 18px rgba(25, 38, 44, .06);
+      padding: 7px 10px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-areas:
+        "label value"
+        "sub value";
+      align-items: center;
+      column-gap: 10px;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    .metric span:first-child {
+      grid-area: label;
+      align-self: end;
+    }
+
+    .metric span:last-child {
+      grid-area: sub;
+      align-self: start;
+    }
+
+    .metric b {
+      display: block;
+      grid-area: value;
+      margin: 0;
+      font-family: var(--mono);
+      font-size: clamp(21px, 1.45vw, 28px);
+      line-height: 1;
+      text-align: right;
+    }
+
+    section { margin: 18px 0; }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 10px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: clamp(21px, 1.45vw, 28px);
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .section-head p {
+      max-width: 760px;
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .panel {
+      border: 1px solid rgba(17, 19, 20, .16);
+      background: rgba(255, 255, 255, .74);
+      box-shadow: var(--shadow);
+    }
+
+    .atlas {
+      overflow-x: auto;
+      padding: 12px;
+    }
+
+    .lanes {
+      display: grid;
+      grid-template-columns: 150px 648px 185px 245px 175px;
+      gap: 8px;
+      width: max-content;
+      min-width: min(100%, 1458px);
+      min-height: 540px;
+    }
+
+    .lane {
+      border: 1px solid rgba(17, 19, 20, .16);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.58)),
+        repeating-linear-gradient(0deg, rgba(17, 19, 20, .035) 0 1px, transparent 1px 34px);
+      min-width: 0;
+    }
+
+    .lane-head {
+      min-height: 84px;
+      padding: 11px 12px;
+      border-bottom: 1px solid rgba(17, 19, 20, .12);
+    }
+
+    .lane-head h3 {
+      margin: 0 0 8px;
+      font-family: var(--mono);
+      font-size: 20px;
+      line-height: 1.1;
+    }
+
+    .lane-head p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 12px;
+    }
+
+    .lane-body {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      padding: 8px;
+    }
+
+    .lane.modules .lane-body {
+      grid-template-columns: repeat(3, minmax(201px, 1fr));
+    }
+
+    .lane:not(.modules) .domain-card h4 {
+      font-size: 20px;
+    }
+
+    .lane:not(.modules) .en,
+    .lane:not(.modules) .path {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      word-break: normal;
+    }
+
+    .domain-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 102px;
+      border: 1px solid rgba(17, 19, 20, .15);
+      background: rgba(255, 255, 255, .86);
+      padding: 9px;
+    }
+
+    .domain-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 5px;
+      background: var(--tone);
+    }
+
+    .domain-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-left: 5px;
+    }
+
+    .code {
+      color: var(--tone);
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .owner {
+      max-width: 96px;
+      padding: 3px 8px;
+      border: 1px solid rgba(17, 19, 20, .15);
+      border-radius: 999px;
+      background: #f8faf6;
+      color: #303736;
+      font-family: var(--mono);
+      font-size: 11px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .domain-card h4 {
+      margin: 8px 0 5px 5px;
+      font-size: 22px;
+      line-height: 1.08;
+    }
+
+    .en {
+      margin-left: 5px;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.45;
+      word-break: break-all;
+    }
+
+    .path {
+      margin: 10px 0 0 5px;
+      color: #3f4946;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .lane.modules .path {
+      overflow: hidden;
+      white-space: nowrap;
+      word-break: normal;
+      font-size: 11px;
+      letter-spacing: 0;
+    }
+
+    .bar {
+      height: 7px;
+      margin: 10px 0 0 5px;
+      background: rgba(17, 19, 20, .08);
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      width: var(--w);
+      height: 100%;
+      background: var(--tone);
+    }
+
+    .brief {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 9px 0 0 5px;
+      color: #343c3a;
+      font-family: var(--mono);
+      font-size: 11px;
+    }
+
+    .charts {
+      display: grid;
+      grid-template-columns: minmax(640px, 1.1fr) minmax(460px, .9fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .share-card {
+      grid-column: 1 / -1;
+      padding: 18px;
+      min-height: 168px;
+    }
+
+    .share-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: end;
+      margin-bottom: 14px;
+    }
+
+    .share-head h3 {
+      margin: 0;
+      font-family: var(--display);
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .share-head p {
+      max-width: 760px;
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 14px;
+      text-align: right;
+    }
+
+    .share-bar {
+      display: flex;
+      width: 100%;
+      min-height: 58px;
+      border: 1px solid rgba(17, 19, 20, .12);
+      background: rgba(17, 19, 20, .06);
+      overflow: hidden;
+    }
+
+    .share-segment {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 6px;
+      color: #fff;
+      background: var(--tone);
+      font-family: var(--mono);
+      font-size: 11px;
+      line-height: 1.2;
+      text-align: center;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, .25);
+      box-shadow: inset -1px 0 rgba(255, 255, 255, .28);
+    }
+
+    .share-legend {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .share-chip {
+      display: grid;
+      grid-template-columns: 9px 1fr auto;
+      gap: 7px;
+      align-items: center;
+      min-height: 28px;
+      color: #394340;
+      font-size: 12px;
+      min-width: 0;
+    }
+
+    .share-chip i {
+      width: 9px;
+      height: 9px;
+      background: var(--tone);
+    }
+
+    .share-chip b {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-weight: 700;
+    }
+
+    .share-chip span {
+      color: var(--muted);
+      font-family: var(--mono);
+      white-space: nowrap;
+    }
+
+    .chart-card {
+      padding: 20px;
+      min-height: 620px;
+    }
+
+    .chart-card h3 {
+      margin: 0 0 6px;
+      font-family: var(--display);
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .chart-card > p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .radial-wrap {
+      position: relative;
+      min-height: 540px;
+      display: grid;
+      place-items: center;
+    }
+
+    .selected {
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      gap: 14px;
+      align-items: center;
+      margin-top: 12px;
+      border: 1px solid rgba(17, 19, 20, .15);
+      background: rgba(246, 247, 242, .86);
+      padding: 12px 14px;
+    }
+
+    .selected b {
+      color: var(--red);
+      font-family: var(--mono);
+      font-size: 34px;
+    }
+
+    .selected strong {
+      display: block;
+      font-size: 20px;
+      line-height: 1.25;
+    }
+
+    .selected span {
+      display: block;
+      color: var(--muted);
+      line-height: 1.55;
+      word-break: break-word;
+    }
+
+    .owner-board {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .owner-row {
+      display: grid;
+      grid-template-columns: 112px 1fr 88px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .owner-name {
+      font-family: var(--mono);
+      font-weight: 800;
+    }
+
+    .owner-track {
+      display: flex;
+      gap: 4px;
+      min-height: 46px;
+    }
+
+    .owner-piece {
+      min-width: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: var(--tone);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 11px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, .28);
+    }
+
+    .owner-score {
+      color: var(--muted);
+      font-family: var(--mono);
+      text-align: right;
+    }
+
+    .folder-panel {
+      overflow-x: auto;
+      padding: 12px;
+    }
+
+    .folder-map {
+      display: grid;
+      grid-template-columns: 190px 390px 250px 310px 240px;
+      gap: 10px;
+      width: max-content;
+      min-width: min(100%, 1440px);
+    }
+
+    .folder {
+      border: 1px solid rgba(17, 19, 20, .15);
+      background: rgba(255, 255, 255, .8);
+      padding: 12px;
+      min-height: 210px;
+    }
+
+    .folder h3 {
+      margin: 0 0 8px;
+      font-family: var(--mono);
+      font-size: 20px;
+    }
+
+    .folder p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 13px;
+    }
+
+    .folder ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 6px;
+    }
+
+    .folder li {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 7px;
+      align-items: baseline;
+      line-height: 1.35;
+      font-size: 12px;
+    }
+
+    .folder li b {
+      color: var(--blue);
+      font-family: var(--mono);
+    }
+
+    .folder li span {
+      word-break: break-word;
+    }
+
+    .table-panel {
+      max-height: 780px;
+      overflow: auto;
+      padding: 0;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1520px;
+      border-collapse: separate;
+      border-spacing: 0;
+      table-layout: fixed;
+      font-size: 13px;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      background: #edf1ea;
+      color: #46514c;
+      border-bottom: 1px solid rgba(17, 19, 20, .16);
+      text-align: left;
+      user-select: none;
+    }
+
+    th button {
+      width: 100%;
+      border: 0;
+      padding: 11px 8px;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: 800;
+      text-align: inherit;
+      cursor: pointer;
+    }
+
+    th button::after {
+      content: attr(data-sort-mark);
+      margin-left: 6px;
+      color: var(--red);
+      font-family: var(--mono);
+    }
+
+    td {
+      border-bottom: 1px solid rgba(17, 19, 20, .1);
+      padding: 10px 8px;
+      background: rgba(255, 255, 255, .62);
+      vertical-align: top;
+    }
+
+    th:nth-child(1), td:nth-child(1) { width: 58px; }
+    th:nth-child(2), td:nth-child(2) { width: 70px; }
+    th:nth-child(3), td:nth-child(3) { width: 150px; }
+    th:nth-child(4), td:nth-child(4) { width: 86px; }
+    th:nth-child(5), td:nth-child(5) { width: 112px; }
+    th:nth-child(6), td:nth-child(6) { width: 210px; }
+    th:nth-child(7), td:nth-child(7) { width: 72px; }
+    th:nth-child(8), td:nth-child(8) { width: 90px; }
+    th:nth-child(9), td:nth-child(9) { width: 76px; }
+    th:nth-child(10), td:nth-child(10) { width: 64px; }
+    th:nth-child(11), td:nth-child(11) { width: 64px; }
+    th:nth-child(12), td:nth-child(12) { width: 74px; }
+    th:nth-child(13), td:nth-child(13) { width: 84px; }
+    th:nth-child(14), td:nth-child(14) { width: 310px; }
+
+    td:nth-child(2),
+    td:nth-child(3),
+    td:nth-child(4),
+    td:nth-child(5),
+    td:nth-child(6),
+    th:nth-child(2),
+    th:nth-child(3),
+    th:nth-child(4),
+    th:nth-child(5),
+    th:nth-child(6) {
+      white-space: nowrap;
+    }
+
+    td:nth-child(3),
+    .path-cell {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    tbody tr:nth-child(2n) td {
+      background: rgba(248, 250, 246, .82);
+    }
+
+    tbody tr:hover td {
+      background: rgba(21, 95, 138, .07);
+    }
+
+    .num {
+      text-align: right;
+      font-family: var(--mono);
+      white-space: nowrap;
+    }
+
+    .code-cell {
+      color: var(--red);
+      font-family: var(--mono);
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .path-cell {
+      color: #43504b;
+      font-family: var(--mono);
+      white-space: nowrap;
+    }
+
+    .tag {
+      display: inline-flex;
+      min-height: 24px;
+      align-items: center;
+      padding: 0 8px;
+      border: 1px solid rgba(17, 19, 20, .15);
+      border-radius: 999px;
+      background: #fff;
+      white-space: nowrap;
+    }
+
+    .note {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .footer {
+      padding: 28px 0 52px;
+      color: var(--muted);
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 1320px) {
+      .charts,
+      .share-legend {
+        grid-template-columns: 1fr;
+      }
+
+      .lane.modules .lane-body {
+        grid-template-columns: repeat(3, minmax(201px, 1fr));
+      }
+    }
+
+    @media (max-width: 520px) {
+      .shell { width: min(100vw - 24px, 720px); }
+      .mast-inner { grid-template-columns: 1fr; padding: 14px 0; }
+      .brand { display: block; }
+      .nav { justify-content: flex-start; }
+      .lane.modules .lane-body { grid-template-columns: repeat(3, minmax(201px, 1fr)); }
+      .owner-row { grid-template-columns: 1fr; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 10px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      * { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="mast">
+    <div class="shell mast-inner">
+      <div class="brand">
+        <h1>领域工作量地图</h1>
+        <span>ORBIT-PLATFORM · D01-D21</span>
+      </div>
+      <nav class="nav" aria-label="页面导航">
+        <a class="is-active" href="#atlas"><b>01</b><span>五分区架构</span></a>
+        <a href="#charts"><b>02</b><span>全量可视化</span></a>
+        <a href="#owners"><b>03</b><span>负责人负载</span></a>
+        <a href="#folders"><b>04</b><span>文件夹对照</span></a>
+        <a href="#detail"><b>05</b><span>明细数据</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="summary">
+      <div class="metric-board" id="metrics"></div>
+    </section>
+
+    <section id="atlas">
+      <div class="section-head">
+        <h2>五分区架构归属</h2>
+      </div>
+      <div class="panel atlas">
+        <div class="lanes" id="lanes"></div>
+      </div>
+    </section>
+
+    <section id="charts">
+      <div class="section-head">
+        <h2>全量可视化</h2>
+      </div>
+      <div class="charts">
+        <div class="panel share-card">
+          <div class="share-head">
+            <h3>工作量占比</h3>
+            <p>按工作量分计算 D01-D21 的占比，整条为 100%。核心域、支撑域、公共层、平台层和地区差异都在同一条里展示。</p>
+          </div>
+          <div class="share-bar" id="shareBar"></div>
+          <div class="share-legend" id="shareLegend"></div>
+        </div>
+        <div class="panel chart-card">
+          <h3>工作量星盘</h3>
+          <p>文字标签外移，底部详情独立显示，避免遮挡图形。</p>
+          <div class="radial-wrap">
+            <svg id="radial" viewBox="0 0 900 720" width="100%" height="540" role="img" aria-label="D01 到 D21 工作量星盘"></svg>
+          </div>
+          <div class="selected" id="selectedDomain"></div>
+        </div>
+        <div class="panel chart-card" id="owners">
+          <h3>负责人负载</h3>
+          <p>这里只统计明确归属到 team-a 到 team-f 的业务域；公共层、平台层、地区差异进入全员涉及清单，不归单人独占。</p>
+          <div class="owner-board" id="ownerBoard"></div>
+          <p class="note">说明：D16-D21 是架构/全员涉及范围，用于评估协作面，不作为单人工作量直接累加。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="folders">
+      <div class="section-head">
+        <h2>文件夹对照</h2>
+      </div>
+      <div class="panel folder-panel">
+        <div class="folder-map" id="folderMap"></div>
+      </div>
+    </section>
+
+    <section id="detail">
+      <div class="section-head">
+        <h2>全领域明细</h2>
+        <p>点击表头可以按任意列升降排序。默认按领域编码排序。</p>
+      </div>
+      <div class="panel table-panel">
+        <table>
+          <thead>
+            <tr id="detailHead"></tr>
+          </thead>
+          <tbody id="detailRows"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span>源数据：docs/assessment/domain-workload.md（演示数据 · 虚构平台）</span>
+      <span>口径：有效代码排除 `domain/` 实体与 `*Example.java`</span>
+    </footer>
+  </main>
+
+  <script>
+    /* ============================================================
+       数据区 —— 改填只动这一段。
+       每个 domain 一行；tone 由 tier 决定（见 toneFor）。
+       root 决定它落在哪条泳道（见 laneMeta）。
+       演示内容为虚构的 Orbit 电商中台，替换成你自己的领域即可。
+       ============================================================ */
+    const palette = {
+      core: "#d43f2f",
+      support: "#aa6d12",
+      architecture: "#155f8a",
+      generic: "#6f5aa8",
+      integration: "#237963",
+      regional: "#38454d"
+    };
+
+    const domains = [
+      {code:"D01", id:"account", zh:"账户", tier:"核心域", root:"modules", owner:"team-a", path:"src/main/java/com/example/orbit/modules/account", shortPath:"modules/account", files:540, loc:33800, methods:4600, interfaces:150, http:340, mappers:105, score:2180.0, note:"账户、组织、门店、主数据与权限。"},
+      {code:"D02", id:"catalog", zh:"商品", tier:"核心域", root:"modules", owner:"team-b", path:"src/main/java/com/example/orbit/modules/catalog", shortPath:"modules/catalog", files:410, loc:26200, methods:3700, interfaces:92, http:300, mappers:61, score:1720.0, note:"商品、类目、SKU、价格与上下架。"},
+      {code:"D03", id:"order", zh:"订单", tier:"核心域", root:"modules", owner:"team-a", path:"src/main/java/com/example/orbit/modules/order", shortPath:"modules/order", files:360, loc:22400, methods:3100, interfaces:88, http:240, mappers:58, score:1520.0, note:"下单、订单状态机、拆合单与快照。"},
+      {code:"D04", id:"payment", zh:"支付", tier:"支撑域", root:"modules", owner:"team-e", path:"src/main/java/com/example/orbit/modules/payment", shortPath:"modules/payment", files:250, loc:15600, methods:2200, interfaces:66, http:180, mappers:40, score:1080.0, note:"收银台、渠道路由、对账与退款。"},
+      {code:"D05", id:"inventory", zh:"库存", tier:"支撑域", root:"modules", owner:"team-f", path:"src/main/java/com/example/orbit/modules/inventory", shortPath:"modules/inventory", files:210, loc:13100, methods:1900, interfaces:55, http:150, mappers:38, score:912.0, note:"库存扣减、锁定、调拨与盘点。"},
+      {code:"D06", id:"fulfillment", zh:"履约", tier:"支撑域", root:"modules", owner:"team-d", path:"src/main/java/com/example/orbit/modules/fulfillment", shortPath:"modules/fulfillment", files:226, loc:12503, methods:1600, interfaces:50, http:174, mappers:29, score:852.0, note:"拣货、发货、物流轨迹与签收。"},
+      {code:"D07", id:"promotion", zh:"营销", tier:"支撑域", root:"modules", owner:"team-e", path:"src/main/java/com/example/orbit/modules/promotion", shortPath:"modules/promotion", files:200, loc:12000, methods:1500, interfaces:58, http:190, mappers:42, score:806.0, note:"优惠券、活动、满减与秒杀。"},
+      {code:"D08", id:"search", zh:"搜索", tier:"支撑域", root:"modules", owner:"team-b", path:"src/main/java/com/example/orbit/modules/search", shortPath:"modules/search", files:175, loc:12075, methods:1943, interfaces:37, http:236, mappers:19, score:788.0, note:"商品检索、召回排序与筛选。"},
+      {code:"D09", id:"review", zh:"评价", tier:"支撑域", root:"modules", owner:"team-c", path:"src/main/java/com/example/orbit/modules/review", shortPath:"modules/review", files:148, loc:7523, methods:1423, interfaces:43, http:127, mappers:24, score:560.0, note:"评价、晒单、问答与内容审核。"},
+      {code:"D10", id:"messaging", zh:"消息通知", tier:"支撑域", root:"modules", owner:"team-d", path:"src/main/java/com/example/orbit/modules/messaging", shortPath:"modules/messaging", files:192, loc:11777, methods:1552, interfaces:57, http:210, mappers:41, score:724.0, note:"站内信、短信、Push 与模板。"},
+      {code:"D11", id:"content", zh:"内容", tier:"支撑域", root:"modules", owner:"team-e", path:"src/main/java/com/example/orbit/modules/content", shortPath:"modules/content", files:212, loc:12242, methods:1513, interfaces:60, http:199, mappers:44, score:706.0, note:"文章、专题、素材与富文本。"},
+      {code:"D12", id:"membership", zh:"会员", tier:"支撑域", root:"modules", owner:"team-c", path:"src/main/java/com/example/orbit/modules/membership", shortPath:"modules/membership", files:189, loc:10123, methods:1361, interfaces:51, http:144, mappers:32, score:648.0, note:"会员等级、积分、成长值与权益。"},
+      {code:"D13", id:"aftersale", zh:"售后工单", tier:"支撑域", root:"modules", owner:"team-d", path:"src/main/java/com/example/orbit/modules/aftersale", shortPath:"modules/aftersale", files:120, loc:6900, methods:980, interfaces:34, http:96, mappers:22, score:470.0, note:"退换货、工单流转与客服协同。"},
+      {code:"D14", id:"analytics", zh:"数据分析", tier:"支撑域", root:"modules", owner:"team-c", path:"src/main/java/com/example/orbit/modules/analytics", shortPath:"modules/analytics", files:68, loc:3824, methods:672, interfaces:18, http:39, mappers:9, score:300.0, note:"看板、指标聚合与经营报表。"},
+      {code:"D15", id:"media", zh:"媒体资源", tier:"支撑域", root:"modules", owner:"team-c", path:"src/main/java/com/example/orbit/modules/media", shortPath:"modules/media", files:53, loc:1787, methods:231, interfaces:18, http:21, mappers:8, score:130.0, note:"图片、视频转码与 CDN 轻集成。"},
+      {code:"D16", id:"regional", zh:"地区差异", tier:"地域域", root:"regional", owner:"全员涉及", path:"src/main/java/com/example/orbit/regional", shortPath:"regional", files:189, loc:20596, methods:3356, interfaces:34, http:0, mappers:24, score:1320.0, note:"纯地区差异由涉及该业务的后端在对应任务中带入。"},
+      {code:"D17", id:"platform", zh:"平台能力", tier:"架构域", root:"platform", owner:"全员涉及", path:"src/main/java/com/example/orbit/platform", shortPath:"platform", files:218, loc:13066, methods:2184, interfaces:105, http:0, mappers:62, score:1040.0, note:"Web、持久化、消息、系统、平台集成；上级汇总。"},
+      {code:"D18", id:"platform.integration.support", zh:"集成支撑", tier:"集成域", root:"platform", owner:"全员涉及", path:"src/main/java/com/example/orbit/platform/integration/support", shortPath:"platform/integration/support", files:136, loc:10016, methods:1705, interfaces:70, http:0, mappers:54, score:820.0, note:"外部平台、防腐层、remote facade；属于 D17 子集。"},
+      {code:"D19", id:"common", zh:"公共基础", tier:"架构域", root:"common", owner:"全员涉及", path:"src/main/java/com/example/orbit/common", shortPath:"common", files:72, loc:3514, methods:639, interfaces:7, http:0, mappers:2, score:300.0, note:"常量、枚举、响应、工具、公共服务。"},
+      {code:"D20", id:"common.generic", zh:"通用能力", tier:"通用域", root:"common", owner:"全员涉及", path:"src/main/java/com/example/orbit/common/generic", shortPath:"common/generic", files:15, loc:539, methods:91, interfaces:6, http:0, mappers:0, score:52.0, note:"通知、工作流、变更留痕、配置；属于 D19 子集。"},
+      {code:"D21", id:"kernel", zh:"最小内核", tier:"架构域", root:"kernel", owner:"全员约束", path:"src/main/java/com/example/orbit/kernel", shortPath:"kernel", files:10, loc:245, methods:48, interfaces:2, http:0, mappers:0, score:20.0, note:"领域治理与边界规则。"}
+    ];
+
+    const laneMeta = [
+      {root:"kernel", title:"kernel", zh:"最小内核", desc:"领域治理和边界规则"},
+      {root:"modules", title:"modules", zh:"业务领域", desc:"核心域优先，其他业务域按有效代码量排序"},
+      {root:"common", title:"common", zh:"公共基础", desc:"跨业务复用能力，不承载业务事实"},
+      {root:"platform", title:"platform", zh:"平台能力", desc:"Web、集成、防腐、持久化等平台层"},
+      {root:"regional", title:"regional", zh:"地区差异", desc:"所有涉及地区差异的业务任务共同维护"}
+    ];
+
+    const columns = [
+      {key:"code", label:"编码", type:"text"},
+      {key:"zh", label:"中文名", type:"text"},
+      {key:"id", label:"标识", type:"text"},
+      {key:"tier", label:"层级", type:"text"},
+      {key:"owner", label:"归属", type:"text"},
+      {key:"path", label:"主文件夹", type:"text"},
+      {key:"files", label:"有效文件", type:"number"},
+      {key:"loc", label:"有效 LOC", type:"number"},
+      {key:"methods", label:"方法", type:"number"},
+      {key:"interfaces", label:"接口", type:"number"},
+      {key:"http", label:"HTTP", type:"number"},
+      {key:"mappers", label:"Mapper", type:"number"},
+      {key:"score", label:"工作量分", type:"number"},
+      {key:"note", label:"备注", type:"text"}
+    ];
+
+    /* ============================================================
+       渲染逻辑 —— 通常不用改。
+       ============================================================ */
+    const fmt = (n) => new Intl.NumberFormat("zh-CN").format(n);
+    const toneFor = (d) => {
+      if (d.tier === "核心域") return palette.core;
+      if (d.tier === "通用域") return palette.generic;
+      if (d.tier === "集成域") return palette.integration;
+      if (d.tier === "地域域") return palette.regional;
+      if (d.tier === "架构域") return palette.architecture;
+      return palette.support;
+    };
+    const maxScore = Math.max(...domains.map((d) => d.score));
+    let sortState = { key: "code", dir: "asc" };
+
+    function sortDomains(list, key = "code", dir = "asc") {
+      const col = columns.find((item) => item.key === key) || {type:"text"};
+      return [...list].sort((a, b) => {
+        const av = a[key];
+        const bv = b[key];
+        const result = col.type === "number"
+          ? Number(av) - Number(bv)
+          : String(av).localeCompare(String(bv), "zh-Hans-CN", { numeric: true });
+        return dir === "asc" ? result : -result;
+      });
+    }
+
+    function renderMetrics() {
+      const business = domains.filter((d) => d.root === "modules");
+      const allEffFiles = domains.reduce((sum, d) => sum + d.files, 0);
+      const businessLoc = business.reduce((sum, d) => sum + d.loc, 0);
+      const allMethods = domains.reduce((sum, d) => sum + d.methods, 0);
+      const shared = domains.filter((d) => d.owner.includes("全员")).length;
+      const metrics = [
+        ["领域编码", `${domains.length}`, "D01-D21"],
+        ["业务领域", `${business.length}`, "modules"],
+        ["全员涉及域", `${shared}`, "common / platform / regional"],
+        ["业务有效 LOC", fmt(businessLoc), "排除实体与 Example"],
+        ["全量有效文件", fmt(allEffFiles), "含架构域"],
+        ["全量方法数", fmt(allMethods), "静态扫描"]
+      ];
+      document.getElementById("metrics").innerHTML = metrics.map(([label, value, sub]) => `
+        <div class="metric"><span>${label}</span><b>${value}</b><span>${sub}</span></div>
+      `).join("");
+    }
+
+    function domainCard(d) {
+      const width = Math.max(6, Math.round((d.score / maxScore) * 100));
+      return `
+        <article class="domain-card" style="--tone:${toneFor(d)};--w:${width}%">
+          <div class="domain-top">
+            <span class="code">${d.code}</span>
+            <span class="owner">${d.owner}</span>
+          </div>
+          <h4>${d.zh}</h4>
+          <div class="en">${d.id} · ${d.tier}</div>
+          <div class="path">${d.shortPath}</div>
+          <div class="bar"><i></i></div>
+          <div class="brief"><span>${fmt(d.files)} 文件</span><span>${fmt(d.loc)} LOC</span></div>
+        </article>
+      `;
+    }
+
+    function renderWorkloadShare() {
+      const total = domains.reduce((sum, d) => sum + d.score, 0);
+      const ranked = sortDomains(domains, "score", "desc");
+      document.getElementById("shareBar").innerHTML = ranked.map((d) => {
+        const pct = d.score / total * 100;
+        return `
+          <div class="share-segment" style="--tone:${toneFor(d)};width:${pct}%" title="${d.code} ${d.zh} ${pct.toFixed(1)}%">
+            ${pct >= 3.2 ? `${d.code}<br>${pct.toFixed(1)}%` : ""}
+          </div>
+        `;
+      }).join("");
+      document.getElementById("shareLegend").innerHTML = ranked.map((d) => {
+        const pct = d.score / total * 100;
+        return `
+          <div class="share-chip" style="--tone:${toneFor(d)}" title="${d.code} ${d.zh} ${pct.toFixed(1)}%">
+            <i></i><b>${d.code} ${d.zh}</b><span>${pct.toFixed(1)}%</span>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderLanes() {
+      document.getElementById("lanes").innerHTML = laneMeta.map((lane) => {
+        const items = sortDomains(domains.filter((d) => d.root === lane.root), "code", "asc");
+        return `
+          <section class="lane ${lane.root}">
+            <div class="lane-head">
+              <h3>${lane.title} · ${lane.zh}</h3>
+              <p>${lane.desc}</p>
+            </div>
+            <div class="lane-body">${items.map(domainCard).join("")}</div>
+          </section>
+        `;
+      }).join("");
+    }
+
+    function polar(cx, cy, r, angle) {
+      return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)];
+    }
+
+    function arcPath(cx, cy, inner, outer, start, end) {
+      const large = end - start > Math.PI ? 1 : 0;
+      const [x1, y1] = polar(cx, cy, outer, start);
+      const [x2, y2] = polar(cx, cy, outer, end);
+      const [x3, y3] = polar(cx, cy, inner, end);
+      const [x4, y4] = polar(cx, cy, inner, start);
+      return `M ${x1} ${y1} A ${outer} ${outer} 0 ${large} 1 ${x2} ${y2} L ${x3} ${y3} A ${inner} ${inner} 0 ${large} 0 ${x4} ${y4} Z`;
+    }
+
+    function selectDomain(d) {
+      document.getElementById("selectedDomain").innerHTML = `
+        <b>${d.code}</b>
+        <div>
+          <strong>${d.zh} · ${d.id} · ${d.owner}</strong>
+          <span>${d.note}</span>
+          <span>${d.path}</span>
+        </div>
+      `;
+    }
+
+    function renderRadial() {
+      const svg = document.getElementById("radial");
+      const cx = 450;
+      const cy = 350;
+      const gap = 0.018;
+      const step = (Math.PI * 2) / domains.length;
+      const inner = 116;
+      const baseOuter = 178;
+      const growth = 130;
+      const sorted = sortDomains(domains, "code", "asc");
+      const rings = sorted.map((d, index) => {
+        const start = -Math.PI / 2 + index * step + gap;
+        const end = -Math.PI / 2 + (index + 1) * step - gap;
+        const outer = baseOuter + (d.score / maxScore) * growth;
+        const mid = start + step / 2;
+        const [lx, ly] = polar(cx, cy, 338, mid);
+        const [lineStartX, lineStartY] = polar(cx, cy, outer + 8, mid);
+        const [lineEndX, lineEndY] = polar(cx, cy, 318, mid);
+        const anchor = Math.cos(mid) > .18 ? "start" : Math.cos(mid) < -.18 ? "end" : "middle";
+        return `
+          <path d="${arcPath(cx, cy, inner, outer, start, end)}" fill="${toneFor(d)}" opacity=".9" data-code="${d.code}"></path>
+          <line x1="${lineStartX}" y1="${lineStartY}" x2="${lineEndX}" y2="${lineEndY}" stroke="${toneFor(d)}" stroke-width="1.4"></line>
+          <text x="${lx}" y="${ly}" text-anchor="${anchor}" font-size="12" fill="#1d2324">${d.code} ${d.zh}</text>
+        `;
+      }).join("");
+      svg.innerHTML = `
+        <circle cx="${cx}" cy="${cy}" r="104" fill="#fff" stroke="rgba(17,19,20,.16)"></circle>
+        <text x="${cx}" y="${cy - 10}" text-anchor="middle" font-size="22" font-family="var(--display)" fill="#111314">ORBIT</text>
+        <text x="${cx}" y="${cy + 18}" text-anchor="middle" font-size="12" fill="#6d7470">全领域工作量</text>
+        ${rings}
+      `;
+      [...svg.querySelectorAll("path[data-code]")].forEach((node) => {
+        const d = domains.find((item) => item.code === node.dataset.code);
+        node.addEventListener("mouseenter", () => selectDomain(d));
+        node.addEventListener("click", () => selectDomain(d));
+      });
+      selectDomain(domains.find((d) => d.code === "D01"));
+    }
+
+    function renderOwners() {
+      const ownedDomains = domains.filter((d) => /^team-[a-f]$/.test(d.owner));
+      const owners = [...new Set(ownedDomains.map((d) => d.owner))].sort();
+      const groups = owners.map((owner) => {
+        const items = sortDomains(ownedDomains.filter((d) => d.owner === owner), "score", "desc");
+        return { owner, items, score: items.reduce((sum, d) => sum + d.score, 0) };
+      }).sort((a, b) => b.score - a.score);
+      const maxOwner = Math.max(...groups.map((g) => g.score));
+      document.getElementById("ownerBoard").innerHTML = groups.map((g) => `
+        <div class="owner-row">
+          <div class="owner-name">${g.owner}</div>
+          <div class="owner-track" style="width:${Math.max(26, (g.score / maxOwner) * 100)}%">
+            ${g.items.map((d) => `
+              <div class="owner-piece" title="${d.code} ${d.zh} ${fmt(d.score)}" style="--tone:${toneFor(d)};flex:${Math.max(20, d.score)}">${d.code}</div>
+            `).join("")}
+          </div>
+          <div class="owner-score">${fmt(Math.round(g.score))}</div>
+        </div>
+      `).join("");
+    }
+
+    function renderFolderMap() {
+      document.getElementById("folderMap").innerHTML = laneMeta.map((lane) => {
+        const items = sortDomains(domains.filter((d) => d.root === lane.root), "code", "asc");
+        return `
+          <article class="folder">
+            <h3>${lane.title}</h3>
+            <p>${lane.desc}</p>
+            <ul>${items.map((d) => `<li><b>${d.code}</b><span>${d.zh}：${d.shortPath}</span></li>`).join("")}</ul>
+          </article>
+        `;
+      }).join("");
+    }
+
+    function renderDetailHead() {
+      document.getElementById("detailHead").innerHTML = columns.map((col) => {
+        const mark = sortState.key === col.key ? (sortState.dir === "asc" ? "↑" : "↓") : "";
+        return `<th class="${col.type === "number" ? "num" : ""}"><button data-key="${col.key}" data-sort-mark="${mark}">${col.label}</button></th>`;
+      }).join("");
+      document.querySelectorAll("#detailHead button").forEach((button) => {
+        button.addEventListener("click", () => {
+          const key = button.dataset.key;
+          sortState = {
+            key,
+            dir: sortState.key === key && sortState.dir === "asc" ? "desc" : "asc"
+          };
+          renderDetailHead();
+          renderDetailRows();
+        });
+      });
+    }
+
+    function renderDetailRows() {
+      document.getElementById("detailRows").innerHTML = sortDomains(domains, sortState.key, sortState.dir)
+        .map((d) => `
+          <tr>
+            <td class="code-cell">${d.code}</td>
+            <td><strong>${d.zh}</strong></td>
+            <td title="${d.id}"><code>${d.id}</code></td>
+            <td><span class="tag">${d.tier}</span></td>
+            <td><span class="tag">${d.owner}</span></td>
+            <td class="path-cell" title="${d.path}">${d.shortPath}</td>
+            <td class="num">${fmt(d.files)}</td>
+            <td class="num">${fmt(d.loc)}</td>
+            <td class="num">${fmt(d.methods)}</td>
+            <td class="num">${fmt(d.interfaces)}</td>
+            <td class="num">${fmt(d.http)}</td>
+            <td class="num">${fmt(d.mappers)}</td>
+            <td class="num">${fmt(d.score)}</td>
+            <td>${d.note}</td>
+          </tr>
+        `).join("");
+    }
+
+    function bindNavState() {
+      const navItems = [...document.querySelectorAll(".nav a")];
+      const sections = navItems
+        .map((item) => document.querySelector(item.getAttribute("href")))
+        .filter(Boolean);
+
+      const setActive = (id) => {
+        navItems.forEach((item) => {
+          const active = item.getAttribute("href") === `#${id}`;
+          item.classList.toggle("is-active", active);
+          if (active) item.scrollIntoView({ inline: "nearest", block: "nearest" });
+        });
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActive(visible.target.id);
+      }, { rootMargin: "-18% 0px -64% 0px", threshold: [0.1, 0.35, 0.6] });
+
+      sections.forEach((section) => observer.observe(section));
+      navItems.forEach((item) => {
+        item.addEventListener("click", () => setActive(item.getAttribute("href").slice(1)));
+      });
+    }
+
+    renderMetrics();
+    renderLanes();
+    renderWorkloadShare();
+    renderRadial();
+    renderOwners();
+    renderFolderMap();
+    renderDetailHead();
+    renderDetailRows();
+    bindNavState();
+  </script>
+</body>
+</html>
