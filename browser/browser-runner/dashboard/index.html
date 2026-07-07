@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>browser·runner · 流程看板</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <!-- 海报角标注记 -->
+  <span class="cmark cmark--tl"></span><span class="cmark cmark--tr"></span>
+  <span class="cmark cmark--bl"></span><span class="cmark cmark--br"></span>
+
+  <!-- ── 海报头 ── -->
+  <header class="head wrap">
+    <svg class="sticker st-burst" viewBox="0 0 100 100" aria-hidden="true"><path d="M50 2l9 20 21-9-9 21 20 9-20 9 9 21-21-9-9 20-9-20-21 9 9-21-20-9 20-9-9-21 21 9z" fill="#c7f03a" stroke="#141414" stroke-width="3" stroke-linejoin="round"/></svg>
+    <svg class="sticker st-arrow" viewBox="0 0 80 60" aria-hidden="true"><path d="M6 40 C 26 6, 52 6, 70 26" fill="none" stroke="#ff4d4d" stroke-width="6" stroke-linecap="round"/><path d="M56 20l16 6-8 15z" fill="#ff4d4d" stroke="#141414" stroke-width="2.5" stroke-linejoin="round"/></svg>
+    <svg class="sticker st-squig" viewBox="0 0 120 30" aria-hidden="true"><path d="M4 15 Q 19 -3, 34 15 T 64 15 T 94 15 T 116 15" fill="none" stroke="#7b3ff2" stroke-width="6" stroke-linecap="round"/></svg>
+
+    <div class="tagrow" data-reveal style="--i:0">
+      <span class="numtag">01</span>
+      <span class="kick">Browser Automation · Console</span>
+    </div>
+    <h1 class="wordmark" data-reveal style="--i:1">browser<span class="dot">·</span>runner</h1>
+    <p class="lede" data-reveal style="--i:2">把重复的浏览器操作，attach 你真实已登录的浏览器，沉淀成秒级可复放的脚本。</p>
+
+    <div class="chips" role="status" aria-live="polite">
+      <div class="chip chip--flows" data-reveal style="--i:3">
+        <span class="chip__v mono" data-flowcount>–</span>
+        <span class="chip__k">流程</span>
+      </div>
+      <div class="chip chip--port" data-reveal style="--i:4" title="调试浏览器 · browser-runner 专属 profile">
+        <span class="chip__v mono" data-port>–</span>
+        <span class="chip__k">调试端口</span>
+      </div>
+      <div class="chip chip--conn" data-reveal style="--i:5">
+        <span class="chip__dot" aria-hidden="true"></span>
+        <span class="chip__k" data-conn>未连接</span>
+      </div>
+      <button type="button" class="btn btn--launch" data-launch-chrome hidden data-reveal style="--i:6">
+        <span class="btn__spin" aria-hidden="true"></span>
+        <svg class="btn__play" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 2l9 5-9 5z" fill="#ffffff" stroke="#ffffff" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        <span class="btn__label" data-launch-label>起调试 Chrome</span>
+      </button>
+    </div>
+  </header>
+
+  <div id="secrets-bar" class="secrets-bar" role="alert" hidden>
+    <span class="secrets-bar__icon" aria-hidden="true">!</span>
+    <span class="secrets-bar__text">
+      缺配置：<b data-missing></b> —— 在 <code>~/.browser-runner/secrets.toml</code> 补上后重跑对应流程。
+    </span>
+  </div>
+
+  <main id="main" class="main" aria-busy="true">
+    <div class="loading" data-boot>加载流程清单…</div>
+  </main>
+
+  <footer class="foot wrap" data-reveal>
+    <span class="footcode">一个流程一个目录 · 加流程不改内核 · 写操作停在提交前</span>
+  </footer>
+
+  <!-- ── 模板：JS 只 clone + 填数据，杜绝字符串拼 HTML ── -->
+
+  <template id="tmpl-group">
+    <section class="group">
+      <h2 class="group__label"><span data-group></span><span class="group__count" data-count></span></h2>
+      <div class="group__grid" data-grid></div>
+    </section>
+  </template>
+
+  <template id="tmpl-card">
+    <article class="card" data-flow>
+      <button type="button" class="card__head" data-role="toggle" aria-expanded="false">
+        <span class="card__icon" data-icon aria-hidden="true"></span>
+        <span class="card__meta">
+          <span class="card__title-row">
+            <span class="card__title" data-title></span>
+            <span class="card__badges" data-badges></span>
+          </span>
+          <span class="card__desc" data-desc></span>
+        </span>
+        <span class="card__chev" aria-hidden="true"></span>
+      </button>
+      <div class="card__body" data-body hidden>
+        <form class="form" data-form novalidate>
+          <div class="form__fields" data-fields></div>
+          <label class="dryrun">
+            <input type="checkbox" class="input input--check" data-dryrun />
+            <span class="dryrun__text">Dry-run<span class="dryrun__note">只连接 + 定位，不执行动作</span></span>
+          </label>
+          <div class="form__actions">
+            <button type="submit" class="btn btn--run" data-run>
+              <span class="btn__spin" aria-hidden="true"></span>
+              <span class="btn__label">运行</span>
+            </button>
+            <span class="run-hint" data-runhint></span>
+          </div>
+        </form>
+        <section class="output" data-output hidden>
+          <div class="output__head">
+            <span class="output__title">运行输出</span>
+            <span class="output__status" data-status></span>
+          </div>
+          <pre class="output__log" data-log tabindex="0"></pre>
+          <div class="result" data-result hidden></div>
+        </section>
+      </div>
+    </article>
+  </template>
+
+  <template id="tmpl-field">
+    <label class="field">
+      <span class="flabel">
+        <span data-label></span>
+        <span class="freq" data-req hidden>必填</span>
+      </span>
+      <span class="field__control" data-control></span>
+    </label>
+  </template>
+
+  <template id="tmpl-empty">
+    <div class="empty">
+      <div class="empty__mark" aria-hidden="true"></div>
+      <h2 class="empty__title">还没有流程</h2>
+      <p class="empty__desc">复制模板开一个 —— registry 自动收录、看板自动渲染、CLI 自动可跑，内核一行不动。</p>
+      <code class="empty__cmd">cp -r flows/_template flows/&lt;你的流程名&gt;</code>
+      <p class="empty__hint">或放私有目录 <code>~/.browser-runner/flows/&lt;名&gt;</code></p>
+    </div>
+  </template>
+
+  <script type="module" src="/assets/app.js"></script>
+</body>
+</html>

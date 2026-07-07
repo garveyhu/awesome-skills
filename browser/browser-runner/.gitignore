@@ -1,0 +1,13 @@
+# browser-runner 自带忽略 —— 跟着 skill 走（git 原生认嵌套 .gitignore）。
+# skillctl 只维护根 links/.gitignore，不碰这份。
+# 根 .gitignore 已全局挡 .DS_Store / __pycache__ / accounts.json / *.local.json|yaml / .env，
+# 这里只补本 skill 特有的：运行时产物、私有流程、本地配置。
+# 真正的配置和密钥都在 ~/.browser-runner/（skill 目录外），本来就不会进 git；
+# 下面再多挡一道，防止有人手滑把真 config.toml / secrets.toml 放进 skill 目录。
+
+runs/
+flows/_private/
+*.local.toml
+.runtime/
+**/secrets.toml
+**/config.toml

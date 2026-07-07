@@ -1,0 +1,15 @@
+# browser-runner 运行配置模板。
+# 用法：复制到 ~/.browser-runner/config.toml，按需改。全部可选，不填就走内置默认。
+# 也可以用环境变量 BROWSER_RUNNER_<大写键名> 临时覆盖任意一项。
+
+# 调试 Chrome 的端口（默认 9876，特意选个不常用的，避开常见的 9222，免得和别的调试浏览器撞）
+# debug_port = 9876
+
+# Chrome 可执行文件路径（换机 / 换系统时改）
+# chrome_path = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
+# 调试 Chrome 的专属登录 profile 目录（和你日常用的 Chrome 隔离开）
+# profile_dir = "~/.browser-runner/profiles/default"
+
+# 你自己写的流程放哪（看板和 CLI 除了扫 skill 内置流程，也扫这里）
+# private_flows_dir = "~/.browser-runner/flows"

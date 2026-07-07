@@ -1,0 +1,25 @@
+# 新流程模板 —— `cp -r flows/_template flows/<你的流程名>` 后改这里。
+# registry 自动扫到、看板自动渲染、CLI 自动列出，无需改内核。
+
+[flow]
+name        = "my-flow"                    # 唯一名（= CLI/看板里的 id）
+title       = "流程标题"                    # 看板卡片标题
+description = "一句话说明这个流程干嘛"        # 卡片副标题
+icon        = "form"                        # 卡片图标：命名 SVG（见 dashboard/assets/icons.js），不要用 emoji
+                                            # 可选名：search form rocket publish pulse globe download upload
+                                            #        link grid eye layers tag gear bolt camera（查不到自动回落通用图标）
+group       = "未分组"                      # 看板分组（如 采集 / 发布 / 运营）
+write_ops   = false                         # true=有写操作(发布/删/付款) → 看板标红 + 需确认 + CLI 需 --yes
+landing_url = ""                            # 起始页（run 时先导航到这·空则空白页）
+
+# 参数（看板据此自动生成表单；type: string|int|float|bool）
+[[params]]
+key = "example"
+label = "示例参数"
+type = "string"
+required = false
+default = ""
+
+# 要用的密钥（对着 ~/.browser-runner/secrets.toml 里的段名写；缺了 doctor 和看板会提示）。用不到就删这段。
+# [secrets]
+# needs = ["llm.deepseek"]
