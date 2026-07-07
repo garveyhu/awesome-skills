@@ -29,7 +29,9 @@ import workflows as wf_mod
 
 OUT_DIR = os.environ.get("COMFYUI_OUTPUT", os.path.join(os.getcwd(), "comfy_outputs"))
 # ComfyUI 安装根目录（用于把产物归到它 output/projects/<项目>/ 下，便于汇总查看）
-COMFY_HOME = os.environ.get("COMFYUI_HOME", "/Users/links/Coding/Hub/ComfyUI")
+COMFY_HOME = os.environ.get(
+    "COMFYUI_HOME", os.path.join(os.path.expanduser("~"), "Coding", "Hub", "ComfyUI")
+)
 # scripts/ 根目录(本文件在 scripts/cli/ 下,上跳一层)
 _SCRIPTS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # t2i 在多架构都可用时的优先级（质量/速度权衡）

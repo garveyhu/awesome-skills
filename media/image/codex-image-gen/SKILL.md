@@ -73,5 +73,5 @@ bash ~/.claude/skills/codex-image-gen/scripts/gen-batch.sh \
 
 ## 和其它 skill 配合
 
-- **docsify-station-creator / wiki-creator**:生成的图存进文档 `assets/`,需要公网 URL 时按 `~/.claude/rules/cdn-publish.md` 推到 `cdn.archeruuu.com`,markdown 里引用——站点运行时仍只引自托管资源。
+- **docsify-station-creator / wiki-creator**:生成的图存进文档 `assets/`,需要公网 URL 时按你自己的 CDN 规约推到公网 CDN,markdown 里引用——站点运行时仍只引自托管资源。
 - **要带固定 IP 角色出图**:把角色设定写进 prompt + 用 `--ref` 喂角色参考图;后续若要做成专门的「IP 配图 skill」,可在本 skill 之上加一层风格/IP 参考(参考 ian-xiaohei 的 references 结构)。

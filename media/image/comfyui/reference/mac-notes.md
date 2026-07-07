@@ -17,7 +17,7 @@
 
 ## 启停（项目自带脚本）
 
-ComfyUI 根目录 `/Users/links/Coding/Hub/ComfyUI`：
+ComfyUI 根目录（`$COMFYUI_HOME`，示例 `~/Coding/Hub/ComfyUI`）：
 
 ```bash
 ./run.sh            # 后台启动，监听 127.0.0.1:8188，日志 comfyui.log，pid 存 .comfyui.pid
@@ -26,15 +26,15 @@ ComfyUI 根目录 `/Users/links/Coding/Hub/ComfyUI`：
 tail -f comfyui.log # 看实时日志（排查报错最有用）
 ```
 
-它用项目内独立 `.venv`，不污染全局 Python。脚本调用建议用同一个解释器：`/Users/links/Coding/Hub/ComfyUI/.venv/bin/python`。
+它用项目内独立 `.venv`，不污染全局 Python。脚本调用建议用同一个解释器：`$COMFYUI_HOME/.venv/bin/python`（示例 `~/Coding/Hub/ComfyUI/.venv/bin/python`）。
 
 ## 跑本 skill 脚本
 
 脚本零三方依赖（纯标准库），任意 python3 都行。固定用法：
 
 ```bash
-cd /Users/links/Coding/Hub/ComfyUI            # 任意目录都行，这里只是习惯
-.venv/bin/python /Users/links/Coding/Hub/ComfyUI/skills/comfyui/scripts/comfy.py discover
+cd "$COMFYUI_HOME"            # 任意目录都行，这里只是习惯（$COMFYUI_HOME 示例 ~/Coding/Hub/ComfyUI）
+.venv/bin/python "$COMFYUI_HOME/skills/comfyui/scripts/comfy.py" discover
 ```
 
 环境变量：

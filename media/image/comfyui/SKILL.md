@@ -60,7 +60,7 @@ description: >-
 
 ComfyUI 必须在运行。脚本默认连 `http://127.0.0.1:8188`（可用环境变量 `COMFYUI_HOST` 改）。
 
-- 启动：ComfyUI 根目录 `./run.sh`（项目：`/Users/links/Coding/Hub/ComfyUI`）
+- 启动：ComfyUI 根目录 `./run.sh`（项目根 `$COMFYUI_HOME`，示例 `~/Coding/Hub/ComfyUI`）
 - 停止：`./stop.sh`
 - 先确认活着：`python scripts/comfy.py discover` 连不上会直接提示去 run.sh
 
@@ -104,7 +104,7 @@ python scripts/comfy.py discover
 - 想先看工作流不执行：加 `--dry-run`。
 - 写提示词前看 `reference/prompt-engineering.md`——不同架构写法差异很大（FLUX/Z-Image 低 cfg、自然语言、别堆质量词；视频要动作优先）。
 - 产物默认下载到 `./comfy_outputs`（或 `COMFYUI_OUTPUT` 指定目录），同时 ComfyUI 自己也会存到它的 `output/`。
-- **按项目归档**:在项目里生成始终带 `--project <名>`(或 `COMFY_PROJECT`),产物落 `output/projects/<名>/`;`init` 已把它反向软链到项目仓 `assets/`,出图直接进仓随 git(手动建链见 art-pipeline.md)。ComfyUI 根目录默认 `/Users/links/Coding/Hub/ComfyUI`,可 `COMFYUI_HOME` 改。
+- **按项目归档**:在项目里生成始终带 `--project <名>`(或 `COMFY_PROJECT`),产物落 `output/projects/<名>/`;`init` 已把它反向软链到项目仓 `assets/`,出图直接进仓随 git(手动建链见 art-pipeline.md)。ComfyUI 根目录默认 `~/Coding/Hub/ComfyUI`,可 `COMFYUI_HOME` 改。
 - **通用工作流 vs 项目专用工作流(两层):**
   - **通用**(t2i/i2i/i2v/抠图等任何项目都用)→ 进 skill `workflows/<媒体>/` + `catalog.json`,CLI 命令直接调,所有项目共享。
   - **项目专用**(只有本项目要的固定构图/角色三视图等)→ 存项目仓 `<repo>/comfy-workflows/`,反向软链 `ln -sfn <repo>/comfy-workflows <ComfyUI>/user/default/workflows/projects/<项目>`,用 `comfy.py raw <wf>.json --var k=v --project <项目> --prefix <类>/<名>` 跑。

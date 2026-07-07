@@ -89,7 +89,7 @@ python3 "$SK" say --text-file script.txt --out narration.wav
 
 ## 兜底：高质量 PyTorch 路线
 
-需要更高保真、或 MLX 版异常时，可退回原版 VoxCPM2（PyTorch）在 `$VOXCPM_HOME`（默认 `/Users/links/Coding/Hub/VoxCPM`，模型在其 `pretrained_models/VoxCPM2`，4.6GB）。**但慢得多**（MPS RTF ≈ 11，降噪器还卡 CPU），仅作高质量兜底，不做日常批量。
+需要更高保真、或 MLX 版异常时，可退回原版 VoxCPM2（PyTorch）在 `$VOXCPM_HOME`（默认 `~/Coding/Hub/VoxCPM`，模型在其 `pretrained_models/VoxCPM2`，4.6GB）。**但慢得多**（MPS RTF ≈ 11，降噪器还卡 CPU），仅作高质量兜底，不做日常批量。
 
 ## 排错
 
