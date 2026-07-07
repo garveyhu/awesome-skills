@@ -58,12 +58,6 @@ These aren't generic "do-anything assistants." Each skill takes a stance: my tec
 |---|---|
 | **voxcpm** | Local text-to-speech / voiceover (VoxCPM2 on Apple MLX) — zero-shot, voice design from a text prompt, and voice cloning; offline, 48kHz, faster-than-realtime on Apple Silicon |
 
-## Browser & automation
-
-| skill | what it does |
-|---|---|
-| **browser-runner** | Sediment repeated browser workflows into deterministic, replayable Playwright-over-CDP scripts that attach to your real, already-logged-in Chrome (login state & fingerprint intact — lowest ban risk); one dir per flow (`flow.toml` meta + `flow.py`), so adding a flow never touches the core, plus a lightweight metadata-driven local dashboard to trigger flows with auto-generated param forms & live output |
-
 ## Methodology
 
 | skill | what it does |
