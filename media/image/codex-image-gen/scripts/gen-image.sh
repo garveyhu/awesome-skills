@@ -39,6 +39,19 @@ case "$DIR" in /*) ;; *) DIR="$PWD/$DIR";; esac
 mkdir -p "$DIR"
 
 CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
+
+# 并发安全:默认为本次调用建隔离的 CODEX_HOME —— 复制登录态/配置(不回写真实 ~/.codex),
+# generated_images 独立,让多个并发 codex 各写各的目录 → 从根上杜绝串图。
+# CODEX_IMG_NO_ISOLATE=1 关闭(单进程调试/复用真实 home 时用)。
+ISO_HOME=""
+if [ -z "${CODEX_IMG_NO_ISOLATE:-}" ]; then
+  ISO_HOME="$(mktemp -d)"
+  for f in auth.json config.toml; do
+    [ -e "$CODEX_HOME/$f" ] && cp "$CODEX_HOME/$f" "$ISO_HOME/$f" 2>/dev/null
+  done
+  CODEX_HOME="$ISO_HOME"
+fi
+export CODEX_HOME
 GEN_DIR="$CODEX_HOME/generated_images"
 
 # 选 codex:优先全局,退回 npx
@@ -62,24 +75,37 @@ fi
 INSTR="${INSTR}
 Do not edit any other files. Once ${OUT} is saved, stop."
 
-# 出图前打时间标记,供兜底定位新产物
-MARK="$(mktemp)"; trap 'rm -f "$MARK"' EXIT
+# 出图前打时间标记 + 捕获 codex 输出(解析 session id → 按 session 隔离取图,并发安全)
+MARK="$(mktemp)"; CODEX_LOG="$(mktemp)"
+trap 'rm -f "$MARK" "$CODEX_LOG"; [ -n "${ISO_HOME:-}" ] && rm -rf "$ISO_HOME"' EXIT
 
 echo "[codex-image-gen] 出图中 → $OUT" >&2
 "${CODEX[@]}" exec -C "$DIR" -s workspace-write --skip-git-repo-check \
-  -c model_reasoning_effort="low" "$INSTR" >&2 \
+  -c model_reasoning_effort="low" "$INSTR" 2>&1 | tee "$CODEX_LOG" >&2 \
   || echo "[codex-image-gen] codex exec 退出码非零,尝试兜底" >&2
 
-# agent 没把图拷到 --out 时,从 generated_images 找最新产物补上
-if [ ! -f "$OUT" ] && [ -d "$GEN_DIR" ]; then
-  newest="$(find "$GEN_DIR" -type f -name '*.png' -newer "$MARK" -exec stat -f '%m %N' {} \; 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)"
-  [ -n "${newest:-}" ] && cp "$newest" "$OUT"
+# 本次 codex 的 session id → 它把图落在 GEN_DIR/<session>/(新版行为)
+SID="$(grep -oE 'session id: [0-9a-fA-F-]+' "$CODEX_LOG" | head -1 | awk '{print $NF}')"
+
+# 取图:优先本 session 自己的目录(并发下各取各的·绝不串图);再全局兜底(单进程够用)。
+# agent 有时直接写到 --out,那样 $OUT 已比 MARK 新,跳过下面;否则从 session 目录搬。
+# 不用 [ ! -f "$OUT" ] 单独做门槛:重生成时旧文件还在会挡掉兜底 → 旧图冒充成功。
+if [ ! -f "$OUT" ] || [ ! "$OUT" -nt "$MARK" ]; then
+  src=""
+  if [ -n "${SID:-}" ] && [ -d "$GEN_DIR/$SID" ]; then
+    src="$(find "$GEN_DIR/$SID" -type f -name '*.png' -newer "$MARK" -exec stat -f '%m %N' {} \; 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)"
+  fi
+  if [ -z "$src" ] && [ -d "$GEN_DIR" ]; then
+    src="$(find "$GEN_DIR" -type f -name '*.png' -newer "$MARK" -exec stat -f '%m %N' {} \; 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)"
+  fi
+  [ -n "${src:-}" ] && cp "$src" "$OUT"
 fi
 
-if [ -f "$OUT" ]; then
+# 诚实校验:$OUT 必须是本次运行的产出(比 MARK 新)。旧文件残留不算成功。
+if [ -f "$OUT" ] && [ "$OUT" -nt "$MARK" ]; then
   echo "[codex-image-gen] 完成: $OUT" >&2
   echo "$OUT"
 else
-  echo "[codex-image-gen] 失败:未生成 $OUT" >&2
+  echo "[codex-image-gen] 失败:未生成新的 $OUT(codex 可能没出图或没落盘)" >&2
   exit 1
 fi
