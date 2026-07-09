@@ -9,6 +9,7 @@ tags:
   aesthetic: [minimal, editorial]
   mood: [calm, warm]
   stack: [react-tailwind]
+preview: /preview/tokens/radius/studio-board/soft-sand-scale
 ---
 
 # 暖砂大软圆角阶

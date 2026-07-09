@@ -9,6 +9,7 @@ tags:
   aesthetic: [editorial, organic]
   mood: [warm, calm]
   stack: [react-tailwind]
+preview: /preview/tokens/texture/studio-board/warm-paper-grain
 ---
 
 # 暖纸颗粒 + 弥散氛围底

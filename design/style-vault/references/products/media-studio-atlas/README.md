@@ -1,7 +1,7 @@
 ---
-id: products/media-studio
+id: products/media-studio-atlas
 type: product
-name: media-studio
+name: Media Studio · 架构讲解站
 description: AI 制片工作台·可视化讲解站「飞轮的内部」—— 一页滚到底讲清「一句灵感→一条成片」，孟菲斯滚动叙事脸
 platforms: [web]
 theme: light
@@ -28,10 +28,10 @@ refs:
     - tokens/typography/pairs/flywheel/han-black-grotesk
     - tokens/shadow/flywheel/hard-offset-stack
     - tokens/motion/flywheel/reveal-pin-scroll
-preview: /preview/products/media-studio
+preview: /preview/products/media-studio-atlas
 ---
 
-# media-studio
+# Media Studio · 架构讲解站
 
 > AI 制片工作台。它的可视化讲解站「飞轮的内部」把一套自媒体制片流水线拆开摊给人看——一页滚到底，讲清「一句灵感如何变成一条四平台成片」。已公开发布。
 

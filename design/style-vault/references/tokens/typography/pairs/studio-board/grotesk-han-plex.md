@@ -9,6 +9,7 @@ tags:
   aesthetic: [editorial, minimal]
   mood: [warm, confident]
   stack: [react-tailwind]
+preview: /preview/tokens/typography/pairs/studio-board/grotesk-han-plex
 ---
 
 # Grotesk × 苹方 × Plex 字体栈

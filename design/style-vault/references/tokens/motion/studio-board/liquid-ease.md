@@ -9,6 +9,7 @@ tags:
   aesthetic: [minimal, editorial]
   mood: [calm, confident]
   stack: [react-tailwind]
+preview: /preview/tokens/motion/studio-board/liquid-ease
 ---
 
 # Liquid easeOut 动效栈

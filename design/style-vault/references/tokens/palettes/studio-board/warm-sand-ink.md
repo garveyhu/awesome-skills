@@ -9,6 +9,7 @@ tags:
   aesthetic: [editorial, minimal]
   mood: [warm, calm]
   stack: [react-tailwind]
+preview: /preview/tokens/palettes/studio-board/warm-sand-ink
 ---
 
 # 暖砂暖墨调色板
