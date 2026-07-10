@@ -57,6 +57,7 @@ These aren't generic "do-anything assistants." Each skill takes a stance: my tec
 | skill | what it does |
 |---|---|
 | **voxcpm** | Local text-to-speech / voiceover (VoxCPM2 on Apple MLX) — zero-shot, voice design from a text prompt, and voice cloning; offline, 48kHz, faster-than-realtime on Apple Silicon |
+| **sound-gen** | Local text-to-music (BGM) + text-to-SFX generation — one prompt to instrumental background music (ACE-Step 1.5, MIT) or short sound effects (Stable Audio Open Small); offline, commercial-use, on Apple Silicon |
 
 ## Methodology
 

@@ -57,6 +57,7 @@
 | skill | 做什么 |
 |---|---|
 | **voxcpm** | 本地文字转语音 / 配音（VoxCPM2 跑在 Apple MLX）——零样本、文字描述造音色、参考音克隆；离线、48kHz、Apple Silicon 上快过实时 |
+| **sound-gen** | 本地文生 BGM（背景音乐）+ 文生音效（SFX）——一句描述出纯器乐底床（ACE-Step 1.5·MIT）或短音效（Stable Audio Open Small）；离线、可商用、Apple Silicon 上跑 |
 
 ## 方法论
 
