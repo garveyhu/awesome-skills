@@ -28,17 +28,30 @@ Agent(subagent_type: "codex:codex-rescue",
       run_in_background: false)
 ```
 
-| 旋钮（写在 prompt 里） | 何时用 |
+| 旋钮（写在 prompt 里） | 作用 |
 |---|---|
-| `--write` | 要改文件就带上（纯诊断 / 评审 / 调研不带 = 只读） |
+| `--write` | 要改文件就带上（不带 = 只读） |
 | `--background` | 长任务让 Codex 后台跑，subagent 秒回 job-id，Claude 腾出手干别的 |
 | `--resume` | 续上一个 Codex 会话（「继续 / 修掉刚才那个问题 / 再深挖」） |
-| `--model spark` | 机械杂活降档提速 |
-| `--effort high` | 最难啃的调试 / 设计升档 |
+| `--model <型号\|spark>` / `--effort <low…xhigh>` | 覆盖默认档；何时用什么组合见下方角色表 |
 
-**模型与推理强度默认一律不传**——继承用户 `~/.codex/config.toml` 里设好的慣用型号与强度；用户改习惯只动 config 一处，skill 与 prompt 永不硬编码型号。
+**模型与推理强度的「默认档」一律不传参**——继承用户 `~/.codex/config.toml` 里设好的慣用型号与强度；用户改习惯只动 config 一处，skill 与 prompt 永不硬编码型号。
 
 长任务两种等法（选一）：prompt 带 `--background` 后用下方 companion 轮询；或 Agent 调用本身 `run_in_background: true`，等 harness 通知。
+
+## 角色档位（派发前先选角色）
+
+角色 = 「模型档 + effort + 读写 + prompt 姿态」的预设组合，由 Claude 派发时套进任务书。**选档规则：默认 builder；吃不准范围先 scout；反复修不动升 detective；每波收尾必过 reviewer。**
+
+| 角色 | 适用任务 | 模型 / effort | 读写 | prompt 姿态 |
+|------|---------|--------------|------|------------|
+| **builder** 主力实现 | 核心功能、成批工作包、重构 | 默认档 / 默认档 | `--write`（长任务 + `--background` + worktree） | 完整任务书：锚 + 交付定义 + done-gate + 提交规矩（见下节） |
+| **chore** 机械杂役 | 批量替换 / 搬运 / 格式化 / 依赖跑腿 | `--model spark` / `--effort low` | `--write` | 短指令 + 硬边界（只许动哪些文件、动完跑哪条命令自查） |
+| **detective** 疑难侦探 | 反复修不好的 bug、深度根因勘探 | 默认档 / `--effort high` | 先**只读**诊断；拿到根因后 Claude 决定谁修（`--resume` 让它修，或转 builder） | 附上全部已试过的失败路径；要求分层输出「观察事实 / 推断 / 开放问题」 |
+| **scout** 勘探研究 | 大库摸底、方案调研、可行性验证 | 默认档 / 默认档 | 只读 | 给结构化问题清单，要情报和证据、不要它拍方案 |
+| **reviewer** 对抗评审 | 波次验收、安全边界审查 | 默认档 / `--effort high` | 只读 | 优先走 `/codex:review` / `/codex:adversarial-review`（主线程直调，不经 rescue agent）；用 task 时姿态 = 专找反例、按严重度排序 |
+
+角色可按需增设；要给某个角色钉死特定型号，直接改本表该行的「模型」列（这是唯一允许出现具体型号的地方，默认档永远指 config）。一次派发只套一个角色——同一任务书里混两种姿态（又实现又自审）会让实现者自己验收，违反分工铁律。
 
 ## 任务书写法（实战沉淀）
 
@@ -71,6 +84,7 @@ node "$COMPANION" cancel <job-id>   # 取消
 
 - ❌ 把 Codex 的完工报告当验收结果直接汇报给用户（必须亲验）
 - ❌ Codex 后台写盘期间在同一目录做 git 操作（commit / checkout / merge）
-- ❌ prompt 里硬编码模型型号（默认档一律继承用户 config）
+- ❌ prompt 里硬编码模型型号（默认档一律继承用户 config；型号只许出现在角色表里）
+- ❌ 同一任务书混两个角色（又实现又自审 = 实现者自己验收）
 - ❌ 几分钟能干完的小活也派 Codex（自己干更快）
 - ❌ 替用户 push（对外操作，先确认）
