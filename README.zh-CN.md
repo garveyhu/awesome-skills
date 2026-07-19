@@ -67,6 +67,7 @@
 | **self-improving-workflow** | 通用方法论：4 个评审子 agent 协同学习 + `/run` 单入口长任务自主执行 |
 | **memory-palace** | 引导任何人搭建平台无关的个人记忆系统：一座 Obsidian vault（纯 Markdown）让 Claude / Codex / Gemini 共读共写「你是谁/项目/偏好/决策」，越用越懂你、记忆可见可改可带走。子命令 help/init/interview/extract/distill/review/analyze；确定性零依赖引擎 `mp.py`。吸收自 Karpathy / OpenClaw / Hermes / open-second-brain / mem0 |
 | **loop-harness** | 搭建并跑「高质量长期自主迭代 loop 任务」的脚手架 + harness（优化/审计/迁移/深度打磨）。任务书+台账+日志文件即记忆，**外部客观验证门**（agent 报脚本结果·不报自评），**进度检测停止/升级**（非步数·停滞求人），记忆防漂移 + 多智能体。**从一个真跑 100 轮的 loop 提炼**，与 Ralph loop + BabyAGI + evaluator-optimizer 同构。建在 `/loop` 或 `/schedule` 之上 |
+| **codex-conductor** | 「Claude 当大脑、Codex 当手」的派活工作流：实现类任务经 `codex:codex-rescue` agent 派给本机 Codex CLI——Claude 拆任务、写任务书、**独立验收**（Codex 完工报告不作数）、亲自合并。含任务书范式、worktree 纪律、后台任务轮询。从一场 9 个工作包全由 Codex 实现的实战沉淀 |
 
 ---
 
