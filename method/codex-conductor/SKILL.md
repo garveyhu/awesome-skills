@@ -41,17 +41,20 @@ Agent(subagent_type: "codex:codex-rescue",
 
 ## 角色档位（派发前先选角色）
 
-角色 = 「模型档 + effort + 读写 + prompt 姿态」的预设组合，由 Claude 派发时套进任务书。**选档规则：默认 builder；吃不准范围先 scout；反复修不动升 detective；每波收尾必过 reviewer。**
+角色 = 「模型档 + effort + 读写 + prompt 姿态」的预设组合，由 Claude 派发时套进任务书。**选档规则：默认 builder；规格明确照图施工降 coder；机械活降 chore；吃不准范围先 scout；反复修不动升 detective；每波收尾必过 reviewer。**
 
-| 角色 | 适用任务 | 模型 / effort | 读写 | prompt 姿态 |
-|------|---------|--------------|------|------------|
-| **builder** 主力实现 | 核心功能、成批工作包、重构 | 默认档 / 默认档 | `--write`（长任务 + `--background` + worktree） | 完整任务书：锚 + 交付定义 + done-gate + 提交规矩（见下节） |
-| **chore** 机械杂役 | 批量替换 / 搬运 / 格式化 / 依赖跑腿 | `--model spark` / `--effort low` | `--write` | 短指令 + 硬边界（只许动哪些文件、动完跑哪条命令自查） |
-| **detective** 疑难侦探 | 反复修不好的 bug、深度根因勘探 | 默认档 / `--effort high` | 先**只读**诊断；拿到根因后 Claude 决定谁修（`--resume` 让它修，或转 builder） | 附上全部已试过的失败路径；要求分层输出「观察事实 / 推断 / 开放问题」 |
-| **scout** 勘探研究 | 大库摸底、方案调研、可行性验证 | 默认档 / 默认档 | 只读 | 给结构化问题清单，要情报和证据、不要它拍方案 |
-| **reviewer** 对抗评审 | 波次验收、安全边界审查 | 默认档 / `--effort high` | 只读 | 优先走 `/codex:review` / `/codex:adversarial-review`（主线程直调，不经 rescue agent）；用 task 时姿态 = 专找反例、按严重度排序 |
+| 角色 | 适用任务 | 模型 / effort | 读写 | 详规（任务书骨架 + 姿态细则） |
+|------|---------|--------------|------|------|
+| **builder** 主力实现 | 核心功能、成批工作包、重构（要做设计判断） | 默认档 / 默认档 | `--write`（+ `--background` + worktree） | [references/builder.md](references/builder.md) |
+| **coder** 确定性编码 | 规格明确照施工图写：按既有模式补模块 / 接口 / 测试 | `--model gpt-5.6-luna` / 默认档 | `--write` | [references/coder.md](references/coder.md) |
+| **chore** 机械杂役 | 批量替换 / 搬运 / 格式化 / 依赖跑腿（无需理解代码） | `--model spark` / `--effort low` | `--write` | [references/chore.md](references/chore.md) |
+| **detective** 疑难侦探 | 反复修不好的 bug、深度根因勘探 | 默认档 / `--effort high` | 先只读诊断 | [references/detective.md](references/detective.md) |
+| **scout** 勘探研究 | 大库摸底、方案调研、可行性验证 | 默认档 / 默认档 | 只读 | [references/scout.md](references/scout.md) |
+| **reviewer** 对抗评审 | 波次验收、安全边界审查 | 默认档 / `--effort high` | 只读 | [references/reviewer.md](references/reviewer.md) |
 
-角色可按需增设；要给某个角色钉死特定型号，直接改本表该行的「模型」列（这是唯一允许出现具体型号的地方，默认档永远指 config）。一次派发只套一个角色——同一任务书里混两种姿态（又实现又自审）会让实现者自己验收，违反分工铁律。
+**派发前先读对应角色的 reference 文件**，按其任务书骨架写 prompt。三层实现阶梯的直觉：builder（要设计判断）> coder（答案基本唯一）> chore（不用理解代码）——拿不准往上一档放。
+
+角色可按需增设（加一行 + 建一个 reference 文件）；要调某角色的型号，只改该角色行与其 reference（型号只许出现在这两处，默认档永远指 config）。本机可用型号阶梯查 `~/.codex/models_cache.json`（sol 旗舰 / terra 均衡 / luna 快省 / spark 极速）。一次派发只套一个角色——又实现又自审 = 实现者自己验收，违反分工铁律。
 
 ## 任务书写法（实战沉淀）
 
