@@ -5,8 +5,9 @@
 **/.DS_Store
 **/__pycache__/
 
-# 本地密钥/账号配置：accounts.json / *.local.* / .env（example 模板照常入库）
+# 本地密钥/账号配置：accounts.json / proxy_config.json / *.local.* / .env（example 模板照常入库）
 **/accounts.json
+**/proxy_config.json
 **/*.local.json
 **/*.local.yaml
 **/.env
