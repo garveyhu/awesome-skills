@@ -80,8 +80,10 @@ MARK="$(mktemp)"; CODEX_LOG="$(mktemp)"
 trap 'rm -f "$MARK" "$CODEX_LOG"; [ -n "${ISO_HOME:-}" ] && rm -rf "$ISO_HOME"' EXIT
 
 echo "[codex-image-gen] 出图中 → $OUT" >&2
+# stdin 必接 /dev/null:无 TTY 的后台管道里 codex exec 会打印 "Reading additional input
+# from stdin..." 然后永久等 stdin(管道不关闭永不返回) → cover 等编排层整步卡死(260712 实锤)。
 "${CODEX[@]}" exec -C "$DIR" -s workspace-write --skip-git-repo-check \
-  -c model_reasoning_effort="low" "$INSTR" 2>&1 | tee "$CODEX_LOG" >&2 \
+  -c model_reasoning_effort="low" "$INSTR" </dev/null 2>&1 | tee "$CODEX_LOG" >&2 \
   || echo "[codex-image-gen] codex exec 退出码非零,尝试兜底" >&2
 
 # 本次 codex 的 session id → 它把图落在 GEN_DIR/<session>/(新版行为)
