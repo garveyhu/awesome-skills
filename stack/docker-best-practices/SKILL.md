@@ -1,23 +1,12 @@
 ---
 name: docker-best-practices
-description: >
-  Use when containerizing a project for local testing, internal-registry push,
-  or production deployment. Triggers: "docker化", "容器化", "写Dockerfile",
-  "build镜像", "推送镜像", "部署到服务器", "docker-compose", or any request
-  about Docker images / compose / multi-arch buildx / tar-offline delivery.
-  Establishes the standard three-zone layout (docker/images, docker/containers,
-  docker/scripts) with parameterized build/push/run scripts. Defaults to
-  multi-image split (base + code + ui / venv / models …) for any non-trivial
-  project; falls back to single-image only for genuinely tiny services.
-  Supports full-stack (React + FastAPI), backend-only, and frontend-only
-  projects. Covers embedded MariaDB dual-mode, multi-arch buildx, registry vs
-  tar-offline delivery, init-container .version skip logic, and dev/prod
-  compose split.
-  Outputs: docker/ directory containing images/ (Dockerfiles + entrypoint +
-  nginx.conf + .env / .env.example), containers/ (docker-compose.yml at root
-  for local dev, plus subdirs for each prod environment), scripts/
-  (build-images.sh / push-images.sh / run-local.sh / stop-local.sh / .registry.env.example),
-  and docker/README.md as the deploy manual.
+description: >-
+  Use when containerizing or deploying a frontend, backend, or full-stack project
+  for local testing, an internal registry, production, or offline delivery.
+  Triggers include "docker化", "容器化", "写Dockerfile", "build镜像", "推送镜像",
+  "部署到服务器", "docker-compose", Docker images, Compose, multi-stage or
+  multi-arch buildx, registry delivery, tar-offline delivery, embedded MariaDB,
+  dev/prod container environments, and image build/push/run scripts.
 ---
 
 # Docker Best Practices

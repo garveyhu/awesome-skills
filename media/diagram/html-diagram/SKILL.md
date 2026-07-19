@@ -1,6 +1,13 @@
 ---
 name: html-diagram
-description: Render diagrams (system architecture, link/topology maps, narrative architecture decks, sequence flows, timelines, etc.) as self-contained single-file HTML by picking a style from the style library and adapting one of its samples. Triggers include `/html-diagram`, "画一张 HTML 图", "用 HTML 画 X", "html 架构图 / 链路图 / 流程图", "html 可视化", "single-file html diagram", "interactive html diagram", "deck-style html"。Output is one HTML file with inlined CSS/SVG/JS, no build step. PURE RENDERING LAYER — does NOT brainstorm content, only formalizes content already in context (chat history, design docs, markdown notes). DO NOT trigger for: mermaid charts (use mermaid-visualizer), Excalidraw boards (use excalidraw-diagram), PNG/PDF posters (use canvas-design), generic frontend pages (use frontend-design / website-creator).
+description: >-
+  Render system architecture, topology, narrative architecture, sequence flow,
+  and timeline diagrams as self-contained single-file HTML. Use for
+  `/html-diagram`, "画一张 HTML 图", "用 HTML 画 X", "html 架构图 / 链路图 / 流程图",
+  "html 可视化", "single-file html diagram", "interactive html diagram", or
+  "deck-style html" when the content already exists in chat, design docs, or
+  notes. Do not use for Mermaid, Excalidraw, PNG/PDF posters, generic frontend
+  pages, or brainstorming diagram content.
 metadata:
   version: 1.2.0
   changelog:
