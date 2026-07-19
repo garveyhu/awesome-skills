@@ -46,7 +46,7 @@ description: >-
 
 ## 派生物（从 registry 生成，不手维护）
 
-1. **扁平镜像 `<root>/skills/`**：把 `tier=core` 的 skill 用软链拍平成一层，供「会扫描整个目录」的通用 agent 使用——这样物理上分了类，扁平扫描照样工作。
+1. **扁平镜像 `<root>/skills/`**：把 skill 用软链拍平成一层，供「会扫描整个目录」的通用 agent 使用——这样物理上分了类，扁平扫描照样工作。范围缺省 = 全部 `tier=core`，可由 `sync:` 段收窄（见下）。
 2. **各 agent 挂载点的软链**：把 `core + extra` 软链进每个 agent 的 skill 目录（`mounts` 列表，见下「跨 agent」）。
 3. **白名单 `.gitignore`**：只有「会 push 的来源目录」是 git 仓库，且它整目录只含你自己的 skill——所以 `.gitignore` 只挡垃圾即可，**第三方天然不在这个目录、永不外泄**。
 
@@ -62,6 +62,17 @@ description: >-
 | `parked` | ❌ | ❌ | 仅留存，不装载 |
 
 改 tier 即调装载范围——不挪文件、不动目录。
+
+**`sync:` 段——按目标微调同步范围（tier 之上的第二层旋钮）。** tier 管「一个 skill 默认去哪些目标」，`sync:` 段管「每个目标实际收多少」。registry 里可选声明：
+
+```yaml
+sync:
+  mirror: [agent-browser, memory-palace, skill-management]  # 扁平镜像只留点名的（白名单，无视 tier）
+  claude: true    # true=默认全量（core+extra）
+  gemini: true    # false=跳过该目标：sync 不碰、doctor 不查
+```
+
+每个目标三种取值：`true` 全量（按 tier 规则）/ `false` 跳过不碰 / `[白名单]` 只软链点名的 skill。缺省无此段 = 全部 `true`（与旧行为一致）。典型用法：通用扁平镜像只留最常用的几个、控住会全量扫描它的 agent 的 token，各 agent 挂载点仍全量。
 
 **`tier: project` 配 `project: <名>` + `projects:` 段——把「只有某工作目录才用得到」的 skill 移出全局。** 它不进扁平镜像、也不进各 agent 的全局挂载点（`sync` 会把它从全局 prune 掉），只按 `project:` 字段归属某个项目。`projects:` 段（registry 里，类比 `sources:`）声明 `<项目名>: "<目录绝对路径>"`，**支持非 git 目录**。**默认只「声明 + 移出全局」、不挂载**；要把它推进项目时跑 `skillctl mount <项目>`——软链进该目录的 `.claude/skills/`（真身仍在来源目录，单一事实源不破），`unmount` 撤销；也可在脚本里把 `SYNC_AUTOMOUNT_PROJECTS` 置 `True` 让 `sync` 顺带挂载。**注：Claude 原生从 git 根的 `.claude/skills` 读 project skill，要 Claude 自动加载、`projects:` 路径须指向 git 根。**
 

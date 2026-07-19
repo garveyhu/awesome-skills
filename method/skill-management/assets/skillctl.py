@@ -13,6 +13,7 @@
   python3 scripts/skillctl.py unmount [项目] 撤销上面的项目软链
 
 registry.yaml 需含： mounts(列表) / sources / projects(可选) / categories / skills，详见同目录 registry.example.yaml
+可选 sync: 段按目标微调同步范围（mirror / mounts 两键，取值 true=全量 / false=跳过不碰 / [白名单]=只链点名的）
 """
 import os, re, sys, shutil
 
@@ -31,8 +32,10 @@ def c(s, col): return f"{C[col]}{s}{C['rst']}"
 def load_registry():
     txt = open(REG, encoding="utf-8").read()
     mounts, sources, projects, sec = [], [], {}, None
+    # sync: 段缺省 = 全量（mirror=全部 core；mounts=core+extra），与无此段的旧行为一致
+    sync_conf = {"mirror": True, "mounts": True}
     for ln in txt.splitlines():
-        h = re.match(r'^(mounts|sources|projects|categories|skills):', ln)
+        h = re.match(r'^(mounts|sources|projects|categories|skills|sync):', ln)
         if h: sec = h.group(1); continue
         if sec == "mounts":
             m = re.match(r'^\s*-\s*(.+?)\s*(?:#.*)?$', ln)
@@ -43,6 +46,12 @@ def load_registry():
         elif sec == "projects":
             m = re.match(r'^\s{2}([A-Za-z0-9_-]+):\s*"([^"]+)"', ln)
             if m: projects[m.group(1)] = os.path.expanduser(m.group(2))
+        elif sec == "sync":
+            m = re.match(r'^\s{2}(mirror|mounts):\s*(\[[^\]]*\]|true|false)', ln)
+            if m:
+                k, v = m.groups()
+                sync_conf[k] = (True if v == "true" else False if v == "false"
+                                else [x.strip() for x in v[1:-1].split(",") if x.strip()])
     skills = {}
     for m in re.finditer(
         r'^\s{2}([A-Za-z0-9_-]+):\s*\{source:\s*([A-Za-z0-9_-]+),\s*'
@@ -53,11 +62,22 @@ def load_registry():
     for m in re.finditer(r'^\s{2}([A-Za-z0-9_-]+):\s*\{[^}]*\bproject:\s*([A-Za-z0-9_-]+)', txt, re.M):
         if m.group(1) in skills:
             skills[m.group(1)]["project"] = m.group(2)
-    return mounts, sources, projects, skills
+    return mounts, sources, projects, skills, sync_conf
 
 
 def skill_dir(info, name):
     return os.path.join(ROOT, info["source"], info["category"], name)
+
+
+def _resolve_target(val, default_names, skills, label, warn=True):
+    """sync: 目标取值 → 实际 skill 集。true=默认全量；false=None（跳过不碰）；[白名单]=点名集合（无视 tier）。"""
+    if val is False: return None
+    if val is True: return set(default_names)
+    good = {n for n in val if n in skills}
+    if warn:
+        for n in sorted(set(val) - good):
+            print(c(f"⚠ sync.{label} 白名单含未登记 skill：{n}（忽略）", "yel"))
+    return good
 
 
 def _relink(dst, target):
@@ -68,30 +88,39 @@ def _relink(dst, target):
 
 
 def sync():
-    mounts, sources, projects, skills = load_registry()
+    mounts, sources, projects, skills, sconf = load_registry()
     core   = {n: i for n, i in skills.items() if i["tier"] == "core"}
     linked = {n: i for n, i in skills.items() if i["tier"] in ("core", "extra")}
+    mirror_set = _resolve_target(sconf["mirror"], core, skills, "mirror")
+    mounts_set = _resolve_target(sconf["mounts"], linked, skills, "mounts")
+    mode = lambda v: "全量" if v is True else "白名单"
 
-    # 1) 扁平镜像（仅 core，相对软链，全量重建）
-    if os.path.islink(MIRROR): os.unlink(MIRROR)
-    if os.path.isdir(MIRROR): shutil.rmtree(MIRROR)
-    os.makedirs(MIRROR)
-    for n, i in sorted(core.items()):
-        os.symlink(os.path.relpath(skill_dir(i, n), MIRROR), os.path.join(MIRROR, n))
-    print(c(f"✓ 扁平镜像 {MIRROR}：{len(core)} 个 core", "grn"))
+    # 1) 扁平镜像（相对软链，全量重建；范围由 sync.mirror 决定，缺省=全部 core）
+    if mirror_set is None:
+        print(c("· 扁平镜像：sync.mirror=false，跳过不碰", "dim"))
+    else:
+        if os.path.islink(MIRROR): os.unlink(MIRROR)
+        if os.path.isdir(MIRROR): shutil.rmtree(MIRROR)
+        os.makedirs(MIRROR)
+        for n in sorted(mirror_set):
+            os.symlink(os.path.relpath(skill_dir(skills[n], n), MIRROR), os.path.join(MIRROR, n))
+        print(c(f"✓ 扁平镜像 {MIRROR}：{len(mirror_set)} 个（{mode(sconf['mirror'])}）", "grn"))
 
-    # 2) 各 agent 挂载点（core+extra；prune 指向本 root 但已不该在的软链）
-    for mnt in mounts:
-        os.makedirs(mnt, exist_ok=True)
-        made = 0
-        for n, i in sorted(linked.items()):
-            _relink(os.path.join(mnt, n), skill_dir(i, n)); made += 1
-        pruned = []
-        for e in os.listdir(mnt):
-            p = os.path.join(mnt, e)
-            if os.path.islink(p) and os.path.abspath(os.readlink(p)).startswith(ROOT) and e not in linked:
-                os.unlink(p); pruned.append(e)
-        print(c(f"✓ 挂载 {mnt}：建/更新 {made}，prune {len(pruned)}", "grn"))
+    # 2) 各 agent 挂载点（缺省 core+extra；prune 指向本 root 但已不在目标集的软链）
+    if mounts_set is None:
+        print(c("· 挂载点：sync.mounts=false，跳过不碰", "dim"))
+    else:
+        for mnt in mounts:
+            os.makedirs(mnt, exist_ok=True)
+            made = 0
+            for n in sorted(mounts_set):
+                _relink(os.path.join(mnt, n), skill_dir(skills[n], n)); made += 1
+            pruned = []
+            for e in os.listdir(mnt):
+                p = os.path.join(mnt, e)
+                if os.path.islink(p) and os.path.abspath(os.readlink(p)).startswith(ROOT) and e not in mounts_set:
+                    os.unlink(p); pruned.append(e)
+            print(c(f"✓ 挂载 {mnt}：建/更新 {made}（{mode(sconf['mounts'])}），prune {len(pruned)}", "grn"))
 
     # 3) 含 .git 的来源目录写简化 .gitignore
     for src in sources:
@@ -130,7 +159,7 @@ def mount(projects=None, skills=None, only=None):
     支持非 git 目录（不卡 git 根）；默认 sync 不调用，需显式 `skillctl mount` 或开 SYNC_AUTOMOUNT_PROJECTS。
     注：Claude 原生从 git 根读 project skill，要让 Claude 自动加载，projects: 路径须指向 git 根。"""
     if skills is None:
-        _, _, projects, skills = load_registry()
+        _, _, projects, skills, _ = load_registry()
     targets = _project_targets(skills, only)
     if not any(targets.values()):
         print(c(f"无 tier:project skill{('（项目 ' + only + '）') if only else ''}", "dim")); return
@@ -153,7 +182,7 @@ def mount(projects=None, skills=None, only=None):
 def unmount(projects=None, skills=None, only=None):
     """撤销 mount 建的项目软链（只动指向本 root 的软链，不碰手放的）。"""
     if skills is None:
-        _, _, projects, skills = load_registry()
+        _, _, projects, skills, _ = load_registry()
     targets = _project_targets(skills, only)
     for pname in sorted(targets):
         if pname not in projects: continue
@@ -168,7 +197,7 @@ def unmount(projects=None, skills=None, only=None):
 
 
 def stats():
-    mounts, sources, projects, skills = load_registry()
+    mounts, sources, projects, skills, sconf = load_registry()
     if not skills: print("registry 为空"); return
     by_src, by_cat = {}, {}
     by_tier = {"core": 0, "extra": 0, "project": 0, "parked": 0}
@@ -211,7 +240,9 @@ def stats():
             print(f"    {p:<14}{by_proj[p]:>3}  {decl} · {ms}")
     print(c("\n  挂载 & 健康", "dim"))
     mir = len(os.listdir(MIRROR)) if os.path.isdir(MIRROR) else 0
-    print(f"    扁平镜像 skills/        {mir:>3} core")
+    mmode = ("关闭" if sconf["mirror"] is False else
+             "白名单" if isinstance(sconf["mirror"], list) else "core 全量")
+    print(f"    扁平镜像 skills/        {mir:>3} ({mmode})")
     linked = {n for n, i in skills.items() if i["tier"] in ("core", "extra")}
     for mnt in mounts:
         managed, foreign = 0, []
@@ -229,9 +260,14 @@ def stats():
 
 
 def doctor():
-    mounts, sources, projects, skills = load_registry()
+    mounts, sources, projects, skills, sconf = load_registry()
     problems = []
     SKIP = {".git", ".gitignore", "README.md", "CATALOG.md", ".DS_Store"}
+    # sync: 白名单里点名的 skill 必须已在 registry 登记
+    for label in ("mirror", "mounts"):
+        if isinstance(sconf[label], list):
+            for n in sconf[label]:
+                if n not in skills: problems.append(f"sync.{label} 白名单含未登记 skill: {n}")
     for n, i in skills.items():
         d = skill_dir(i, n)
         if not os.path.isdir(d): problems.append(f"缺真身: {i['source']}/{i['category']}/{n}")
@@ -251,22 +287,26 @@ def doctor():
             elif skills[s]["category"] != cat: problems.append(f"分类不一致: {s} 磁盘={cat} registry={skills[s]['category']}")
             dirs[:] = []  # 命中 skill 后不再深入其内部
     core = {n for n, i in skills.items() if i["tier"] == "core"}
-    mir = set(os.listdir(MIRROR)) if os.path.isdir(MIRROR) else set()
-    for n in core - mir: problems.append(f"镜像缺 core: {n}")
-    for n in mir - core: problems.append(f"镜像多出: {n}")
+    mirror_set = _resolve_target(sconf["mirror"], core, skills, "mirror", warn=False)
+    if mirror_set is not None:
+        mir = set(os.listdir(MIRROR)) if os.path.isdir(MIRROR) else set()
+        for n in mirror_set - mir: problems.append(f"镜像缺: {n}")
+        for n in mir - mirror_set: problems.append(f"镜像多出: {n}")
     linked = {n for n, i in skills.items() if i["tier"] in ("core", "extra")}
-    for mnt in mounts:
-        for n in linked:
-            p = os.path.join(mnt, n)
-            if not os.path.islink(p): problems.append(f"{mnt} 缺软链: {n}")
-            elif not os.path.exists(p): problems.append(f"{mnt} 断链: {n}")
+    mounts_set = _resolve_target(sconf["mounts"], linked, skills, "mounts", warn=False)
+    if mounts_set is not None:
+        for mnt in mounts:
+            for n in mounts_set:
+                p = os.path.join(mnt, n)
+                if not os.path.islink(p): problems.append(f"{mnt} 缺软链: {n}")
+                elif not os.path.exists(p): problems.append(f"{mnt} 断链: {n}")
     # tier:project：必须带 project 字段且已在 projects: 声明；且不该残留在任一全局 mount
     for n, i in skills.items():
         if i["tier"] != "project": continue
         if not i.get("project"): problems.append(f"tier:project 缺 project 字段: {n}")
         elif i["project"] not in projects: problems.append(f"project 未在 projects: 声明: {n} → {i['project']}")
         for mnt in mounts:
-            if os.path.islink(os.path.join(mnt, n)):
+            if n not in (mounts_set or set()) and os.path.islink(os.path.join(mnt, n)):
                 problems.append(f"tier:project 仍残留全局挂载 {mnt}（跑 sync 清理）: {n}")
     print(c(f"\ndoctor {len(skills)} skill / {len(sources)} 来源 / {len(mounts)} 挂载", "dim"))
     if not problems: print(c("✓ 全部通过，无漂移", "grn")); return 0

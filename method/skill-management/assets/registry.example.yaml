@@ -15,6 +15,14 @@ sources:
   community: "开源 / 第三方来源 · 本地编排，不进我的仓库"
   # company: "公司内部 skill · 加一行 + 建 company/ 目录即可扩展"
 
+# 2.2) 同步范围（可选）：按目标微调 sync 收多少（tier 之上的第二层旋钮）。缺省无此段 = 全部 true。
+#      每个目标三种取值： true=默认全量（mirror=全部 core；mounts=core+extra）
+#                        false=跳过该目标（sync 不碰、doctor 不查）
+#                        [白名单]=该目标只软链点名的 skill（无视 tier）
+# sync:
+#   mirror: [skill-management, my-react-conventions]   # 例：通用扁平镜像只留最常用的，控 token
+#   mounts: true
+
 # 2.5) 项目（可选）：tier:project 的 skill 归属哪个工作目录。每行 <项目名>: "<目录绝对路径>"，支持非 git 目录。
 #      这类 skill 默认移出全局（不进镜像 / 不进 mounts）、只声明不挂载；`skillctl mount <项目名>` 才把它们
 #      软链进 <目录>/.claude/skills/。注：Claude 从 git 根读 project skill，要 Claude 自动加载就把路径指向 git 根。
