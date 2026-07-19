@@ -1,0 +1,14 @@
+{
+  "__doc__": [
+    "复制本文件为 proxy_config.json，填入你自己反代服务的地址与 key。",
+    "反代服务：antigravity2api-nodejs（github.com/liuw1535/antigravity2api-nodejs）——",
+    "把 Antigravity/Gemini Cloud Code Assist 转成 OpenAI 兼容 API，自带多账号 OAuth 登录 + 轮询 + 撞额度自动禁用。",
+    "部署：clone 仓库 → npm install → npm run login（走 Google OAuth，可登多个账号）→ npm start（默认端口 8045）。",
+    "base_url 指向反代的 /v1（本地默认 http://localhost:8045/v1）；api_key 是你在反代 .env 里配的 API_KEY。",
+    "default_model 是出图模型名（反代 GET /v1/models 可查完整列表），已验证 gemini-3.1-flash-image 效果不错。",
+    "proxy_config.json 已被 gitignore，不会进仓库；不要把真实 key 写进本 example 文件。"
+  ],
+  "base_url": "http://localhost:8045/v1",
+  "api_key": "sk-your-proxy-api-key",
+  "default_model": "gemini-3.1-flash-image"
+}

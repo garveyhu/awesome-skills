@@ -1,7 +1,17 @@
 #!/usr/bin/env python3
-"""Gemini 会员号生图 CLI：多账号 cookie 隔离 + 负载均衡 + 撞额度自动跳号。
+"""Gemini 生图 CLI：默认走本机反代服务（antigravity2api-nodejs，proxy 后端），
+可选切回 Gemini 网页会员号 cookie 方式（cookie，旧方式）。
 
-依赖（由 gen-image.sh 经 uv 注入）：gemini_webapi、browser-cookie3。
+两条后端配额池不互通，分别管理：
+  proxy  —— 反代账号池（Antigravity/Cloud Code Assist），多账号轮询在反代服务里做，
+             凭据读 skill 目录下 proxy_config.json（见 proxy_config.example.json 模板），
+             找不到时兜底读本机 ~/.agents/resources.json 的 llm.antigravity2api.local（个人机器
+             私有配置，别人用本 skill 不会有这个文件，正常应该走 proxy_config.json）。
+  cookie —— Gemini 网页版会员号（Pro/Advanced 订阅）cookie，凭据配置见本文件下方
+             cookie 相关代码 + skill 根目录 accounts.json，多账号 LRU 负载 + 撞额度跳号。
+
+依赖（由 gen-image.sh 经 uv 注入）：gemini_webapi、browser-cookie3（仅 cookie 后端用到，
+proxy 后端只用标准库）。
 账号身份以 Chrome Local State 的 profile→email 映射为准（Gemini 自报邮箱不可靠）。
 """
 
@@ -9,19 +19,20 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import base64
 import json
-import os
+import mimetypes
 import random
+import re
 import sys
 import time
+import urllib.error
+import urllib.request
 from pathlib import Path
-
-import browser_cookie3 as bc3
-from gemini_webapi import GeminiClient
-from gemini_webapi.constants import Model
 
 CHROME_BASE = Path.home() / "Library/Application Support/Google/Chrome"
 STATE_PATH = Path.home() / ".config/gemini-gen/state.json"
+RESOURCES_PATH = Path.home() / ".agents/resources.json"
 COOLDOWN_SECONDS = 2 * 3600  # 撞 limit 后该号冷却时长，过后自动重试
 # pacing：每次出图请求前随机停顿，模拟人手节奏、降低被反自动化限流的概率。
 JITTER_MIN, JITTER_MAX = 0.8, 2.5
@@ -53,18 +64,152 @@ def load_members() -> dict[str, str]:
 
 LIMIT_MARKERS = ("limit resets", "check your usage", "usage in settings")
 
-# 出图模型：flash=Nano Banana 2(宽额度/快/默认)，pro=Nano Banana Pro(更高质量/额度紧)。
-# ⚠️ 不能用默认 UNSPECIFIED——它路由到的图额度桶极小，会误报 "limit resets"。
-MODEL_MAP = {
-    "flash": Model.BASIC_FLASH,
-    "pro": Model.BASIC_PRO,
-}
-
 
 def log(msg: str) -> None:
     print(f"[gemini-gen] {msg}", file=sys.stderr)
 
 
+# ==================== backend: proxy（默认，antigravity2api-nodejs 反代）====================
+# 凭据 / 端点优先读 skill 目录下 proxy_config.json（见 load_proxy_config），本机私有的
+# ~/.agents/resources.json 只是没配 proxy_config.json 时的个人兜底，不是主路径。
+# 多账号轮询、撞额度自动跳号都在反代服务里做，脚本这边只是个薄 HTTP 客户端。
+
+DEFAULT_PROXY_IMAGE_MODEL = "gemini-3.1-flash-image"
+
+
+PROXY_CONFIG_CANDIDATES = [
+    SKILL_DIR / "proxy_config.json",
+    Path.home() / ".config/gemini-gen/proxy_config.json",
+]
+
+
+def load_proxy_config() -> dict:
+    """读反代配置，返回统一字段 {base_url, api_key, default_model}。
+
+    查找顺序：skill 目录/proxy_config.json → ~/.config/gemini-gen/proxy_config.json
+    → 兜底 ~/.agents/resources.json 的 llm.antigravity2api.local（个人机器私有配置，
+    别人用本 skill 一般不会有这个文件，正常应该配前两者之一）。
+    """
+    for p in PROXY_CONFIG_CANDIDATES:
+        if p.exists():
+            cfg = json.loads(p.read_text())
+            if cfg.get("base_url") and cfg.get("api_key"):
+                return cfg
+    if RESOURCES_PATH.exists():
+        try:
+            data = json.loads(RESOURCES_PATH.read_text())
+            local = data["llm"]["antigravity2api"]["local"]
+            return {
+                "base_url": local["base_url"],
+                "api_key": local["api_key"],
+                "default_model": local.get("default_image_model", DEFAULT_PROXY_IMAGE_MODEL),
+            }
+        except Exception:
+            pass
+    raise SystemExit(
+        f"[gemini-gen] 未找到反代配置。请把 {SKILL_DIR / 'proxy_config.example.json'} "
+        f"复制为 {SKILL_DIR / 'proxy_config.json'}（或 ~/.config/gemini-gen/proxy_config.json）"
+        "并填入你反代服务的 base_url / api_key。"
+    )
+
+
+def check_proxy_alive(base_url: str) -> bool:
+    """只判断服务有没有在监听、能不能连上；HTTP 层面报什么状态码都算活（哪怕 401/404），
+    真正的鉴权失败留给正式请求去报错，这里不该因为没带 Authorization 就误判成"服务没启动"。
+    """
+    try:
+        urllib.request.urlopen(f"{base_url}/models", timeout=3)
+        return True
+    except urllib.error.HTTPError:
+        return True
+    except Exception:
+        return False
+
+
+def image_to_data_url(path: str) -> str:
+    p = Path(path).expanduser()
+    mime = mimetypes.guess_type(p.name)[0] or "image/png"
+    b64 = base64.b64encode(p.read_bytes()).decode()
+    return f"data:{mime};base64,{b64}"
+
+
+def generate_via_proxy(prompt: str, refs: list[str], out: Path, model: str,
+                       size: str) -> list[str]:
+    cfg = load_proxy_config()
+    base_url = cfg["base_url"].rstrip("/")
+    api_key = cfg["api_key"]
+
+    if not check_proxy_alive(base_url):
+        raise SystemExit(
+            f"[gemini-gen] 反代服务未运行（{base_url}）。请先 `app run antigravity2api` 再重试。"
+        )
+
+    full_model = model if (size == "1K" or model.endswith(size)) else f"{model}-{size}"
+    content: list[dict] = [{"type": "text", "text": prompt}]
+    for r in refs:
+        content.append({"type": "image_url", "image_url": {"url": image_to_data_url(r)}})
+
+    body = json.dumps({
+        "model": full_model,
+        "messages": [{"role": "user", "content": content}],
+        "stream": False,
+    }).encode()
+
+    last_err = ""
+    result = None
+    for attempt in range(2):  # 撞到刚被反代标坏的账号时，重试一次通常会换到健康账号
+        req = urllib.request.Request(
+            f"{base_url}/chat/completions",
+            data=body,
+            headers={"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                result = json.loads(resp.read())
+            break
+        except urllib.error.HTTPError as e:
+            last_err = e.read().decode(errors="replace")[:300]
+            log(f"反代请求失败（第 {attempt + 1} 次）：{e.code} {last_err}")
+        except Exception as e:
+            last_err = str(e)
+            log(f"反代请求异常（第 {attempt + 1} 次）：{last_err[:300]}")
+    if result is None:
+        raise SystemExit(f"[gemini-gen] 反代出图失败：{last_err}")
+
+    reply_text = result["choices"][0]["message"]["content"]
+    urls = re.findall(r"!\[image\]\((.*?)\)", reply_text)
+    if not urls:
+        raise SystemExit(f"[gemini-gen] 反代未返回图片，模型回应：{reply_text[:200]}")
+
+    out.parent.mkdir(parents=True, exist_ok=True)
+    saved: list[str] = []
+    for i, url in enumerate(urls):
+        fname = out.name if len(urls) == 1 else f"{out.stem}_{i}{out.suffix}"
+        dest = out.parent / fname
+        with urllib.request.urlopen(url, timeout=60) as r:
+            dest.write_bytes(r.read())
+        saved.append(str(dest))
+    return saved
+
+
+def run_proxy(args) -> int:
+    out = Path(args.out).expanduser()
+    prompt = args.prompt
+    if args.aspect:
+        prompt = f"{prompt}\n(aspect ratio: {args.aspect})"
+    refs = args.ref or []
+    cfg = load_proxy_config()
+    model = args.proxy_model or cfg.get("default_model", DEFAULT_PROXY_IMAGE_MODEL)
+
+    saved = generate_via_proxy(prompt, refs, out, model, args.size)
+    log(f"出图模型：{model}（size={args.size}）")
+    for p in saved:
+        print(p)
+    return 0
+
+
+# ==================== backend: cookie（旧方式，Gemini 网页会员号）====================
 # ---------- profile / cookie ----------
 
 def discover_profiles() -> dict[str, Path]:
@@ -88,6 +233,8 @@ def cookie_file(profile_dir: Path) -> Path | None:
 
 
 def read_cookies(profile_dir: Path) -> tuple[str | None, str | None]:
+    import browser_cookie3 as bc3
+
     cf = cookie_file(profile_dir)
     if not cf:
         return None, None
@@ -151,6 +298,8 @@ def is_quota_exhausted(resp) -> bool:
 async def generate_with(account: str, profile_dir: Path, prompt: str,
                         refs: list[str], out: Path, model) -> list[str] | None:
     """单账号出图。成功返回保存路径列表；撞额度返回 None；其它异常抛出。"""
+    from gemini_webapi import GeminiClient
+
     psid, psidts = read_cookies(profile_dir)
     if not psid:
         log(f"{account}: 该 profile 读不到 __Secure-1PSID（是否登录了 gemini？）")
@@ -181,7 +330,11 @@ async def generate_with(account: str, profile_dir: Path, prompt: str,
         await client.close()
 
 
-async def run(args) -> int:
+async def run_cookie(args) -> int:
+    from gemini_webapi.constants import Model
+
+    model_map = {"flash": Model.BASIC_FLASH, "pro": Model.BASIC_PRO}
+
     members = load_members()
     profiles = discover_profiles()
 
@@ -196,7 +349,7 @@ async def run(args) -> int:
     if args.aspect:
         prompt = f"{prompt}\n(aspect ratio: {args.aspect})"
     refs = args.ref or []
-    model = MODEL_MAP[args.model]
+    model = model_map[args.model]
 
     state = load_state()
 
@@ -242,16 +395,30 @@ async def run(args) -> int:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="Gemini 会员号生图（多账号负载均衡）")
+    ap = argparse.ArgumentParser(description="Gemini 生图（默认反代 proxy 后端，可选 cookie 会员号后端）")
+    ap.add_argument("--backend", choices=["proxy", "cookie"], default="proxy",
+                    help="出图后端：proxy=本机 antigravity2api-nodejs 反代（默认，Antigravity 账号池配额，"
+                         "免 Chrome profile）| cookie=Gemini 网页会员号 cookie（旧方式，网页订阅配额，"
+                         "两者配额池不通用）")
     ap.add_argument("--prompt", required=True, help="图像描述（越具体越好，中英文均可）")
-    ap.add_argument("--out", required=True, help="输出 PNG 路径，父目录自动建；多图自动加 _0/_1")
-    ap.add_argument("--account", help="指定账号（accounts.json 里的名字）；不传则全部号负载均衡")
-    ap.add_argument("--model", choices=list(MODEL_MAP), default="flash",
-                    help="出图模型：flash=Nano Banana 2(默认/宽额度) | pro=Nano Banana Pro(更高质量)")
-    ap.add_argument("--aspect", help="宽高比提示，如 16:9 / 1:1 / 9:16（best-effort，写进提示词）")
-    ap.add_argument("--ref", action="append", help="参考图路径，可重复（锁角色/风格）")
+    ap.add_argument("--out", required=True, help="输出图片路径，父目录自动建；多图自动加 _0/_1")
+    ap.add_argument("--ref", action="append", help="参考图路径，可重复（锁角色/风格；两个后端都支持）")
+    ap.add_argument("--aspect", help="宽高比提示，如 16:9 / 1:1 / 9:16（两个后端都是 best-effort，写进提示词）")
+    # cookie 后端专用
+    ap.add_argument("--account", help="[cookie 后端] 指定账号（accounts.json 里的名字）；不传则全部号负载均衡")
+    ap.add_argument("--model", choices=["flash", "pro"], default="flash",
+                    help="[cookie 后端] 出图模型：flash=Nano Banana 2(默认/宽额度) | pro=Nano Banana Pro(更高质量)")
+    # proxy 后端专用
+    ap.add_argument("--proxy-model", dest="proxy_model",
+                    help="[proxy 后端] 反代模型名，默认读 proxy_config.json 的 default_model"
+                         f"（缺省 {DEFAULT_PROXY_IMAGE_MODEL}）")
+    ap.add_argument("--size", choices=["1K", "2K", "4K"], default="1K",
+                    help="[proxy 后端] 出图分辨率档位，默认 1K")
     args = ap.parse_args()
-    return asyncio.run(run(args))
+
+    if args.backend == "proxy":
+        return run_proxy(args)
+    return asyncio.run(run_cookie(args))
 
 
 if __name__ == "__main__":
