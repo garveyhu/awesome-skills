@@ -59,7 +59,7 @@ bash ~/.claude/skills/codex-image-gen/scripts/gen-image.sh \
   [--aspect 16:9] [--ref shot-3] [--license original] [--washed true]
 ```
 
-- **`gen-image.sh` 不内嵌此步**——留痕由**调用方/管线**负责（mediastudio `produce` 的 asset 步已自动写；手动/skill 编排出图时调本 helper 补）。
+- **`gen-image.sh` 不内嵌此步**——留痕由**调用方/管线**负责（编排素材步时调本 helper 补写）。
 - 幂等可重跑：已有 sidecar → 字段覆盖更新、`refs` 去重追加、`created` 保留首次；产物不存在则拒写（不给不存在的东西记账）。
 - 后端无关：图/视频/HTML/音频都能记（`--kind` 缺省按扩展名自判），其它出图后端（gemini-gen / comfyui / media-gen 编排）同样可调本工具留痕。
 

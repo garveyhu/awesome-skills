@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>【姓名】· 简历</title>
+<style>
+/* ═══════════════════════════════════════════════════
+   版式：resume · 简历
+   适用：求职简历
+   特征：单页高密度 · 无封面 · 左侧时间轴 · 技能矩阵
+   核心约束：HR 平均看 15 秒。信息密度优先于留白，
+             但绝不能挤成一坨——靠字重和缩进分层，不靠边框。
+   ═══════════════════════════════════════════════════ */
+
+:root {
+  --ink:    #1a1a1a;
+  --ink-2:  #55555a;
+  --ink-3:  #8a8a90;
+  --line:   #dededf;
+  --accent: #1f4e79;
+
+  --sans: "PingFang SC", "Heiti SC", sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+
+/* 简历页边距要窄，把空间留给内容 */
+@page { size: A4; margin: 12mm 14mm; }
+
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+html { font-size: 9.5pt; }
+body {
+  margin: 0; background: #fff; color: var(--ink);
+  font-family: var(--sans); font-size: 9.5pt; line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ════ 抬头 ════ */
+.head { display: flex; align-items: flex-end; justify-content: space-between; gap: 8mm; border-bottom: 2px solid var(--ink); padding-bottom: 3mm; margin-bottom: 4mm; }
+.head .name { font-size: 22pt; font-weight: 700; letter-spacing: .04em; line-height: 1.1; }
+.head .title { font-size: 10.5pt; color: var(--accent); font-weight: 600; margin-top: 1.5mm; }
+.head .contact { text-align: right; font-size: 8.6pt; color: var(--ink-2); line-height: 1.9; font-family: var(--mono); white-space: nowrap; }
+.head .contact a { color: inherit; text-decoration: none; }
+
+/* ════ 一句话定位：全篇唯一的「大声说话」处 ════ */
+.pitch { font-size: 10pt; line-height: 1.7; color: var(--ink-2); margin-bottom: 5mm; padding-left: 3mm; border-left: 2.5px solid var(--accent); }
+
+/* ════ 区块标题 ════ */
+h2 {
+  font-size: 10.5pt; font-weight: 700; letter-spacing: .12em;
+  margin: 5mm 0 2.5mm; padding-bottom: 1.2mm;
+  border-bottom: 1px solid var(--line); page-break-after: avoid;
+}
+
+/* ════ 经历条目 ════ */
+.item { margin-bottom: 3.5mm; page-break-inside: avoid; }
+.item-h { display: flex; align-items: baseline; justify-content: space-between; gap: 4mm; margin-bottom: .8mm; }
+.item-h .org { font-weight: 700; font-size: 10pt; }
+.item-h .role { color: var(--ink-2); font-size: 9.2pt; }
+.item-h .when { font-family: var(--mono); font-size: 8.4pt; color: var(--ink-3); white-space: nowrap; }
+.item ul { margin: 0; padding-left: 4.5mm; }
+.item li { margin-bottom: .9mm; }
+/* 成果要能被扫到：把数字加粗 */
+.item li b { font-weight: 700; }
+.item li .m { font-family: var(--mono); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* ════ 技能矩阵 ════ */
+.skills { display: grid; grid-template-columns: 22mm 1fr; gap: 1.6mm 4mm; font-size: 9.2pt; }
+.skills dt { font-weight: 700; color: var(--ink-2); }
+.skills dd { margin: 0; }
+.skills .tag {
+  display: inline-block; font-family: var(--mono); font-size: 8.2pt;
+  background: #f2f4f7; border: 1px solid var(--line);
+  padding: .3mm 1.6mm; border-radius: 2px; margin: 0 1mm .8mm 0;
+}
+.skills .tag.on { background: var(--accent); border-color: var(--accent); color: #fff; }  /* 主力技能 */
+
+/* ════ 项目 ════ */
+.proj { margin-bottom: 3mm; page-break-inside: avoid; }
+.proj .n { font-weight: 700; font-size: 9.8pt; }
+.proj .n .stack { font-family: var(--mono); font-size: 8.2pt; font-weight: 400; color: var(--ink-3); margin-left: 2mm; }
+.proj p { margin: .6mm 0 0; color: var(--ink-2); }
+
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 0 7mm; }
+.muted { color: var(--ink-3); font-size: 8.6pt; }
+</style>
+</head>
+<body>
+
+<div class="head">
+  <div>
+    <div class="name">【姓名】</div>
+    <div class="title">【目标岗位 · 如：高级前端工程师】</div>
+  </div>
+  <div class="contact">
+    <div>【手机】</div>
+    <div>【邮箱】</div>
+    <div>github.com/【id】</div>
+  </div>
+</div>
+
+<div class="pitch">
+  【一句话定位：你是谁、最强的是什么、能给对方带来什么。这是 HR 前 5 秒唯一会读的一句，
+  写具体——“用架构思维把零散能力工程化成生产线”，而不是“热爱技术、学习能力强”。】
+</div>
+
+<h2>工作经历</h2>
+
+<div class="item">
+  <div class="item-h">
+    <div><span class="org">【公司名】</span> <span class="role">· 【职位】</span></div>
+    <div class="when">2023.07 – 至今</div>
+  </div>
+  <ul>
+    <li>【做了什么 + <span class="m">量化结果</span>】——成果一定要带数字，“优化了性能”不如“首屏从 <span class="m">3.2s</span> 降到 <span class="m">0.8s</span>”</li>
+    <li>【负责的系统 / 主导的项目，写清你的角色是主导还是参与】</li>
+  </ul>
+</div>
+
+<h2>项目</h2>
+
+<div class="proj">
+  <div class="n">【项目名】<span class="stack">TypeScript · React · Rust</span></div>
+  <p>【一两句说清：解决什么问题、你做了哪部分、有什么可验证的结果（用户数 / 性能 / 开源 star）】</p>
+</div>
+
+<h2>技能</h2>
+<dl class="skills">
+  <dt>语言</dt>
+  <dd><span class="tag on">TypeScript</span><span class="tag on">Python</span><span class="tag">Rust</span><span class="tag">Go</span></dd>
+  <dt>前端</dt>
+  <dd><span class="tag on">React</span><span class="tag">Vue</span><span class="tag">Tailwind</span></dd>
+  <dt>后端</dt>
+  <dd><span class="tag on">FastAPI</span><span class="tag">PostgreSQL</span><span class="tag">Redis</span></dd>
+</dl>
+<p class="muted" style="margin-top:2mm;">深色标签 = 主力技能。别把会写 Hello World 的也列上——面试官会挑最不熟的那个问。</p>
+
+<h2>教育</h2>
+<div class="item">
+  <div class="item-h">
+    <div><span class="org">【学校】</span> <span class="role">· 【专业】· 【学历】</span></div>
+    <div class="when">2019.09 – 2023.06</div>
+  </div>
+</div>
+
+</body>
+</html>

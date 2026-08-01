@@ -83,6 +83,16 @@ node "$COMPANION" result <job-id>   # 取某任务结果
 node "$COMPANION" cancel <job-id>   # 取消
 ```
 
+**⚠️ rescue subagent 的「完成」≠ Codex task 完成（血泪坑）**：`codex:codex-rescue` 是纯转发器，它把 task 发到 companion 后台**就立刻返回并触发完成通知**——那一刻真正的 Codex task 才刚启动。别把这个 subagent 通知当审计完成。task 的真实终态**只能**靠 companion 主动查：拿它返回里的 `task-<id>`，轮询 `status --all` 到该行状态变 `completed`/`failed`，再 `result <id>` 取报告。
+
+**轮询判定要认状态字段，别数任务条数**：`completed` 的 job 会从 `status --all` 的 active 列表里消失——所以「凑够 N 个且 running==0」这类计数判据永远不成立、必然假超时（本会话实测栽过两次）。正确写法：对**每个已知 task-id** grep 它那一行，命中 `completed|failed|cancelled` 或**整行消失**即判其结束；全部结束才收工。轮询用长间隔（30–60s）少打扰。
+
+**看守要盯 log 增长、别只看 status（早警卡死）**：task 的 job log（`.../state/<repo>/jobs/<task-id>.log`）里 `Starting Codex Task → Starting task thread → Thread ready → Turn started → Running command…` 是真实心跳。健康任务几秒内就过 `Thread ready` 且 log 持续长；**卡死的任务会停在某行几十分钟不动而 status 仍显 running**（本会话真机：卡在 `Turn started` 41 分钟、log 4 行不长）。看守除查 status 终态外，加一条：`i≥6`（约 12min）时 log 仍 `≤5` 行 → 判卡死早退报警；log mtime 停滞 >15–20min → 判挂起。别再傻等 3 小时黑盒。
+
+**`--resume` 的 turn 会挂起（血泪坑·区别于 broker 死）**：resume 一个上下文很大的会话时，log 能到 `Thread ready`+`Turn started` 但那个 turn **十几分钟零输出**（broker 是活的、socket 在——不是下面那种 broker 死）。这是 resume 机制本身卡。修法：取消卡死的 resume，**改派一个 fresh 任务**（把要续的规格/plan 直接内联进 prompt，不用 `--resume`）——fresh 任务不会挂。经验：大会话续跑优先内联重派而非 `--resume`。
+
+**卡在 `Starting Codex task thread` 起不来 = 共享会话 broker 崩了（血泪坑·已实测修复）**：openai-codex 的「shared session」靠一个 **broker 进程**中介（companion task-worker ⇄ codex app-server），信息在 `…/state/<repo>/broker.json`（`endpoint`/`pidFile`/`sessionDir`/`pid`）。ChatGPT.app 重启等会让 broker 进程死掉，但 `broker.json` 仍死指着它 → 之后**每个新 task 都连死 socket、卡在 thread 启动、status 永远 running**。`companion setup` 只报 `connect ENOENT …/broker.sock` 不自愈。**修法**：确认 broker 死了（`ps -p <pid>` 无进程 / `broker.sock` ENOENT），`rm` 掉 stale `broker.json` + 其死 `sessionDir` 目录，再派任务——`ensureBrokerSession` 会自动拉起新 broker（`broker.json` 换成新 `sessionDir`+新 pid）。先派个极小 smoke（`task --background "print SMOKE_OK"`）验证越过 `Thread ready` 再重派真活。
+
 ## 禁止
 
 - ❌ 把 Codex 的完工报告当验收结果直接汇报给用户（必须亲验）

@@ -12,7 +12,7 @@
   · 模型走魔搭 ModelScope，落标准缓存 ~/.cache/modelscope（见 ~/.claude/rules/model-download.md）
   · 推理用专用 venv ~/.venvs/mlx-audio（mlx-audio + modelscope），脚本会自动重定向到它
   · 长文本按句切分逐段生成再拼接，适合 5 分钟级旁白
-  · 频道音色两型（channel.json voice.profiles·engine 字段路由·见 resolve_channel_ref）：
+  · 频道音色两型（card.json voice.profiles·engine 字段路由·见 resolve_channel_ref）：
     LoRA 型 voxcpm2-mlx-lora（mlx_model 专属合并模型 + 可选 prompt_wav/prompt_text 提示条）
     与零样本型（ref_wav/ref_text 基座克隆·向后兼容）
 """
@@ -48,7 +48,7 @@ from scipy.io import wavfile
 DEFAULT_MODEL = "mlx-community/VoxCPM2-8bit"   # 也可换 -4bit(更小更快) / -bf16(更高质量)
 DEFAULT_SR = 48000
 
-# 频道音色 profile 的 engine 路由值（channel.json voice.profiles[].engine）
+# 频道音色 profile 的 engine 路由值（card.json voice.profiles[].engine）
 ENGINE_LORA = "voxcpm2-mlx-lora"                    # LoRA 型：音色工作台训 LoRA→合并→转 MLX 的专属模型
 ENGINES_ZEROSHOT = ("", "voxcpm-mlx", "voxcpm2-mlx")  # 零样本型：基座 + 参考音克隆（含缺省无 engine）
 
@@ -58,29 +58,29 @@ _RNNN = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def load_channel():
-    """惰性加载当前频道（ms_channel·零依赖标准库）；找不到/坏了返回 None（零回归安全）。
+    """惰性加载当前频道（channek·零依赖标准库）；找不到/坏了返回 None（零回归安全）。
 
-    走 _shared/ms_channel.py（dev 真身 / vendored 两处都成立）；惰性调用，
+    走 _shared/channek.py（dev 真身 / vendored 两处都成立）；惰性调用，
     say/design 不付频道解析成本。mlx-audio venv 下也能 import（stdlib json）。
     """
     try:
         import pathlib
 
         for _anc in pathlib.Path(__file__).resolve().parents:
-            cand = _anc / "_shared" / "ms_channel.py"
+            cand = _anc / "_shared" / "channek.py"
             if cand.exists():
                 if str(cand.parent) not in sys.path:
                     sys.path.insert(0, str(cand.parent))
                 break
-        import ms_channel
+        import channek
 
-        return ms_channel.load(required=False)
+        return channek.load(required=False)
     except Exception:
         return None
 
 
 def resolve_channel_ref(ch, profile_key, md_tok):
-    """从 channel.json voice.profiles 解析 (model, ref_audio, ref_text)——按 `engine` 字段路由两型 profile。
+    """从 card.json voice.profiles 解析 (model, ref_audio, ref_text)——按 `engine` 字段路由两型 profile。
 
     · LoRA 型（engine=voxcpm2-mlx-lora）：音色工作台（voice-lab）训 LoRA → 合并进底座 → 转 MLX 的
       **专属音色模型**。model = `mlx_model`（音色烤进权重·必须是存在的目录，缺/坏直接报错不静默降级
@@ -107,7 +107,7 @@ def resolve_channel_ref(ch, profile_key, md_tok):
         if mm:
             p = ch.path(os.path.expanduser(mm))
             if not p.is_dir():
-                sys.exit(f"channel.json voice profile（engine={engine}）的 mlx_model 不是有效目录：{p}\n"
+                sys.exit(f"card.json voice profile（engine={engine}）的 mlx_model 不是有效目录：{p}\n"
                          "→ 音色为外部依赖：确认音色工作台的合并模型已就位（voices/<名>/mlx-8bit）")
             model = str(p)
         ref_audio = md_tok.get("ref_audio")
@@ -135,7 +135,7 @@ def resolve_channel_ref(ch, profile_key, md_tok):
             ref_text = p.read_text(encoding="utf-8").strip() if p.is_file() else ref_text
         return None, ref_audio, ref_text
 
-    sys.exit(f"channel.json voice profile 的 engine 未知：{engine!r}\n"
+    sys.exit(f"card.json voice profile 的 engine 未知：{engine!r}\n"
              f"→ 支持：{ENGINE_LORA}（LoRA 型·mlx_model [+ prompt_wav/prompt_text]）"
              "或缺省/voxcpm-mlx（零样本型·ref_wav/ref_text）")
 
@@ -374,7 +374,7 @@ def read_text(args) -> str:
 def _resolve_clone_voice(args, *, is_clone: bool):
     """解析 clone 音色 → (ch_model, ref_audio, ref_text)。run(clone) 与 run_batch 共用（不重复逻辑）。
 
-    channel.json voice.profiles（engine 路由两型·文件 exists() 兜底）→ voice.md（--voice）。
+    card.json voice.profiles（engine 路由两型·文件 exists() 兜底）→ voice.md（--voice）。
     只在 clone（需音色·is_clone）或显式 --voice 时介入；say/design 不进来（行为不变·零回归）。
     """
     ref_audio = getattr(args, "ref_audio", None)
@@ -393,7 +393,7 @@ def _resolve_clone_voice(args, *, is_clone: bool):
         if ch is not None and ch.voice_profile(profile_key):
             _pk = profile_key or ch.get("voice.default")
             _tag = "·LoRA 合并模型（音色在权重）" if ch_model else ""
-            print(f"· 频道音色 channel.json voice.profiles[{_pk}]{_tag}", file=sys.stderr)
+            print(f"· 频道音色 card.json voice.profiles[{_pk}]{_tag}", file=sys.stderr)
     return ch_model, ref_audio, ref_text
 
 
@@ -414,7 +414,7 @@ def run_batch(args) -> None:
 
     ch_model, ref_audio, ref_text = _resolve_clone_voice(args, is_clone=True)
     if not ch_model and not (ref_audio and ref_text):
-        sys.exit("batch(clone) 需要频道 channel.json voice.profiles，或 --voice 指向 voice.md，"
+        sys.exit("batch(clone) 需要频道 card.json voice.profiles，或 --voice 指向 voice.md，"
                  "或 --ref-audio + --ref-text")
 
     model = load_model(args.model or ch_model or DEFAULT_MODEL)   # ★ 只载一次·省 N-1 次重载
@@ -477,7 +477,7 @@ def run(args) -> None:
     # clone 硬闸：零样本型必须有 ref；LoRA 型音色烤进权重·无提示条也能出声（有 prompt 更贴·0.889）
     if args.mode == "clone" and not ch_model and not (ref_audio and ref_text):
         sys.exit("clone 需要 --ref-audio + --ref-text，或 --voice 指向 voice.md，"
-                 "或频道 channel.json voice.profiles（LoRA 型 mlx_model / 零样本型 ref_wav+ref_text）")
+                 "或频道 card.json voice.profiles（LoRA 型 mlx_model / 零样本型 ref_wav+ref_text）")
     # 模型优先级：显式 --model > 频道 LoRA 型 profile 的 mlx_model > 默认基座
     model = load_model(args.model or ch_model or DEFAULT_MODEL)
     audio, sr = synthesize(
@@ -531,7 +531,7 @@ def build_parser() -> argparse.ArgumentParser:
     common(s_clone)
     s_clone.add_argument("--voice", help="读 voice.md 音色 token 自动取 ref-audio/ref-text（替代手填）")
     s_clone.add_argument("--voice-profile", dest="voice_profile", default=None,
-                         help="channel.json voice.profiles 的 key（默认取 voice.default）")
+                         help="card.json voice.profiles 的 key（默认取 voice.default）")
     s_clone.add_argument("--ref-audio", dest="ref_audio", help="参考音频 wav（不用 --voice 时必填）")
     s_clone.add_argument("--ref-text", dest="ref_text", help="参考音频逐字转写（不用 --voice 时必填）")
 
@@ -541,7 +541,7 @@ def build_parser() -> argparse.ArgumentParser:
                          help="JSON 数组文件：[{text_file|text, out}, ...]（音色 / 参数全段共享）")
     s_batch.add_argument("--voice", help="读 voice.md 音色 token（同 clone·替代手填 ref）")
     s_batch.add_argument("--voice-profile", dest="voice_profile", default=None,
-                         help="channel.json voice.profiles 的 key（默认取 voice.default）")
+                         help="card.json voice.profiles 的 key（默认取 voice.default）")
     s_batch.add_argument("--ref-audio", dest="ref_audio", help="参考音频 wav（不用频道音色 / --voice 时）")
     s_batch.add_argument("--ref-text", dest="ref_text", help="参考音频逐字转写")
 

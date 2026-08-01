@@ -30,11 +30,11 @@ import json, hashlib, hmac, datetime, base64, urllib.request, urllib.error, time
 
 import pathlib as _pl
 RES = str(_pl.Path.home() / ".agents" / "resources.json")  # 兜底：等价 ~/.agents/resources.json（零回归）
-try:  # 经 _shared/ms_channel 定位凭据（$AGENTS_RESOURCES > 上溯 _secrets > ~/.agents/resources.json）
+try:  # 经 _shared/channek 定位凭据（$AGENTS_RESOURCES > 上溯 _secrets > ~/.agents/resources.json）
     for _anc in _pl.Path(__file__).resolve().parents:
-        if (_anc / "_shared" / "ms_channel.py").exists():
+        if (_anc / "_shared" / "channek.py").exists():
             sys.path.insert(0, str(_anc / "_shared")); break
-    import ms_channel as _msc
+    import channek as _msc
     _hit = _msc.find_secrets()
     if _hit:
         RES = str(_hit)

@@ -27,6 +27,7 @@ These aren't generic "do-anything assistants." Each skill takes a stance: my tec
 | **spechub-best-practices** | Write high-quality handoff specs managed via git worktree — built for AI-to-AI task handoff |
 | **notion-chat-archiver** | Summarize an AI conversation and archive it into a personal Notion database (topic / takeaways / tags) |
 | **solution-vault** | A personal solution library to replicate proven implementations (OAuth, uploads, payments…) across projects |
+| **pdf-craft** | Typeset content into print-grade PDFs via HTML+CSS — four layout systems (government filing / business proposal / technical report / resume) plus a typography linter for Chinese print conventions |
 
 ## Visualization
 
@@ -63,7 +64,7 @@ These aren't generic "do-anything assistants." Each skill takes a stance: my tec
 
 | skill | what it does |
 |---|---|
-| **skill-management** | My skill-management methodology itself: organize many skills as source → category → skill, driven by a single `registry`, reusable across Claude Code & Codex, with bundled tooling. **Any AI can read it and replicate the whole setup** |
+| **skill-management** | My skill-management methodology itself: organize many skills as source → category → skill, driven by a single `registry`, reusable across Claude Code, Gemini, Pi & Codex with per-agent sync whitelists and bundled tooling. **Any AI can read it and replicate the whole setup** |
 | **self-improving-workflow** | A universal methodology: four reviewer sub-agents for collaborative learning + a single `/run` entrypoint for long-running autonomous execution |
 | **memory-palace** | Guide anyone to build a platform-agnostic personal memory system: one Obsidian vault (plain Markdown) that Claude / Codex / Gemini read & write together, so every agent understands *you* over time — memory visible, editable, portable. Subcommands help/init/interview/extract/distill/review/analyze; deterministic zero-dep engine `mp.py`. Distils from Karpathy / OpenClaw / Hermes / open-second-brain / mem0 |
 | **loop-harness** | Scaffold + harness for high-quality long-running autonomous iteration loops (optimization / audit / migration / deep grinding). Taskbook + ledger + log file-driven memory, an **external objective verification gate** (report what the script says, not self-judgment), **progress-detection stop/escalate** (not step count), anti-drift memory + multi-agent. Distilled from a real 100-round loop; isomorphic to Ralph loop + BabyAGI + evaluator-optimizer. Runs on top of `/loop` or `/schedule` |

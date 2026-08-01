@@ -27,6 +27,7 @@
 | **spechub-best-practices** | 写高质量交接规约、用 git worktree 管理，专为 AI 之间的任务交接 |
 | **notion-chat-archiver** | 把一次 AI 对话总结归档进 Notion 对话录库（带主题 / 要点 / 标签等元数据） |
 | **solution-vault** | 个人方案库：把验证过的技术方案（OAuth、文件上传、支付…）跨项目复刻 |
+| **pdf-craft** | 走 HTML+CSS 把内容排成印刷级 PDF——四套版式（政务申报 / 商业提案 / 技术报告 / 简历）+ 中文排版自检 |
 
 ## 可视化
 
@@ -63,7 +64,7 @@
 
 | skill | 做什么 |
 |---|---|
-| **skill-management** | 我管理 skill 的方法论本身：把大量 skill 按「来源 → 分类 → skill」三级组织、单一 `registry` 驱动、跨 Claude Code 与 Codex 复用，自带工具。**别人的 AI 读完即可复刻同一套** |
+| **skill-management** | 我管理 skill 的方法论本身：把大量 skill 按「来源 → 分类 → skill」三级组织、单一 `registry` 驱动，通过各 agent 独立白名单跨 Claude Code、Gemini、Pi 与 Codex 复用，自带工具。**别人的 AI 读完即可复刻同一套** |
 | **self-improving-workflow** | 通用方法论：4 个评审子 agent 协同学习 + `/run` 单入口长任务自主执行 |
 | **memory-palace** | 引导任何人搭建平台无关的个人记忆系统：一座 Obsidian vault（纯 Markdown）让 Claude / Codex / Gemini 共读共写「你是谁/项目/偏好/决策」，越用越懂你、记忆可见可改可带走。子命令 help/init/interview/extract/distill/review/analyze；确定性零依赖引擎 `mp.py`。吸收自 Karpathy / OpenClaw / Hermes / open-second-brain / mem0 |
 | **loop-harness** | 搭建并跑「高质量长期自主迭代 loop 任务」的脚手架 + harness（优化/审计/迁移/深度打磨）。任务书+台账+日志文件即记忆，**外部客观验证门**（agent 报脚本结果·不报自评），**进度检测停止/升级**（非步数·停滞求人），记忆防漂移 + 多智能体。**从一个真跑 100 轮的 loop 提炼**，与 Ralph loop + BabyAGI + evaluator-optimizer 同构。建在 `/loop` 或 `/schedule` 之上 |

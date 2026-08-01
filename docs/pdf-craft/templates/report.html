@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>【报告标题】</title>
+<style>
+/* ═══════════════════════════════════════════════════
+   版式：report · 技术报告 / 白皮书
+   适用：技术方案、架构设计、调研报告、白皮书
+   特征：编号标题 · 代码块 · 图表编号 · 术语表 · 页眉导航
+   与 govdoc 的区别：允许代码块和技术图，标题用阿拉伯数字多级编号（1.2.3），
+   更适合工程读者；与 proposal 的区别：不追求视觉冲击，信息密度优先
+   ═══════════════════════════════════════════════════ */
+
+:root {
+  --ink:    #1c1c1e;
+  --ink-2:  #4a4a4f;
+  --ink-3:  #86868b;
+  --line:   #dcdce0;
+  --line-2: #1c1c1e;
+  --tint:   #f5f5f7;
+  --accent: #2c5f8a;          /* 冷色，技术文档常用 */
+  --code-bg: #f7f7f9;
+
+  --sans: "PingFang SC", "Heiti SC", sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+
+@page { size: A4; margin: 22mm 20mm 20mm; }
+@page :first { margin: 0; }
+
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+html { font-size: 10.5pt; }
+body {
+  margin: 0; background: #fff; color: var(--ink);
+  font-family: var(--sans); font-size: 10.5pt; line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ════ 封面 ════ */
+.cover {
+  width: 210mm; height: 297mm; padding: 45mm 28mm 25mm;
+  display: flex; flex-direction: column; page-break-after: always; position: relative;
+}
+.cover::after {                       /* 底部色带，技术文档的克制装饰 */
+  content: ""; position: absolute; left: 0; bottom: 0; right: 0; height: 6mm; background: var(--accent);
+}
+.cover-tag { font-family: var(--mono); font-size: 9pt; letter-spacing: .2em; text-transform: uppercase; color: var(--accent); margin-bottom: 6mm; }
+.cover-title { font-size: 30pt; font-weight: 700; line-height: 1.35; letter-spacing: -.01em; margin: 0 0 5mm; }
+.cover-sub { font-size: 13pt; color: var(--ink-2); line-height: 1.6; margin-bottom: auto; }
+.cover-meta { border-top: 2px solid var(--line-2); padding-top: 5mm; font-size: 10pt; line-height: 2; }
+.cover-meta b { display: inline-block; width: 22mm; font-weight: 600; color: var(--ink-2); }
+
+/* ════ 标题：多级阿拉伯数字编号 ════ */
+h2 {
+  font-size: 16pt; font-weight: 700; margin: 10mm 0 4mm;
+  padding-bottom: 2mm; border-bottom: 2px solid var(--accent);
+  page-break-after: avoid;
+}
+h3 { font-size: 12.5pt; font-weight: 700; margin: 7mm 0 3mm; page-break-after: avoid; }
+h4 { font-size: 10.5pt; font-weight: 700; margin: 5mm 0 2mm; color: var(--ink-2); page-break-after: avoid; }
+p { margin: 0 0 3.2mm; }
+ul, ol { margin: 0 0 3.5mm; padding-left: 6mm; }
+li { margin-bottom: 1.4mm; }
+
+/* ════ 代码 ════ */
+code { font-family: var(--mono); font-size: .88em; background: var(--code-bg); padding: .4mm 1.3mm; border-radius: 2px; overflow-wrap: anywhere; }
+pre {
+  font-family: var(--mono); font-size: 8.5pt; line-height: 1.6;
+  background: var(--code-bg); border: 1px solid var(--line); border-left: 3px solid var(--accent);
+  padding: 3mm 4mm; margin: 3mm 0 4mm; overflow-x: auto;
+  page-break-inside: avoid;         /* 代码块被撕开极难读 */
+  white-space: pre-wrap; word-break: break-all;
+}
+pre code { background: none; padding: 0; font-size: inherit; }
+
+/* ════ 表格 ════ */
+table {
+  width: 100%; border-collapse: collapse; margin: 3.5mm 0 5mm;
+  font-size: 9.5pt; line-height: 1.6; page-break-inside: avoid; text-align: left;
+}
+caption { caption-side: top; text-align: left; font-size: 9pt; font-weight: 700; color: var(--ink-2); padding-bottom: 2mm; }
+thead th { text-align: left; font-weight: 700; padding: 2.2mm 2.5mm; background: var(--tint); border-top: 1.5px solid var(--line-2); border-bottom: 1px solid var(--line-2); white-space: nowrap; }
+tbody td { padding: 2mm 2.5mm; border-bottom: .5px solid var(--line); vertical-align: top; }
+tbody tr:last-child td { border-bottom: 1.5px solid var(--line-2); }
+td.r, th.r { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+td.c, th.c { text-align: center; }
+td.mono { font-family: var(--mono); font-size: 8.8pt; }
+
+/* ════ 提示框：技术文档的四种语义 ════ */
+.admon { padding: 3mm 4mm; margin: 4mm 0; border-left: 3px solid; border-radius: 0 3px 3px 0; page-break-inside: avoid; font-size: 9.8pt; }
+.admon .t { font-weight: 700; margin-bottom: 1.5mm; }
+.admon.note { background: #f2f6fa; border-color: var(--accent); }
+.admon.warn { background: #fdf6ec; border-color: #c98a10; }
+.admon.danger { background: #fdf1f0; border-color: #c0392b; }
+.admon.tip { background: #f1f8f3; border-color: #2e7d4f; }
+.admon p { margin: 0; }
+.admon p + p { margin-top: 2mm; }
+
+/* ════ 图 ════ */
+figure { margin: 4mm 0 5mm; page-break-inside: avoid; text-align: center; }
+figure img, figure svg { max-width: 100%; }
+figcaption { font-size: 9pt; color: var(--ink-2); margin-top: 2.5mm; }
+
+/* ════ 术语表 ════ */
+dl.glossary { margin: 4mm 0; }
+dl.glossary dt { font-weight: 700; font-family: var(--mono); font-size: 9.5pt; margin-top: 3mm; }
+dl.glossary dd { margin: .8mm 0 0; font-size: 9.8pt; color: var(--ink-2); }
+
+.page-break { page-break-before: always; }
+.note-sm { font-size: 8.5pt; color: var(--ink-2); }
+</style>
+</head>
+<body>
+
+<!-- ════════ 封面 ════════ -->
+<div class="cover">
+  <div class="cover-tag">Technical Report</div>
+  <h1 class="cover-title">【报告标题】</h1>
+  <div class="cover-sub">【一句话说明这份报告解决什么问题】</div>
+  <div class="cover-meta">
+    <div><b>版本</b>v1.0</div>
+    <div><b>作者</b>【姓名】</div>
+    <div><b>日期</b>2026-07-29</div>
+    <div><b>状态</b>草稿 / 评审中 / 已定稿</div>
+  </div>
+</div>
+
+<!-- ════════ 正文 ════════ -->
+<h2>1　背景与目标</h2>
+<p>技术报告的标题用阿拉伯数字多级编号（1、1.1、1.1.1），便于交叉引用「见 3.2 节」。</p>
+
+<h3>1.1　二级标题</h3>
+
+<div class="admon note">
+  <div class="t">说明</div>
+  <p>四种提示框：note（说明）/ tip（建议）/ warn（注意）/ danger（严重风险）。用语义选，别只看颜色好看。</p>
+</div>
+
+<h3>1.2　代码示例</h3>
+<pre><code>export function resolveTime(t: RationalTime): number {
+  return t.value / t.rate;   // 有理时间转秒，仅用于展示层
+}</code></pre>
+
+<div class="admon warn">
+  <div class="t">注意</div>
+  <p>代码块设了 <code>page-break-inside: avoid</code>——被撕成两页的代码极难读。超过一页的长代码应拆分或放附录。</p>
+</div>
+
+<h2>2　方案设计</h2>
+
+<table>
+  <caption>表 2-1　方案对比</caption>
+  <thead><tr><th style="width:18%">方案</th><th style="width:26%">优点</th><th>代价</th></tr></thead>
+  <tbody>
+    <tr><td class="mono">option-a</td><td>实现简单</td><td>扩展性受限</td></tr>
+    <tr><td class="mono">option-b</td><td>可扩展</td><td>初期成本高</td></tr>
+  </tbody>
+</table>
+
+<figure>
+  <!-- 架构图建议内联 SVG，或用纯 CSS 画（见 references/components.md） -->
+  <div style="border:1px solid var(--line);padding:8mm;color:var(--ink-3);font-size:9pt;">【架构图占位】</div>
+  <figcaption>图 2-1　系统架构</figcaption>
+</figure>
+
+<h2>附录 A　术语表</h2>
+<dl class="glossary">
+  <dt>RationalTime</dt>
+  <dd>有理时间。以 {value, rate} 分数表示时间点，避免浮点累积误差。</dd>
+  <dt>EditTransaction</dt>
+  <dd>编辑事务。文档的唯一写入路径，保证每次修改可撤销、可审计。</dd>
+</dl>
+
+</body>
+</html>

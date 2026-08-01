@@ -30,20 +30,20 @@ python3 "$SK" design --instruct "温柔甜美的年轻女性主播" \
 python3 "$SK" clone --ref-audio voice.wav --ref-text "参考音频里说的原话" \
   --text "这句话会用参考音色说出来。" --out out.wav
 
-# ③' clone（频道固定音色首选）—— 自动读 _channel/channel.json 的 voice.profiles[default]
-#     在频道目录内 / 设 $MEDIA_STUDIO_CHANNEL 即可，连 --voice 都不用；多音色用 --voice-profile <key>。
+# ③' clone（频道固定音色首选）—— 自动读 _channel/card.json 的 voice.profiles[default]
+#     在频道目录内 / 设 $CHANNEK_CHANNEL 即可，连 --voice 都不用；多音色用 --voice-profile <key>。
 #     LoRA 型 profile（engine=voxcpm2-mlx-lora）会**自动加载专属合并模型**（mlx_model）+
 #     prompt_wav/prompt_text 提示条——出片管线（voicegen）走的就是这条，不必手传 --model
 python3 "$SK" clone --text-file script.txt --out narration.wav
 
-# ③'' clone --voice —— 显式指一份 voice.md（channel.json 缺失时的兜底）
+# ③'' clone --voice —— 显式指一份 voice.md（card.json 缺失时的兜底）
 python3 "$SK" clone --voice path/to/voice.md --text-file script.txt --out narration.wav
 
 # 长旁白：文本入文件，自动按句切分逐段生成再拼接
 python3 "$SK" say --text-file script.txt --out narration.wav
 ```
 
-`info` 子命令打印 venv / 模型路径 / 采样率 / engine（+ 解析到的频道音色 profile）。**音色解析优先级**：显式 `--ref-audio/--ref-text`（及显式 `--model`）> **频道 `_channel/channel.json` 的 `voice.profiles[default]`**（经 `_shared/ms_channel.py` 读取，`--voice-profile` 选 key）> `--voice` 指的 voice.md frontmatter。
+`info` 子命令打印 venv / 模型路径 / 采样率 / engine（+ 解析到的频道音色 profile）。**音色解析优先级**：显式 `--ref-audio/--ref-text`（及显式 `--model`）> **频道 `_channel/card.json` 的 `voice.profiles[default]`**（经 `_shared/channek.py` 读取，`--voice-profile` 选 key）> `--voice` 指的 voice.md frontmatter。
 
 **频道 profile 两型（`engine` 字段路由·`resolve_channel_ref`）**：
 

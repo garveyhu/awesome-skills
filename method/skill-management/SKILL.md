@@ -70,6 +70,7 @@ sync:
   mirror: [agent-browser, memory-palace, skill-management]  # 扁平镜像只留点名的（白名单，无视 tier）
   claude: true    # true=默认全量（core+extra）
   gemini: true    # false=跳过该目标：sync 不碰、doctor 不查
+  pi: [media-gen, codex-image-gen, gemini-gen]  # 白名单：Pi 只挂它真正需要的能力
 ```
 
 每个目标三种取值：`true` 全量（按 tier 规则）/ `false` 跳过不碰 / `[白名单]` 只软链点名的 skill。缺省无此段 = 全部 `true`（与旧行为一致）。典型用法：通用扁平镜像只留最常用的几个、控住会全量扫描它的 agent 的 token，各 agent 挂载点仍全量。
@@ -90,12 +91,14 @@ python3 scripts/skillctl.py unmount <项目> # 撤销该项目的软链
 
 工作流：**只改 registry.yaml → 跑 sync → doctor 验收**。`stats` 里的「未纳管 foreign」会暴露任何绕过 registry 偷偷塞进挂载点的 skill。
 
-## 跨 agent：Claude Code 与 Codex
+## 跨 agent：Claude Code、Gemini、Pi 与 Codex
 
-方法论本身与 agent 无关，**只有最后「软链挂到哪」按 agent 不同**——这正是 `mounts` 列表存在的意义，列出每个 agent 的目标目录，`sync` 一次同步到全部：
+方法论本身与 agent 无关，**只有最后「软链挂到哪」按 agent 不同**。实际部署可为每个 agent 设置独立同步目标与白名单，`sync` 一次同步到全部：
 
-- **Claude Code**：原生在 `~/.claude/skills/<name>/SKILL.md` 自动发现 skill。挂载点填 `~/.claude/skills`。
-- **Codex**：没有等价的 skill 自动发现机制。两种落地：① 把扁平镜像目录在 `AGENTS.md` 里引用，让 Codex 读到；② 软链进你让 Codex 读取的某个目录，挂载点填那个路径。
+- **Claude Code**：原生发现 `~/.claude/skills/<name>/SKILL.md`。
+- **Gemini CLI**：挂载到 `~/.gemini/config/skills/<name>/SKILL.md`。
+- **Pi**：原生发现 `~/.pi/agent/skills/` 和 `~/.agents/skills/`；推荐用 `sync.pi` 白名单挂载 Pi 真正需要的能力，避免所有 skill 描述常驻上下文。
+- **Codex**：若当前版本没有等价自动发现机制，可把扁平镜像目录在 `AGENTS.md` 里引用，或软链进它会读取的目录。
 - **任何能读文件的 AI**：直接把本 `SKILL.md` 喂给它，按下方步骤执行即可复刻。
 
 ## 复刻步骤（AI 照此执行即可搭好）

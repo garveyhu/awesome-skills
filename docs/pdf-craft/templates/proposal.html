@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>【提案标题】</title>
+<style>
+/* ═══════════════════════════════════════════════════
+   版式：proposal · 商业提案（设计感）
+   适用：给投资人/客户看的 BP、产品方案、品牌提案
+   特征：暖砂底 · 大字排版对比 · 卡片 · 数据块 · 单一强调色
+   ⚠️ 不要拿它交政府材料——对方会觉得不够严肃，那种场合用 govdoc
+   ═══════════════════════════════════════════════════ */
+
+:root {
+  /* 5 色板：1 主色 + 1 强调 + 3 中性。强调色面积 ≤5% */
+  --canvas:  #f6f2e8;
+  --surface: #fffdf7;
+  --sunken:  #efeade;
+  --ink:     #161616;
+  --ink-2:   #746f66;
+  --ink-3:   #9c968b;
+  --line:    rgba(22,22,22,.13);
+  --line-2:  rgba(22,22,22,.22);
+  --accent:  #12805c;        /* 换成品牌色 */
+  --accent-soft: rgba(18,128,92,.10);
+  --cta:     #1a1815;
+
+  --sans: "PingFang SC", "Heiti SC", sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+
+@page { size: A4; margin: 18mm 16mm 16mm; }
+@page :first { margin: 0; }
+
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+html { font-size: 10.5pt; }
+body {
+  margin: 0; color: var(--ink); font-family: var(--sans);
+  line-height: 1.75; letter-spacing: .01em; -webkit-font-smoothing: antialiased;
+  background-color: var(--canvas);
+  /* 全幅细颗粒去塑料感。走 body 背景而非 fixed 层，才能平铺到每一页 */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
+}
+
+/* ════ 封面：signature moment 在这里，全文只此一处 ════ */
+.cover {
+  position: relative; width: 210mm; height: 297mm;
+  padding: 26mm 20mm 18mm; display: flex; flex-direction: column;
+  page-break-after: always; overflow: hidden;
+}
+/* 破框咬合：出血的氛围光晕，制造纵深 */
+.cover::before {
+  content: ""; position: absolute; top: -40mm; right: -50mm;
+  width: 130mm; height: 130mm; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--accent-soft), rgba(26,24,21,.05) 60%, transparent 72%);
+}
+.cover-mark { display: flex; align-items: center; gap: 11px; position: relative; }
+.cover-mark .wordmark { font-family: var(--mono); font-size: 15pt; font-weight: 700; letter-spacing: -.02em; color: var(--cta); }
+.cover-eyebrow {
+  margin-top: auto; font-family: var(--mono); font-size: 8.5pt;
+  letter-spacing: .22em; text-transform: uppercase; color: var(--ink-3);
+}
+.cover-eyebrow .cn { font-family: var(--sans); letter-spacing: .3em; }
+
+/* 超大中文标题必须拆内部层级——铺垫（中号）→ payoff（超大）→ 关键词（强调色）。
+   全篇一个字号靠换色假装层级 = 黑砖墙。中文词绝不能被容器切断。 */
+.cover-title { margin: 7mm 0 0; font-size: 41pt; font-weight: 500; line-height: 1.24; letter-spacing: -.01em; }
+.cover-title .peak { display: block; font-size: 55pt; font-weight: 800; line-height: 1.12; letter-spacing: -.035em; }
+.cover-title .peak em { font-style: normal; color: var(--accent); }
+.cover-title .dot { font-size: .5em; }        /* 超大标题的句号要缩小 */
+.cover-sub { margin-top: 8mm; font-size: 13pt; color: var(--ink-2); letter-spacing: .04em; }
+.cover-rule { margin: 11mm 0 6mm; height: 2px; background: var(--cta); width: 22mm; }
+.cover-meta { display: grid; grid-template-columns: repeat(4,1fr); gap: 6mm; padding-top: 6mm; border-top: 1px solid var(--line); }
+.cover-meta dt { font-family: var(--mono); font-size: 7pt; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2mm; }
+.cover-meta dd { margin: 0; font-size: 9.5pt; font-weight: 500; }
+
+/* ════ 正文 ════ */
+h2 {
+  font-size: 19pt; font-weight: 700; letter-spacing: -.02em;
+  margin: 11mm 0 5mm; padding-top: 4mm;
+  border-top: 2px solid var(--cta); page-break-after: avoid; position: relative;
+}
+h2 .num { font-family: var(--mono); font-size: 9pt; font-weight: 700; color: var(--accent); letter-spacing: .1em; display: block; margin-bottom: 1.5mm; }
+h3 { font-size: 12pt; font-weight: 700; margin: 7mm 0 2.5mm; page-break-after: avoid; letter-spacing: -.01em; }
+h4 { font-size: 10pt; font-weight: 700; margin: 5mm 0 2mm; color: var(--ink-2); page-break-after: avoid; }
+p { margin: 0 0 3mm; }
+em.hl { font-style: normal; color: var(--accent); font-weight: 700; }
+ul, ol { margin: 0 0 3.5mm; padding-left: 5mm; }
+li { margin-bottom: 1.2mm; }
+code { font-family: var(--mono); font-size: .88em; background: var(--sunken); padding: .5mm 1.4mm; border-radius: 2px; overflow-wrap: anywhere; }
+.n { font-family: var(--mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* ════ 表格 ════ */
+table {
+  width: 100%; border-collapse: collapse; margin: 3mm 0 5mm;
+  font-size: 9pt; page-break-inside: avoid;
+  text-align: left;                 /* ⚠️ 别继承两端对齐，见 govdoc 注释 */
+}
+thead th { text-align: left; font-weight: 700; font-size: 8pt; letter-spacing: .06em; color: var(--ink-2); padding: 2mm 2.5mm; border-bottom: 1.5px solid var(--line-2); white-space: nowrap; }
+tbody td { padding: 2mm 2.5mm; border-bottom: 1px solid var(--line); vertical-align: top; }
+tbody tr:nth-child(even) { background: rgba(22,22,22,.022); }
+td.r, th.r { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+tfoot td { padding: 2.2mm 2.5mm; border-top: 1.5px solid var(--cta); font-weight: 700; background: var(--accent-soft); }
+tfoot td.r { font-family: var(--mono); text-align: right; }
+
+/* ════ 数据块 ════ */
+.stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 3mm; margin: 4mm 0 6mm; page-break-inside: avoid; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 4mm 3.5mm; box-shadow: 0 1px 2px rgba(22,22,22,.04); }
+.stat .v { font-family: var(--mono); font-size: 21pt; font-weight: 700; line-height: 1.05; letter-spacing: -.04em; color: var(--cta); font-variant-numeric: tabular-nums; }
+.stat .v small { font-size: 10pt; font-weight: 600; margin-left: .5mm; }
+.stat .k { margin-top: 1.5mm; font-size: 7.8pt; color: var(--ink-2); line-height: 1.5; }
+.stat.accent { border-color: rgba(18,128,92,.35); background: var(--accent-soft); }
+.stat.accent .v { color: var(--accent); }
+
+/* ════ 引述块 ════ */
+.pull { margin: 5mm 0; padding: 4mm 5mm; background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 4px 4px 0; font-size: 10.5pt; line-height: 1.7; page-break-inside: avoid; box-shadow: 0 1px 2px rgba(22,22,22,.04); }
+.pull.dark { background: var(--cta); color: #fdfcf8; border-left-color: var(--accent); }
+.pull.dark strong { color: #fff; }
+.pull .lead { display: block; font-family: var(--mono); font-size: 7.5pt; letter-spacing: .16em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2mm; }
+.pull.dark .lead { color: rgba(253,252,248,.5); }
+
+/* ════ 卡片 ════ */
+.cards { display: grid; grid-template-columns: 1fr 1fr; gap: 3mm; margin: 4mm 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 4mm; page-break-inside: avoid; }
+.card h5 { margin: 0 0 2mm; font-size: 9.5pt; font-weight: 700; display: flex; align-items: baseline; gap: 2mm; }
+.card h5 .idx { font-family: var(--mono); font-size: 8pt; color: var(--accent); }
+.card p { font-size: 8.8pt; color: var(--ink-2); margin: 0; line-height: 1.65; }
+
+.page-break { page-break-before: always; }
+.note-sm { font-size: 8.2pt; color: var(--ink-2); line-height: 1.6; }
+.footnote { margin-top: 8mm; padding-top: 3mm; border-top: 1px solid var(--line); font-size: 7.8pt; color: var(--ink-3); line-height: 1.65; }
+</style>
+</head>
+<body>
+
+<!-- ════════ 封面 ════════ -->
+<div class="cover">
+  <div class="cover-mark">
+    <svg width="30" height="30" viewBox="0 0 100 100"><rect x="20" y="30" width="14" height="40" rx="7" fill="#1a1815"/><rect x="43" y="18" width="14" height="64" rx="7" fill="#12805c"/><rect x="66" y="36" width="14" height="28" rx="7" fill="#1a1815"/></svg>
+    <span class="wordmark">【品牌名】</span>
+  </div>
+
+  <div class="cover-eyebrow">Business Plan&nbsp;&nbsp;·&nbsp;&nbsp;<span class="cn">商业计划书</span></div>
+
+  <!-- 标题拆层级：铺垫句中号 → payoff 超大 → 关键词强调色 -->
+  <h1 class="cover-title">
+    【铺垫半句】<span class="dot">，</span>
+    <span class="peak">【核心主张<em>关键词</em>】<span class="dot">。</span></span>
+  </h1>
+  <div class="cover-sub">【一句话副标题】</div>
+
+  <div class="cover-rule"></div>
+
+  <dl class="cover-meta">
+    <div><dt>Version</dt><dd>v1.0</dd></div>
+    <div><dt>Date</dt><dd>2026.07</dd></div>
+    <div><dt>Location</dt><dd>浙江 · 杭州</dd></div>
+    <div><dt>Founder</dt><dd>【姓名】</dd></div>
+  </dl>
+</div>
+
+<!-- ════════ 正文 ════════ -->
+<h2><span class="num">01</span>执行摘要</h2>
+
+<p>正文不缩进，靠段间距分隔——这是设计感版式与公文版式最直观的差别之一。</p>
+
+<div class="stats">
+  <div class="stat"><div class="v">1.8<small>万亿</small></div><div class="k">市场规模<br>2025 年，同比 +42%</div></div>
+  <div class="stat"><div class="v">1.3<small>亿+</small></div><div class="k">目标人群总数</div></div>
+  <div class="stat accent"><div class="v">50<small>万</small></div><div class="k">三年可获得市场</div></div>
+  <div class="stat"><div class="v">300<small>万</small></div><div class="k">第三年营收目标</div></div>
+</div>
+
+<div class="pull dark">
+  <span class="lead">Why now</span>
+  深色引述块用来放全文最重要的那一两句判断。<strong>一份提案里不超过三处</strong>，多了就失去重量。
+</div>
+
+<h3>二级标题</h3>
+
+<div class="cards">
+  <div class="card"><h5><span class="idx">01</span>卡片标题</h5><p>并列要点用卡片，两列。三个以上要点时第三张单独占整行。</p></div>
+  <div class="card"><h5><span class="idx">02</span>卡片标题</h5><p>卡片里的文字要短，长段落回到正文流。</p></div>
+</div>
+
+<table>
+  <thead><tr><th>项目</th><th class="r" style="width:18%">第一年</th><th class="r" style="width:18%">第二年</th></tr></thead>
+  <tbody><tr><td>示例行</td><td class="r">225,000</td><td class="r">976,000</td></tr></tbody>
+  <tfoot><tr><td><strong>合计</strong></td><td class="r">225,000</td><td class="r">976,000</td></tr></tfoot>
+</table>
+
+<div class="footnote">
+  数据来源：【出处】。财务预测为保守估算，不构成收益承诺。
+</div>
+
+</body>
+</html>

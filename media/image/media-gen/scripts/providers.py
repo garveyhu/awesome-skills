@@ -68,7 +68,7 @@ def _aspect_to_dashscope_size(aspect: Optional[str]) -> str:
 
 
 # ── 直连 API key 配置（绝不硬编码：运行时读配置文件）─────────────────────────
-# 事实源：Media-Studio/_secrets/media-api-keys.json（从 --out / cwd 上溯找）。
+# 由使用者自行配置：`风格卡/发布配置/media-api-keys.json`（从 --out / cwd 上溯找）。
 # 也允许环境变量覆盖（MEDIAGEN_KEYS_FILE 指向配置文件）。
 def _find_keys_file() -> Optional[Path]:
     env = os.environ.get("MEDIAGEN_KEYS_FILE")

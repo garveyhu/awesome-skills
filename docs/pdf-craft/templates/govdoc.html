@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>【文件名称】</title>
+<style>
+/* ═══════════════════════════════════════════════════
+   版式：govdoc · 公文 / 政务申报
+   适用：政府申报材料、立项书、结题报告、正式方案、对公文件
+   特征：白底 · 居中封面 · 中文数字章节 · 三线表 · 单色 · 页码
+   ═══════════════════════════════════════════════════ */
+
+:root {
+  --ink:    #1a1a1a;
+  --ink-2:  #444444;
+  --ink-3:  #767676;
+  --line:   #d5d5d5;
+  --line-2: #1a1a1a;
+  --tint:   #f4f4f2;          /* 表头浅底 */
+  --accent: #1a5c46;          /* 标识色，面积极小，可换成机构色 */
+
+  --sans: "PingFang SC", "Heiti SC", "Microsoft YaHei", sans-serif;
+  --serif: "Songti SC", "STSong", serif;
+  --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+
+@page { size: A4; margin: 25mm 25mm 22mm; }
+@page :first { margin: 0; }   /* 封面满页，同时使首页不显示页脚 */
+
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+html { font-size: 10.5pt; }
+body {
+  margin: 0; background: #fff; color: var(--ink);
+  font-family: var(--sans); font-size: 10.5pt;
+  line-height: 1.85; text-align: justify;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ════ 封面 ════ */
+.cover {
+  width: 210mm; height: 297mm; padding: 40mm 30mm 25mm;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; position: relative; page-break-after: always;
+}
+.cover-classify {                    /* 密级标记，不需要就删 */
+  position: absolute; top: 18mm; right: 25mm;
+  font-size: 9pt; letter-spacing: .25em; color: var(--ink-2);
+  border: 1px solid var(--line); padding: 1mm 3mm;
+}
+.cover-logo { display: flex; align-items: center; gap: 9px; margin-bottom: 34mm; }
+.cover-logo span { font-family: var(--mono); font-size: 13pt; font-weight: 600; }
+.cover-project { font-size: 26pt; font-weight: 600; line-height: 1.5; letter-spacing: .06em; margin-bottom: 4mm; }
+.cover-project-en { font-family: var(--mono); font-size: 11pt; letter-spacing: .16em; color: var(--ink-3); margin-bottom: 16mm; }
+.cover-doctype { font-size: 30pt; font-weight: 700; letter-spacing: .5em; text-indent: .5em; margin-bottom: 6mm; }
+.cover-version { font-family: var(--mono); font-size: 10pt; color: var(--ink-2); letter-spacing: .1em; }
+.cover-divider { width: 70mm; height: 1px; background: var(--line-2); margin: 22mm 0; }
+.cover-info { font-size: 11.5pt; line-height: 2.4; letter-spacing: .04em; }
+/* 标签两端对齐撑成等宽，是公文封面的标准做法 */
+.cover-info .label { display: inline-block; width: 24mm; text-align: justify; text-align-last: justify; color: var(--ink-2); }
+.cover-info .sep { margin: 0 3mm; color: var(--ink-3); }
+.cover-foot { margin-top: auto; font-size: 11pt; letter-spacing: .18em; color: var(--ink-2); }
+
+/* ════ 正文 ════ */
+p { margin: 0 0 3.2mm; text-indent: 2em; }        /* 中文正文首行缩进 2 字 */
+p.noindent, li p, .box p, .tbl-note { text-indent: 0; }
+
+h2 {                                               /* 一、章 */
+  font-size: 15pt; font-weight: 700; letter-spacing: .04em;
+  margin: 10mm 0 4mm; padding-bottom: 2mm;
+  border-bottom: 1.5px solid var(--line-2);
+  page-break-after: avoid; text-indent: 0;
+}
+h3 { font-size: 12pt; font-weight: 700; margin: 6mm 0 2.5mm; page-break-after: avoid; text-indent: 0; }
+h4 { font-size: 10.5pt; font-weight: 700; margin: 4.5mm 0 2mm; page-break-after: avoid; text-indent: 0; }
+ul, ol { margin: 0 0 3.2mm; padding-left: 7mm; }
+li { margin-bottom: 1.4mm; text-align: justify; }
+code {
+  font-family: var(--mono); font-size: .9em;
+  background: var(--tint); padding: .3mm 1.2mm;
+  overflow-wrap: anywhere;                         /* 允许在代码名前后断行 */
+}
+
+/* ════ 三线表 ════ */
+table {
+  width: 100%; border-collapse: collapse;
+  margin: 3.5mm 0 5mm; font-size: 9.5pt; line-height: 1.6;
+  page-break-inside: avoid;
+  /* ⚠️ 必须左对齐：窄单元格里两端对齐遇上不可断开的长 token，
+     前半行会被强行拉满、字距爆散。这是最容易踩的坑。 */
+  text-align: left;
+}
+caption { caption-side: top; text-align: left; font-size: 9.5pt; font-weight: 700; padding-bottom: 2mm; }
+thead th {
+  text-align: left; font-weight: 700; padding: 2.2mm 2.5mm;
+  border-top: 1.5px solid var(--line-2);
+  border-bottom: .75px solid var(--line-2);
+  background: var(--tint); white-space: nowrap;
+}
+tbody td { padding: 2mm 2.5mm; border-bottom: .5px solid var(--line); vertical-align: top; }
+tbody tr:last-child td { border-bottom: 1.5px solid var(--line-2); }
+td.r, th.r { text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.c, th.c { text-align: center; }
+tfoot td { padding: 2.2mm 2.5mm; font-weight: 700; border-bottom: 1.5px solid var(--line-2); background: var(--tint); }
+tfoot td.r { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+.tbl-note { font-size: 8.5pt; color: var(--ink-2); line-height: 1.65; margin: -3mm 0 5mm; }
+
+/* ════ 框注 ════ */
+.box { border: .75px solid var(--line-2); padding: 3.5mm 4.5mm; margin: 4mm 0 5mm; background: #fcfcfb; page-break-inside: avoid; }
+.box .box-t { font-weight: 700; font-size: 9.5pt; margin-bottom: 1.5mm; letter-spacing: .04em; }
+.box p { margin-bottom: 0; font-size: 10pt; }
+.box p + p { margin-top: 2mm; }
+
+/* ════ 图 ════ */
+figure { margin: 4mm 0 5mm; page-break-inside: avoid; }
+figcaption { font-size: 9pt; text-align: center; color: var(--ink-2); margin-top: 2.5mm; }
+
+/* ════ 目录 ════ */
+.toc-list { margin: 5mm 0; }
+.toc-row { display: flex; align-items: baseline; font-size: 10.5pt; margin-bottom: 2.6mm; text-indent: 0; }
+.toc-row .dots { flex: 1; border-bottom: .5px dotted var(--ink-3); margin: 0 2mm 1mm; }
+
+.page-break { page-break-before: always; }
+.sig { margin-top: 12mm; padding-top: 4mm; border-top: .75px solid var(--line); font-size: 9pt; color: var(--ink-2); line-height: 1.8; text-indent: 0; }
+</style>
+</head>
+<body>
+
+<!-- ════════ 封面 ════════ -->
+<div class="cover">
+  <div class="cover-classify">内部资料</div>
+
+  <div class="cover-logo">
+    <!-- 换成自己的 logo（内联 SVG，单色版最适合公文） -->
+    <svg width="26" height="26" viewBox="0 0 100 100"><rect x="20" y="30" width="14" height="40" rx="7" fill="#1a1a1a"/><rect x="43" y="18" width="14" height="64" rx="7" fill="#1a5c46"/><rect x="66" y="36" width="14" height="28" rx="7" fill="#1a1a1a"/></svg>
+    <span>【品牌名】</span>
+  </div>
+
+  <div class="cover-project">【项目全称】</div>
+  <div class="cover-project-en">【ENGLISH SUBTITLE · 可删】</div>
+
+  <div class="cover-doctype">商业计划书</div>
+  <div class="cover-version">Version 1.0</div>
+
+  <div class="cover-divider"></div>
+
+  <div class="cover-info">
+    <div><span class="label">编制人</span><span class="sep">：</span>【姓名】</div>
+    <div><span class="label">经营主体</span><span class="sep">：</span>【单位全称】</div>
+    <div><span class="label">创业地</span><span class="sep">：</span>【省市区】</div>
+    <div><span class="label">编制日期</span><span class="sep">：</span>二〇二六年七月</div>
+  </div>
+
+  <div class="cover-foot">二〇二六年</div>
+</div>
+
+<!-- ════════ 目录 ════════ -->
+<h2>目　　录</h2>
+<div class="toc-list">
+  <div class="toc-row"><span>一、执行摘要</span><span class="dots"></span></div>
+  <div class="toc-row"><span>二、项目背景</span><span class="dots"></span></div>
+  <div class="toc-row"><span>附录一　数据来源</span><span class="dots"></span></div>
+</div>
+<!-- 注：Chrome 不支持 CSS target-counter，目录页码需人工填或引 Paged.js -->
+
+<!-- ════════ 正文 ════════ -->
+<div class="page-break"></div>
+<h2>一、执行摘要</h2>
+
+<p>正文首行自动缩进两字。中文排版规范见 references/typography-zh.md：引号用“”不用""，中英文之间加空格，公文日期用中文数字（二〇二六年），正文数量用阿拉伯数字。</p>
+
+<h3>（一）二级标题</h3>
+<p>二级标题用（一）（二），三级用 1. 2.，与公文习惯一致。</p>
+
+<table>
+  <caption>表 1-1　表格标题（表号按「章-序」编）</caption>
+  <thead>
+    <tr><th>项目</th><th class="r" style="width:18%">第一年</th><th class="r" style="width:18%">第二年</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>示例行</td><td class="r">225,000</td><td class="r">976,000</td></tr>
+  </tbody>
+  <tfoot><tr><td>合计</td><td class="r">225,000</td><td class="r">976,000</td></tr></tfoot>
+</table>
+<p class="tbl-note">注：表下注释用 .tbl-note，字号更小、不缩进。</p>
+
+<div class="box">
+  <div class="box-t">框注标题</div>
+  <p>需要强调、但不适合放进正文流的内容用框注。公文里的框注要克制——通篇不超过五六处。</p>
+</div>
+
+<h4>1. 四级标题</h4>
+<ol>
+  <li><strong>要点。</strong>列表项里的说明文字。</li>
+</ol>
+
+<div class="sig">
+  <p><strong>免责声明：</strong>本文所载预测基于当前判断，不构成任何承诺。</p>
+  <p style="margin-top:3mm;">编制人：【姓名】　　编制日期：二〇二六年七月二十九日</p>
+</div>
+
+</body>
+</html>

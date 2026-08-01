@@ -21,15 +21,15 @@ from typing import Optional
 
 import providers as P
 
-# ── ms_channel 导入引导（走 _shared，dev 真身 / vendored 两处都成立）──
+# ── channek 导入引导（走 _shared，dev 真身 / vendored 两处都成立）──
 for _anc in Path(__file__).resolve().parents:
-    if (_anc / "_shared" / "ms_channel.py").exists():
+    if (_anc / "_shared" / "channek.py").exists():
         sys.path.insert(0, str(_anc / "_shared"))
         break
 try:
-    import ms_channel  # noqa: E402
+    import channek  # noqa: E402
 except Exception:  # noqa: BLE001 — 找不到共享库则全程回落旧逻辑（零回归）
-    ms_channel = None  # type: ignore[assignment]
+    channek = None  # type: ignore[assignment]
 
 
 # ── 日志：决策走 stderr，结果走 stdout ──────────────────────────────────────
@@ -47,7 +47,7 @@ def find_style_lock(out_path: Path, explicit: Optional[str]) -> Optional[Path]:
     if explicit:
         p = Path(explicit).expanduser()
         return p if p.exists() else None
-    # 从 out 目录逐级上溯找 Media-Studio 的画风锁（style-lock token 真身文件 画风锁.md）
+    # 从 out 目录逐级上溯找 Channek 的画风锁（style-lock token 真身文件 画风锁.md）
     cur = out_path.resolve().parent
     for _ in range(12):
         cand = cur / "风格卡" / "风格锁" / "画风锁.md"
@@ -94,14 +94,14 @@ def inject_style_lock(user_prompt: str, sl: dict) -> tuple[str, str]:
 
 
 def channel_style_lock() -> Optional[dict]:
-    """优先从 channel.json 取 style-lock（brand.style_lock.image_prompt / negative_prompt）。
+    """优先从 card.json 取 style-lock（brand.style_lock.image_prompt / negative_prompt）。
 
     当前频道（`_channel/<slug>/`）的 image_prompt 与其 画风锁.md 的 locked_prompt 一字不差 → 生成 prompt 零回归；
     频道未解析 / 无该字段时返 None → 上层回落「上溯找 画风锁.md」旧逻辑。
     """
-    if ms_channel is None:
+    if channek is None:
         return None
-    ch = ms_channel.load(required=False)
+    ch = channek.load(required=False)
     if not ch:
         return None
     ip = ch.get("brand.style_lock.image_prompt")
@@ -111,7 +111,7 @@ def channel_style_lock() -> Optional[dict]:
         "locked_prompt": ip,
         "negative_prompt": ch.get("brand.style_lock.negative_prompt") or "",
         "version": ch.get("brand.style_lock.version") or "v2",
-        "_source": "channel.json",
+        "_source": "card.json",
     }
 
 
@@ -146,7 +146,7 @@ def cmd_gen(args: argparse.Namespace) -> int:
     prompt_user = args.prompt
     prompt_final = args.prompt
     if not args.no_style_lock:
-        # 优先级：显式 --style-lock 文件 > channel.json > 上溯找 画风锁.md（旧逻辑兜底）
+        # 优先级：显式 --style-lock 文件 > card.json > 上溯找 画风锁.md（旧逻辑兜底）
         sl: Optional[dict] = None
         sl_src: Optional[str] = None
         if args.style_lock:
@@ -156,7 +156,7 @@ def cmd_gen(args: argparse.Namespace) -> int:
         if sl is None:
             sl = channel_style_lock()
             if sl:
-                sl_src = sl.pop("_source", "channel.json")
+                sl_src = sl.pop("_source", "card.json")
         if sl is None:
             sl_path = find_style_lock(out_path, None)
             if sl_path:
@@ -166,7 +166,7 @@ def cmd_gen(args: argparse.Namespace) -> int:
             sl_version = sl.get("version") or "v1"
             log(f"style-lock 注入：{sl_src}（{sl_version}）")
         else:
-            log("未找到 style-lock（channel.json / 画风锁.md 皆无），跳过注入（非品牌图可忽略）")
+            log("未找到 style-lock（card.json / 画风锁.md 皆无），跳过注入（非品牌图可忽略）")
     else:
         log("--no-style-lock：跳过 style-lock 注入")
 

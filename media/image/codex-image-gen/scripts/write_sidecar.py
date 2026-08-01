@@ -18,7 +18,7 @@
   · 已存在 → 合并更新：新字段覆盖旧值、`refs` 去重追加、`created` 保留首次；
   · 纯标准库、幂等；stdout 只打 sidecar 绝对路径（管线可接）。
 
-字段口径与 mediastudio 管线 asset 步、asset-index skill 的 `_meta/<名>.json` 扫描约定同构。
+字段口径与素材步、asset-index skill 的 `_meta/<名>.json` 扫描约定同构。
 """
 from __future__ import annotations
 

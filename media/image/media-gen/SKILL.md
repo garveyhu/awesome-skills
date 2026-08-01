@@ -68,14 +68,14 @@ python3 "$MG" contract           # 打印统一结果契约 schema
 | `--prefer` | 可选。后端偏好（`gemini-gen`/`comfyui`/`codex-image-gen`/…），把它提到链首；仍会降级，除非 `--no-fallback`。 |
 | `--no-fallback` | 可选。只试链首一个后端，失败即失败，不降级。 |
 | `--no-style-lock` | 可选。关掉 style-lock 注入（非品牌图才关）。 |
-| `--style-lock` | 可选。指定 画风锁.md 路径（默认自动找 Media-Studio `风格卡/风格锁/画风锁.md`）。 |
+| `--style-lock` | 可选。指定 画风锁.md 路径（默认自动找 Channek `风格卡/风格锁/画风锁.md`）。 |
 | `--dry-run` | 可选。只打印路由决策 + 降级链 + 可用性，不真生成。 |
 
 ## 路由 + 降级（核心）
 
 本 skill 不自己生图，它**决策走哪个后端**并**串行降级**。完整决策表、capability 元数据、降级链见 [`reference/providers.md`](reference/providers.md)，要点：
 
-1. **默认链（与 Media-Studio 能力矩阵 / style-lock 同源）**：
+1. **默认链（与 Channek 能力矩阵 / style-lock 同源）**：
    `gemini-gen`（免费快·默认）→ `codex-image-gen`（gpt-image-2·参考图锁风格）→ `comfyui`（本地可控·模型无关）→ `dashscope`（通义万象直连 API·可控质量稳定·≈¥0.14/张）→ `browser-gen`（Gemini 网页·兜底稳出）。
 2. **`--prefer X`**：把 X 提到链首，其余按默认顺序续在后面。
 3. **带 `--ref`**：路由优先选**支持参考图**的后端（gemini-gen / codex-image-gen / comfyui-i2i），把不支持的降权（dashscope t2i 主路不吃 ref，带 ref 时会被降权）。
@@ -93,7 +93,7 @@ python3 "$MG" contract           # 打印统一结果契约 schema
 所有生图**默认**自动拼 style-lock：读 `风格卡/风格锁/画风锁.md` 的 frontmatter，把 `locked_prompt` 拼到用户 prompt 前、`negative_prompt` 透传给支持负向的后端（comfyui）。这样跨内容画风不漂移。注入规则、各后端如何吃负向 / seed / sref 见 [`reference/style-lock-injection.md`](reference/style-lock-injection.md)。
 
 - frontmatter 的 `backend: gemini-gen` + 降级链与本 skill 默认链一致（同源），但**本 skill 的 `--prefer` / 可用性**优先于 frontmatter 的静态声明。
-- 没传 `--style-lock` 时自动向上找 Media-Studio 的 画风锁.md；找不到则跳过注入并在 stderr 提示（不报错）。
+- 没传 `--style-lock` 时自动向上找 Channek 的 画风锁.md；找不到则跳过注入并在 stderr 提示（不报错）。
 
 ## 统一结果契约（借 Pixelle MediaService）
 
