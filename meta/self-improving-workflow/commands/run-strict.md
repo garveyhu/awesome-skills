@@ -23,7 +23,7 @@ For everyday refactors, exploration, and lower-stakes changes, use `/run`.
 
 Three cases for `.claude/state/plan.json`:
 
-1. **Missing** → run `bash ~/.agents/skills/self-improving-workflow/scripts/init.sh "$(pwd)"`, then write `{"meta":{"mode":"strict"}}` (a sentinel — §1 will fill the rest). Also delete `.claude/state/strike-state.json` if it exists. Proceed to §1.
+1. **Missing** → run `bash ~/.agents/skills/src/mirror/self-improving-workflow/scripts/init.sh "$(pwd)"`, then write `{"meta":{"mode":"strict"}}` (a sentinel — §1 will fill the rest). Also delete `.claude/state/strike-state.json` if it exists. Proceed to §1.
 
 2. **Empty seed** (file is `{}`, or has no `phases` array, or `phases` is empty) → no real plan exists yet. Set `meta.mode = "strict"` and proceed silently to §1.
 
@@ -73,7 +73,7 @@ if all main phases done AND (no P_recovery exists OR P_recovery is fully done):
     persist; continue main loop (re-execute the new slices)
   else:
     dispatch planner-critic for final pass
-    bash ~/.agents/skills/self-improving-workflow/scripts/crystallize.sh .claude
+    bash ~/.agents/skills/src/mirror/self-improving-workflow/scripts/crystallize.sh .claude
     set plan.meta.status = "done"; persist
     EXIT cleanly
 ```

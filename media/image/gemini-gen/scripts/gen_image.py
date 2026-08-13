@@ -5,8 +5,8 @@
 两条后端配额池不互通，分别管理：
   proxy  —— 反代账号池（Antigravity/Cloud Code Assist），多账号轮询在反代服务里做，
              凭据读 skill 目录下 proxy_config.json（见 proxy_config.example.json 模板），
-             找不到时兜底读本机 ~/.agents/resources.json 的 llm.antigravity2api.local（个人机器
-             私有配置，别人用本 skill 不会有这个文件，正常应该走 proxy_config.json）。
+             找不到时经 $AGENTS_RESOURCES 读资源中枢的 llm.antigravity2api（只认环境变量，
+             不猜任何家目录路径；别人用本 skill 走 proxy_config.json 即可）。
   cookie —— Gemini 网页版会员号（Pro/Advanced 订阅）cookie，凭据配置见本文件下方
              cookie 相关代码 + skill 根目录 accounts.json，多账号 LRU 负载 + 撞额度跳号。
 
@@ -22,6 +22,7 @@ import asyncio
 import base64
 import json
 import mimetypes
+import os
 import random
 import re
 import sys
@@ -32,7 +33,6 @@ from pathlib import Path
 
 CHROME_BASE = Path.home() / "Library/Application Support/Google/Chrome"
 STATE_PATH = Path.home() / ".config/gemini-gen/state.json"
-RESOURCES_PATH = Path.home() / ".agents/resources.json"
 COOLDOWN_SECONDS = 2 * 3600  # 撞 limit 后该号冷却时长，过后自动重试
 # pacing：每次出图请求前随机停顿，模拟人手节奏、降低被反自动化限流的概率。
 JITTER_MIN, JITTER_MAX = 0.8, 2.5
@@ -71,7 +71,7 @@ def log(msg: str) -> None:
 
 # ==================== backend: proxy（默认，antigravity2api-nodejs 反代）====================
 # 凭据 / 端点优先读 skill 目录下 proxy_config.json（见 load_proxy_config），本机私有的
-# ~/.agents/resources.json 只是没配 proxy_config.json 时的个人兜底，不是主路径。
+# $AGENTS_RESOURCES 资源中枢只是没配 proxy_config.json 时的兜底，不是主路径。
 # 多账号轮询、撞额度自动跳号都在反代服务里做，脚本这边只是个薄 HTTP 客户端。
 
 DEFAULT_PROXY_IMAGE_MODEL = "gemini-3.1-flash-image"
@@ -86,31 +86,62 @@ PROXY_CONFIG_CANDIDATES = [
 def load_proxy_config() -> dict:
     """读反代配置，返回统一字段 {base_url, api_key, default_model}。
 
-    查找顺序：skill 目录/proxy_config.json → ~/.config/gemini-gen/proxy_config.json
-    → 兜底 ~/.agents/resources.json 的 llm.antigravity2api.local（个人机器私有配置，
-    别人用本 skill 一般不会有这个文件，正常应该配前两者之一）。
+    三级发现（**本文件随公开 skill 分发，绝不写死任何家目录路径**）：
+      ① 环境变量 GEMINI_PROXY_BASE_URL / GEMINI_PROXY_API_KEY
+      ② skill 目录或 ~/.config/gemini-gen 下的 proxy_config.json（XDG 标准位置）
+      ③ $AGENTS_RESOURCES 指向的资源中枢 llm.antigravity2api.local
     """
+    env_url = os.environ.get("GEMINI_PROXY_BASE_URL")
+    env_key = os.environ.get("GEMINI_PROXY_API_KEY")
+    if env_url and env_key:
+        return {"base_url": env_url, "api_key": env_key,
+                "default_model": os.environ.get("GEMINI_PROXY_MODEL",
+                                                DEFAULT_PROXY_IMAGE_MODEL)}
     for p in PROXY_CONFIG_CANDIDATES:
         if p.exists():
             cfg = json.loads(p.read_text())
             if cfg.get("base_url") and cfg.get("api_key"):
                 return cfg
-    if RESOURCES_PATH.exists():
-        try:
-            data = json.loads(RESOURCES_PATH.read_text())
-            local = data["llm"]["antigravity2api"]["local"]
-            return {
-                "base_url": local["base_url"],
-                "api_key": local["api_key"],
-                "default_model": local.get("default_image_model", DEFAULT_PROXY_IMAGE_MODEL),
-            }
-        except Exception:
-            pass
+    local = _from_resource_hub("llm.antigravity2api", "local")
+    if local and local.get("base_url") and local.get("api_key"):
+        return {
+            "base_url": local["base_url"],
+            "api_key": local["api_key"],
+            "default_model": local.get("default_image_model", DEFAULT_PROXY_IMAGE_MODEL),
+        }
     raise SystemExit(
-        f"[gemini-gen] 未找到反代配置。请把 {SKILL_DIR / 'proxy_config.example.json'} "
-        f"复制为 {SKILL_DIR / 'proxy_config.json'}（或 ~/.config/gemini-gen/proxy_config.json）"
-        "并填入你反代服务的 base_url / api_key。"
+        f"[gemini-gen] 未找到反代配置。三选一：\n"
+        f"  · 设 GEMINI_PROXY_BASE_URL / GEMINI_PROXY_API_KEY\n"
+        f"  · 把 {SKILL_DIR / 'proxy_config.example.json'} 复制为 "
+        f"{SKILL_DIR / 'proxy_config.json'}（或 ~/.config/gemini-gen/proxy_config.json）\n"
+        f"  · 设 $AGENTS_RESOURCES 指向资源中枢"
     )
+
+
+def _from_resource_hub(res_id: str, instance: str) -> dict | None:
+    """经 $AGENTS_RESOURCES 读资源中枢的一条凭据；没设或读不到就返回 None。
+
+    只认环境变量——**不猜任何家目录路径**，这样本文件随 skill 公开分发时
+    不会指向别人机器上并不存在的私有凭据库。
+    """
+    hub = os.environ.get("AGENTS_RESOURCES") or os.environ.get("AGENTS_HOME")
+    if not hub:
+        return None
+    base = Path(hub).expanduser()
+    if base.is_file():
+        base = base.parent
+    for cand in (base, base / "resources"):
+        # 中枢里一个资源一个目录，位置由索引 registry.json 的 path 给出
+        idx = cand / "src" / "registry.json"
+        if not idx.is_file():
+            continue
+        try:
+            info = json.loads(idx.read_text("utf-8"))["resources"][res_id]
+            return json.loads((cand / "secrets" / info["path"] / "secret.json")
+                              .read_text("utf-8")).get(instance)
+        except Exception:
+            return None
+    return None
 
 
 def check_proxy_alive(base_url: str) -> bool:

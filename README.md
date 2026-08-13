@@ -41,6 +41,7 @@ These aren't generic "do-anything assistants." Each skill takes a stance: my tec
 |---|---|
 | **style-vault** | A six-tier (product / style / page / block / component / token) personal style library that generates frontends to my aesthetic |
 | **style-vault-sediment** | The companion writer: deposit new styles into style-vault, versioned by author |
+| **slop-audit** | Pre-ship "AI slop" audit: sweep a page against a countable checklist and a dictionary of model tells (decorative eyebrows, fake screenshots, locale strips, scroll cues, blacklisted palettes and serifs, AI-voice copy), each with a concrete replacement |
 
 ## Image & video
 

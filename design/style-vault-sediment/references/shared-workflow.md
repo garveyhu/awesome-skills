@@ -8,11 +8,11 @@
 
 执行前须知：
 
-- **skill 仓真实 git 根**：`/Users/links/.agents/skills/`（也就是 `~/.agents/skills/`）
+- **skill 仓真实 git 根**：`~/.agents/skills/src/mirror/`（也就是 `~/.agents/skills/src/mirror/`）
 - **网站仓路径**：读 `~/.agents/path.json` 的 `"style-vault"` 字段（见步骤 5 的判定逻辑）
-- **分类字典真相源**：`~/.agents/skills/style-vault/assets/taxonomy.json`
-- **查询工具**：`~/.agents/skills/style-vault/scripts/taxonomy.py`（用 `python3` 调，依赖 PyYAML）
-- **沉淀历史归档**：`~/.agents/skills/style-vault-sediment/assets/sediment-history/<author>/<date-topic>/`
+- **分类字典真相源**：`~/.agents/skills/src/mirror/style-vault/assets/taxonomy.json`
+- **查询工具**：`~/.agents/skills/src/mirror/style-vault/scripts/taxonomy.py`（用 `python3` 调，依赖 PyYAML）
+- **沉淀历史归档**：`~/.agents/skills/src/mirror/style-vault-sediment/assets/sediment-history/<author>/<date-topic>/`
 
 ---
 
@@ -23,7 +23,7 @@
 **操作**：
 
 ```bash
-python3 ~/.agents/skills/style-vault/scripts/taxonomy.py overview --json
+python3 ~/.agents/skills/src/mirror/style-vault/scripts/taxonomy.py overview --json
 ```
 
 输出是 JSON，结构大致：
@@ -101,10 +101,10 @@ python3 ~/.agents/skills/style-vault/scripts/taxonomy.py overview --json
 
 ```bash
 # 例：要新增 components/buttons/acme/cyan-cta，先扫所有 buttons/
-ls ~/.agents/skills/style-vault/references/components/buttons/*/
+ls ~/.agents/skills/src/mirror/style-vault/references/components/buttons/*/
 
 # 或用 taxonomy.py 列同类：
-python3 ~/.agents/skills/style-vault/scripts/taxonomy.py search --type component --json \
+python3 ~/.agents/skills/src/mirror/style-vault/scripts/taxonomy.py search --type component --json \
   | grep -E '"id":\s*"components/buttons/'
 ```
 
@@ -262,7 +262,7 @@ AI 自动填：[1] [2] [3]
 
 路径：
 ```
-~/.agents/skills/style-vault-sediment/assets/sediment-history/<author>/<date>-<topic>/plan.md
+~/.agents/skills/src/mirror/style-vault-sediment/assets/sediment-history/<author>/<date>-<topic>/plan.md
 ```
 
 `<author>` / `<date>` / `<topic>` 的生成见步骤 5 前的"作者 slug 初始化"子步骤 + 下面的"主题 slug 生成"。
@@ -361,7 +361,7 @@ mint-analytics/mint-table → mint-analytics/cold-mint
 **若无**：
 
 ```bash
-CONFIG=~/.agents/skills/style-vault-sediment/assets/sediment-history/.author-config.json
+CONFIG=~/.agents/skills/src/mirror/style-vault-sediment/assets/sediment-history/.author-config.json
 if [[ ! -f "$CONFIG" ]]; then
   # 推断 slug
   NAME=$(git config user.name 2>/dev/null || true)
@@ -443,7 +443,7 @@ echo "<topic>" > "$LOCK"
 
 **id 必须含 namespace 段**（tokens / components / blocks / pages 这 4 层）：`<layer>/<bucket>/<namespace>/<slug>`。`<namespace>` 优先 = 关联 product 的短名（如 `acme` / `skillhub`）；无产品关联用 `_shared`。详见 [style-vault/references/README.md · Namespace 子目录](../../style-vault/references/README.md#namespace-子目录强制)。
 
-**skill 仓**（根 `~/.agents/skills/`）：
+**skill 仓**（根 `~/.agents/skills/src/mirror/`）：
 
 - 文件形：`style-vault/references/<id>.md`
   - 例：`style-vault/references/tokens/palettes/acme/slate-cyan-ice.md`
@@ -584,7 +584,7 @@ EOF
 2. **必须按路径精确 add**：
    ```bash
    # skill 仓
-   cd ~/.agents/skills
+   cd ~/.agents/skills/src/mirror
    git add style-vault/references/<本次改动子路径>
    git add style-vault-sediment/assets/sediment-history/<本次 batch>
 
@@ -677,7 +677,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 ### 落盘路径
 
 ```
-~/.agents/skills/style-vault-sediment/assets/sediment-history/<author>/<date>-<topic>/report.md
+~/.agents/skills/src/mirror/style-vault-sediment/assets/sediment-history/<author>/<date>-<topic>/report.md
 ```
 
 同时落盘（若来源是 from-web / from-project）：
@@ -707,7 +707,7 @@ Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
 把 `references/` 下所有新增/修改/删除的条目 + `sediment-history/` 下的 plan.md / report.md / source.md 作为**同一个 commit** 提交：
 
 ```bash
-cd ~/.agents/skills
+cd ~/.agents/skills/src/mirror
 git add style-vault/references/<涉及的 MD>
 git add style-vault-sediment/assets/sediment-history/<author>/<date-topic>/
 git commit -m "$(cat <<'EOF'

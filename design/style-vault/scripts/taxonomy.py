@@ -36,6 +36,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -49,7 +50,20 @@ except ImportError:
 SKILL_ROOT = Path(__file__).resolve().parent.parent
 REFS_DIR = SKILL_ROOT / "references"
 TAXONOMY_FILE = SKILL_ROOT / "assets" / "taxonomy.json"
-SEDIMENT_HISTORY_ROOT = Path.home() / ".agents/skills/style-vault-sediment/assets/sediment-history"
+def _sediment_history_root() -> Path:
+    """兄弟 skill style-vault-sediment 的沉淀历史目录。
+
+    按「与本 skill 同级」定位——源码树（links/design/）与各 agent 的软链目录
+    （~/.claude/skills 等）都成立；也可用 $STYLE_VAULT_SEDIMENT 显式指定。
+    **不写死家目录路径**——本 skill 会公开分发，别人机器上没有这套目录。
+    """
+    env = os.environ.get("STYLE_VAULT_SEDIMENT")
+    if env:
+        return Path(env).expanduser()
+    return SKILL_ROOT.parent / "style-vault-sediment" / "assets" / "sediment-history"
+
+
+SEDIMENT_HISTORY_ROOT = _sediment_history_root()
 
 
 # --- loaders ---

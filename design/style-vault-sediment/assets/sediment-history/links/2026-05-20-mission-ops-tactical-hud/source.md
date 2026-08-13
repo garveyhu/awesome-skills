@@ -6,7 +6,7 @@ from-project（本地 HTML mockup 反向提取）
 
 ## 项目路径
 
-`/Users/links/Documents/company/ikt-docs/数据同步/docs/plans/2026-05-20-aura-redesign-mockups/`
+`~/Documents/company/ikt-docs/数据同步/docs/plans/2026-05-20-aura-redesign-mockups/`
 
 属于 aura 监控大屏重构 brainstorming 期间产出的视觉探索 mockup。**不是真实生产代码**，是 4 个并行 agent 跑出的 4 套调子（A NASA / B 赛博朋克 / C HUD / D NOC），其中 A 和 C 被用户选中沉淀。
 

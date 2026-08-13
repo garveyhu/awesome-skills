@@ -17,7 +17,7 @@ Argument: $ARGUMENTS (the topic, in natural language)
 
 Three cases for `.claude/state/plan.json`:
 
-1. **Missing** → run `bash ~/.agents/skills/self-improving-workflow/scripts/init.sh "$(pwd)"`, then write `{}` to plan.json. Proceed to §1.
+1. **Missing** → run `bash ~/.agents/skills/src/mirror/self-improving-workflow/scripts/init.sh "$(pwd)"`, then write `{}` to plan.json. Proceed to §1.
 
 2. **Empty seed** (file is `{}`, or has no `phases` array, or `phases` is empty) → no real plan exists yet, this is the freshly-seeded state. Proceed silently to §1 with no user prompt.
 
@@ -55,7 +55,7 @@ while plan.meta.status != "done":
   set task.status = "in_progress"; persist plan.json
 
   for each shell command you intend to run:
-    bash ~/.agents/skills/self-improving-workflow/scripts/guard.sh "<command>"
+    bash ~/.agents/skills/src/mirror/self-improving-workflow/scripts/guard.sh "<command>"
     if exit != 0:
       append decisions.jsonl: {kind:"blocked", scope:task.id, action:"<command>"}
       set task.status = "blocked"; set plan.meta.status = "blocked"; persist; EXIT
@@ -98,7 +98,7 @@ if all slices in current phase are done:
 
 if all phases done:
   dispatch planner-critic for final pass
-  bash ~/.agents/skills/self-improving-workflow/scripts/crystallize.sh .claude
+  bash ~/.agents/skills/src/mirror/self-improving-workflow/scripts/crystallize.sh .claude
   set plan.meta.status = "done"; persist
   EXIT cleanly
 ```
@@ -119,7 +119,7 @@ JSONL format: one line per record, see schema in design doc §7.
 
 Periodically (after each phase done, and at exit) run:
 ```bash
-bash ~/.agents/skills/self-improving-workflow/scripts/crystallize.sh .claude
+bash ~/.agents/skills/src/mirror/self-improving-workflow/scripts/crystallize.sh .claude
 ```
 This is the only place new rules enter `dev-lessons.md`.
 

@@ -72,7 +72,7 @@ Skill 越用越准。
 **先搜再加**——用 grep 确认现有文件里没有同义规则，避免重复：
 
 ```bash
-grep -rn "关键词" ~/.agents/skills/style-vault-sediment/{SKILL.md,references/*.md}
+grep -rn "关键词" ~/.agents/skills/src/mirror/style-vault-sediment/{SKILL.md,references/*.md}
 ```
 
 ### 第 3 步 · 写硬规矩 + 自检

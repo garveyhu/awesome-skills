@@ -9,7 +9,7 @@
     → 200, Content-Type: image/png, body = PNG 字节
 
 本服务就是那层翻译：收归一化请求 → 调 `jimeng_api.py` → 回图片字节。
-**凭据不进请求也不进日志**——它由 `jimeng_api.py` 自己从 `~/.agents/resources.json` 读。
+**凭据不进请求也不进日志**——它由 `jimeng_api.py` 自己按三级发现读（环境变量 / _secrets / $AGENTS_RESOURCES）。
 
 ⚠️ 每次调用都是**真实付费**的云端出图，别拿它做压测。
 

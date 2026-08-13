@@ -3,7 +3,7 @@
 日期：2026-07-09
 作者：links
 模式：create
-起点：from-project（$PROJECT = /Users/links/Documents/obsidian/Media-Studio/studio-board）
+起点：from-project（$PROJECT = ~/Documents/obsidian/Media-Studio/studio-board）
 档位：Tier 2 · 基础级（目标 12–18 · 实际 17 条）
 技术栈指纹：react-tailwind + vite + css-variables（无组件库·纯自研 UI）
 

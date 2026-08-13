@@ -99,9 +99,16 @@ def sync():
     if mirror_set is None:
         print(c("· 扁平镜像：sync.mirror=false，跳过不碰", "dim"))
     else:
+        # ⚠️ 镜像目录若与 <root> 重合（常见于把镜像直接放在 agent 约定扫描路径上，
+        #    如 ~/.agents/skills），rmtree 会连来源目录一起删掉——那里面可能是 git 仓库。
+        #    所以一律「只摘旧软链」，永不整目录删。
+        same_as_root = os.path.realpath(MIRROR) == os.path.realpath(ROOT)
         if os.path.islink(MIRROR): os.unlink(MIRROR)
-        if os.path.isdir(MIRROR): shutil.rmtree(MIRROR)
-        os.makedirs(MIRROR)
+        if os.path.isdir(MIRROR) and not same_as_root: shutil.rmtree(MIRROR)
+        os.makedirs(MIRROR, exist_ok=True)
+        for _e in os.listdir(MIRROR):
+            _p = os.path.join(MIRROR, _e)
+            if os.path.islink(_p): os.unlink(_p)
         for n in sorted(mirror_set):
             os.symlink(os.path.relpath(skill_dir(skills[n], n), MIRROR), os.path.join(MIRROR, n))
         print(c(f"✓ 扁平镜像 {MIRROR}：{len(mirror_set)} 个（{mode(sconf['mirror'])}）", "grn"))

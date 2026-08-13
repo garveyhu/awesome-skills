@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """把 126 个 discovery 候选合并成连贯的最终沉淀计划。"""
 import json, sys
+from pathlib import Path
 
-WORK = "/Users/links/.agents/skills/style-vault-sediment/assets/sediment-history/links/2026-06-13-chameleon"
+# 这次沉淀的工作目录 = 本文件所在目录（历史存档，与 discovery-raw.json / plan.md 同放）。
+# 原先写死绝对路径，随 skill 公开分发时既无效又暴露本地布局。
+WORK = str(Path(__file__).resolve().parent)
 raw = json.load(open(WORK + "/discovery-raw.json"))
 cands = {c["proposed_id"]: c for c in raw["candidates"]}  # 注意有重名，后者覆盖；下面 from 用列表合并
 

@@ -29,7 +29,7 @@ Every non-trivial decision is logged to `.claude/state/decisions.jsonl` for post
 
 ## Quickstart
 
-From your project root, after the skill is installed in `~/.agents/skills/`:
+From your project root, after the skill is installed in `~/.agents/skills/src/mirror/`:
 
 ```
 # Step 1 (one time per project) — invoke the skill by name to bootstrap.

@@ -11,7 +11,7 @@ If your project's `.claude/` was created by the old tiered (minimal/standard/ful
    ```
 2. Re-run init from the skill:
    ```bash
-   bash ~/.agents/skills/self-improving-workflow/scripts/init.sh "$(pwd)"
+   bash ~/.agents/skills/src/mirror/self-improving-workflow/scripts/init.sh "$(pwd)"
    ```
 3. The init is idempotent: it mirrors the new `commands/` and `agents/` from the skill, and creates any missing per-project files (`state/`, `memory/semantic-patterns.json`, `rules/{autonomy-stops,dev-lessons}.md`) from `seeds/`. Existing files (including your `CLAUDE.md` and any rules you've written) are never overwritten.
 4. The old `coding-bans.md`, `module-isolation.md`, `domain-compliance.md` files are not touched. Decide whether to keep them as project-specific rules or delete them and let crystallization rebuild.
@@ -19,7 +19,7 @@ If your project's `.claude/` was created by the old tiered (minimal/standard/ful
 ## Option B — Clean slate
 
 1. `mv .claude .claude.tiered-backup`
-2. `bash ~/.agents/skills/self-improving-workflow/scripts/init.sh "$(pwd)"`
+2. `bash ~/.agents/skills/src/mirror/self-improving-workflow/scripts/init.sh "$(pwd)"`
 3. Diff the two if you want to lift over project-specific lessons.
 
 ## What the old version had that the new one doesn't

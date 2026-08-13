@@ -63,7 +63,7 @@
 
 ## Commit
 
-- 网站仓：`/Users/links/Coding/Archer/style-vault/` · `feat(preview): add mission-ops + tactical-hud preview (12 条)` · 13 files / 4711 insertions
+- 网站仓：`~/Coding/Archer/style-vault/` · `feat(preview): add mission-ops + tactical-hud preview (12 条)` · 13 files / 4711 insertions
 - skill 仓：（步骤 8 末尾）`feat(style-vault): add mission-ops + tactical-hud (12 条 · 4 tokens + 2 components + 2 blocks + 2 pages + 2 styles)`
 - **两仓均未 push**，保留给用户
 
@@ -74,9 +74,9 @@
 
 ## 下一步
 
-1. `cd /Users/links/Coding/Archer/style-vault/frontend && yarn dev`
+1. `cd ~/Coding/Archer/style-vault/frontend && yarn dev`
    浏览器打开 vault 网站，左侧导航选 styles → admin-console → 两条 style 看实际效果
-2. 肉眼过 12 条 preview，对比 mockup 原版（`/Users/links/Documents/company/ikt-docs/数据同步/docs/plans/2026-05-20-aura-redesign-mockups/mockup-v3-A-nasa.html` 和 `mockup-v3-C-hud.html`）
+2. 肉眼过 12 条 preview，对比 mockup 原版（`~/Documents/company/ikt-docs/数据同步/docs/plans/2026-05-20-aura-redesign-mockups/mockup-v3-A-nasa.html` 和 `mockup-v3-C-hud.html`）
 3. 若 OK：两仓各自 `git push`
 4. 若发现细节问题：用 modify-workflow 改对应条目，不要重新走 sediment 全流程
 

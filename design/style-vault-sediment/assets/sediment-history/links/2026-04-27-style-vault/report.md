@@ -2,7 +2,7 @@
 
 日期：2026-04-27
 模式：create
-起点：from-project（$PROJECT = /Users/links/Coding/Archer/style-vault · 即 vault 自身）
+起点：from-project（$PROJECT = ~/Coding/Archer/style-vault · 即 vault 自身）
 档位：Tier 2 · 基础级（目标 12–18 · 实际 18 条）
 作者：links
 
@@ -59,7 +59,7 @@
 
 ## 下一步
 
-1. `cd /Users/links/Coding/Archer/style-vault/frontend && yarn dev`
+1. `cd ~/Coding/Archer/style-vault/frontend && yarn dev`
 2. 浏览：
    - `/products` → 看产品列表新条目（设计类目 indigo dot）
    - `/products/style-vault` → 看产品详情完整的 17 条聚合
@@ -71,7 +71,7 @@
 
 ## 关键观察
 
-这是一次"自指沉淀"——vault 网站自己的设计语言被沉淀回 vault 数据库。技术上 VAULT_OK 路径与 PROJECT 路径相同，但 skill 仓与 vault 仓本就是两个独立 git repo（`~/.agents/skills/` vs `/Users/links/Coding/Archer/style-vault/`），双仓 commit 模式无差。
+这是一次"自指沉淀"——vault 网站自己的设计语言被沉淀回 vault 数据库。技术上 VAULT_OK 路径与 PROJECT 路径相同，但 skill 仓与 vault 仓本就是两个独立 git repo（`~/.agents/skills/` vs `~/Coding/Archer/style-vault/`），双仓 commit 模式无差。
 
 唯一值得提的一点：因为是自己沉淀自己，preview tsx 的"真实组件"和"沉淀条目所描述的真实页面"几乎可以视觉直接对照——给了一次很好的"沉淀准确度"自检机会。
 

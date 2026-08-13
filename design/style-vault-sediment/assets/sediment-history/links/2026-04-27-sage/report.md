@@ -2,7 +2,7 @@
 
 日期：2026-04-27
 模式：create
-起点：from-project (`/Users/links/Coding/A-complex/ikt/sage/frontend/`)
+起点：from-project (`~/Coding/A-complex/ikt/sage/frontend/`)
 档位：Tier 3 · 全量级（目标 30–50+ · 实际 38 条）
 作者：links
 namespace：`sage`
@@ -89,15 +89,15 @@ namespace：`sage`
 
 ## 下一步
 
-1. `cd /Users/links/Coding/Archer/style-vault/frontend && yarn dev` 肉眼过 38 条 preview（重点看：sage-multitheme-data-platform / products/sage / agent-chat-stream / revolver-menu-fab / crt-tv-404）
+1. `cd ~/Coding/Archer/style-vault/frontend && yarn dev` 肉眼过 38 条 preview（重点看：sage-multitheme-data-platform / products/sage / agent-chat-stream / revolver-menu-fab / crt-tv-404）
 2. OK 后 `git push` 两仓
 3. 发现问题 `git reset --soft HEAD~1` 回到工作区改条目
 
 ## sync 状态
 
 ```
-✓ synced 117 items to /Users/links/Coding/Archer/style-vault/frontend/src/data/registry.json
-✓ copied taxonomy to /Users/links/Coding/Archer/style-vault/frontend/src/data/taxonomy.json
+✓ synced 117 items to ~/Coding/Archer/style-vault/frontend/src/data/registry.json
+✓ copied taxonomy to ~/Coding/Archer/style-vault/frontend/src/data/taxonomy.json
 ```
 
 117 = 79（原）+ 38（新）✓

@@ -3,7 +3,7 @@
 日期：2026-05-21
 作者：links
 模式：create
-起点：from-project (/Users/links/Coding/A-complex/ikt/waveflow-ui)
+起点：from-project (~/Coding/A-complex/ikt/waveflow-ui)
 档位：Tier 3 · 全量级（目标 30-50+ 条 · 实际 59 条 + 1 跨 namespace 复用）
 
 ## 目标
@@ -111,7 +111,7 @@ products/waveflow
 
 ## 起点 / 来源
 
-源码路径：`/Users/links/Coding/A-complex/ikt/waveflow-ui`
+源码路径：`~/Coding/A-complex/ikt/waveflow-ui`
 
 技术栈指纹：
 - React 18 + TypeScript + Vite 7

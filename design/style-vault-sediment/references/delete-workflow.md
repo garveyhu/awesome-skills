@@ -99,7 +99,7 @@ refs:
 对**每条**待删 id 调：
 
 ```bash
-python3 ~/.agents/skills/style-vault/scripts/taxonomy.py \
+python3 ~/.agents/skills/src/mirror/style-vault/scripts/taxonomy.py \
   item <id> --json
 ```
 
@@ -207,7 +207,7 @@ python3 ~/.agents/skills/style-vault/scripts/taxonomy.py \
 #### 5.a skill 仓 rm
 
 ```bash
-cd ~/.agents/skills
+cd ~/.agents/skills/src/mirror
 
 # 文件形条目
 rm -f style-vault/references/tokens/palettes/cold-mint.md
@@ -282,7 +282,7 @@ EOF
 **skill 仓**（步骤 8 末尾聚合）：
 
 ```bash
-cd ~/.agents/skills
+cd ~/.agents/skills/src/mirror
 git add -u style-vault/references/   # -u 包含删除
 git add style-vault/references/      # cascade 改过的 MD 也一起 add
 git add style-vault-sediment/assets/sediment-history/<author>/<date-topic>-delete/
@@ -356,7 +356,7 @@ EOF
 落盘路径：
 
 ```
-~/.agents/skills/style-vault-sediment/assets/sediment-history/<author>/YYYY-MM-DD-<id-slug>-delete/
+~/.agents/skills/src/mirror/style-vault-sediment/assets/sediment-history/<author>/YYYY-MM-DD-<id-slug>-delete/
   ├── plan.md     (步骤 4 已落盘)
   └── report.md   (本步骤落盘)
 ```
@@ -422,7 +422,7 @@ cascade 会**修改引用者条目的 frontmatter**（不是只删一条）：
 | 删了但引用者没 cascade（用户选了"强删"但我漏 patch 了某个引用者） | sync 报层级断链 → **全部回滚**：`git checkout -- style-vault/references/ frontend/src/preview/`；释放锁；打印差错指引；plan.md 保留可重跑 |
 | 文件夹式条目只删了 README.md 漏了其它子文件 | 手动 `rm -rf` 整目录；若已 commit → 补一个 commit 删剩余文件 |
 | cascade 时 YAML 解析失败（引用者 frontmatter 语法有问题） | 停，报路径让用户先修 YAML，不自动继续 |
-| sync 成功但用户事后发现误删 | 用 git：`cd ~/.agents/skills && git reset --soft HEAD~1`；网站仓同样操作。commit 未 push 所以可逆。 |
+| sync 成功但用户事后发现误删 | 用 git：`cd ~/.agents/skills/src/mirror && git reset --soft HEAD~1`；网站仓同样操作。commit 未 push 所以可逆。 |
 | 并发锁冲突 | 拒启，对标 [shared-workflow 步骤 5.c](shared-workflow.md#5c-并发锁) |
 | VAULT_OK=false | 只操作 skill 仓；report 注明"未联动网站"；skill 侧轻量自检代替 sync |
 | 用户输入的 id 不存在 | 步骤 1 / 2 就拦住，让用户确认 |

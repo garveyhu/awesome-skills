@@ -3,7 +3,7 @@
 日期：2026-04-27
 作者：links
 模式：create
-起点：from-project（$PROJECT = /Users/links/Coding/Archer/style-vault，即 vault 项目自身）
+起点：from-project（$PROJECT = ~/Coding/Archer/style-vault，即 vault 项目自身）
 档位：Tier 2 · 基础级（目标 12–18 条 · 实际 18 条）
 
 ## 目标

@@ -24,7 +24,7 @@ Whenever this skill is loaded (the user invoked it by name, or a trigger word ma
 
 1. Run the bootstrap:
    ```bash
-   bash ~/.agents/skills/self-improving-workflow/scripts/init.sh "$(pwd)"
+   bash ~/.agents/skills/src/mirror/self-improving-workflow/scripts/init.sh "$(pwd)"
    ```
 2. Check the output:
    - If it created files (commands/, agents/, state/, memory/, rules/) → tell the user: *"Workflow scaffold installed in `.claude/`. You can now use `/run <topic>` to start an autonomous task, or `/plan <topic>` to plan only. See `.claude/CLAUDE.md` for the full operating contract."* Then **stop and wait** for the user's next instruction.

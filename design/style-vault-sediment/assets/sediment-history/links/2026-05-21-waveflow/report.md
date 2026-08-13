@@ -2,7 +2,7 @@
 
 日期：2026-05-21
 模式：create
-起点：from-project (`/Users/links/Coding/A-complex/ikt/waveflow-ui`)
+起点：from-project (`~/Coding/A-complex/ikt/waveflow-ui`)
 档位：Tier 3 · 全量级（目标 30-50+ 条 · 实际 59 条 + 1 跨 namespace 复用）
 作者：links
 
@@ -66,7 +66,7 @@
 ## 验证
 
 ```
-$ cd /Users/links/Coding/Archer/style-vault/frontend && yarn sync
+$ cd ~/Coding/Archer/style-vault/frontend && yarn sync
 ✓ synced 204 items to .../src/data/registry.json
 ✓ copied taxonomy to .../src/data/taxonomy.json
 
@@ -84,7 +84,7 @@ token 缺 preview 文件: 0
 
 ## 下一步
 
-1. `cd /Users/links/Coding/Archer/style-vault/frontend && yarn dev` 肉眼过 preview
+1. `cd ~/Coding/Archer/style-vault/frontend && yarn dev` 肉眼过 preview
 2. OK 后 `git push` 双仓
 3. 发现细节问题 `git reset --soft HEAD~1` 回到工作区
 

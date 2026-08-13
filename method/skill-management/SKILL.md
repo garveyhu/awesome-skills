@@ -97,7 +97,7 @@ python3 scripts/skillctl.py unmount <项目> # 撤销该项目的软链
 
 - **Claude Code**：原生发现 `~/.claude/skills/<name>/SKILL.md`。
 - **Gemini CLI**：挂载到 `~/.gemini/config/skills/<name>/SKILL.md`。
-- **Pi**：原生发现 `~/.pi/agent/skills/` 和 `~/.agents/skills/`；推荐用 `sync.pi` 白名单挂载 Pi 真正需要的能力，避免所有 skill 描述常驻上下文。
+- **Pi**：原生发现 `~/.pi/agent/skills/` 和扁平镜像目录；推荐用 `sync` 白名单只挂它真正需要的能力，避免所有 skill 描述常驻上下文。
 - **Codex**：若当前版本没有等价自动发现机制，可把扁平镜像目录在 `AGENTS.md` 里引用，或软链进它会读取的目录。
 - **任何能读文件的 AI**：直接把本 `SKILL.md` 喂给它，按下方步骤执行即可复刻。
 

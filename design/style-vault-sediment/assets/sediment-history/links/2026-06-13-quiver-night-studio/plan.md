@@ -3,7 +3,7 @@
 日期：2026-06-13
 作者：links
 模式：create
-起点：from-project（/Users/links/Coding/Archer/quiver · feat/game-first 分支）
+起点：from-project（~/Coding/Archer/quiver · feat/game-first 分支）
 档位：Tier 2 · 基础级（目标 12–18 · 本计划 16 条）
 技术栈指纹：React 18 + TypeScript + Vite + Tauri v2 · 纯手写 CSS（无 Tailwind）· DOM 等距渲染器（clip-path 体素 + 画家算法 z-index）
 namespace：quiver
@@ -74,7 +74,7 @@ components/* → uses {tokens 1,3}
 
 ## 双仓
 
-VAULT_OK=true（/Users/links/Coding/Archer/style-vault · style-vault-site marker 校验通过）
+VAULT_OK=true（~/Coding/Archer/style-vault · style-vault-site marker 校验通过）
 preview tsx：12 个（4 token 中仅 palette 给 preview；typography/motion/layout token 按可选省略）
 
 ## 执行状态

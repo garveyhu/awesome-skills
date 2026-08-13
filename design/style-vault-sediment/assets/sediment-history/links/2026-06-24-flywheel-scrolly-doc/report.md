@@ -2,7 +2,7 @@
 
 日期：2026-06-24
 模式：create
-起点：from-project（/Users/links/Documents/wiki/media-studio · 已公开 cdn.archeruuu.com/pages/media-studio/）
+起点：from-project（~/Documents/wiki/media-studio · 已公开 cdn.archeruuu.com/pages/media-studio/）
 档位：Tier 2 · 基础级（目标 12–18 · 实际 14 条）
 作者：links
 
@@ -53,7 +53,7 @@ flywheel-inside → memphis-scrolly-doc → [section-shell, toc-rail, scroll-pin
 - **均未 push**
 
 ## 下一步
-1. `cd /Users/links/Coding/Archer/style-vault/frontend && yarn dev` 肉眼过 14 个 preview（尤其 signature 钉滚脊梁那条 + page 整页）
+1. `cd ~/Coding/Archer/style-vault/frontend && yarn dev` 肉眼过 14 个 preview（尤其 signature 钉滚脊梁那条 + page 整页）
 2. OK 后 `git push` 两仓
 3. 发现 preview 差异 → 改对应 `.tsx` 重 sync；发现条目抽象错 → 改 `.md`
 

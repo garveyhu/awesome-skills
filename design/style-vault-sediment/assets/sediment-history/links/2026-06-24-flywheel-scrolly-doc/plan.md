@@ -3,7 +3,7 @@
 日期：2026-06-24
 作者：links
 模式：create
-起点：from-project（/Users/links/Documents/wiki/media-studio · 已公开发布 cdn.archeruuu.com/pages/media-studio/）
+起点：from-project（~/Documents/wiki/media-studio · 已公开发布 cdn.archeruuu.com/pages/media-studio/）
 档位：Tier 2 · 基础级（目标 12–18 · 实际 14 条）
 
 ## 目标

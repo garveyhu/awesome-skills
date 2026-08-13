@@ -63,7 +63,7 @@
 
 ## 下一步
 
-1. `cd /Users/links/Coding/Archer/style-vault/frontend && yarn dev` 实际跑一下：
+1. `cd ~/Coding/Archer/style-vault/frontend && yarn dev` 实际跑一下：
    - `/browse` 验证「总览」高亮、`/browse/style` 切换激活、连续懒加载稳定
    - `⌘K` 搜 → 点结果 → 浏览器后退 → 面板带原 query 复活
    - 收藏 tab 切换间翻页位置保留

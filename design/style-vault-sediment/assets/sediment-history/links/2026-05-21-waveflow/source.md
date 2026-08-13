@@ -2,7 +2,7 @@
 
 ## 项目路径
 
-- $PROJECT = `/Users/links/Coding/A-complex/ikt/waveflow-ui`
+- $PROJECT = `~/Coding/A-complex/ikt/waveflow-ui`
 - 技术栈指纹：`shadcn-radix` (React 18 + Vite 7 + Radix UI + Tailwind v4 + CVA) + Three.js + ECharts + lucide-react + Inter/JetBrains Mono/Instrument Serif via @fontsource
 
 ## 关键源文件

@@ -102,7 +102,7 @@ bash ~/.claude/skills/gemini-gen/scripts/gen-batch.sh \
 3. 出图前确保反代服务在跑;本机用 `app` 项目管理器的可以 `app run antigravity2api`,没有这套管理器就直接进反代目录 `npm start`。
 4. 多账号 / 撞额度自动禁用都在反代服务自己的管理台里管(默认 `http://localhost:8045`,登录 `.env` 里配的 `ADMIN_USERNAME`/`ADMIN_PASSWORD`),本 skill 不重复实现。
 
-**找不到 `proxy_config.json` 时的兜底**:会尝试读本机 `~/.agents/resources.json` 的 `llm.antigravity2api.local`(仅我自己机器上有这个私有凭据库,其他人用本 skill 应该走上面的 `proxy_config.json`,不依赖这个)。
+**配置三级发现**:①环境变量 `GEMINI_PROXY_BASE_URL`/`GEMINI_PROXY_API_KEY` → ②`proxy_config.json`(skill 目录或 `~/.config/gemini-gen/`) → ③`$AGENTS_RESOURCES` 资源中枢的 `llm.antigravity2api`。**不写死任何家目录路径**,别人用本 skill 走 ①② 即可。
 
 ## cookie 后端配置(备选,私密,不入 git)
 

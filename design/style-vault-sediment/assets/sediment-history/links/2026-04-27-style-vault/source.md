@@ -1,7 +1,7 @@
 # 素材溯源 · style-vault 自指沉淀
 
 ## 项目路径
-- $PROJECT = /Users/links/Coding/Archer/style-vault（即 vault 网站自身仓）
+- $PROJECT = ~/Coding/Archer/style-vault（即 vault 网站自身仓）
 - 技术栈指纹：react@19 + antd@6 + tailwind@3 + react-router-dom@7 + vite@8
 - VAULT_OK = true（项目即 vault，preview tsx 直接写在 frontend/src/preview/）
 

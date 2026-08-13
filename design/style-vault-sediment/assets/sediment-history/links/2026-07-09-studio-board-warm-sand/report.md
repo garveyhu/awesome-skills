@@ -2,7 +2,7 @@
 
 日期：2026-07-09
 模式：create
-起点：from-project（/Users/links/Documents/obsidian/Media-Studio/studio-board）
+起点：from-project（~/Documents/obsidian/Media-Studio/studio-board）
 档位：Tier 2 · 基础级（目标 12–18 · 实际 17 条）
 作者：links
 
@@ -56,7 +56,7 @@
 
 ## Commit
 
-- skill 仓（~/.agents/links·awesome-skills）：见 `feat(style-vault): add studio-board 暖砂白玻璃工作台`
+- skill 仓（~/.agents/skills/links·awesome-skills）：见 `feat(style-vault): add studio-board 暖砂白玻璃工作台`
 - 网站仓（~/Coding/Archer/style-vault）：见 `feat(preview): add studio-board 暖砂工作台 preview`
 - **均未 push**（留给用户）
 

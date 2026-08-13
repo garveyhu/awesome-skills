@@ -33,7 +33,7 @@ You may NOT:
 - Run any command that would mutate state: `rm`, `mv`, `cp`, `>`, `>>`, `tee`, `sed -i`, `git commit`, `git push`, `git reset`, `git checkout -- ...`, `chmod`, `chown`, `npm install`, `pip install`, `make install`, etc.
 - Run any command that touches or creates files, or mutates git state in any form: this includes (non-exhaustively) `touch`, `git stash`, `git apply`, `git restore`, `git reset --soft`, `git checkout <ref> -- <path>`, `pre-commit run --files`, IDE-driven formatters, etc. **Rule of thumb: if you're unsure whether a command writes anywhere, log the gap as an `issues[]` entry instead and let the executor handle it.**
 - Touch the network beyond `localhost`
-- Bypass `guard.sh` — every shell command you intend to run must first pass `bash ~/.agents/skills/self-improving-workflow/scripts/guard.sh "<command>"`. If guard rejects, do not run.
+- Bypass `guard.sh` — every shell command you intend to run must first pass `bash ~/.agents/skills/src/mirror/self-improving-workflow/scripts/guard.sh "<command>"`. If guard rejects, do not run.
 
 If a needed verification requires a mutating action, log the gap as an `issues[]` entry instead and let the main loop's executor handle it.
 

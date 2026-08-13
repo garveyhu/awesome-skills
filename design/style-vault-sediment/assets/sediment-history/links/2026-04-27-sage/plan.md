@@ -3,7 +3,7 @@
 日期：2026-04-27
 作者：links
 模式：create
-起点：from-project (`/Users/links/Coding/A-complex/ikt/sage/frontend/`)
+起点：from-project (`~/Coding/A-complex/ikt/sage/frontend/`)
 档位：Tier 3 · 全量级（目标 30–50+ 条 · 实际 38 条）
 namespace：`sage`（关联 `products/sage`）
 

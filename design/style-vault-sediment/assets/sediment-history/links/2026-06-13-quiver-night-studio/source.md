@@ -2,7 +2,7 @@
 
 ## 项目路径
 
-- $PROJECT = /Users/links/Coding/Archer/quiver（feat/game-first 分支）
+- $PROJECT = ~/Coding/Archer/quiver（feat/game-first 分支）
 - 技术栈指纹：React 18 + TypeScript + Vite + Tauri v2 · 纯手写 CSS（无 Tailwind / 无 Antd）· DOM 等距渲染器（已从 Phaser 迁回）· SQLite 持久化
 
 ## 关键源文件（逐条溯源）

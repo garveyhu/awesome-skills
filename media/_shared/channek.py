@@ -29,7 +29,13 @@
     brand.sound                              →  locks.motionSound.sound
     brand.code_theme                         →  brand.codeTheme
     secrets_needed                           →  requires.secrets
-    brand.tokens.* / voice.* / captions / cover / audio / platforms / publish  →  同名不变
+    brand.tokens.* / captions / cover / platforms  →  同名不变
+
+本机接线值（弃用期收尾后不再入卡·落频道侧车 `.channek/local/`，get() 双轨读侧车 > 卡段）：
+    voice.profiles（modelPath/promptWav…） →  .channek/local/voice.json
+    publish.profileDir / publish.debugPort →  .channek/local/publish.json
+    publish.accounts                        →  config 声明 channek.publish.accounts（逗号文本·读回重组数组）
+    audio.bed.floorDb                       →  config 声明 sound.bedFloorDb
 
 解析优先级（频道）：
     explicit 参数  >  $CHANNEK_CHANNEL  >  从 start/cwd 上溯找 card.json（≤MAX_UP 层）
@@ -47,6 +53,7 @@ CLI 自检：
 from __future__ import annotations
 
 import json
+import tempfile
 import os
 import sys
 from pathlib import Path
@@ -54,6 +61,7 @@ from typing import Any, Optional
 
 CARD_FILE = "card.json"  # 风格卡 v2·机器单一事实源（旧 card.json 已退役）
 STYLE_DIR = "风格卡"  # 频道可分发区（含 card.json + 创作宪章 + 品牌 + hooks）·两区布局
+LOCAL_DIR = ".channek/local"  # 频道侧车（本机接线值·不入卡不随卡·gitignore）
 ENV_CHANNEL = "CHANNEK_CHANNEL"
 ENV_SECRETS = "AGENTS_RESOURCES"  # 凭据文件（或其所在目录）
 ENV_SECRETS_HOME = "AGENTS_HOME"  # 凭据库根目录（其下 resources.json）
@@ -62,15 +70,133 @@ SECRETS_FILE = "resources.json"
 MAX_UP = 12
 
 
+# 卡已完成「config 自声明」迁移（locks/captions 段退场·audio 合成参数进 pluginSettings），
+# 旧点号路径靠这张表续命：skill 不用改一行，get() 先查 config 声明、再落旧段。
+_LEGACY_TO_CONFIG = {
+    "locks.visualStyle.imagePrompt": "channek.visual.imagePrompt",
+    "locks.visualStyle.negativePrompt": "channek.visual.negativePrompt",
+    "locks.visualStyle.seed": "channek.visual.seed",
+    "locks.visualStyle.sref": "channek.visual.sref",
+    "captions.highlight": "channek.captions.highlight",
+    "captions.maxLines": "channek.captions.maxLines",
+    "captions.wordsPerLine": "channek.captions.wordsPerLine",
+    "captions.stroke": "channek.captions.stroke",
+    "voice.default": "channek.voice.default",
+    "locks.motionSound.sound.vibe": "sound.vibe",
+    "locks.motionSound.sound.bgm.enabled": "sound.bgmEnabled",
+    "locks.motionSound.sound.bgm.genre": "sound.bgmGenre",
+    "locks.motionSound.sound.bgm.noVocals": "sound.bgmNoVocals",
+    "locks.motionSound.sound.sfx.palette": "sound.sfxPalette",
+    "locks.motionSound.sound.sfx.brightnessCeilingHz": "sound.sfxBrightnessCeilingHz",
+    "locks.motionSound.sound.sonicLogo.enabled": "sound.sonicLogoEnabled",
+    "locks.motionSound.sound.intro.enabled": "sound.introEnabled",
+    "locks.motionSound.sound.intro.file": "sound.introFile",
+    "locks.motionSound.sound.intro.source": "sound.introSource",
+    "audio.bed.floorDb": "sound.bedFloorDb",
+}
+
+# audio 六个合成参数已归「AI 配音」插件的频道级参数段（plugin id 含点号，走不了点号 walk）。
+_AUDIO_PLUGIN_ID = "channek.generation-voice-lab"
+_AUDIO_KEYS = {"ttsCfg", "ttsTimesteps", "headBreath", "tailBreath", "paceEven", "toneEven"}
+
+
+def _split_list(raw: Any) -> list:
+    """config 七型没有数组——数组判据以逗号文本声明（bgmMood/sfxAvoid），读回时重组。"""
+    if isinstance(raw, list):
+        return raw
+    if isinstance(raw, str) and raw.strip():
+        return [item.strip() for item in raw.split(",") if item.strip()]
+    return []
+
+
+def _walk(obj: Any, dotted: str) -> Any:
+    """在嵌套 dict 里走点号路径；走不通返回 None（与 get() 的缺席语义一致）。"""
+    cur = obj
+    for key in dotted.split("."):
+        if isinstance(cur, dict) and key in cur:
+            cur = cur[key]
+        else:
+            return None
+    return cur
+
+
 class Channel:
     """解析好的风格卡（card.json）+ 频道根。"""
 
     def __init__(self, root: Path, data: dict):
         self.root = root
         self.data = data or {}
+        # config 声明拍平成 {key: value}（有值才收；fileRef 的值就是卡内相对路径）
+        self._config: dict = {}
+        for section in (self.data.get("config") or {}).get("sections", []) or []:
+            for field in section.get("fields", []) or []:
+                if "value" in field and field.get("value") is not None:
+                    self._config[field["key"]] = field["value"]
+        self._sidecars: dict = {}
+
+    def _sidecar(self, name: str) -> dict:
+        """频道侧车（`.channek/local/<name>`）——本机接线值的家。缺失 / 坏 JSON 一律空 dict。"""
+        if name not in self._sidecars:
+            data: Any = {}
+            path = self.root / LOCAL_DIR / name
+            try:
+                if path.is_file():
+                    data = json.loads(path.read_text(encoding="utf-8"))
+            except Exception:  # noqa: BLE001 —— 侧车是可选增强，坏了退回卡段，绝不炸调用方
+                data = {}
+            self._sidecars[name] = data if isinstance(data, dict) else {}
+        return self._sidecars[name]
 
     def get(self, dotted: str, default: Any = None) -> Any:
-        """点号路径取值，路径即 card.json 的真实结构：get('brand.tokens.colors.mint')。"""
+        """点号路径取值。解析序：config 声明（直接键 / 旧路径映射）> 侧车 > 旧段原位 > default。
+
+        旧 skill 写的 `locks.visualStyle.imagePrompt` 与新写法 `channek.visual.imagePrompt`
+        读到的是同一个声明值；数组判据（bgm.mood / sfx.avoid / bgm.bpm / publish.accounts）
+        由映射层重组；本机接线（voice.profiles / publish.profileDir·debugPort）读频道侧车。
+        """
+        if dotted in self._config:
+            return self._config[dotted]
+        mapped = _LEGACY_TO_CONFIG.get(dotted)
+        if mapped is not None and mapped in self._config:
+            return self._config[mapped]
+        if dotted == "voice.profiles" or dotted.startswith("voice.profiles."):
+            hit = _walk(self._sidecar("voice.json"), dotted.split(".", 1)[1])
+            if hit is not None:
+                return hit
+        if dotted == "publish":
+            merged = dict(_walk(self.data, "publish") or {})
+            accounts = _split_list(self._config.get("channek.publish.accounts"))
+            if accounts:
+                merged["accounts"] = accounts
+            merged.update(self._sidecar("publish.json"))
+            if merged:
+                return merged
+        elif dotted.startswith("publish."):
+            hit = _walk(self._sidecar("publish.json"), dotted.split(".", 1)[1])
+            if hit is not None:
+                return hit
+            if dotted == "publish.accounts":
+                accounts = _split_list(self._config.get("channek.publish.accounts"))
+                if accounts:
+                    return accounts
+        if dotted == "locks.motionSound.sound.bgm.mood":
+            mood = _split_list(self._config.get("sound.bgmMood"))
+            if mood:
+                return mood
+        if dotted == "locks.motionSound.sound.sfx.avoid":
+            avoid = _split_list(self._config.get("sound.sfxAvoid"))
+            if avoid:
+                return avoid
+        if dotted == "locks.motionSound.sound.bgm.bpm":
+            low, high = self._config.get("sound.bgmBpmMin"), self._config.get("sound.bgmBpmMax")
+            if low is not None and high is not None:
+                return [low, high]
+        if dotted.startswith("audio."):
+            key = dotted.split(".", 1)[1]
+            if key in _AUDIO_KEYS:
+                plugin = (self.data.get("pluginSettings") or {}).get(_AUDIO_PLUGIN_ID) or {}
+                if key in plugin:
+                    return plugin[key]
         cur: Any = self.data
         for key in dotted.split("."):
             if isinstance(cur, dict) and key in cur:
@@ -90,10 +216,164 @@ class Channel:
         return (base / rel).resolve() if rel else base.resolve()
 
     def voice_profile(self, key: Optional[str] = None) -> dict:
-        """取某音色 profile（默认 voice.default）。"""
-        profiles = self.get("voice.profiles", {}) or {}
+        """取某音色 profile（默认 voice.default）。接线键住频道侧车 voice.json > 卡段兜底。
+
+        **弃用中**：本机接线已迁 app 的能力目录（见 `capability()`），侧车 voice.json 已退役。
+        这个方法留给还没迁的调用方兜底，读不到就返回空 dict。
+        """
         key = key or self.get("voice.default")
-        return profiles.get(key, {}) if key else {}
+        if not key:
+            return {}
+        profiles = self.get("voice.profiles", {}) or {}
+        return profiles.get(key, {}) if isinstance(profiles, dict) else {}
+
+    def capability(self, capability_id: str, prefer: Optional[str] = None) -> dict:
+        """取一条**可以直接照着调**的能力绑定。
+
+        这是 skill 与插件之间唯一的耦合面：app 在装插件 / 改设置 / 开频道时把三层配置合并、
+        provider 选路、路径解析全算完，物化成一个 JSON；这里只是把答案读出来。于是 skill
+        既不认识插件、也不认识配置分层，更不需要 app 在跑。
+
+        返回形如 `{"providerId", "invoke", "params", "offline", ...}`；没有可用候选返回 {}。
+        `invoke.args` 里只剩调用期占位符（`{{input.*}}` / `{{outputDir}}` / `{{runId}}`
+        / `{{tmpDir}}`），由调用方自己替。
+
+        频道目录优先、机器级兜底：后者缺频道个性（音色 / 画风 / 尺寸），所以走到兜底时
+        **必须如实报告**——静默降级会产出「看起来对但不是这个频道」的东西。
+        """
+        catalog = self._read_json(self.root / ".channek" / "local" / "capabilities.json")
+        source = "channel"
+        if not catalog:
+            catalog = self._read_json(Path.home() / ".channek" / "capabilities.json")
+            source = "machine-fallback"
+        entry = (catalog.get("capabilities") or {}).get(capability_id) or {}
+        candidates = entry.get("candidates") or []
+        if prefer:
+            candidates = sorted(candidates, key=lambda c: c.get("providerId") != prefer)
+        if not candidates:
+            return {}
+        return {**candidates[0], "catalog": source}
+
+    def invoke_capability(
+        self,
+        capability_id: str,
+        inputs: Optional[dict] = None,
+        out_dir: Optional[Path] = None,
+        prefer: Optional[str] = None,
+        run_id: Optional[str] = None,
+    ) -> dict:
+        """调用一条能力，返回 `{"ok", "path", "backend", "catalog", "attempts"}`。
+
+        这是 skill 迁移的落点：原来每个 skill 各写一遍「后端在哪、venv 是哪个、参数怎么拼」，
+        现在只说「我要 channek.tts，正文是这个」。**怎么调**由插件声明、由 app 物化进能力目录。
+
+        候选链按序试，**回退不掩盖失败**：每个候选为什么没用上都记在 `attempts` 里——
+        否则用户会以为自己点名的那家在跑。
+        """
+        import subprocess
+        import time
+        import urllib.request
+
+        inputs = inputs or {}
+        out_dir = Path(out_dir or self.root / ".channek" / "local" / "out")
+        out_dir.mkdir(parents=True, exist_ok=True)
+        run_id = run_id or f"{capability_id.split('.')[-1]}-{int(time.time() * 1000)}"
+        tmp_dir = Path(tempfile.mkdtemp(prefix="channek-cap-"))
+
+        catalog = self._read_json(self.root / ".channek" / "local" / "capabilities.json")
+        source = "channel"
+        if not catalog:
+            catalog = self._read_json(Path.home() / ".channek" / "capabilities.json")
+            source = "machine-fallback"
+        entry = (catalog.get("capabilities") or {}).get(capability_id) or {}
+        candidates = list(entry.get("candidates") or [])
+        if prefer:
+            candidates.sort(key=lambda c: c.get("providerId") != prefer)
+        if not candidates:
+            miss = entry.get("unavailable") or []
+            hint = miss[0].get("hint") if miss else "先在 app 里装一个提供这条能力的插件"
+            return {"ok": False, "catalog": source, "attempts": miss,
+                    "error": f"没有可用的 {capability_id}：{hint}"}
+
+        def fill(value: str) -> str:
+            out = value.replace("{{outputDir}}", str(out_dir))
+            out = out.replace("{{runId}}", run_id).replace("{{tmpDir}}", str(tmp_dir))
+            for key, val in inputs.items():
+                # `@file` 修饰：大载荷落临时文件再传路径——三千字的稿子上 argv 会撞 ARG_MAX，
+                # 而撞不撞取决于稿子长度，那种「大部分时候能跑」的故障最难查。
+                token = "{{input.%s@file}}" % key
+                if token in out:
+                    holder = tmp_dir / f"{key}.txt"
+                    holder.write_text(str(val), encoding="utf-8")
+                    out = out.replace(token, str(holder))
+                out = out.replace("{{input.%s}}" % key, str(val))
+            return out
+
+        attempts = []
+        for binding in candidates:
+            invoke = binding.get("invoke") or {}
+            provider = binding.get("providerId", "?")
+            try:
+                if invoke.get("kind") == "command":
+                    args = [fill(str(a)) for a in invoke.get("args") or []]
+                    proc = subprocess.run(
+                        [fill(str(invoke.get("program")))] + args,
+                        capture_output=True, text=True,
+                        timeout=(invoke.get("timeoutMs") or 600000) / 1000,
+                    )
+                    payload = {}
+                    for line in reversed((proc.stdout or "").strip().splitlines()):
+                        try:
+                            payload = json.loads(line)
+                            break
+                        except Exception:
+                            continue
+                    # 成功要两条同时成立：退出码 0 **且** 末行 JSON ok——只看退出码会把
+                    # 「打印了错误但退 0」当成功，只看 JSON 会把「进程被 kill」当没发生。
+                    if proc.returncode == 0 and payload.get("ok") is not False:
+                        path = payload.get("path")
+                        if not path:
+                            # 不打印 JSON 的后端（voxcpm 这类通用 CLI 就是）走 `files-in-outdir`：
+                            # 产物路径本来就由 args 里的 `--out` 指定，去 outputDir 里认最新的那个。
+                            glob = (invoke.get("result") or {}).get("glob") or "*"
+                            made = sorted(out_dir.glob(glob), key=lambda f: f.stat().st_mtime)
+                            path = str(made[-1]) if made else None
+                        return {"ok": True, "path": path, "backend": provider,
+                                "catalog": source, "attempts": attempts, "meta": payload}
+                    attempts.append({"backend": provider, "status": "failed",
+                                     "error": (proc.stderr or proc.stdout or "")[-400:]})
+                    continue
+                if invoke.get("kind") == "http":
+                    body = json.dumps(
+                        {k: fill(str(v)) for k, v in (invoke.get("body") or {}).get("template", {}).items()}
+                    ).encode()
+                    request = urllib.request.Request(
+                        fill(str(invoke.get("url"))), data=body, method=invoke.get("method", "POST"),
+                        headers=invoke.get("headers") or {"Content-Type": "application/json"},
+                    )
+                    with urllib.request.urlopen(request, timeout=(invoke.get("timeoutMs") or 120000) / 1000) as resp:
+                        blob = resp.read()
+                    target = Path(fill(str((invoke.get("result") or {}).get("saveAs") or out_dir / f"{run_id}.bin")))
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(blob)
+                    return {"ok": True, "path": str(target), "backend": provider,
+                            "catalog": source, "attempts": attempts}
+                attempts.append({"backend": provider, "status": "unavailable",
+                                 "error": "这条 provider 需要 app 打开着（module 形态）"})
+            except Exception as exc:
+                attempts.append({"backend": provider, "status": "failed", "error": str(exc)})
+        return {"ok": False, "catalog": source, "attempts": attempts,
+                "error": f"{capability_id} 的候选都没跑通"}
+
+    @staticmethod
+    def _read_json(path: Path) -> dict:
+        """读一份 JSON；缺失 / 坏形状一律返回空 dict，绝不炸调用方。"""
+        try:
+            with open(path, "r", encoding="utf-8") as handle:
+                data = json.load(handle)
+            return data if isinstance(data, dict) else {}
+        except Exception:
+            return {}
 
     @property
     def slug(self) -> Optional[str]:
@@ -122,11 +402,51 @@ class Channel:
 
     @property
     def style_lock(self) -> dict:
-        return self.get("locks.visualStyle", {}) or {}
+        """画风锁四参——从 config 声明（channek.visual.*）重组；老卡落回 locks 段。"""
+        lock = {
+            key: self._config[f"channek.visual.{key}"]
+            for key in ("imagePrompt", "negativePrompt", "seed", "sref")
+            if f"channek.visual.{key}" in self._config
+        }
+        return lock or (self.get("locks.visualStyle", {}) or {})
 
     @property
     def sound(self) -> dict:
-        return self.get("locks.motionSound.sound", {}) or {}
+        """声场口味——从 config 扁平声明（sound.*）重组成旧嵌套形状；老卡落回 locks 段。"""
+        cfg = self._config
+        if "sound.vibe" not in cfg:
+            return self.get("locks.motionSound.sound", {}) or {}
+        bgm = {
+            "enabled": cfg.get("sound.bgmEnabled"),
+            "genre": cfg.get("sound.bgmGenre"),
+            "mood": _split_list(cfg.get("sound.bgmMood")),
+            "noVocals": cfg.get("sound.bgmNoVocals"),
+        }
+        if cfg.get("sound.bgmBpmMin") is not None and cfg.get("sound.bgmBpmMax") is not None:
+            bgm["bpm"] = [cfg["sound.bgmBpmMin"], cfg["sound.bgmBpmMax"]]
+        return {
+            "vibe": cfg.get("sound.vibe"),
+            "bgm": {k: v for k, v in bgm.items() if v is not None},
+            "sfx": {
+                k: v
+                for k, v in {
+                    "palette": cfg.get("sound.sfxPalette"),
+                    "brightnessCeilingHz": cfg.get("sound.sfxBrightnessCeilingHz"),
+                    "avoid": _split_list(cfg.get("sound.sfxAvoid")) or None,
+                }.items()
+                if v is not None
+            },
+            "sonicLogo": {"enabled": cfg.get("sound.sonicLogoEnabled")},
+            "intro": {
+                k: v
+                for k, v in {
+                    "enabled": cfg.get("sound.introEnabled"),
+                    "file": cfg.get("sound.introFile"),
+                    "source": cfg.get("sound.introSource"),
+                }.items()
+                if v is not None
+            },
+        }
 
     @property
     def colors(self) -> dict:
@@ -259,6 +579,51 @@ def find_secrets(start: Optional[str] = None) -> Optional[Path]:
     return None
 
 
+def load_secret(res_id: str, instance: Optional[str] = None,
+                start: Optional[str] = None) -> Optional[dict]:
+    """按资源 id 取一份凭据 —— `load_secret("media_generation.volcengine", "personal")`。
+
+    两种凭据源，都**不含家目录硬编码**（随卡/随 skill 分发时绝不指向他人凭据库）：
+      ① 资源中枢（$AGENTS_RESOURCES 指向的目录，其下 secrets/<资源>.json）
+      ② 频道树内 `_secrets/resources.json`（带外下发的老结构，按 category→provider→variant）
+    都找不到返回 None，调用方自行降级——绝不抛。
+    """
+    env = os.environ.get(ENV_SECRETS) or os.environ.get(ENV_SECRETS_HOME)
+    if env:
+        base = Path(env).expanduser()
+        if base.is_file():
+            base = base.parent
+        for cand in (base, base / "resources"):
+            # 中枢里一个资源一个目录，位置由索引 registry.json 的 path 给出
+            idx = cand / "src" / "registry.json"
+            if not idx.is_file():
+                continue
+            try:
+                info = json.loads(idx.read_text("utf-8"))["resources"][res_id]
+                f = cand / "secrets" / info["path"] / "secret.json"
+                data = json.loads(f.read_text("utf-8"))
+            except (KeyError, OSError, json.JSONDecodeError):
+                break
+            if instance is None:
+                instance = next(iter(data), None)
+            return data.get(instance) if instance else None
+
+    hit = find_secrets(start)
+    if hit and hit.is_file():
+        node: Any = json.loads(hit.read_text("utf-8"))
+        for part in res_id.split("."):
+            if not isinstance(node, dict) or part not in node:
+                return None
+            node = node[part]
+        if isinstance(node, dict):
+            if instance and instance in node:
+                return node[instance]
+            sub = [v for k, v in node.items()
+                   if isinstance(v, dict) and not k.startswith("_")]
+            return sub[0] if sub else node
+    return None
+
+
 def _main(argv: list) -> int:
     explicit = None
     args = list(argv)
@@ -272,6 +637,32 @@ def _main(argv: list) -> int:
     if args and args[0] == "--root":
         print(ch.root)
         return 0
+    # `caps` / `invoke` 让**非 Python 的 skill**（bash / node / 任何语言）也能用能力目录：
+    # 一条命令进去，一行 JSON 出来。Python skill 直接 import 本模块即可，不必绕这一层。
+    if args and args[0] == "caps":
+        catalog = ch._read_json(ch.root / ".channek" / "local" / "capabilities.json") or \
+            ch._read_json(Path.home() / ".channek" / "capabilities.json")
+        for cap, entry in sorted((catalog.get("capabilities") or {}).items()):
+            names = [c.get("providerId") for c in entry.get("candidates") or []]
+            mark = "" if entry.get("offline") else "  (需 app 打开着)"
+            print(f"{cap:24} {', '.join(names) or '<无可用 provider>'}{mark}")
+        return 0
+    if args and args[0] == "invoke":
+        if len(args) < 2:
+            print("用法: channek.py invoke <能力id> [键=值 ...] [--out 目录]", file=sys.stderr)
+            return 2
+        rest, out_dir, inputs = args[2:], None, {}
+        while rest:
+            token = rest.pop(0)
+            if token == "--out":
+                out_dir = rest.pop(0) if rest else None
+            elif "=" in token:
+                key, _, value = token.partition("=")
+                inputs[key] = value
+        result = ch.invoke_capability(args[1], inputs, out_dir=out_dir)
+        # 末行一行紧凑 JSON——与 skill 生态既有的结果契约一致，调用方 tail -1 即可。
+        print(json.dumps(result, ensure_ascii=False))
+        return 0 if result.get("ok") else 1
     if args:
         print(ch.get(args[0], "<未定义>"))
         return 0

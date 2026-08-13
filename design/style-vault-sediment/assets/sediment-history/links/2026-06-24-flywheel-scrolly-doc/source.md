@@ -1,7 +1,7 @@
 # 素材溯源 · 飞轮的内部 · 孟菲斯滚动叙事文档站
 
 ## 项目路径
-- $PROJECT = /Users/links/Documents/wiki/media-studio
+- $PROJECT = ~/Documents/wiki/media-studio
 - 已公开发布：https://cdn.archeruuu.com/pages/media-studio/
 - 技术栈指纹：react-tailwind（Vite + React 18 + TS strict + Tailwind v4 + framer-motion）· base 相对路径
 

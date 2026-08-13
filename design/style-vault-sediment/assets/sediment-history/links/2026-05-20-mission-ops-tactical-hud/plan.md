@@ -16,8 +16,8 @@
 
 ## 来源溯源
 
-- `/Users/links/Documents/company/ikt-docs/数据同步/docs/plans/2026-05-20-aura-redesign-mockups/mockup-v3-A-nasa.html`
-- `/Users/links/Documents/company/ikt-docs/数据同步/docs/plans/2026-05-20-aura-redesign-mockups/mockup-v3-C-hud.html`
+- `~/Documents/company/ikt-docs/数据同步/docs/plans/2026-05-20-aura-redesign-mockups/mockup-v3-A-nasa.html`
+- `~/Documents/company/ikt-docs/数据同步/docs/plans/2026-05-20-aura-redesign-mockups/mockup-v3-C-hud.html`
 
 ## 涉及条目（依赖拓扑序 · 共 12 条）
 

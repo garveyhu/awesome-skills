@@ -50,8 +50,8 @@ skill 的核心价值不在"能查到什么"，而是 **"拿到一个 id，就�
 
 2. **Read 主条目 md**
    ```
-   ~/.agents/skills/style-vault/references/<id>/README.md   # 文件夹式（products / styles / pages）
-   ~/.agents/skills/style-vault/references/<id>.md          # 单文件（blocks / components / tokens）
+   ~/.agents/skills/src/mirror/style-vault/references/<id>/README.md   # 文件夹式（products / styles / pages）
+   ~/.agents/skills/src/mirror/style-vault/references/<id>.md          # 单文件（blocks / components / tokens）
    ```
    路径错误立刻报错，不要猜替代。判断文件夹 vs 单文件：看该层的 `_CATEGORY.md` 的命名约定。
 
@@ -90,7 +90,7 @@ skill 提供 `scripts/taxonomy.py`，AI 和人都可以用它查询分类体系�
 
 ```bash
 # 依赖：Python 3 + PyYAML（`pip install pyyaml`）
-python3 ~/.agents/skills/style-vault/scripts/taxonomy.py <subcommand>
+python3 ~/.agents/skills/src/mirror/style-vault/scripts/taxonomy.py <subcommand>
 ```
 
 常用子命令：
@@ -198,4 +198,4 @@ Token 条目必带 `## Tokens` 下可 `JSON.parse` 的代码块。schema 全貌�
 ## 维护原则
 
 - **消费模式禁止触发任何 commit / sync / 写入**
-- **skill 仓真实 git 根在 `/Users/links/.agents/skills/`**，git 命令用 `git -C /Users/links/.agents/skills` 形式
+- **skill 仓真实 git 根在 `~/.agents/skills/src/mirror/`**，git 命令用 `git -C ~/.agents/skills/src/mirror` 形式

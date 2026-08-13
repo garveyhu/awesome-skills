@@ -3,7 +3,7 @@
 日期：2026-06-13
 作者：links
 模式：create
-起点：from-project（$PROJECT = /Users/links/Coding/Archer/Chameleon/frontend + frontend/embed）
+起点：from-project（$PROJECT = ~/Coding/Archer/Chameleon/frontend + frontend/embed）
 档位：Tier 3 · 全量级（穷举每域）
 技术栈指纹：react19 + shadcn-radix（Radix + CVA + Tailwind v4 CSS-first @theme）+ vite + lucide-react
 设计「脸」：工程师暖白 SaaS 控制台 + 霓虹 AI 强调色

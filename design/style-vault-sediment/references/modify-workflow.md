@@ -28,7 +28,7 @@
 **用户给了不带 namespace 的旧 id**（如 `components/buttons/ghost-button`）→ 不要直接报"找不到"，先 grep 同 bucket 下所有 namespace：
 
 ```bash
-ls ~/.agents/skills/style-vault/references/components/buttons/*/ghost-button.md 2>/dev/null
+ls ~/.agents/skills/src/mirror/style-vault/references/components/buttons/*/ghost-button.md 2>/dev/null
 # 命中 1 条 → 自动补 namespace 段，告诉用户"我找到 components/buttons/acme/ghost-button"
 # 命中多条（同 base-name 跨 namespace）→ 列给用户选
 # 命中 0 条 → 走 search --name 模糊反查
@@ -37,7 +37,7 @@ ls ~/.agents/skills/style-vault/references/components/buttons/*/ghost-button.md 
 **模糊 id / 只给了名字** → 用 `search --name` 反查：
 
 ```bash
-python3 ~/.agents/skills/style-vault/scripts/taxonomy.py \
+python3 ~/.agents/skills/src/mirror/style-vault/scripts/taxonomy.py \
   search --name "<用户说的名字>" --json
 ```
 
@@ -102,7 +102,7 @@ python3 ~/.agents/skills/style-vault/scripts/taxonomy.py \
 **新增**：紧接着反查要改的条目全貌：
 
 ```bash
-python3 ~/.agents/skills/style-vault/scripts/taxonomy.py \
+python3 ~/.agents/skills/src/mirror/style-vault/scripts/taxonomy.py \
   item <id> --json
 ```
 
@@ -233,7 +233,7 @@ diff 预览模板：
 
 ```bash
 # skill 仓：用 git checkout 恢复单文件
-cd ~/.agents/skills
+cd ~/.agents/skills/src/mirror
 git checkout -- style-vault/references/<id>.md
 #  文件夹形条目：
 git checkout -- style-vault/references/<id>/
@@ -272,7 +272,7 @@ EOF
 **skill 仓**（步骤 7 末尾聚合）：
 
 ```bash
-cd ~/.agents/skills
+cd ~/.agents/skills/src/mirror
 git add style-vault/references/<改动的 MD>
 git add style-vault-sediment/assets/sediment-history/<author>/<date-topic>-modify/
 git commit -m "$(cat <<'EOF'
@@ -335,7 +335,7 @@ EOF
 落盘路径：
 
 ```
-~/.agents/skills/style-vault-sediment/assets/sediment-history/<author>/YYYY-MM-DD-<id-slug>-modify/
+~/.agents/skills/src/mirror/style-vault-sediment/assets/sediment-history/<author>/YYYY-MM-DD-<id-slug>-modify/
   ├── plan.md     (步骤 4 已落盘)
   └── report.md   (本步骤落盘)
 ```

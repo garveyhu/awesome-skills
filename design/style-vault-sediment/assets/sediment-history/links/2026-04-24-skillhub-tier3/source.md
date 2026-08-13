@@ -2,7 +2,7 @@
 
 ## 项目路径
 
-- `$PROJECT = /Users/links/Coding/A-complex/ikt/skills/skillhub`
+- `$PROJECT = ~/Coding/A-complex/ikt/skills/skillhub`
 - 技术栈指纹：react 19 + antd 6 + tailwind 4 + vite 8 + framer-motion 12
 
 ## Discovery 产物

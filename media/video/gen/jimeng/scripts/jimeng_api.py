@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """即梦图像/视频生成 · 火山 visual API(visual.volcengineapi.com) · V4 签名 · 同步/异步统一入口。
 关键:AK/SK 直连,【不需要 maestro vip】(区别 dreamina CLI——CLI 普通账号被拦)。
-读 ~/.agents/resources.json 的 media_generation.volcengine.personal 取 AK/SK。
+AK/SK 三级发现：环境变量 VOLC_ACCESS_KEY_ID/VOLC_SECRET_ACCESS_KEY > 频道树 _secrets/ >
+$AGENTS_RESOURCES 资源中枢的 media_generation.volcengine（**不写死任何家目录路径**）。
 
 == model 速查 ==
  绘图:
@@ -28,20 +29,29 @@
 """
 import json, hashlib, hmac, datetime, base64, urllib.request, urllib.error, time, argparse, sys
 
-import pathlib as _pl
-RES = str(_pl.Path.home() / ".agents" / "resources.json")  # 兜底：等价 ~/.agents/resources.json（零回归）
-try:  # 经 _shared/channek 定位凭据（$AGENTS_RESOURCES > 上溯 _secrets > ~/.agents/resources.json）
-    for _anc in _pl.Path(__file__).resolve().parents:
-        if (_anc / "_shared" / "channek.py").exists():
-            sys.path.insert(0, str(_anc / "_shared")); break
-    import channek as _msc
-    _hit = _msc.find_secrets()
-    if _hit:
-        RES = str(_hit)
-except Exception:
-    pass
-d = json.load(open(RES))["media_generation"]["volcengine"]["personal"]
-AK, SK = d["access_key_id"], d["secret_access_key"]
+import os, pathlib as _pl
+# 凭据三级发现（**本文件会随公开 skill 分发，绝不写死任何家目录路径**）：
+#   ① 环境变量 VOLC_ACCESS_KEY_ID / VOLC_SECRET_ACCESS_KEY
+#   ② 频道树内 _secrets/（带外下发）
+#   ③ $AGENTS_RESOURCES 指向的资源中枢
+# 都落空 → 报可执行的指引，不静默失败。
+AK, SK = os.environ.get("VOLC_ACCESS_KEY_ID"), os.environ.get("VOLC_SECRET_ACCESS_KEY")
+if not (AK and SK):
+    d = None
+    try:
+        for _anc in _pl.Path(__file__).resolve().parents:
+            if (_anc / "_shared" / "channek.py").exists():
+                sys.path.insert(0, str(_anc / "_shared")); break
+        import channek as _msc
+        d = _msc.load_secret("media_generation.volcengine", "personal")
+    except Exception:
+        d = None
+    if not d:
+        sys.exit("找不到火山引擎 AK/SK。三选一：\n"
+                 "  · 设 VOLC_ACCESS_KEY_ID / VOLC_SECRET_ACCESS_KEY\n"
+                 "  · 设 $AGENTS_RESOURCES 指向资源中枢（其下 secrets/media_generation.volcengine.json）\n"
+                 "  · 在频道树内放 _secrets/resources.json")
+    AK, SK = d["access_key_id"], d["secret_access_key"]
 HOST, REGION, SERVICE, VER = "visual.volcengineapi.com", "cn-north-1", "cv", "2022-08-31"
 
 # model → req_key / 输出 image|video / sync同步异步async / 输入需求

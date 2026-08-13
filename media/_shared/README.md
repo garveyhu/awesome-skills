@@ -76,8 +76,8 @@ keys = channek.find_secrets()              # 凭据文件定位（找不到返 N
 | 变量 | 用途 | 缺省回退 |
 |------|------|---------|
 | `CHANNEK_CHANNEL` | 当前频道根（`_channel/<slug>`） | cwd 上溯 / `_channel/.active` / 唯一频道 |
-| `AGENTS_RESOURCES` | 凭据文件（也可传其所在目录） | 上溯 `_secrets/resources.json` → `$AGENTS_HOME/resources.json` |
-| `AGENTS_HOME` | 机器级凭据库根目录（其下 `resources.json`） | 无——**不设就没有兜底**（返 None） |
+| `AGENTS_RESOURCES` | 资源中枢目录（其下 `secrets/<资源>.json`；也兼容旧的单文件凭据库） | 上溯 `_secrets/resources.json` → `$AGENTS_HOME` |
+| `AGENTS_HOME` | 机器级根目录（其下 `resources/`） | 无——**不设就没有兜底**（返 None） |
 | `COMFYUI_HOME` / `VOXCPM_HOME` | 运行时依赖 | 见各 skill 自身说明 |
 
 > 凭据定位**不再有家目录硬编码兜底**（旧版会落到某个私人 vault 路径）。随卡分发的文件里绝不留

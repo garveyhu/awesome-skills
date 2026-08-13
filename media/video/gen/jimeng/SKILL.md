@@ -16,12 +16,12 @@ description: >-
 
 | | **① API（火山 visual·首选）** | ② CLI（`dreamina`·备选） |
 |---|---|---|
-| 鉴权 | AK/SK 签名(`resources.json` 已存),**不需要 vip** | OAuth 登录 + **必须 maestro vip**(普通账号被拦) |
+| 鉴权 | AK/SK 签名(资源中枢已存),**不需要 vip** | OAuth 登录 + **必须 maestro vip**(普通账号被拦) |
 | 依赖 | 零(自写 V4 签名,标准库) | 装 CLI + 登录态 |
 | 覆盖 | 绘图/P图/局部重绘/视频/动作模仿(见下) | 更全(放大/多帧故事/全能参考/多模态) |
 | 何时用 | **默认**——账号没 vip 也能跑 | 账号有 vip 且要 CLI 独有能力时 |
 
-> 火山 API 的 AK/SK 在 `~/.agents/resources.json` 的 `media_generation.volcengine.personal`（脚本自动读）。**生成消耗额度(付费)**,真跑前知会用户。
+> 火山 API 的 AK/SK：脚本按三级发现自动读——环境变量 `VOLC_ACCESS_KEY_ID`/`VOLC_SECRET_ACCESS_KEY` → 频道树 `_secrets/` → `$AGENTS_RESOURCES` 资源中枢的 `media_generation.volcengine`。**生成消耗额度(付费)**,真跑前知会用户。
 
 ## ① API 用法（`scripts/jimeng_api.py`）
 

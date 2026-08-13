@@ -2,7 +2,7 @@
 
 ## 项目路径
 
-- $PROJECT = /Users/links/Documents/obsidian/Media-Studio/studio-board
+- $PROJECT = ~/Documents/obsidian/Media-Studio/studio-board
 - 前端子包 = studio-board/web
 - 技术栈指纹：react-tailwind + vite + css-variables（React 18 + Vite 5 + TS + Tailwind 3.4 + react-router v6·无组件库）
 

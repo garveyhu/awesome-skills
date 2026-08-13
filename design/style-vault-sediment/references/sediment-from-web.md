@@ -210,7 +210,7 @@ refs:
 落盘路径（走 shared-workflow 步骤 8）：
 
 ```
-~/.agents/skills/style-vault-sediment/assets/sediment-history/<author>/<date>-<topic>/source.md
+~/.agents/skills/src/mirror/style-vault-sediment/assets/sediment-history/<author>/<date>-<topic>/source.md
 ```
 
 模板：

@@ -1,7 +1,7 @@
 # 素材溯源 · Chameleon
 
 ## 项目路径
-- $PROJECT = /Users/links/Coding/Archer/Chameleon/frontend（主前端）+ frontend/embed（嵌入式 widget）
+- $PROJECT = ~/Coding/Archer/Chameleon/frontend（主前端）+ frontend/embed（嵌入式 widget）
 - 技术栈指纹：react19 + TypeScript + Vite + **Tailwind v4（CSS-first @theme，无 tailwind.config）** + **Radix UI（shadcn 范式）** + class-variance-authority + lucide-react + @xyflow/react + recharts + @uiw/react-codemirror + react-hook-form + zod + zustand + @tanstack/react-query + react-router-dom v7
 - stack tag：shadcn-radix（**注意：旧记忆里的 antd 已不存在**）
 

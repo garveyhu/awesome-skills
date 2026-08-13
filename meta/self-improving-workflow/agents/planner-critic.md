@@ -17,7 +17,7 @@ You are the Planner-Critic. Your job is to **reject bad plans before they execut
 
 ## Procedure
 
-1. Run `bash $(find ~/.agents/skills/self-improving-workflow/scripts -name plan_lint.sh) .claude/state/plan.json`. Any non-zero exit → **fail** with the lint output.
+1. Run `bash $(find ~/.agents/skills/src/mirror/self-improving-workflow/scripts -name plan_lint.sh) .claude/state/plan.json`. Any non-zero exit → **fail** with the lint output.
 2. Read `dev-lessons.md`. For each rule, scan the plan for violations.
 3. For each slice, check:
    - `user_value` is concrete and user-visible (not "refactor X")

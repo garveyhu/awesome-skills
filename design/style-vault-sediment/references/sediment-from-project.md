@@ -602,7 +602,7 @@ react-antd-tailwind
 **1. 输入解析**
 
 ```bash
-PROJECT=/Users/links/Projects/acme-admin
+PROJECT=~/Projects/acme-admin
 ```
 
 **2. 技术栈识别**

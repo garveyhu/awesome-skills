@@ -2,7 +2,7 @@
 
 日期：2026-06-13
 模式：create
-起点：from-project（/Users/links/Coding/Archer/quiver · feat/game-first 分支）
+起点：from-project（~/Coding/Archer/quiver · feat/game-first 分支）
 档位：Tier 2 · 基础级（目标 12–18 · 实际 16 条）
 作者：links
 

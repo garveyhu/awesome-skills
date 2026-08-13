@@ -1,7 +1,7 @@
 # 素材溯源 · sage
 
 ## 项目路径
-- $PROJECT = /Users/links/Coding/A-complex/ikt/sage/frontend/
+- $PROJECT = ~/Coding/A-complex/ikt/sage/frontend/
 - 技术栈指纹：react-antd-tailwind + vite + tailwindcss v4 + styled-components + lucide-react
 
 ## 关键源文件

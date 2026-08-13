@@ -3,7 +3,7 @@
 日期：2026-04-24
 作者：links
 模式：create
-起点：from-project (`/Users/links/Coding/A-complex/ikt/skills/skillhub`)
+起点：from-project (`~/Coding/A-complex/ikt/skills/skillhub`)
 
 ## 目标
 

@@ -2,7 +2,7 @@
 
 日期：2026-06-13
 模式：create
-起点：from-project（/Users/links/Coding/Archer/Chameleon/frontend + frontend/embed）
+起点：from-project（~/Coding/Archer/Chameleon/frontend + frontend/embed）
 档位：Tier 3 · 全量级（目标 30–50+ · 实际 **76 条新建** + 复用 23 waveflow）
 作者：links
 策略：**智能去重**（Chameleon 与 waveflow 同源，共享地基 ref 复用，只建独有/分叉面）
@@ -57,7 +57,7 @@ AI 自动填（Y · 用户授权全量开始写）。stack 一律 shadcn-radix�
 
 ## 下一步
 
-1. `cd /Users/links/Coding/Archer/style-vault/frontend && yarn dev`（已在 6001 跑），肉眼过更多 preview
+1. `cd ~/Coding/Archer/style-vault/frontend && yarn dev`（已在 6001 跑），肉眼过更多 preview
 2. OK 后 `git push` 两仓
 3. 发现问题 `git reset --soft HEAD~1` 回工作区
 

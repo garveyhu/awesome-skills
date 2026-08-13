@@ -29,7 +29,7 @@
 
 ## 快速开始
 
-在项目根目录，确保 skill 已安装到 `~/.agents/skills/` 后：
+在项目根目录，确保 skill 已安装到 `~/.agents/skills/src/mirror/` 后：
 
 ```
 # 第 1 步（每个项目一次）—— 用 skill 名字调用，触发 bootstrap。

@@ -2,7 +2,7 @@
 
 日期：2026-04-24
 模式：create（补沉淀 · 在 2026-04-24-skillhub 基础上追加）
-起点：from-project (`/Users/links/Coding/A-complex/ikt/skills/skillhub`)
+起点：from-project (`~/Coding/A-complex/ikt/skills/skillhub`)
 档位：**Tier 3 · 全量级（目标 30–50+ · 本次补 20 · 累计 35 条）**
 作者：links
 
