@@ -22,7 +22,7 @@ These aren't generic "do-anything assistants." Each skill takes a stance: my tec
 | skill | what it does |
 |---|---|
 | **wiki-creator** | Deep-scan a project into DeepWiki-style multi-file docs (Mermaid, Docsify-ready) |
-| **docsify-station-creator** | Turn a `docs/` folder into a full-featured Docsify site (dark mode / full-text search / TOC / Mermaid / optional animation mode) |
+| **docs-site-creator** | Create documentation sites with a two-provider router: Docsify (zero-build, offline single-file) for simple docs, Docusaurus 3 (module tabs / local search / dark mode / brandable theme) for professional portals |
 | **req-to-ai-spec** | Turn scattered requirements (text / screenshots / legacy code) into structured, AI-friendly specs a coding agent can run with |
 | **spechub-best-practices** | Write high-quality handoff specs managed via git worktree — built for AI-to-AI task handoff |
 | **notion-chat-archiver** | Summarize an AI conversation and archive it into a personal Notion database (topic / takeaways / tags) |
