@@ -52,6 +52,7 @@ These aren't generic "do-anything assistants." Each skill takes a stance: my tec
 | **gemini-gen** | Generate images via Gemini member accounts (Nano Banana) over browser cookies — multi-account load-balancing with auto-failover on quota |
 | **browser-gen** | Drive a logged-in Gemini web session for free image / video generation (Veo video · Nano Banana image) |
 | **jimeng** | Jimeng/Dreamina image + video via the cloud API (AK/SK, **no vip needed**): text/image-to-image, P-image edit, inpaint, text/image-to-video, and **motion-mimic — drive a character image with a template video (IP animation made easy)**; CLI fallback |
+| **flow-gen** | Generate videos in Google Flow with the monthly credits of a Google AI Pro/Ultra plan (Veo 3.1 Lite/Fast/Quality, Omni Flash): drives your real logged-in Chrome via kimi-webbridge, no extra browser and no API key, one command to a full-quality mp4 with audio; models and credit costs read live from Flow |
 | **media-gen** | A unified image-gen entry point: one call routes to gemini-gen / comfyui / codex / … by config & availability, with a quota-failover fallback chain, auto-injects style-lock v1, and returns a unified result contract (à la Pixelle's MediaService) |
 
 ## Audio
