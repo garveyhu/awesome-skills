@@ -42,6 +42,13 @@ class BrowserBridge(ABC):
         """复用本通道之前开的标签页，没有就新开一个并设为当前标签页。"""
 
     @abstractmethod
+    def set_foreground(self, enabled: bool) -> None:
+        """让当前（后台）标签页按前台节奏运行：可见、定时器不被节流，但不抢用户焦点。
+
+        Chrome 会把后台标签页的定时器压到 1 次/秒甚至 1 次/分钟，页面脚本里的等待会被拖成几分钟。
+        """
+
+    @abstractmethod
     def navigate(self, url: str) -> None:
         """当前标签页跳转到 url。"""
 
@@ -50,8 +57,19 @@ class BrowserBridge(ABC):
         """在当前页面执行 JS 表达式（可返回 Promise），返回其结果值。"""
 
     @abstractmethod
+    def click_at(self, x: int, y: int) -> None:
+        """在当前标签页视口坐标 (x, y) 发一次真实鼠标点击（isTrusted=true）。
+
+        有些按钮只认真实点击（如 Flow 出图的「生成」），页面脚本里的 el.click() 会被忽略。
+        """
+
+    @abstractmethod
     def fill(self, selector: str, value: str) -> None:
         """往输入框 / contenteditable 填文本（触发页面的输入事件）。"""
+
+    @abstractmethod
+    def upload(self, selector: str, files: list[str]) -> None:
+        """把本地文件塞进页面的 <input type=file>（不弹系统文件对话框）。"""
 
     @abstractmethod
     def capture_start(self, url_filter: str) -> None:

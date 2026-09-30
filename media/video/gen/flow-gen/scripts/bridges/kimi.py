@@ -59,8 +59,8 @@ class KimiBridge(BrowserBridge):
         try:
             with urllib.request.urlopen(req, timeout=self.timeout) as resp:
                 out = json.loads(resp.read().decode())
-        except urllib.error.URLError as e:
-            raise BridgeError(f"连不上 kimi-webbridge daemon（{self.url}）: {e}") from e
+        except (urllib.error.URLError, TimeoutError, ConnectionError) as e:
+            raise BridgeError(f"kimi-webbridge 调用 {action} 失败或超时（{self.url}）: {e}") from e
         if not out.get("ok"):
             err = out.get("error") or {}
             raise BridgeError(f"{action} 失败: {err.get('message') or err}")
@@ -88,14 +88,29 @@ class KimiBridge(BrowserBridge):
             pass
         self._command("navigate", url=url, newTab=True, group_title=group_title)
 
+    def set_foreground(self, enabled: bool) -> None:
+        # 焦点模拟：标签页被当成可见并正常渲染、定时器不节流，但不会切换到它、不抢用户焦点
+        self._command("cdp", method="Emulation.setFocusEmulationEnabled", params={"enabled": enabled})
+
     def navigate(self, url: str) -> None:
         self._command("navigate", url=url)
 
     def evaluate(self, code: str) -> Any:
         return self._command("evaluate", code=code).get("value")
 
+    def click_at(self, x: int, y: int) -> None:
+        # 后台标签页要先开焦点模拟（set_foreground），真实输入才会落到页面上
+        for event in ("mouseMoved", "mousePressed", "mouseReleased"):
+            params = {"type": event, "x": x, "y": y}
+            if event != "mouseMoved":
+                params.update(button="left", clickCount=1)
+            self._command("cdp", method="Input.dispatchMouseEvent", params=params)
+
     def fill(self, selector: str, value: str) -> None:
         self._command("fill", selector=selector, value=value)
+
+    def upload(self, selector: str, files: list[str]) -> None:
+        self._command("upload", selector=selector, files=files)
 
     def capture_start(self, url_filter: str) -> None:
         self._command("network", cmd="stop")
