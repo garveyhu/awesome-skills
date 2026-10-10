@@ -581,7 +581,7 @@ def find_secrets(start: Optional[str] = None) -> Optional[Path]:
 
 def load_secret(res_id: str, instance: Optional[str] = None,
                 start: Optional[str] = None) -> Optional[dict]:
-    """按资源 id 取一份凭据 —— `load_secret("media_generation.volcengine", "personal")`。
+    """按资源 id 取一份凭据 —— `load_secret("media.volcengine", "personal")`。
 
     两种凭据源，都**不含家目录硬编码**（随卡/随 skill 分发时绝不指向他人凭据库）：
       ① 资源中枢（$AGENTS_RESOURCES 指向的目录，其下 secrets/<资源>.json）

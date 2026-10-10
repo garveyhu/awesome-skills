@@ -21,7 +21,7 @@ description: >-
 | 覆盖 | 绘图/P图/局部重绘/视频/动作模仿(见下) | 更全(放大/多帧故事/全能参考/多模态) |
 | 何时用 | **默认**——账号没 vip 也能跑 | 账号有 vip 且要 CLI 独有能力时 |
 
-> 火山 API 的 AK/SK：脚本按三级发现自动读——环境变量 `VOLC_ACCESS_KEY_ID`/`VOLC_SECRET_ACCESS_KEY` → 频道树 `_secrets/` → `$AGENTS_RESOURCES` 资源中枢的 `media_generation.volcengine`。**生成消耗额度(付费)**,真跑前知会用户。
+> 火山 API 的 AK/SK：脚本按三级发现自动读——环境变量 `VOLC_ACCESS_KEY_ID`/`VOLC_SECRET_ACCESS_KEY` → 频道树 `_secrets/` → `$AGENTS_RESOURCES` 资源中枢的 `media.volcengine`。**生成消耗额度(付费)**,真跑前知会用户。
 
 ## ① API 用法（`scripts/jimeng_api.py`）
 

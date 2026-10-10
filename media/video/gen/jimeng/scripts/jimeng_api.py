@@ -2,7 +2,7 @@
 """即梦图像/视频生成 · 火山 visual API(visual.volcengineapi.com) · V4 签名 · 同步/异步统一入口。
 关键:AK/SK 直连,【不需要 maestro vip】(区别 dreamina CLI——CLI 普通账号被拦)。
 AK/SK 三级发现：环境变量 VOLC_ACCESS_KEY_ID/VOLC_SECRET_ACCESS_KEY > 频道树 _secrets/ >
-$AGENTS_RESOURCES 资源中枢的 media_generation.volcengine（**不写死任何家目录路径**）。
+$AGENTS_RESOURCES 资源中枢的 media.volcengine（**不写死任何家目录路径**）。
 
 == model 速查 ==
  绘图:
@@ -43,13 +43,13 @@ if not (AK and SK):
             if (_anc / "_shared" / "channek.py").exists():
                 sys.path.insert(0, str(_anc / "_shared")); break
         import channek as _msc
-        d = _msc.load_secret("media_generation.volcengine", "personal")
+        d = _msc.load_secret("media.volcengine", "personal")
     except Exception:
         d = None
     if not d:
         sys.exit("找不到火山引擎 AK/SK。三选一：\n"
                  "  · 设 VOLC_ACCESS_KEY_ID / VOLC_SECRET_ACCESS_KEY\n"
-                 "  · 设 $AGENTS_RESOURCES 指向资源中枢（其下 secrets/media_generation.volcengine.json）\n"
+                 "  · 设 $AGENTS_RESOURCES 指向资源中枢（其下 secrets/ai/media/volcengine/secret.json）\n"
                  "  · 在频道树内放 _secrets/resources.json")
     AK, SK = d["access_key_id"], d["secret_access_key"]
 HOST, REGION, SERVICE, VER = "visual.volcengineapi.com", "cn-north-1", "cv", "2022-08-31"
