@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>{{姓名}} · 简历</title>
+<style>
+:root {
+  --ink:    #1a1a1a;
+  --ink-2:  #55555a;
+  --ink-3:  #8a8a90;
+  --line:   #dededf;
+  --accent: #1f4e79;
+  --sans: "PingFang SC", "Heiti SC", sans-serif;
+  --mono: "JetBrains Mono", "SF Mono", Menlo, monospace;
+}
+
+@page { size: A4; margin: 11mm 13mm; }
+
+* { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+html { font-size: 9pt; }
+body {
+  margin: 0; background: #fff; color: var(--ink);
+  font-family: var(--sans); font-size: 9pt; line-height: 1.56;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ════ 抬头：姓名/职位/教育 + 联系方式 + 证件照 ════ */
+.head { display: flex; align-items: flex-end; gap: 8mm; border-bottom: 1px solid var(--ink-3); padding-bottom: 2.2mm; margin-bottom: 3.2mm; }
+.head .id { flex: 1; }
+.head .name { font-size: 21pt; font-weight: 700; letter-spacing: .04em; line-height: 1.05; }
+.head .title { font-size: 10.2pt; color: var(--accent); font-weight: 600; margin-top: 1.5mm; }
+.head .edu { font-size: 8.8pt; color: var(--ink-2); margin-top: 2.2mm; }
+.head .contact { font-size: 8.5pt; color: var(--ink-2); font-family: var(--mono); margin-top: 1.4mm; letter-spacing: -.01em; }
+.head .photo { width: 19mm; height: 26mm; object-fit: cover; border: 1px solid var(--line); flex-shrink: 0; }
+
+.pitch { font-size: 9.1pt; line-height: 1.6; color: var(--ink-2); margin-bottom: 3mm; padding-left: 3mm; border-left: 2.5px solid var(--accent); }
+
+h2 {
+  font-size: 10pt; font-weight: 700; letter-spacing: .12em;
+  margin: 3.2mm 0 1.6mm; padding-bottom: .9mm;
+  border-bottom: 1px solid var(--line); page-break-after: avoid;
+}
+
+.item { margin-bottom: 2.4mm; }
+.item + .item { margin-top: 4mm; padding-top: 3mm; border-top: 1px solid var(--line); }
+.item-h { display: flex; align-items: baseline; justify-content: space-between; gap: 4mm; margin-bottom: 1.4mm; }
+.item-h .org { font-weight: 700; font-size: 11.2pt; letter-spacing: .01em; }
+.item-h .role { color: var(--ink-2); font-size: 9pt; }
+.item-h .when { font-family: var(--mono); font-size: 8.2pt; color: var(--ink-3); white-space: nowrap; }
+.item ul { margin: 0; padding-left: 4.5mm; }
+.item li { margin-bottom: .7mm; page-break-inside: avoid; }
+.item li b { font-weight: 700; }
+.m { font-family: var(--mono); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.adv { margin: 0 0 1mm; padding-left: 4.5mm; }
+.adv li { margin-bottom: 1mm; }
+
+/* ════ 技能：纯文本关键词，无色块 ════ */
+.skills { display: grid; grid-template-columns: 22mm 1fr; gap: 1.5mm 4mm; font-size: 9pt; }
+.skills dt { font-weight: 700; color: var(--ink-2); }
+.skills dd { margin: 0; font-family: var(--mono); font-size: 8.5pt; color: var(--ink); letter-spacing: -.01em; }
+
+.proj { margin-bottom: 2.4mm; page-break-inside: avoid; }
+.proj .n { font-weight: 700; font-size: 9.6pt; }
+.proj .n .stack { font-family: var(--mono); font-size: 8pt; font-weight: 400; color: var(--ink-3); margin-left: 2mm; }
+.proj .lead { margin: .5mm 0 .8mm; color: var(--ink-2); }
+.proj ul { margin: 0; padding-left: 4.5mm; }
+.proj li { margin-bottom: .7mm; page-break-inside: avoid; }
+
+.sub { font-weight: 700; font-size: 9.2pt; margin: 2mm 0 .7mm; page-break-after: avoid; break-after: avoid; }
+.sub .stack { font-family: var(--mono); font-size: 8pt; font-weight: 400; color: var(--ink-3); margin-left: 2mm; }
+.sub .tagline { font-weight: 400; font-size: 8.6pt; color: var(--accent); margin-left: 2mm; }
+</style>
+</head>
+<body>
+<!--
+  ══════════════════════════════════════════════════════════════════════
+  简历模板 · resume-ai
+  {{ }} 为占位符。正文是「写法骨架 + 示范」，请整段替换成你自己的内容，
+  但保留它的句式结构，那才是这份模板真正的价值：
+
+      【标签】动作 → 可验证的数字 → 这个数字怎么来的
+
+  三条硬规矩（完整规约见 skills/resume-craft/SKILL.md）：
+    1. 不写你讲不出来的名词 —— 简历上每个词都是面试出题范围
+    2. 一个能全线防守的数字，胜过两个其中一个会塌的
+    3. 写能力与判断，不写实现细节 —— 细节留到面试口头讲
+
+  排版目标：第 1 页填满（底部空白 < 3mm），第 2 页留白 15–20mm。
+  调节方法见 skills/pdf-craft/SKILL.md 的「两页填充」一节。
+  ══════════════════════════════════════════════════════════════════════
+-->
+
+<div class="head">
+  <div class="id">
+    <div class="name">{{姓名}}</div>
+    <div class="title">{{目标岗位}}</div>
+    <div class="edu">{{学校}}　·　{{专业}}　·　{{学历}}　·　{{入学}} – {{毕业}}</div>
+    <div class="contact">{{手机}}　·　{{邮箱}}　·　{{GitHub}}　·　{{作品站，无则删}}</div>
+  </div>
+  <!-- 证件照：照片命名 photo.png 放在本文件同目录；不放照片就删掉下面这行 -->
+  <img class="photo" src="photo.png" alt="">
+</div>
+
+<!-- pitch：只讲能力，别讲「我一个人做完了前后端」这类行为描述 -->
+<div class="pitch">
+{{一句话定位。示范：}}后端工程师出身，近两年专注 XX 方向的生产落地，具备从架构设计到生产交付的端到端能力。
+擅长把跑得通的 demo 变成扛得住业务拷问的系统——{{列 3–4 个你真正做过的能力域}}。
+</div>
+
+<h2>个人优势</h2>
+<!-- 4–5 条。每条 = 粗体能力标签 + 冒号 + 可验证事实。禁止「熟悉/精通/学习能力强」 -->
+<ul class="adv">
+  <li><b>{{年限与方向}}</b>：{{最硬的一个交付事实，带规模与时长}}。
+      <span class="muted-note"><!-- 示范：独立设计并交付 XX 系统，已在 N 个生产环境稳定运行 M 个月 --></span></li>
+  <li><b>{{你的差异化能力}}</b>：{{用一个「前 → 后」的数字对比证明}}。
+      <!-- 示范：定位到瓶颈不在 A 而在 B，通过 XX 改造将核心指标由 X 提升至 Y -->
+  </li>
+  <li><b>{{能力域清单}}</b>：{{列出你能被追问两层的技术能力，别列不熟的}}。</li>
+  <li><b>{{互补优势}}</b>：{{你有而同岗位竞争者普遍没有的东西}}。</li>
+</ul>
+
+<h2>工作经历</h2>
+
+<div class="item">
+  <div class="item-h">
+    <div><span class="org">{{公司全称}}</span> <span class="role">· {{业务领域}} · {{职位变化，如：后端开发 → 架构师}}</span></div>
+    <div class="when">{{起}} – {{止}}</div>
+  </div>
+
+  <!-- 主力项目：占最大篇幅，4–5 条 bullet -->
+  <div class="sub">{{项目名}}<span class="tagline">{{你的角色，如：独立设计与交付}}</span><span class="stack">{{技术栈，只写敢被追问的}}</span></div>
+  <ul>
+    <li><b>{{维度一，如：核心链路}}</b>：{{完整链路一句话讲完}}；{{关键指标}} <span class="m">{{数字}}</span>。</li>
+    <li><b>{{维度二：根因治理}}</b>：{{定位到问题不在 A 而在 B}}——{{原始状况与量化痛点}}。{{你的动作}}，{{结果}} <span class="m">{{前}} → {{后}}</span>。
+        <!-- 这类「重新定义问题」的 bullet 分量最重，优先写 --></li>
+    <li><b>{{维度三：验证方法}}</b>：{{上述数字怎么测的——样本来源、防作弊设计、真值如何确定}}。
+        <!-- 有方法论的数字才防得住追问 --></li>
+    <li><b>{{维度四：安全 / 稳定性 / 成本}}</b>：{{做了什么}}，{{可验证结果}}。</li>
+    <li><b>{{维度五：工程化落地}}</b>：{{部署形态、交付约束、效率数字}}。</li>
+  </ul>
+
+  <!-- 次要项目：2–3 条 -->
+  <div class="sub">{{项目名}}<span class="tagline">{{角色}}</span><span class="stack">{{技术栈}}</span></div>
+  <ul>
+    <li><b>{{关键决策}}</b>：{{在什么约束下，你选了什么、放弃了什么、依据是什么}}。
+        <!-- 「选型判断」类 bullet 展示的是判断力，比罗列实现细节值钱 --></li>
+    <li>{{其他要点}}</li>
+  </ul>
+
+  <div class="sub">团队角色</div>
+  <ul>
+    <li><b>{{角色一，如：内部讲师 / 面试官}}</b>：{{做了什么，带量化规模}}。</li>
+    <li><b>{{角色二}}</b>：{{同上}}。</li>
+  </ul>
+</div>
+
+<div class="item">
+  <div class="item-h">
+    <div><span class="org">{{上一家公司}}</span> <span class="role">· {{职位}}</span></div>
+    <div class="when">{{起}} – {{止}}</div>
+  </div>
+  <!-- 越早的经历压得越短。两年前的项目 1–2 条足够 -->
+  <ul>
+    <li><b>{{项目}}</b>：{{一句话 + 最硬的两个数字}}。</li>
+    <li><b>{{项目}}</b>：{{性能类成果用「前 → 后」写，例如：内存占用 -X%、耗时 A → B}}。</li>
+  </ul>
+</div>
+
+<h2>个人项目</h2>
+
+<div class="proj">
+  <div class="n">{{项目名}} · {{一句话定性}}<span class="stack">{{技术栈}}</span></div>
+  <p class="lead">{{为什么做它 + 覆盖了哪些能力域 + 它产生了什么真实影响}}。
+     <!-- 最后半句很关键：把个人项目与工作决策连起来，它就从「业余玩票」变成「支撑判断的调研」 --></p>
+  <ul>
+    <li>{{能力层面的说明，不要罗列实现细节和生僻名词}}</li>
+  </ul>
+</div>
+
+<div class="proj">
+  <p class="lead"><b>{{小项目一}}</b>{{一句话}}；<b>{{小项目二}}</b>{{一句话}}。</p>
+</div>
+
+</body>
+</html>

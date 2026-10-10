@@ -1,6 +1,6 @@
 ---
 name: pdf-craft
-description: Turn content into print-grade PDF documents via HTML+CSS and headless Chrome. Ships four battle-tested layout systems — govdoc (Chinese official/government filing), proposal (design-forward business proposal), report (technical whitepaper), resume — plus a typography linter that catches the mistakes that actually happen (straight quotes in Chinese text, justified text tearing apart in narrow table cells, tables split across pages, missing fonts). Use when the user wants a PDF deliverable: 商业计划书, 政府申报材料, 立项书, 结题报告, 技术方案, 白皮书, 调研报告, 简历, 正式文件, 出个 PDF, 排版成 PDF, 做成 PDF, 生成 PDF, business plan PDF, proposal PDF, whitepaper PDF, resume PDF, print-ready document, typeset a document. NOT for reading/merging/splitting existing PDFs (use the `pdf` skill), Word output (use `docx`), or screen-reading web articles (use `beautiful-article`).
+description: Turn content into print-grade PDF documents via HTML+CSS and headless Chrome. Ships four battle-tested layout systems — govdoc (Chinese official/government filing), proposal (design-forward business proposal), report (technical whitepaper), resume — plus a typography linter that catches the mistakes that actually happen (straight quotes in Chinese text, justified text tearing apart in narrow table cells, tables split across pages, missing fonts). Use when the user wants a PDF deliverable — 商业计划书, 政府申报材料, 立项书, 结题报告, 技术方案, 白皮书, 调研报告, 简历, 正式文件, 出个 PDF, 排版成 PDF, 做成 PDF, 生成 PDF, business plan PDF, proposal PDF, whitepaper PDF, resume PDF, print-ready document, typeset a document. NOT for reading/merging/splitting existing PDFs (use the `pdf` skill), Word output (use `docx`), or screen-reading web articles (use `beautiful-article`).
 ---
 
 # PDF Craft
@@ -31,7 +31,8 @@ pdf-craft/
 | **govdoc** | 政府申报、立项书、结题报告、正式方案、对公文件 | 白底、居中封面、中文数字章节（一、（一）1.）、三线表、单色、页码 |
 | **proposal** | 给投资人/客户看的 BP、产品方案、品牌提案 | 有设计感：品牌色、大字排版对比、卡片、数据块 |
 | **report** | 技术方案、架构设计、白皮书、调研报告 | 结构化、代码块、图表编号、术语表、可带页眉导航 |
-| **resume** | 简历 | 单页高密度、时间线、技能矩阵、无封面 |
+| **resume** | 简历（单页速排） | 单页高密度、时间线、技能矩阵、无封面 |
+| **resume-tech** | **技术简历（双页 · 推荐）** | 证件照 · 公司分层 · 项目/角色三级结构 · 纯文本技能行 · 精确两页填充 |
 
 **选错版式比排版丑更糟。** 拿 proposal 的设计感版式去交政府材料，对方会觉得不严肃；拿 govdoc 去见投资人，会显得没想法。
 
@@ -118,6 +119,57 @@ npm i -D playwright && npx playwright install chromium
 或用环境变量指定已有的：`export PDFCRAFT_PLAYWRIGHT=/path/to/node_modules`
 
 字体全部走**本机系统字体**（PingFang SC / Songti SC / JetBrains Mono），**绝不引网络字体**——离线渲染时会静默 fallback，字全变样还不报错。
+
+---
+
+## 简历专章：两页填充与分页控制
+
+用 `templates/resume-tech.html`。**目标：第 1 页填满（底部空白 < 3mm，与上边距视觉对称），
+第 2 页留白 15–20mm。**
+
+### 精确测量（比反复出 PDF 快十倍）
+
+```js
+await page.emulateMedia({ media: 'print' });
+await page.setViewportSize({ width: Math.round(184/25.4*96), height: 800 });  // A4 内容区宽
+const mm = (await page.evaluate(() => document.body.scrollHeight)) / (96/25.4);
+// 每页可用高 = 297 − 上下边距；两页容量 = ×2
+```
+
+还能量**某个区块的起始位置**，预判它会不会被推到下一页：
+
+```js
+const top = await page.evaluate(() => {
+  const el = [...document.querySelectorAll('.sub')].find(e => e.textContent.includes('目标区块'));
+  return el.offsetTop / (96/25.4);
+});
+// top 接近页底且该块放不下 → 整块被推走，上一页就空一截
+```
+
+### 调节手段（副作用从小到大）
+
+增删内容 → 微调字号行距（每 0.1pt ≈ 总高 1%）→ 调区块间距 → 改页边距（慎用，会重排）
+
+### 简历排版踩坑账
+
+| 现象 | 真实原因 | 解法 |
+|---|---|---|
+| **内容不多却排到 3 页** | 大块元素设了 `page-break-inside: avoid`，放不下就整块推走 | **把粒度下放到单条 `li`**，绝不设在整段工作经历上 |
+| 第 1 页底部空一截 | 下一个项目块（标题+首条）放不下被整体推走 | 给第 1 页补 5–8mm 内容填平 |
+| 抬头信息堆成一坨 | 联系方式竖排右对齐、紧挨照片 | 全部左对齐、**联系方式横排一行**、照片底部与文字底部对齐 |
+| 两家公司看起来像一家 | 公司名与项目名字号太接近 | 公司名高一档（11.2pt vs 9.2pt）+ 公司块间加分隔线与上间距 |
+| 技能栏花花绿绿像标签云 | 用了带背景色的 tag | **纯文本 + 分类名加粗 + `·` 分隔** |
+
+### 内容层面的硬规矩
+
+这些不属于排版，但决定简历成败，写模板时一并遵守：
+
+1. **不写用户讲不出来的名词** —— 简历上每个词都是面试出题范围
+2. **一个能全线防守的数字，胜过两个其中一个会塌的**（同一件事多个口径时只留方法论最完整的）
+3. **写能力与判断，不写实现细节** —— 细节留到面试口头讲
+4. **不编造任何可被追问或验证的信息** —— 任职日期是背调硬伤；性能与效果数字会在追问三层内崩
+
+配套的完整方法论（素材挖掘 / 能力实测 / 话术 / 盲评）见 `resume-craft` skill。
 
 ---
 

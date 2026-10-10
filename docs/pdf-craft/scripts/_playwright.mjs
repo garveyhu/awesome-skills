@@ -1,5 +1,5 @@
 // 解析 Playwright —— 按顺序找几个常见位置，都没有就给出可执行的补救提示。
-// 覆盖顺序：PDFCRAFT_PLAYWRIGHT 环境变量 > 当前项目 > 已知本机项目 > 全局 npm root
+// 覆盖顺序：PDFCRAFT_PLAYWRIGHT 环境变量 > 当前项目 > 全局 npm root
 import { createRequire } from 'node:module';
 import { existsSync } from 'node:fs';
 import { execSync } from 'node:child_process';
@@ -8,8 +8,6 @@ import path from 'node:path';
 const CANDIDATES = [
   process.env.PDFCRAFT_PLAYWRIGHT,
   process.cwd(),
-  // 本机已装浏览器的项目，作为兜底
-  '/Users/links/Coding/Archer/MediaStudio/frontend/app',
 ].filter(Boolean);
 
 function tryLoad(base) {
