@@ -12,7 +12,7 @@
 
 | skill | 做什么 |
 |---|---|
-| **react-best-practices** | React 工程规约与脚手架：yarn + Vite + TS + Antd + Tailwind，含分层 / 命名 / lint 全家桶，初始化、开发、评审一条龙 |
+| **react-best-practices** | React 工程规约与脚手架：yarn + Vite + TS + Tailwind + shadcn/ui，含分层 / 命名 / lint 全家桶，初始化、开发、评审一条龙 |
 | **fastapi-best-practices** | FastAPI 后端规约：uv + SQLAlchemy + Alembic + loguru + ruff，MVC 分层、统一响应封装、GET+POST 约定 |
 | **docker-best-practices** | 容器化标准件：三区布局（images / containers / scripts）、多镜像拆分、多架构 buildx、registry 与离线 tar 双投递 |
 | **website-creator** | 从零起一个网站 / 应用：苏格拉底式追问到需求 95% 确定，再按前端 / 全栈自动落脚手架 |

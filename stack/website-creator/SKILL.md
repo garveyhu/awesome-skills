@@ -68,7 +68,7 @@ description: >
 创建位置: {target_dir}/{name}/
 
 技术栈:
-  前端: React 19 + Vite + TypeScript + Antd + Tailwind CSS
+  前端: React 19 + Vite + TypeScript + Tailwind CSS + shadcn/ui
   后端: FastAPI + SQLAlchemy + Alembic + SQLite   ← 仅全栈
 
 核心页面/功能:
@@ -156,7 +156,7 @@ logs/
 
 ## 技术栈
 
-- 前端: React 19 + Vite + TypeScript + Antd + Tailwind CSS
+- 前端: React 19 + Vite + TypeScript + Tailwind CSS + shadcn/ui
 - 后端: FastAPI + SQLAlchemy + Alembic（仅全栈）
 
 ## 目录结构

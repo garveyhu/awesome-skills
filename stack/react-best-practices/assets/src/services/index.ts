@@ -1,7 +1,7 @@
-import { message } from 'antd';
 import axios from 'axios';
 import type { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import humps from 'humps';
+import { toast } from 'sonner';
 
 import {
   API_CONFIG,
@@ -80,7 +80,7 @@ service.interceptors.response.use(
         clearAuthAndRedirect();
       }
 
-      message.error(msg || ERROR_MESSAGES.REQUEST_FAILED);
+      toast.error(msg || ERROR_MESSAGES.REQUEST_FAILED);
       return Promise.reject(new Error(msg || ERROR_MESSAGES.REQUEST_FAILED));
     }
 
@@ -101,7 +101,7 @@ service.interceptors.response.use(
       clearAuthAndRedirect();
     }
 
-    message.error(serverMessage || statusEntry?.message || ERROR_MESSAGES.UNKNOWN_ERROR);
+    toast.error(serverMessage || statusEntry?.message || ERROR_MESSAGES.UNKNOWN_ERROR);
     return Promise.reject(error);
   },
 );

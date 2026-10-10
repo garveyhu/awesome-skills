@@ -29,13 +29,14 @@ src/
 │   ├── fonts/                   # 字体文件
 │   ├── images/                  # 图片资源
 │   └── styles/                  # 全局样式
-│       └── index.less           # 全局样式
+│       └── index.css            # 全局样式入口（Tailwind + shadcn 主题变量）
 │
 ├── constants/                   # 常量
 │   ├── app.constants.ts         # 应用常量
 │   └── http-status.enum.ts      # HTTP 状态枚举
 │
 ├── components/                  # 组件
+│   ├── ui/                      # shadcn/ui 基础组件（CLI 落点，可改，不放业务逻辑）
 │   ├── business/                # 业务组件
 │   ├── complex/                 # 综合组件
 │   │   └── loading.tsx          # loading组件
@@ -45,6 +46,9 @@ src/
 ├── config/                      # 项目配置
 │   ├── env.ts                   # 环境变量处理
 │   └── settings.ts              # 应用常量配置
+│
+├── lib/
+│   └── utils.ts                 # shadcn 生成的 cn() 工具
 │
 ├── hooks/                       # 自定义Hook
 │   ├── use-pagination.ts        # 分页Hook
@@ -87,13 +91,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
-  css: {
-    preprocessorOptions: {
-      less: {
-        javascriptEnabled: true,
-      },
-    },
-  },
   resolve: {
     alias: {
       '@': resolve(__dirname, './src'),
@@ -149,7 +146,7 @@ yarn add -D eslint @eslint/js @typescript-eslint/eslint-plugin @typescript-eslin
 ### 功能依赖（dependencies）
 
 ```bash
-yarn add antd @ant-design/icons react-router-dom axios humps lucide-react less
+yarn add react-router-dom axios humps lucide-react react-hook-form zod @hookform/resolvers sonner less
 ```
 
 ### 功能依赖（devDependencies）
@@ -212,71 +209,54 @@ yarn commitlint
 
 ## Tailwind 入口样式
 
-在 `src/assets/styles/index.less` 中添加：
+在 `src/assets/styles/index.css` 中添加（必须是 CSS，`shadcn init` 会往里写主题变量）：
 
 ```css
-@import (css) 'tailwindcss';
+@import 'tailwindcss';
 ```
 
 在 `src/App.tsx` 中引入：
 
 ```typescript
-import '@/assets/styles/index.less';
+import '@/assets/styles/index.css';
 ```
+
+然后 `yarn dlx shadcn@latest init`（CSS 文件填 `src/assets/styles/index.css`）+ `yarn dlx shadcn@latest add button sonner`。
 
 ## App.tsx 模板
 
-完整的 `src/App.tsx`，包含全局 Loading、ConfigProvider、AntdApp 封装：
+完整的 `src/App.tsx`，包含全局 Loading 与全局提示（sonner `Toaster`）：
 
 ```tsx
-import { App as AntdApp, ConfigProvider, Spin } from 'antd';
+import { Loader2 } from 'lucide-react';
 import { Suspense } from 'react';
 import { RouterProvider } from 'react-router-dom';
 
+import { Toaster } from '@/components/ui/sonner';
+
 import { router } from '@/router';
-import '@/assets/styles/index.less';
+import '@/assets/styles/index.css';
 
 const LoadingFallback = () => (
-  <div
-    style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f0f9ff 0%, #e8f4fd 50%, #f0f0ff 100%)',
-    }}
-  >
-    <div style={{ textAlign: 'center' }}>
-      <Spin size="large" />
-      <div
-        style={{
-          marginTop: 16,
-          fontSize: 15,
-          fontWeight: 500,
-          color: '#64748b',
-          letterSpacing: '0.5px',
-        }}
-      >
-        加载中...
-      </div>
-    </div>
+  <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background">
+    <Loader2 className="size-8 animate-spin text-primary" />
+    <span className="text-sm font-medium tracking-wide text-muted-foreground">加载中...</span>
   </div>
 );
 
 const App = () => (
-  <ConfigProvider theme={{ token: { colorPrimary: '#0ea5e9', borderRadius: 8 } }}>
-    <AntdApp message={{ duration: 1.5, maxCount: 2, top: 72 }}>
-      <Suspense fallback={<LoadingFallback />}>
-        <RouterProvider router={router} />
-      </Suspense>
-    </AntdApp>
-  </ConfigProvider>
+  <>
+    <Suspense fallback={<LoadingFallback />}>
+      <RouterProvider router={router} />
+    </Suspense>
+    <Toaster position="top-center" duration={1500} visibleToasts={2} />
+  </>
 );
 
 export default App;
 ```
 
-> `colorPrimary` 根据项目主题调整；`Suspense` 配合路由 `lazy()` 在页面切换时自动触发全屏 Loading。
+> 主题色改 `index.css` 里的 `--primary` 等 CSS 变量；`Suspense` 配合路由 `lazy()` 在页面切换时自动触发全屏 Loading。
 
 ## 路由使用示例
 

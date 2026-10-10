@@ -2,14 +2,14 @@
 name: react-best-practices
 description: >
   React project initialization, development guidance, and code review based on
-  personal architectural conventions (yarn+vite+ts+react+antd+tailwind).
+  personal architectural conventions (yarn+vite+ts+react+tailwind+shadcn/ui).
   Use when: (1) Creating/initializing a new React project,
   (2) Adding new pages, components, modules, or API services to an existing React project,
   (3) Reviewing React project structure and code organization,
   (4) Setting up linting/formatting toolchain (eslint, prettier, stylelint, husky, commitlint, ls-lint, lint-staged),
   (5) Configuring routing or HTTP request utilities.
   Supports two project scales: simple (single-module) and complex (multi-module with dynamic route discovery).
-  Default UI stack: Antd + Tailwind CSS. Default backend convention: Python (snake_case API with humps auto-conversion).
+  Default UI stack: shadcn/ui (Radix + Tailwind) + react-hook-form + zod + lucide-react; Antd only as an opt-in for form-heavy admin apps. Default backend convention: Python (snake_case API with humps auto-conversion).
 ---
 
 # React Best Practices
@@ -18,7 +18,9 @@ description: >
 
 根据个人架构习惯，提供 React 项目的全生命周期指导：初始化、开发规范、代码审查。
 
-**核心技术栈**: yarn + vite + react + typescript + antd + tailwind CSS
+**核心技术栈**: yarn + vite + react + typescript + tailwind CSS + shadcn/ui（表单 react-hook-form + zod，图标 lucide-react，提示 sonner）
+
+> Antd 不再是默认：只有重表单的中后台、且项目明确选它时才用，MUI / Chakra 同理跟项目走。
 
 **项目规模**:
 - **简单项目**（默认）：单模块，静态路由表，适合大多数场景。详见 [references/simple-project.md](references/simple-project.md)
@@ -57,7 +59,7 @@ yarn add -D eslint @eslint/js @typescript-eslint/eslint-plugin @typescript-eslin
 ### 步骤 3: 安装功能依赖
 
 ```bash
-yarn add antd @ant-design/icons react-router-dom axios humps lucide-react less
+yarn add react-router-dom axios humps lucide-react react-hook-form zod @hookform/resolvers sonner less
 yarn add -D tailwindcss @tailwindcss/postcss autoprefixer postcss @types/humps
 ```
 
@@ -81,7 +83,7 @@ yarn add -D tailwindcss @tailwindcss/postcss autoprefixer postcss @types/humps
 
 替换为包含以下配置的版本：
 - `@vitejs/plugin-react` 插件
-- Less 预处理器（`javascriptEnabled: true`）
+- Less 预处理器（只给组件级样式用，装了 `less` 即可，无需额外配置）
 - 路径别名（`@ → ./src`）
 - 开发代理（`/development` → 本地后端）
 
@@ -142,19 +144,29 @@ src/ 下只保留 `App.tsx` 和 `main.tsx`，删除其他脚手架生成的文�
 
 将文件复制到 `src/core/` 下对应路径，并参考 [references/complex-project.md](references/complex-project.md) 替换路由为动态发现版本。
 
-### 步骤 9: 配置 Tailwind 入口
+### 步骤 9: 配置 Tailwind 入口 + 初始化 shadcn/ui
 
-创建 `src/assets/styles/index.less`：
+创建全局样式入口 `src/assets/styles/index.css`（**必须是 CSS**，shadcn CLI 会往里写主题变量）：
 
 ```css
-@import (css) 'tailwindcss';
+@import 'tailwindcss';
 ```
 
 在 `src/App.tsx` 中引入：
 
 ```typescript
-import '@/assets/styles/index.less';
+import '@/assets/styles/index.css';
 ```
+
+初始化 shadcn/ui，并加上全局提示组件：
+
+```bash
+yarn dlx shadcn@latest init        # 问到 CSS 文件时填 src/assets/styles/index.css；生成 components.json + src/lib/utils.ts
+yarn dlx shadcn@latest add button sonner
+```
+
+- 组件落在 `src/components/ui/`（CLI 落点），属于项目源码、可以直接改；**业务逻辑不塞进去**，业务包装另建 `components/business/<组件>.tsx` 复用 `ui/` 的基元
+- 主题色、圆角等改 `index.css` 里的 CSS 变量（`--primary` 等），组件里不写死颜色
 
 ### 步骤 10: 初始化 Husky + Git Hooks
 
@@ -277,47 +289,28 @@ export const userService = {
 
 ```tsx
 // src/App.tsx
-import { App as AntdApp, ConfigProvider, Spin } from 'antd';
+import { Loader2 } from 'lucide-react';
 import { Suspense } from 'react';
 import { RouterProvider } from 'react-router-dom';
+
+import { Toaster } from '@/components/ui/sonner';
 import { router } from '@/router';
-import '@/assets/styles/index.less';
+import '@/assets/styles/index.css';
 
 const LoadingFallback = () => (
-  <div
-    style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f0f9ff 0%, #e8f4fd 50%, #f0f0ff 100%)',
-    }}
-  >
-    <div style={{ textAlign: 'center' }}>
-      <Spin size="large" />
-      <div
-        style={{
-          marginTop: 16,
-          fontSize: 15,
-          fontWeight: 500,
-          color: '#64748b',
-          letterSpacing: '0.5px',
-        }}
-      >
-        加载中...
-      </div>
-    </div>
+  <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-background">
+    <Loader2 className="size-8 animate-spin text-primary" />
+    <span className="text-sm font-medium tracking-wide text-muted-foreground">加载中...</span>
   </div>
 );
 
 const App = () => (
-  <ConfigProvider theme={{ token: { colorPrimary: '#0ea5e9', borderRadius: 8 } }}>
-    <AntdApp message={{ duration: 1.5, maxCount: 2, top: 72 }}>
-      <Suspense fallback={<LoadingFallback />}>
-        <RouterProvider router={router} />
-      </Suspense>
-    </AntdApp>
-  </ConfigProvider>
+  <>
+    <Suspense fallback={<LoadingFallback />}>
+      <RouterProvider router={router} />
+    </Suspense>
+    <Toaster position="top-center" duration={1500} visibleToasts={2} />
+  </>
 );
 
 export default App;
@@ -333,7 +326,7 @@ const HomePage = lazy(() => import('@/pages/home'));
 
 **层 2：页面内数据加载 Loading**
 
-页面初始加载数据时，在内容区居中展示 Spin，避免空白闪烁：
+页面初始加载数据时，在内容区居中展示加载图标，避免空白闪烁：
 
 ```tsx
 // src/pages/orders/index.tsx
@@ -349,8 +342,8 @@ const OrdersPage = () => {
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
-        <Spin size="large" />
+      <div className="flex min-h-[400px] items-center justify-center">
+        <Loader2 className="size-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -405,7 +398,8 @@ const OrdersPage = () => {
 
 - [ ] 组件文件行数 ≤ 800 行
 - [ ] 服务层无业务逻辑（只做 API 调用）
-- [ ] 不硬编码颜色值（使用 Tailwind 类名或 Antd 主题）
+- [ ] 不硬编码颜色值（使用 Tailwind 类名 / shadcn 主题变量）
+- [ ] `components/ui/` 里没有业务逻辑；表单用 react-hook-form + zod（shadcn `form`）
 - [ ] 路由正确注册（简单项目在 index.tsx，复杂项目在模块 routes.ts）
 - [ ] 类型定义完整（请求/响应都有类型）
 

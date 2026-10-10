@@ -20,7 +20,7 @@ src/
 ├── core/                            # 核心框架（所有模块共享）
 │   ├── assets/                     # 静态资源（样式、字体、图片）
 │   │   └── styles/
-│   │       └── index.less          # 全局样式
+│   │       └── index.css           # 全局样式
 │   ├── components/                 # 核心组件
 │   │   ├── auth/                  # 认证组件（Login、RoleGuard）
 │   │   ├── common/                # 通用工具组件（Loading、Modal）

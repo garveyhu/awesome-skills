@@ -8,7 +8,7 @@
   "endOfLine": "auto",
   "bracketSpacing": true,
   "arrowParens": "avoid",
-  "importOrder": ["^react(.*)", "antd/(.*)", "<THIRD_PARTY_MODULES> ", "@/(.*)", "^[./]"],
+  "importOrder": ["^react(.*)", "<THIRD_PARTY_MODULES> ", "@/(.*)", "^[./]"],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true,
   "plugins": ["prettier-plugin-tailwindcss", "@trivago/prettier-plugin-sort-imports"]

@@ -12,7 +12,7 @@ These aren't generic "do-anything assistants." Each skill takes a stance: my tec
 
 | skill | what it does |
 |---|---|
-| **react-best-practices** | React conventions & scaffolding: yarn + Vite + TS + Antd + Tailwind, with layering / naming / lint suite — init, build and review end to end |
+| **react-best-practices** | React conventions & scaffolding: yarn + Vite + TS + Tailwind + shadcn/ui, with layering / naming / lint suite — init, build and review end to end |
 | **fastapi-best-practices** | FastAPI backend conventions: uv + SQLAlchemy + Alembic + loguru + ruff, MVC layering, unified response envelope, GET+POST convention |
 | **docker-best-practices** | Containerization standard kit: three-zone layout (images / containers / scripts), multi-image split, multi-arch buildx, registry & offline-tar delivery |
 | **website-creator** | Spin up a website / app from scratch: Socratic questioning to 95% requirement certainty, then scaffolds frontend / full-stack |
