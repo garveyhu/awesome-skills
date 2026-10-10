@@ -502,7 +502,9 @@ def cmd_promote(args: argparse.Namespace) -> int:
         if not m or m.group(1).lower() != "x":
             out_lines.append(line)
             continue
-        stmt, meta = m.group(2).strip("* "), json.loads(m.group(3))
+        stmt, meta = m.group(2).strip(), json.loads(m.group(3))
+        if stmt.startswith("**") and stmt.endswith("**") and stmt.count("**") == 2:
+            stmt = stmt[2:-2]  # 只拆「整句加粗」；句中局部加粗原样保留
         if meta.get("action") == "NOOP":
             out_lines.append(line)
             continue
