@@ -57,15 +57,61 @@ _RNNN = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
                      "assets", "rnnoise", "sh.rnnn")
 
 
-def load_channel():
-    """惰性加载当前频道（channek·零依赖标准库）；找不到/坏了返回 None（零回归安全）。
+class _ChannelView:
+    """当前频道的最小视图：只提供 voxcpm 需要的两件事——卡的 voice profile、卡内相对路径解析。
 
-    走 _shared/channek.py（dev 真身 / vendored 两处都成立）；惰性调用，
-    say/design 不付频道解析成本。mlx-audio venv 下也能 import（stdlib json）。
+    不引入任何外部依赖：插件运行时**不在** media-studio 的 `_shared/` 布局里，
+    那条 import 永远失败，于是卡里的 voice.profiles 一辈子读不到（实测症状：
+    能力调用报「clone 需要 --ref-audio」，哪怕卡里明明配好了音色）。
     """
-    try:
+
+    def __init__(self, root: str, card_dir: str, card: dict):
+        self.root, self.card_dir, self.card = root, card_dir, card
+
+    def voice_profile(self, key=None):
+        v = self.card.get("voice") or {}
+        profs = v.get("profiles") or {}
+        k = key or v.get("default")
+        return profs.get(k) if k else None
+
+    def path(self, p):
         import pathlib
 
+        q = pathlib.Path(p)
+        if q.is_absolute():
+            return q
+        # 卡内相对路径的基准是**卡目录**（card-schema：所有卡内路径均为卡根内相对路径）；
+        # 找不到再回落频道根，兼容把路径写成相对频道根的老卡。
+        c = pathlib.Path(self.card_dir) / p
+        return c if c.exists() else pathlib.Path(self.root) / p
+
+
+def load_channel():
+    """定位当前频道并读它的卡；找不到返回 None（零回归安全）。
+
+    **新结构（Channek）**：从 `$CHANNEK_CHANNEL` 或 cwd 往上找 `.channek/workspace.json`，
+    它的 `card` 字段指向卡目录（如 `风格卡`），卡在 `<频道根>/<card>/card.json`。
+    **老结构（media-studio）**：`_shared/channek.py`，留作那边的兼容回落。
+    """
+    import json
+    import os
+    import pathlib
+
+    here = pathlib.Path(os.environ.get("CHANNEK_CHANNEL") or os.getcwd()).resolve()
+    for anc in [here, *here.parents]:
+        ws = anc / ".channek" / "workspace.json"
+        if not ws.is_file():
+            continue
+        try:
+            meta = json.loads(ws.read_text(encoding="utf-8"))
+            card_dir = anc / (meta.get("card") or "风格卡")
+            cj = card_dir / "card.json"
+            if cj.is_file():
+                return _ChannelView(str(anc), str(card_dir), json.loads(cj.read_text(encoding="utf-8")))
+        except Exception:
+            pass
+        break
+    try:
         for _anc in pathlib.Path(__file__).resolve().parents:
             cand = _anc / "_shared" / "channek.py"
             if cand.exists():
@@ -193,6 +239,73 @@ def load_voice_token(path: str) -> dict:
     return {"ref_audio": rel(fm.get("ref_audio")), "ref_text": ref_text, "mode": fm.get("mode", "clone")}
 
 
+def _install_voice_anchor(model, strength: float):
+    """持续把参考音的条件锚回去——治长段生成中的音色漂移。
+
+    **根因**（VoxCPM issue #302 · mlx-audio voxcpm2.py:670）：解码器条件初始化自参考音，
+    但每生成一个 patch 后就 `prefix_feat_cond = pred_feat`，被模型自己刚生成的特征覆盖。
+    生成越久，条件离参考音越远，音色滑向模型的默认点。
+
+    **补丁**：第一次调 `feat_decoder.sample` 时的 `cond` 就是来自参考音的干净锚点，
+    存下来，之后每次按 strength 混合回去。**不改第三方包**——只在运行时换掉方法属性，
+    mlx_audio 的文件一个字节不动；升级后如果签名变了会当场报错，不会静默失效。
+
+    **实测（2026-08-26 · 6 镜 × 8~12 秒）**：
+        无锚点   段间 0.920 · vs参考 0.796 ❌
+        strength=0.15  段间 0.928 · vs参考 0.915 ✅
+
+    **注意它治不了什么**：在 2~3 秒的短段上只有 +0.021（噪音级）——短段根本走不到漂移累积，
+    那种不一致来自「每段独立扩散的随机性」，得靠**把镜切长**解决。两个机制互补，缺一不可。
+    """
+    if strength <= 0:
+        return
+    dec = getattr(model, "feat_decoder", None)
+    if dec is None or not hasattr(dec, "sample"):
+        print("· 音色锚点：模型结构不认识，跳过", file=sys.stderr)
+        return
+    orig_sample = dec.sample
+    state = {"anchor": None}
+
+    def sample(mu, cond=None, **kw):
+        if cond is not None:
+            if state["anchor"] is None:
+                state["anchor"] = cond
+            else:
+                cond = (1.0 - strength) * cond + strength * state["anchor"]
+        return orig_sample(mu=mu, cond=cond, **kw)
+
+    dec.sample = sample
+    orig_gen = model.generate
+
+    def generate(*a, **kw):
+        state["anchor"] = None          # 每段重新锚定：段与段之间不共享锚点
+        return orig_gen(*a, **kw)
+
+    model.generate = generate
+    print(f"· 音色锚点 strength={strength}", file=sys.stderr)
+
+
+def match_loudness(a: np.ndarray, sr: int, target_dbfs: float = -23.0) -> np.ndarray:
+    """把这一段的有声部分对齐到统一响度。
+
+    **段间响度不齐是「听起来像换了个人」的真正来源**，不是音色漂移——2026-08-26 实测：
+    声纹余弦全程 0.87+（同一个人），而段间响度摆动 2.9dB，人耳对 3dB 以上跳变敏感。
+    模型对每段的输出电平本来就有随机性，逐段对齐一次就能压平。
+
+    只按**有声部分**算电平（用峰值 2% 为门限掐掉静音），否则停顿多的段会被算低、然后被推高。
+    """
+    v = a[np.abs(a) > (np.abs(a).max() * 0.02 if a.size else 0)]
+    if v.size < sr // 20:
+        return a
+    cur = 20 * np.log10(float(np.sqrt((v.astype(np.float64) ** 2).mean())) + 1e-12)
+    gain = 10 ** ((target_dbfs - cur) / 20)
+    out = a * gain
+    peak = float(np.abs(out).max())
+    if peak > 0.97:                       # 防削波：整体回退，不做限幅（限幅会改音色）
+        out = out * (0.97 / peak)
+    return out.astype(np.float32)
+
+
 def split_text(text: str, max_chars: int = 120) -> list[str]:
     """按中英句末标点切分，再贪心打包到 <= max_chars 的块，避免单段过长。"""
     parts = re.split(r"(?<=[。！？!?；;\n])", text)
@@ -280,12 +393,27 @@ def synthesize(
     返回 (float32 波形, 采样率)。`denoise=True` 是固定步：每段生成后立刻过 RNNoise，
     保证 raw 层底噪稳定 ≤-80dB（解决逐幕去噪不稳）。
     """
+    _install_voice_anchor(model, float(os.environ.get("CHANNEK_TTS_VOICE_ANCHOR", "0.15") or 0))
     segments = split_text(text, max_chars) if chunk else [text]
     audios: list[np.ndarray] = []
     sr = DEFAULT_SR
     total_dur = 0.0
     t0 = time.time()
     for i, seg in enumerate(segments, 1):
+        # **combined 模式**：`ref_audio` 走 VoxCPM2 的隔离式参考通道（专用 token·与续写上下文
+        # 解耦），`prompt_audio`/`prompt_text` 同时给续接通道——官方文档称之为「最高相似度克隆」。
+        #
+        # 2026-08-26 实测（resemblyzer 声纹余弦·六段同参考音）：
+        #   ref+text 单给      段间最差 0.891 · 响度摆动 2.9dB
+        #   ref 单独           段间最差 0.874 · 响度摆动 2.5dB
+        #   **combined**       段间最差 0.909 · 响度摆动 1.5dB   ← 三项全优
+        # 响度那一项才是关键：人耳对 3dB 以上跳变敏感，2.9dB 听起来就是「一段一个人」，
+        # 而声纹一直是 0.87+（同一个人）——**耳朵听到的不一致来自响度，不是音色**。
+        # ⚠️ **不要再把 prompt_audio/prompt_text 一起传**（combined 模式）。
+        # 2026-08-26 实测：那是**续接模式**——语义是「给你一段话和它的音频，接着往下说」，
+        # 于是模型会把参考音那段话也念出来再接目标文本：8 个字的「这钱能花吗？不能。」
+        # 生成了 22.41 秒。声纹和响度指标反而更好看（0.909 / 1.5dB），因为那两个指标
+        # **量不到念错字**——用它们验证内容正确性是无效的，务必另做转写比对。
         res = next(model.generate(
             seg,
             instruct=instruct,
@@ -298,6 +426,7 @@ def synthesize(
         a = np.asarray(res.audio).squeeze().astype(np.float32)
         if denoise:
             a = denoise_segment(a, sr)
+        a = match_loudness(a, sr)
         a = edge_fade(a, sr)  # 每块首尾去咔哒：消块↔静音交界的阶跃 pop（切换杂音）
         audios.append(a)
         total_dur += len(a) / sr
