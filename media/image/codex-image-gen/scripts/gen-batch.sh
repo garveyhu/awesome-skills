@@ -58,7 +58,7 @@ for job in "${jobs[@]}"; do
     if bash "$GEN" "${args[@]}" >/dev/null 2>&1; then
       echo "✓ $name"
     else
-      echo "✗ $name（失败，可单独重跑）"
+      echo "✗ ${name}（失败，可单独重跑）"
     fi
     printf '\n' >&9
   } &
