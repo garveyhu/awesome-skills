@@ -71,6 +71,7 @@
 | **memory-palace** | 引导任何人搭建平台无关的个人记忆系统：一座 Obsidian vault（纯 Markdown）让 Claude / Codex / Gemini 共读共写「你是谁/项目/偏好/决策」，越用越懂你、记忆可见可改可带走。子命令 help/init/interview/extract/distill/review/analyze；确定性零依赖引擎 `mp.py`。吸收自 Karpathy / OpenClaw / Hermes / open-second-brain / mem0 |
 | **loop-harness** | 搭建并跑「高质量长期自主迭代 loop 任务」的脚手架 + harness（优化/审计/迁移/深度打磨）。任务书+台账+日志文件即记忆，**外部客观验证门**（agent 报脚本结果·不报自评），**进度检测停止/升级**（非步数·停滞求人），记忆防漂移 + 多智能体。**从一个真跑 100 轮的 loop 提炼**，与 Ralph loop + BabyAGI + evaluator-optimizer 同构。建在 `/loop` 或 `/schedule` 之上 |
 | **codex-conductor** | 「Claude 当大脑、Codex 当手」的派活工作流：实现类任务经 `codex:codex-rescue` agent 派给本机 Codex CLI——Claude 拆任务、写任务书、**独立验收**（Codex 完工报告不作数）、亲自合并。**角色档位**（builder / coder / chore / detective / scout / reviewer——每个 = 模型档 + effort + 读写 + prompt 姿态的预设组合，一角色一 reference 文件）+ 任务书范式 + worktree 纪律 + 后台任务轮询。从一场 9 个工作包全由 Codex 实现的实战沉淀 |
+| **rsi** | 评测驱动的 RSI（递归自我改进）闭环：一句话「开启 <项目> 的 RSI」，总指挥会话一轮轮跑分 → 新开子智能体当改进者（没见过考题）→ 冻结评测的门禁判定 → 合入、部署、通知，没说停就不停。方法通用，项目在自己仓库放一份接入说明（命令、受保护 / 冻结路径、节奏）即可接入 |
 
 ---
 
