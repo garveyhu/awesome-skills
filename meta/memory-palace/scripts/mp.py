@@ -33,7 +33,26 @@ SKILL_ROOT = Path(__file__).resolve().parents[1]
 TEMPLATES = SKILL_ROOT / "assets" / "templates"
 CONFIG_EXAMPLE = SKILL_ROOT / "scripts" / "config.example.toml"
 
-PREFIX_TYPE = {"偏好": "preference", "决策": "decision", "纠正": "correction", "观察": "observation"}
+PREFIX_TYPE = {"偏好": "preference", "决策": "decision", "纠正": "correction", "观察": "observation", "事实": "observation"}
+_LABEL = "(" + "|".join(PREFIX_TYPE) + ")"
+# journal 行各会话写法不一：`- 偏好: …`、`偏好: …`、`- **偏好（备注）**：…`、`- 10-23 纠正（备注）：…`、`- 【偏好·备注】…` 都要认
+JOURNAL_LINE = [
+    re.compile(r"^\s*(?:[-*]\s+)?(?:\*\*)?(?:\d{1,2}-\d{1,2}\s+)?" + _LABEL
+               + r"(?:[（(][^）)]*[）)]|·[^:：*]*)?(?:\*\*)?\s*[:：]\s*(?:\*\*\s*)?(.+)$"),
+    re.compile(r"^\s*(?:[-*]\s+)?【" + _LABEL + r"(?:·[^】]*)?】\s*(.+)$"),
+]
+
+
+def match_journal_line(line: str):
+    """认出带类型标签的 journal 行，返回 (kind, text)；认不出返回 None。"""
+    for pat in JOURNAL_LINE:
+        m = pat.match(line)
+        if m:
+            text = m.group(2).strip()
+            # 「当场直接下令」是已执行改动的留痕，供对账不再提候选
+            kind = "observation" if "当场直接下令" in text else PREFIX_TYPE[m.group(1)]
+            return kind, text
+    return None
 REQUIRED_FM = ("title", "type")  # 每条记忆 note 至少要带的 frontmatter 字段
 
 
@@ -101,9 +120,10 @@ def gather_journal(vault: Path, days: int) -> list[Signal]:
         if md.stem not in wanted:
             continue
         for line in md.read_text(encoding="utf-8").splitlines():
-            m = re.match(r"^\s*-\s*(偏好|决策|纠正|观察)\s*[:：]\s*(.+)$", line)
-            if m:
-                out.append(Signal(m.group(2).strip(), "journal", md.stem, PREFIX_TYPE[m.group(1)]))
+            hit = match_journal_line(line)
+            if hit:
+                kind, text = hit
+                out.append(Signal(text, "journal", md.stem, kind))
     return out
 
 
