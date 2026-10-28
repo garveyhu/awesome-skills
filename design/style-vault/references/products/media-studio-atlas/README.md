@@ -61,4 +61,4 @@ signature 三件套 = 薄荷青眼 IP（黑猫 emo）+ 黑粗大字 + 撞色背�
 
 ## 技术栈
 
-Vite + React 18 + TypeScript（strict）+ Tailwind v4 + framer-motion。`@/` 别名；设计 token 在 `styles/index.css` 的 `@theme`，事实源 DTCG `tokens.dtcg.json`。
+Vite + React 18 + TypeScript（strict）+ Tailwind v4 + framer-motion。`@/` 别名；设计 token 在 `styles/index.css` 的 `@theme`，事实源是频道的 `brand/tokens.json`。

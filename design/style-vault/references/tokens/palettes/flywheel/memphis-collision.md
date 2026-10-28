@@ -41,7 +41,7 @@ preview: /preview/tokens/palettes/flywheel/memphis-collision
 }
 ```
 
-派生为 CSS 变量（Tailwind v4 `@theme`）：`--color-ink` / `--color-paper` / `--color-mint` …，组件零硬编码、从变量取。事实源是 DTCG `tokens.dtcg.json`，改值后重派生、模板零改。
+派生为 CSS 变量（Tailwind v4 `@theme`）：`--color-ink` / `--color-paper` / `--color-mint` …，组件零硬编码、从变量取。事实源是频道的 `brand/tokens.json`（频道卡参数 `brand.tokens` 指向它），改值后重派生、模板零改。
 
 ## 适配指南
 
