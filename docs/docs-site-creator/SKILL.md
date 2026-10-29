@@ -1,6 +1,7 @@
 ---
 name: docs-site-creator
-description: 创建文档站点的统一入口(双 provider 路由)。简单/内部/单项目文档 → Docsify provider(零构建、markdown 即站、可编译单文件离线 HTML);专业/对外/规模化文档 → Docusaurus provider(顶部多模块导航 + 侧栏 + 本页目录 + 中文本地搜索 + 暗色模式 + 可深度定制主题)。Use when the user asks to create a documentation site, docs portal, developer docs, or turn markdown files into a browsable site. Triggers: 建文档站, 文档站点, 文档网站, 生成文档站, docsify 站, docusaurus 站, documentation site, docs portal, developer docs。用户没点名引擎时,由本 skill 的选型表来判。
+description: >-
+  创建文档站点的统一入口(双 provider 路由)。简单/内部/单项目文档 → Docsify provider(零构建、markdown 即站、可编译单文件离线 HTML);专业/对外/规模化文档 → Docusaurus provider(顶部多模块导航 + 侧栏 + 本页目录 + 中文本地搜索 + 暗色模式 + 可深度定制主题)。Use when the user asks to create a documentation site, docs portal, developer docs, or turn markdown files into a browsable site. Triggers: 建文档站, 文档站点, 文档网站, 生成文档站, docsify 站, docusaurus 站, documentation site, docs portal, developer docs。用户没点名引擎时,由本 skill 的选型表来判。
 ---
 
 # Docs Site Creator(文档站统一入口)
