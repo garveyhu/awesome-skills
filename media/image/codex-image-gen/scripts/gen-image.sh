@@ -46,7 +46,7 @@ CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
 ISO_HOME=""
 if [ -z "${CODEX_IMG_NO_ISOLATE:-}" ]; then
   ISO_HOME="$(mktemp -d)"
-  for f in auth.json config.toml; do
+  for f in auth.json config.toml models_cache.json; do   # 带上模型清单，否则新模型报「metadata not found」
     [ -e "$CODEX_HOME/$f" ] && cp "$CODEX_HOME/$f" "$ISO_HOME/$f" 2>/dev/null
   done
   CODEX_HOME="$ISO_HOME"
@@ -87,6 +87,11 @@ MODEL_ARGS=(); [ -n "${CODEX_IMAGE_MODEL:-}" ] && MODEL_ARGS=( -m "$CODEX_IMAGE_
 "${CODEX[@]}" exec -C "$DIR" -s workspace-write --skip-git-repo-check ${MODEL_ARGS[@]+"${MODEL_ARGS[@]}"} \
   -c model_reasoning_effort="low" "$INSTR" </dev/null 2>&1 | tee "$CODEX_LOG" >&2 \
   || echo "[codex-image-gen] codex exec 退出码非零,尝试兜底" >&2
+# 「model is not supported when using Codex with a ChatGPT account」多半是全局 codex 太旧、不认识 config 里的新模型
+# （261024：0.144.1 跑 gpt-6.1-sol 被拒，升到 0.164.0 即好）。账号/套餐一般没问题。
+if grep -q 'model_not_found\|not supported when using Codex' "$CODEX_LOG"; then
+  echo "[codex-image-gen] 模型被拒：先升级 codex（npm i -g @openai/codex@latest，当前 $("${CODEX[@]}" --version 2>/dev/null)），仍不行再用 CODEX_IMAGE_MODEL 换模型" >&2
+fi
 
 # 本次 codex 的 session id → 它把图落在 GEN_DIR/<session>/(新版行为)
 SID="$(grep -oE 'session id: [0-9a-fA-F-]+' "$CODEX_LOG" | head -1 | awk '{print $NF}')"
