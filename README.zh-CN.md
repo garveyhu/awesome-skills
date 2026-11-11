@@ -24,7 +24,6 @@
 | **wiki-creator** | 深扫项目生成 DeepWiki 式多文件文档（中文 + Mermaid，配 Docsify 直接可读） |
 | **docs-site-creator** | 文档站统一入口（双 provider 路由）：简单文档走 Docsify（零构建、可编译离线单文件），专业站走 Docusaurus 3（多模块导航 / 中文搜索 / 暗色 / 品牌级定制） |
 | **req-to-ai-spec** | 把零散需求（文字 / 截图 / 旧代码）转成结构化、AI 友好的需求规格，交给编码 agent 直接开干 |
-| **spechub-best-practices** | 写高质量交接规约、用 git worktree 管理，专为 AI 之间的任务交接 |
 | **notion-chat-archiver** | 把一次 AI 对话总结归档进 Notion 对话录库（带主题 / 要点 / 标签等元数据） |
 | **solution-vault** | 个人方案库：把验证过的技术方案（OAuth、文件上传、支付…）跨项目复刻 |
 | **pdf-craft** | 走 HTML+CSS 把内容排成印刷级 PDF——四套版式（政务申报 / 商业提案 / 技术报告 / 简历）+ 中文排版自检 |
